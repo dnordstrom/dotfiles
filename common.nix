@@ -1,12 +1,10 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ "./dell-xps.nix" ];
+  imports = [ ./dell-xps.nix ];
 
   nix.package = pkgs.nixUnstable;
   nix.extraOptions =  ''
-    keep-outputs = true
-    keep-derivations = true
     experimental-features = nix-command flakes ca-derivations ca-references
   '';
 
@@ -15,9 +13,8 @@
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.isContainer = true;
 
-  networking.hostName = "nordix";
+  networking.hostName = "nordixlap";
   networking.wireless.enable = false;
   networking.networkmanager.enable = true;
   networking.useDHCP = false;
@@ -29,7 +26,6 @@
   services.xserver.enable = true;
   services.xserver.displayManager.sddm.enable = true;
   services.xserver.desktopManager.plasma5.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
   services.xserver.libinput.enable = true;
   
   services.xserver = {
@@ -59,13 +55,9 @@
     vimAlias = true;
   };
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
     git
-    qutebrowser
-    kate
-    # latest.firefox-nightly-bin
+    firefox
   ];
 }
 

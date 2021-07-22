@@ -19,9 +19,8 @@
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.isContainer = true;
 
-  networking.hostName = "nordix";
+  networking.hostName = "nordixlap";
   networking.wireless.enable = false;
   networking.networkmanager.enable = true;
   networking.useDHCP = false;
@@ -67,9 +66,7 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     git
-    qutebrowser
-    kate
-    # latest.firefox-nightly-bin
+    firefox
   ];
 }
 

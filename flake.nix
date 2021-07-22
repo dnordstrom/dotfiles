@@ -3,18 +3,16 @@
 
   outputs = { self, nixpkgs }: {
 
-    nixosConfigurations.nordix = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.nordixlap = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules =
         [
 	  ./common.nix
 
 	  ({ pkgs, ... }: {
-	    #packages = with pkgs; [
-	    #   chromium
-	    #   alacritty
-	    #];
-            system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
+	    programs.ssh.askPassword = pkgs.lib.mkForce "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
+	    
+	    system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
           })
         ];
     };
