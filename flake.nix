@@ -1,5 +1,5 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.03";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
   outputs = { self, nixpkgs }: {
 
@@ -7,11 +7,13 @@
       system = "x86_64-linux";
       modules =
         [
-	  "/etc/nixos/common.nix"
+	  ./common.nix
+
 	  ({ pkgs, ... }: {
-	    packages = with pkgs; [
-	       chromium
-	    ];
+	    #packages = with pkgs; [
+	    #   chromium
+	    #   alacritty
+	    #];
             system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
           })
         ];

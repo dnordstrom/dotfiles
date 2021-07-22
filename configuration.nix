@@ -1,7 +1,9 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ /etc/nixos/hardware-configuration.nix ];
+  imports = [
+    ./hardware-configuration.nix
+  ;
 
   nix.package = pkgs.nixUnstable;
   nix.extraOptions =  ''
@@ -11,6 +13,8 @@
   '';
 
   nixpkgs.config.allowUnfree = true;
+
+  programs.chromium.enable = true;
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
