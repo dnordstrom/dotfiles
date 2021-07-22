@@ -7,7 +7,7 @@
       system = "x86_64-linux";
       modules =
         [
-	  "/etc/nixos/configuration.nix"
+	  "/etc/nixos/common.nix"
 	  ({ pkgs, ... }: {
 	    packages = with pkgs; [
 	       chromium
