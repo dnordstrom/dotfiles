@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ /etc/nixos/hardware-configuration.nix ];
+  imports = [ "./dell-xps.nix" ];
 
   nix.package = pkgs.nixUnstable;
   nix.extraOptions =  ''
@@ -17,7 +17,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.isContainer = true;
 
-  networking.hostName = "nordixlap";
+  networking.hostName = "nordix";
   networking.wireless.enable = false;
   networking.networkmanager.enable = true;
   networking.useDHCP = false;
