@@ -1,6 +1,14 @@
 { config, pkgs, ... }:
 
-{
+let
+  extensions = (with pkgs.vscode-extensions; [
+    bbenoist.Nix
+  ]);
+  vscode-with-extensions = pkgs.vscode-with-extensions.override {
+    vscodeExtensions = extensions;
+  };
+
+in {
   imports = [ ./dell-xps.nix ];
 
   nix.package = pkgs.nixUnstable;
@@ -9,6 +17,9 @@
   '';
 
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.overlays = [
+    (import overlays/vscode.nix)
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -24,7 +35,8 @@
 
   # Enable the Plasma 5 Desktop Environment.
   services.xserver.enable = true;
-  services.xserver.displayManager.sddm.enable = true;
+  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.desktopManager.gnome.enable = true;
   services.xserver.desktopManager.plasma5.enable = true;
   services.xserver.libinput.enable = true;
   
@@ -57,7 +69,11 @@
 
   environment.systemPackages = with pkgs; [
     git
-    firefox
+    wget
+    nodejs
+    yarn
+    firefox-beta-bin
+    vscode-with-extensions
   ];
 }
 
