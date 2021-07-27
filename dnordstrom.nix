@@ -15,7 +15,6 @@
       editorconfig.editorconfig
       bbenoist.Nix
       foxundermoon.shell-format
-      jnoortheen.nix-ide
       skyapps.fish-vscode
       graphql.vscode-graphql
       dbaeumer.vscode-eslint
