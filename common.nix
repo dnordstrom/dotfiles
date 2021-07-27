@@ -31,6 +31,12 @@ in {
   networking.wireless.enable = false;
   networking.networkmanager.enable = true;
   networking.useDHCP = false;
+  networking.extraHosts = ''
+    ***REMOVED***
+    ***REMOVED***
+    ***REMOVED***
+    ***REMOVED***
+  '';
 
   # Set your time zone.
   time.timeZone = "Europe/Amsterdam";
@@ -80,6 +86,7 @@ in {
     pkgs.firefox-beta-bin
     pkgs.vscode-with-extensions
     pkgs.steam-run
+    pkgs.tor-browser-bundle-bin
     convox
   ];
 }
