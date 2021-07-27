@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, stdenv, lib, ... }:
 
 let
   extensions = (with pkgs.vscode-extensions; [
@@ -13,6 +13,8 @@ in {
 
   nix.package = pkgs.nixUnstable;
   nix.extraOptions =  ''
+    keep-outputs = true
+    keep-derivations = true
     experimental-features = nix-command flakes ca-derivations ca-references
   '';
 
@@ -54,10 +56,9 @@ in {
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.dnordstrom = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" ];
   };
 
   programs.neovim = {
@@ -67,13 +68,19 @@ in {
     vimAlias = true;
   };
 
-  environment.systemPackages = with pkgs; [
-    git
-    wget
-    nodejs
-    yarn
-    firefox-beta-bin
-    vscode-with-extensions
+  environment.systemPackages =
+  let
+    convox = pkgs.callPackage ./convox.nix {};
+  in
+  [
+    pkgs.git
+    pkgs.wget
+    pkgs.nodejs
+    pkgs.yarn
+    pkgs.firefox-beta-bin
+    pkgs.vscode-with-extensions
+    pkgs.steam-run
+    convox
   ];
 }
 

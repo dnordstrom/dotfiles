@@ -11,6 +11,12 @@
         [
 	  ./common.nix
 
+	  home-manager.nixosModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.dnordstrom = import ./dnordstrom.nix;
+          }
+
 	  ({ pkgs, ... }: {
 	    programs.ssh.askPassword = pkgs.lib.mkForce "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
 
