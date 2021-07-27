@@ -51,5 +51,58 @@
         "source.fixAll.eslint" = true;
       };
     };
+    keybindings = [
+      # UI
+      {
+        key = "ctrl+alt+b";
+        command = "workbench.action.toggleActivityBarVisibility";
+      }
+      {
+        key = "alt+b";
+        command = "workbench.action.toggleStatusbarVisibility";
+      }
+      {
+        key = "ctrl+b";
+        command = "workbench.action.toggleSidebarVisibility";
+      }
+      {
+        # Hide search bar on escape
+        key = "escape";
+        command = "closeFindWidget";
+        when = "editorFocus && findWidgetVisible";
+      }
+
+      # Command palette
+      {
+        # Ctrl + Space shows command palette
+        key = "ctrl+space";
+        command = "workbench.action.showCommands";
+        when = "!inQuickOpen";
+      }
+      {
+        # Another Ctrl + Space shows quick open
+        key = "ctrl+space";
+        command = "workbench.action.quickOpen";
+        when = "inQuickOpen && inCommandsPicker";
+      }
+      {
+         # A third Ctrl + Space shows symbols in workspace
+        key = "ctrl+space";
+        command = "workbench.action.gotoSymbol";
+        when = "inQuickOpen && inFilesPicker";
+      }
+      {
+        # A fourth Ctrl + Space shows snippets
+        key = "ctrl+space";
+        command = "editor.action.showSnippets";
+        when = "inQuickOpen && inFileSymbolsPicker";
+      }
+      {
+        # A fifth Ctrl + Space hides quick open panel
+        key = "ctrl+space";
+        command = "workbench.action.closeQuickOpen";
+        when = "inQuickOpen && !inCommandsPicker && !inFilesPicker && !inFileSymbolsPicker";
+      }
+    ];
   };
 }

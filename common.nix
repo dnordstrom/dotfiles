@@ -11,9 +11,6 @@
   '';
 
   nixpkgs.config.allowUnfree = true;
-  nixpkgs.overlays = [
-    (import overlays/vscode.nix)
-  ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
