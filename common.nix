@@ -1,14 +1,6 @@
 { config, pkgs, stdenv, lib, ... }:
 
-let
-  extensions = (with pkgs.vscode-extensions; [
-    bbenoist.Nix
-  ]);
-  vscode-with-extensions = pkgs.vscode-with-extensions.override {
-    vscodeExtensions = extensions;
-  };
-
-in {
+{
   imports = [ ./dell-xps.nix ];
 
   nix.package = pkgs.nixUnstable;
@@ -84,7 +76,7 @@ in {
     pkgs.nodejs
     pkgs.yarn
     pkgs.firefox-beta-bin
-    pkgs.vscode-with-extensions
+    # pkgs.vscode-with-extensions
     pkgs.steam-run
     pkgs.tor-browser-bundle-bin
     convox
