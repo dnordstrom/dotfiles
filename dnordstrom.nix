@@ -18,6 +18,12 @@
       skyapps.fish-vscode
       graphql.vscode-graphql
       dbaeumer.vscode-eslint
+      {
+        name = "rewrap";
+        publisher = "stkb";
+        version = "1.14.0";
+        sha256 = "sha256-qRwKX36a1aLzE1tqaOkH7JfE//pvKdPZ07zasPF3Dl4=";
+      }
 
       # Themes
     ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
@@ -38,12 +44,6 @@
         publisher = "arcticicestudio";
         version = "0.18.0";
         sha256 = "sha256-Uo6peR+2ZNX6nwJ0Yar32Pe0rfBZ+f6ef1cYhUvVUbE=";
-      }
-      {
-        name = "rewrap";
-        publisher = "stkb";
-        version = "1.14.0";
-        sha256 = "sha256-qRwKX36a1aLzE1tqaOkH7JfE//pvKdPZ07zasPF3Dl4=";
       }
     ];
     userSettings = {
