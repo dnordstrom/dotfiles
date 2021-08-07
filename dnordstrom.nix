@@ -11,22 +11,19 @@
     enable = true;
     package = pkgs.vscodium;
     extensions = with pkgs.vscode-extensions; [
-      # Extensions
       editorconfig.editorconfig
       bbenoist.Nix
       foxundermoon.shell-format
       skyapps.fish-vscode
       graphql.vscode-graphql
       dbaeumer.vscode-eslint
+    ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
       {
         name = "rewrap";
         publisher = "stkb";
         version = "1.14.0";
         sha256 = "sha256-qRwKX36a1aLzE1tqaOkH7JfE//pvKdPZ07zasPF3Dl4=";
       }
-
-      # Themes
-    ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
       {
         name = "ayu";
         publisher = "teabyii";
@@ -49,6 +46,24 @@
     userSettings = {
       "editor.codeActionsOnSave" = {
         "source.fixAll.eslint" = true;
+      };
+
+      "rewrap.autoWrap.enabled" = true;
+      "rewrap.autoWrap.notification" = "text";
+      "rewrap.reformat" = true;
+      "rewrap.wholeComment" = true;
+      
+      "eslint.alwaysShowStatus" = true;
+      "eslint.packageManager" = "yarn";
+      "eslint.options" = {
+        "extensions" = [
+          ".html"
+          ".js"
+          ".vue"
+          ".jsx"
+          ".ts"
+          ".tsx"
+        ];
       };
     };
     keybindings = [

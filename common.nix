@@ -69,6 +69,7 @@
     pkgs.firefox-beta-bin
     pkgs.steam-run
     pkgs.tor-browser-bundle-bin
+    pkgs.qbittorrent
     convox
   ];
 }
