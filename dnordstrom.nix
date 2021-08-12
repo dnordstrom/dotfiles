@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, nixpkgs, ... }:
 
 {
   #
@@ -7,13 +7,13 @@
 
   wayland.windowManager.sway = {
     enable = true;
-    wrapperFeatures.gtk = true ;
+    wrapperFeatures.gtk = true;
   };
 
   #
   # Applications
   #
-  
+
   home.packages = with pkgs; [
     swaylock
     swayidle
@@ -22,6 +22,8 @@
     alacritty
     wofi
     kate
+    firefox-devedition-bin
+    tridactyl-native
   ];
 
   #
@@ -58,6 +60,24 @@
     shellAliases = {
       ll = "ls -Al"; # Show all files as list but skip "." and "..".
     };
+
+    initExtra = ''
+      ga () {
+        git add .
+      }
+
+      gc () {
+        git commit -am "$1"
+      }
+
+      gf () {
+        git fetch && git pull
+      }
+
+      gp () {
+        git push
+      }
+    '';
   };
 
   #

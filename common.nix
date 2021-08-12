@@ -3,6 +3,8 @@
 {
   imports = [ ./ryzen.nix ];
 
+  nixpkgs.overlays = [ (import ./overlays/firefox-overlay.nix) ];
+
   nix.package = pkgs.nixUnstable;
   nix.extraOptions =  ''
     keep-outputs = true
@@ -12,8 +14,8 @@
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     "broadcom-sta"
-    "firefox-beta-bin"
-    "firefox-beta-bin-unwrapped"
+    "firefox-devedition-bin"
+    "firefox-devedition-bin-unwrapped"
     "slack"
     "steam-runtime"
   ];
@@ -84,12 +86,12 @@
     pkgs.wget
     pkgs.nodejs
     pkgs.yarn
-    pkgs.firefox-beta-bin
     pkgs.slack
     pkgs.steam-run
     pkgs.tor-browser-bundle-bin
     pkgs.qbittorrent
     pkgs.qutebrowser
+    pkgs.latest.firefox-nightly-bin
     convox
   ];
 }
