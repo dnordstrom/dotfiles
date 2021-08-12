@@ -21,3 +21,8 @@ This is a flake-based configuration is used on my Dell XPS work laptop as well a
 ### Articles
 
 * [What Is Nix and Why Should You Use It](https://serokell.io/blog/what-is-nix)
+
+### Resources
+
+* [Awesome Nix](https://nix-community.github.io/awesome-nix/)
+
