@@ -8,11 +8,16 @@ This is a flake-based configuration is used on my Dell XPS work laptop as well a
 
 ## Links
 
-* [https://nixos.org/](NixOS Website)  
-  Official NixOS website.
-* [https://nixos.org/manual/nixos/unstable/](NixOS Manual)
-* [https://nixos.org/manual/nix/unstable/](Nix Package Manager Manual)
-* [https://search.nixos.org/packages?channel=unstable](Package Search)
-* [https://search.nixos.org/options?channel=unstable](Options Search)
-* [https://nix-community.github.io/home-manager/](Home Manager Manual)
-* [https://nix-community.github.io/home-manager/options.html](Home Manager Options)
+### Official
+
+* [NixOS](https://nixos.org/)
+* [NixOS Manual](https://nixos.org/manual/nixos/unstable/)
+* [Nix Manual](https://nixos.org/manual/nix/unstable/)
+* [Package Search](https://search.nixos.org/packages?channel=unstable)
+* [Options Search](https://search.nixos.org/options?channel=unstable)
+* [Home Manager Manual](https://nix-community.github.io/home-manager/)
+* [Home Manager Options](https://nix-community.github.io/home-manager/options.html)
+
+### Articles
+
+* [What Is Nix and Why Should You Use It](https://serokell.io/blog/what-is-nix)
