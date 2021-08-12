@@ -1,7 +1,7 @@
 { config, pkgs, stdenv, lib, ... }:
 
 {
-  imports = [ ./dell-xps.nix ];
+  imports = [ ./ryzen.nix ];
 
   nix.package = pkgs.nixUnstable;
   nix.extraOptions =  ''
@@ -16,7 +16,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nordixlap";
+  networking.hostName = "nordix";
   networking.wireless.enable = false;
   networking.networkmanager.enable = true;
   networking.useDHCP = false;
@@ -34,6 +34,7 @@
   services.xserver.enable = true;
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
+  services.xserver.desktopManager.plasma5.enable = true;
   services.xserver.libinput.enable = true;
   
   services.xserver = {
@@ -48,6 +49,7 @@
   users.users.dnordstrom = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];
+    shell = pkgs.zsh
   };
 
   programs.neovim = {

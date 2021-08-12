@@ -1,11 +1,75 @@
 { pkgs, ... }:
 
 {
+  #
+  # User Settings
+  #
+   
+  users.users.dnordstrom = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" ];
+    shell = pkgs.zsh
+  };
+
+  #
+  # Sway WM (and Utilities)
+  #
+
+  wayland.windowManager.sway = {
+    enable = true;
+    wrapperFeatures.gtk = true ;
+  };
+  
+  home.packages = with pkgs; [
+    swaylock
+    swayidle
+    wl-clipboard
+    mako
+    alacritty
+    wofi
+  ];
+  
+  #
+  # Direnv (Per Directory Environments)
+  #
+
   programs.direnv.enable = true;
   programs.direnv.nix-direnv.enable = true;
   programs.direnv.nix-direnv.enableFlakes = true;
 
-  programs.zsh.enable = true;
+  #
+  # ZSH and Plugins
+  #
+
+  programs.zsh = {
+    enable = true;
+    enableAutosuggestions = true;
+    
+    oh-my-zsh = {
+      enable = true;
+      theme = "agnoster";
+    };
+
+    plugins = [
+      "zsh-syntax-highlighting";
+    ];
+
+    localVariables = {
+      EDITOR = "nvim";
+    };
+
+    shellAliases = {
+      ll = "ls --list --almost-all";
+    };
+
+    initExtra = ''
+      unset LESS
+    '';
+  };
+
+  #
+  # VSCodium (Extensions, Settings, and Key Binds)
+  #
 
   programs.vscode = {
     enable = true;
@@ -120,4 +184,22 @@
       }
     ];
   };
+
+  #
+  # Sway WM (and Utilities)
+  #
+
+  wayland.windowManager.sway = {
+    enable = true;
+    wrapperFeatures.gtk = true ;
+  };
+  
+  home.packages = with pkgs; [
+    swaylock
+    swayidle
+    wl-clipboard
+    mako
+    alacritty
+    wofi
+  ];
 }

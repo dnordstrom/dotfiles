@@ -1,11 +1,10 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   inputs.home-manager.url = "github:nix-community/home-manager";
-  inputs.firefoxNightly.url = "github:colemickens/flake-firefox-nightly";
 
-  outputs = { self, nixpkgs, firefoxNightly, home-manager }: {
+  outputs = { self, nixpkgs, home-manager }: {
 
-    nixosConfigurations.nordixlap = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.nordix = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules =
         [
