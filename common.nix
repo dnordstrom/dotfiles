@@ -1,9 +1,7 @@
-{ config, pkgs, stdenv, lib, ... }:
+{ config, pkgs, stdenv, lib, nodePackages, ... }:
 
 {
   imports = [ ./ryzen.nix ];
-
-  nixpkgs.overlays = [ (import ./overlays/firefox-overlay.nix) ];
 
   nix.package = pkgs.nixUnstable;
   nix.extraOptions =  ''
@@ -70,29 +68,34 @@
     shell = pkgs.zsh;
   };
 
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-    viAlias = true;
-    vimAlias = true;
-  };
+  security.sudo.extraRules = [{
+    users = [ "dnordstrom" ];
+    commands = [
+      {
+        command = "/run/current-system/sw/bin/chown";
+        options = [ "SETENV" "NOPASSWD" ];
+      }
+      {
+        command = "/run/current-system/sw/bin/chmod";
+        options = [ "SETENV" "NOPASSWD" ];
+      }
+      {
+        command = "/run/current-system/sw/bin/nvim";
+        options = [ "SETENV" "NOPASSWD" ];
+      }
+      {
+        command = "/run/current-system/sw/bin/vim";
+        options = [ "SETENV" "NOPASSWD" ];
+      }
+    ];
+  }];
 
-  environment.systemPackages =
-  let
-    convox = pkgs.callPackage ./convox.nix {};
-  in
-  [
-    pkgs.git
-    pkgs.wget
-    pkgs.nodejs
-    pkgs.yarn
-    pkgs.slack
-    pkgs.steam-run
-    pkgs.tor-browser-bundle-bin
-    pkgs.qbittorrent
-    pkgs.qutebrowser
-    pkgs.latest.firefox-nightly-bin
-    convox
+  environment.systemPackages = with pkgs; [
+    git
+    wget
+    nodejs
+    yarn
+    steam-run
   ];
 }
 

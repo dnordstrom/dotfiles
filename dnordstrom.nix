@@ -14,7 +14,11 @@
   # Applications
   #
 
-  home.packages = with pkgs; [
+  home.packages = 
+  let
+    convox = pkgs.callPackage ./convox.nix {};
+  in
+  with pkgs; [
     swaylock
     swayidle
     wl-clipboard
@@ -24,6 +28,15 @@
     kate
     firefox-devedition-bin
     tridactyl-native
+    slack
+    tor-browser-bundle-bin
+    qbittorrent
+    qutebrowser
+
+    nodePackages.typescript-language-server
+    nodePackages.eslint
+    
+    convox
   ];
 
   #
@@ -35,6 +48,28 @@
     userEmail = "d@mrnordstrom.com";
   };
   
+  #
+  # Neovim
+  #
+
+  xdg.configFile."nvim/lua".source = ./programs/nvim/lua;
+  xdg.configFile."nvim/colors".source = ./programs/nvim/colors;
+
+  programs.neovim = {
+    enable = true;
+    viAlias = true;
+    vimAlias = true;
+    extraConfig = "lua require('init')";
+    plugins = with pkgs.vimPlugins; [
+      vim-javascript
+      vim-markdown
+      vim-nix
+      vim-surround
+      nvim-lspconfig
+      nerdtree
+    ];
+  };
+
   #
   # Direnv (Per Directory Environments)
   #
@@ -58,7 +93,10 @@
     };
 
     shellAliases = {
-      ll = "ls -Al"; # Show all files as list but skip "." and "..".
+      ll = "ls -Al";
+      katenix = "kate /etc/nixos";
+      codenix = "codium /etc/nixos";
+      vimnix = "nvim /etc/nixos";
     };
 
     initExtra = ''
@@ -196,5 +234,13 @@
         when = "inQuickOpen && !inCommandsPicker && !inFilesPicker && !inFileSymbolsPicker";
       }
     ];
+  };
+
+  #
+  # Environment
+  #
+
+  home.sessionVariables = {
+    EDITOR = "nvim";
   };
 }

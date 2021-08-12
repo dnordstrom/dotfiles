@@ -6,23 +6,21 @@
 
     nixosConfigurations.nordix = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      modules =
-        [
-	  ./common.nix
+      modules = [
+        ./common.nix
 
-	  home-manager.nixosModules.home-manager {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.dnordstrom = import ./dnordstrom.nix;
-          }
+        home-manager.nixosModules.home-manager {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.dnordstrom = import ./dnordstrom.nix;
+        }
 
-	  ({ pkgs, ... }: {
-	    programs.ssh.askPassword = pkgs.lib.mkForce "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
+        ({ pkgs, ... }: {
+          programs.ssh.askPassword = pkgs.lib.mkForce "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
 
-	    system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
-          })
-        ];
+          system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
+        })
+      ];
     };
-
   };
 }
