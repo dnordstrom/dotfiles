@@ -4,7 +4,7 @@ This is a flake-based configuration is used on my Dell XPS work laptop as well a
 
 ## Notes to self
 
-* To update Visual Studio Code extension versions that are not in nixpkgs, run [this script](https://nix-community.github.io/awesome-nix/).
+* Run [this script](https://nix-community.github.io/awesome-nix/) to update VSCodium/VSCode extensions not available as Nix packages.
 
 ## Links
 
