@@ -10,9 +10,14 @@
     experimental-features = nix-command flakes ca-derivations ca-references
   '';
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "broadcom-sta"
+    "firefox-beta-bin"
+    "firefox-beta-bin-unwrapped"
+    "slack"
+    "steam-runtime"
+  ];
 
-  # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -27,10 +32,8 @@
     ***REMOVED***
   '';
 
-  # Set your time zone.
   time.timeZone = "Europe/Amsterdam";
 
-  # Enable the Plasma 5 Desktop Environment.
   services.xserver.enable = true;
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
@@ -42,14 +45,27 @@
     xkbOptions = "caps:escape,grp:shifts_toggle";
   };
 
-  # Enable sound.
   sound.enable = true;
-  hardware.pulseaudio.enable = true;
+  hardware.pulseaudio = {
+    enable = true;
+    extraModules = [ pkgs.pulseaudio-modules-bt ]; # More codecs, e.g. APTX
+    package = pkgs.pulseaudioFull;
+  };
+
+  hardware.bluetooth = {
+    enable = true;
+    settings = {
+      General = {
+        Enable = "Source,Sink,Media,Socket";
+      };
+    };
+  };
+  services.blueman.enable = true;
 
   users.users.dnordstrom = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];
-    shell = pkgs.zsh
+    shell = pkgs.zsh;
   };
 
   programs.neovim = {
@@ -69,9 +85,11 @@
     pkgs.nodejs
     pkgs.yarn
     pkgs.firefox-beta-bin
+    pkgs.slack
     pkgs.steam-run
     pkgs.tor-browser-bundle-bin
     pkgs.qbittorrent
+    pkgs.qutebrowser
     convox
   ];
 }

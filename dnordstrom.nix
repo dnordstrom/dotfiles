@@ -2,23 +2,17 @@
 
 {
   #
-  # User Settings
-  #
-   
-  users.users.dnordstrom = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" ];
-    shell = pkgs.zsh
-  };
-
-  #
-  # Sway WM (and Utilities)
+  # Sway
   #
 
   wayland.windowManager.sway = {
     enable = true;
     wrapperFeatures.gtk = true ;
   };
+
+  #
+  # Applications
+  #
   
   home.packages = with pkgs; [
     swaylock
@@ -27,7 +21,17 @@
     mako
     alacritty
     wofi
+    kate
   ];
+
+  #
+  # Git
+  #
+
+  programs.git = {
+    userName  = "dnordstrom";
+    userEmail = "d@mrnordstrom.com";
+  };
   
   #
   # Direnv (Per Directory Environments)
@@ -44,27 +48,16 @@
   programs.zsh = {
     enable = true;
     enableAutosuggestions = true;
+    enableSyntaxHighlighting = true;
     
     oh-my-zsh = {
       enable = true;
       theme = "agnoster";
     };
 
-    plugins = [
-      "zsh-syntax-highlighting";
-    ];
-
-    localVariables = {
-      EDITOR = "nvim";
-    };
-
     shellAliases = {
-      ll = "ls --list --almost-all";
+      ll = "ls -Al"; # Show all files as list but skip "." and "..".
     };
-
-    initExtra = ''
-      unset LESS
-    '';
   };
 
   #
@@ -184,22 +177,4 @@
       }
     ];
   };
-
-  #
-  # Sway WM (and Utilities)
-  #
-
-  wayland.windowManager.sway = {
-    enable = true;
-    wrapperFeatures.gtk = true ;
-  };
-  
-  home.packages = with pkgs; [
-    swaylock
-    swayidle
-    wl-clipboard
-    mako
-    alacritty
-    wofi
-  ];
 }
