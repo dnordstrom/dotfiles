@@ -4,7 +4,7 @@ This is a flake-based configuration is used on my Dell XPS work laptop as well a
 
 ## Notes to self
 
-* Run [this script](https://nix-community.github.io/awesome-nix/) to update VSCodium/VSCode extensions not available as Nix packages.
+* [This script](https://github.com/NixOS/nixpkgs/blob/master/pkgs/misc/vscode-extensions/update_installed_exts.sh) updates VSCodium/VSCode extensions not available as Nix packages.
 
 ## Links
 
