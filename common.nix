@@ -1,8 +1,6 @@
 { config, pkgs, stdenv, lib, nodePackages, ... }:
 
 {
-  imports = [ ./ryzen.nix ];
-
   nix.package = pkgs.nixUnstable;
   nix.extraOptions =  ''
     keep-outputs = true

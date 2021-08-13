@@ -2,6 +2,14 @@
 
 {
   #
+  # Modules
+  #
+
+  imports = [
+    ../modules/vscodium.nix
+  ];
+
+  #
   # Sway
   #
 
@@ -16,7 +24,7 @@
 
   home.packages = 
   let
-    convox = pkgs.callPackage ./convox.nix {};
+    convox = pkgs.callPackage ../packages/convox.nix {};
   in
   with pkgs; [
     swaylock
@@ -52,7 +60,7 @@
   # Neovim
   #
 
-  xdg.configFile."nvim/lua".source = ./programs/nvim/lua;
+  xdg.configFile."nvim/lua".source = ../config/nvim/lua;
 
   programs.neovim = {
     enable = true;
