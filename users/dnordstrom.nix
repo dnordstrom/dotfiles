@@ -40,6 +40,7 @@
     tor-browser-bundle-bin
     qbittorrent
     qutebrowser
+    guvcview
 
     nodePackages.bash-language-server
     nodePackages.typescript-language-server
