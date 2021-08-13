@@ -103,6 +103,9 @@ end
 local remap = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
 
+---- Toggle sidebar
+remap('n', '<C-b>', ':NERDTreeToggle<CR>', opts)
+
 ---- Clear search highlights
 remap('n', '<Leader><Space>', ':set hlsearch!<CR>', opts)
 
@@ -112,6 +115,8 @@ remap('n', 'gb', ':ls<CR>:b<Space>', opts)
 ---- Go to definition
 remap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
 remap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+remap('n', 'F12', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+remap('i', 'F12', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
 
 ---- Autocomplete
 remap('i', '<S-Space>', 'compe#complete()', opts)
