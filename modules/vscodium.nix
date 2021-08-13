@@ -43,6 +43,9 @@
       "editor.codeActionsOnSave" = {
         "source.fixAll.eslint" = true;
       };
+      "editor.detectIndentation" = false;
+      "editor.insertSpaces" = true;
+      "editor.tabSize" = 2;
 
       "explorer.confirmDelete" = false;
 	    "explorer.confirmDragAndDrop" = false;

@@ -41,6 +41,7 @@
     qbittorrent
     qutebrowser
 
+    nodePackages.bash-language-server
     nodePackages.typescript-language-server
     nodePackages.eslint
     
@@ -68,6 +69,7 @@
     vimAlias = true;
     extraConfig = "lua require('init')";
     plugins = with pkgs.vimPlugins; [
+      nvim-compe
       vim-javascript
       vim-markdown
       vim-nix
