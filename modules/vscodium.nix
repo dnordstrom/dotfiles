@@ -1,127 +1,6 @@
-{ pkgs, nixpkgs, ... }:
+{ pkgs, ... }:
 
 {
-  #
-  # Sway
-  #
-
-  wayland.windowManager.sway = {
-    enable = true;
-    wrapperFeatures.gtk = true;
-  };
-
-  #
-  # Applications
-  #
-
-  home.packages = 
-  let
-    convox = pkgs.callPackage ./convox.nix {};
-  in
-  with pkgs; [
-    swaylock
-    swayidle
-    wl-clipboard
-    mako
-    alacritty
-    wofi
-    kate
-    firefox-devedition-bin
-    tridactyl-native
-    slack
-    tor-browser-bundle-bin
-    qbittorrent
-    qutebrowser
-
-    nodePackages.typescript-language-server
-    nodePackages.eslint
-    
-    convox
-  ];
-
-  #
-  # Git
-  #
-
-  programs.git = {
-    userName  = "dnordstrom";
-    userEmail = "d@mrnordstrom.com";
-  };
-  
-  #
-  # Neovim
-  #
-
-  xdg.configFile."nvim/lua".source = ./programs/nvim/lua;
-  xdg.configFile."nvim/colors".source = ./programs/nvim/colors;
-
-  programs.neovim = {
-    enable = true;
-    viAlias = true;
-    vimAlias = true;
-    extraConfig = "lua require('init')";
-    plugins = with pkgs.vimPlugins; [
-      vim-javascript
-      vim-markdown
-      vim-nix
-      vim-surround
-      nvim-lspconfig
-      nerdtree
-    ];
-  };
-
-  #
-  # Direnv (Per Directory Environments)
-  #
-
-  programs.direnv.enable = true;
-  programs.direnv.nix-direnv.enable = true;
-  programs.direnv.nix-direnv.enableFlakes = true;
-
-  #
-  # ZSH and Plugins
-  #
-
-  programs.zsh = {
-    enable = true;
-    enableAutosuggestions = true;
-    enableSyntaxHighlighting = true;
-    
-    oh-my-zsh = {
-      enable = true;
-      theme = "agnoster";
-    };
-
-    shellAliases = {
-      ll = "ls -Al";
-      katenix = "kate /etc/nixos";
-      codenix = "codium /etc/nixos";
-      vimnix = "nvim /etc/nixos";
-    };
-
-    initExtra = ''
-      ga () {
-        git add .
-      }
-
-      gc () {
-        git commit -am "$1"
-      }
-
-      gf () {
-        git fetch && git pull
-      }
-
-      gp () {
-        git push
-      }
-    '';
-  };
-
-  #
-  # VSCodium (Extensions, Settings, and Key Binds)
-  #
-
   programs.vscode = {
     enable = true;
     package = pkgs.vscodium;
@@ -159,9 +38,16 @@
       }
     ];
     userSettings = {
+      "window.menuBarVisibility" = "toggle";
+
       "editor.codeActionsOnSave" = {
         "source.fixAll.eslint" = true;
       };
+
+      "explorer.confirmDelete" = false;
+	    "explorer.confirmDragAndDrop" = false;
+
+      "workbench.colorTheme" = "Ayu Mirage";
 
       "rewrap.autoWrap.enabled" = true;
       "rewrap.autoWrap.notification" = "text";
@@ -234,13 +120,5 @@
         when = "inQuickOpen && !inCommandsPicker && !inFilesPicker && !inFileSymbolsPicker";
       }
     ];
-  };
-
-  #
-  # Environment
-  #
-
-  home.sessionVariables = {
-    EDITOR = "nvim";
   };
 }

@@ -8,11 +8,12 @@
       system = "x86_64-linux";
       modules = [
         ./common.nix
+        ./modules/vscodium.nix
 
         home-manager.nixosModules.home-manager {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.dnordstrom = import ./dnordstrom.nix;
+          home-manager.users.dnordstrom = import ./users/dnordstrom.nix;
         }
 
         ({ pkgs, ... }: {

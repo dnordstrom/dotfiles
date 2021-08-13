@@ -87,6 +87,10 @@
         command = "/run/current-system/sw/bin/vim";
         options = [ "SETENV" "NOPASSWD" ];
       }
+      {
+        command = "/run/current-system/sw/bin/nixos-rebuild";
+        options = [ "SETENV" "NOPASSWD" ];
+      }
     ];
   }];
 
