@@ -27,7 +27,6 @@
     convox = pkgs.callPackage ../packages/convox.nix {};
   in
   with pkgs; [
-    alacritty
     bitwarden
     bitwarden-cli
     guvcview
@@ -54,38 +53,6 @@
   ];
 
   #
-  # Miscellaneous
-  #
-
-  programs.bat.enable = true;
-
-  programs.fzf = {
-    enable = true;
-    enableFishIntegration = true;
-  };
-
-  programs.mako = {
-    backgroundColor = "#F3F3F3FF";
-    borderColor = "#000000BB";
-    borderRadius = 0;
-    borderSize = 2;
-    defaultTimeout = 5000;
-    enable = true;
-    font = "sans 9";
-    height = 110;
-    icons = true;
-    ignoreTimeout = false;
-    layer = "overlay";
-    margin = "20";
-    markup = true;
-    maxIconSize = 24;
-    padding = "12";
-    sort = "-time";
-    textColor = "#222222";
-    width = 300;
-  };
-
-  #
   # Firefox
   #
 
@@ -104,6 +71,46 @@
   };
 
   #
+  # Alacritty
+  #
+
+  xdg.configFile."alacritty/alacritty.yml".source = builtins.toFile "alacritty.yml" (
+    builtins.readFile (
+      builtins.fetchurl {
+        url = "https://raw.githubusercontent.com/arcticicestudio/nord-alacritty/d4b6d2049157a23958dd0e7ecc4d18f64eaa36f3/src/nord.yml";
+        sha256 = "0adp4v2d5w6j4j2lavgwbq2x8gnvmxk4lnmlrvl9hy62rxrqp561";
+      }) + ''
+
+      font:
+        normal:
+          family: 'Hack'
+        bold:
+          family: 'Hack'
+        italic:
+          family: 'Hack'
+        bold_italic:
+          family: 'Hack'
+        size: 9
+        offset:
+          x: 0
+          y: 4
+        glyph_offset:
+          x: 0
+          y: 2
+      window:
+        padding:
+          x: 12
+          y: 8
+        dynamic_padding: false
+      background_opacity: 0.92
+    ''
+  );
+
+  programs.alacritty = {
+    enable = true;
+  };
+
+  #
   # Git
   #
 
@@ -112,8 +119,32 @@
     userEmail = "d@mrnordstrom.com";
     aliases = {
       co = "checkout";
-      br = "branch";
+      ci = "commit";
+      cia = "commit --amend";
+      s = "status";
+      st = "status";
+      b = "branch";
+      p = "pull --rebase";
+      pu = "push";
     };
+  };
+
+  #
+  # Chromium
+  #
+
+  programs.chromium = {
+    enable = true;
+    extensions = [
+      {
+        # 1Password
+        id = "aeblfdkhhhdcdjpifhhbdiojplfjncoa";
+      }
+      {
+        # uBlock Origin
+        id = "cjpalhdlnbpafiamejdnhcphjbkeiagm";
+      }
+    ];
   };
 
   #
@@ -139,14 +170,6 @@
   };
 
   #
-  # Direnv (Per Directory Environments)
-  #
-
-  programs.direnv.enable = true;
-  programs.direnv.nix-direnv.enable = true;
-  programs.direnv.nix-direnv.enableFlakes = true;
-
-  #
   # ZSH and Plugins
   #
 
@@ -165,7 +188,7 @@
       nixkate = "kate /etc/nixos";
       nixcode = "codium /etc/nixos";
       nixvim = "nvim /etc/nixos";
-      nixswitch = "sudo nixos-rebuild switch --flake /etc/nixos";
+      nixrb = "sudo nixos-rebuild switch --flake /etc/nixos";
     };
 
     initExtra = ''
@@ -185,6 +208,66 @@
         git push
       }
     '';
+  };
+
+  #
+  # Other
+  #
+
+  # A flying `cat`
+  programs.bat = {
+    enable = true;
+    config = {
+      theme = "Nord";
+      style = "numbers,rule";
+    };
+  };
+
+  # Fuzzy finder
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
+  # Direnv
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+    nix-direnv.enableFlakes = true;
+  };
+
+  # Mako notification daemon
+  programs.mako = {
+    backgroundColor = "#F3F3F3FF";
+    borderColor = "#000000BB";
+    borderRadius = 0;
+    borderSize = 2;
+    defaultTimeout = 5000;
+    enable = true;
+    font = "sans 9";
+    height = 110;
+    icons = true;
+    ignoreTimeout = false;
+    layer = "overlay";
+    margin = "20";
+    markup = true;
+    maxIconSize = 24;
+    padding = "12";
+    sort = "-time";
+    textColor = "#222222";
+    width = 300;
+  };
+
+  # Dircolors terminal `LS_COLOR` manager
+
+  home.file.".dir_colors".source = builtins.fetchurl {
+    url = "https://github.com/arcticicestudio/nord-dircolors/releases/download/v0.2.0/dir_colors";
+    sha256 = "0a6i9pvl4lj2k1snmc5ckip86akl6c0svzmc5x0vnpl4id0f3raw";
+  };
+
+  programs.dircolors = {
+    enable = true;
+    enableZshIntegration = true;
   };
 
   #

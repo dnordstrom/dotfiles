@@ -4,7 +4,7 @@
 
 set allowautofocus false
 set colorscheme dark
-set editorcmd alacritty -e nvim ~/.config/tridactyl/tridactylrc
+set editorcmd alacritty -e nvim %f '+normal!%lGzv%c|'
 set hintchars fdsqjklmrezauiopwxcvghtybn
 set searchengine g
 set smoothscroll true

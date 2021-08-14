@@ -38,6 +38,18 @@
         version = "0.18.0";
         sha256 = "sha256-Uo6peR+2ZNX6nwJ0Yar32Pe0rfBZ+f6ef1cYhUvVUbE=";
       }
+      {
+        name = "vscode-nonicons";
+        publisher = "yamatsum";
+        version = "0.0.7";
+        sha256 = "sha256-MHXj98zgPAZKXEwdubAdrZV4F00/ffpFTsM740Mzd/A=";
+      }
+      {
+        name = "highlight-matching-tag";
+        publisher = "vincaslt";
+        version = "0.10.1";
+        sha256 = "sha256-gcuBQsLItH2MP9GRgZ3jibb89Onwp+zfQKer7iO/Mi0=";
+      }
     ];
     userSettings = builtins.fromJSON (builtins.readFile ../config/vscode/settings.json);
     keybindings = builtins.fromJSON (builtins.readFile ../config/vscode/keybindings.json);
