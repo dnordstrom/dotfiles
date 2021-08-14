@@ -1,0 +1,83 @@
+"
+" Settings
+"
+
+set allowautofocus false
+set colorscheme dark
+set editorcmd alacritty -e nvim ~/.config/tridactyl/tridactylrc
+set hintchars fdsqjklmrezauiopwxcvghtybn
+set searchengine g
+set smoothscroll true
+set tabopencontaineraware true
+set visualenterauto false
+
+" Custom searches
+
+set searchurls.mdn https://developer.mozilla.org/en-US/search?q=%s&topic=api&topic=js
+set searchurls.npm https://www.npmjs.com/search?q=%s
+set searchurls.nix https://search.nixos.org/packages?channel=unstable&query=%s
+set searchurls.s https://searx.be/?q=%s
+set searchurls.sp https://www.startpage.com/do/search?query=%s
+set searchurls.d https://duckduckgo.com/?kp=-2&q=test&ia=web
+
+set searchengine d
+
+"
+" Key Binds
+"
+
+" Vim-like search
+
+unbind <C-f>
+bind / fillcmdline find
+bind ? fillcmdline find -?
+bind n findnext 1
+bind N findnext -1
+bind ,<Space> nohlsearch
+
+" Tabs
+
+bind H tabprev
+bind L tabnext
+bind K forward
+bind J back
+bind x tabclose
+
+" Classic text binds
+
+bind --mode=ex <C-a> text.beginning_of_line
+bind --mode=insert <C-a> text.beginning_of_line
+bind --mode=input <C-a> text.beginning_of_line
+bind --mode=ex <C-e> text.end_of_line
+bind --mode=insert <C-e> text.end_of_line
+bind --mode=input <C-e> text.end_of_line
+bind --mode=ex <C-f> text.forward_word
+bind --mode=insert <C-f> text.forward_word
+bind --mode=input <C-f> text.forward_word
+bind --mode=ex <C-k> text.kill_line
+bind --mode=insert <C-k> text.kill_line
+bind --mode=input <C-k> text.kill_line
+bind --mode=ex <C-u> text.backward_kill_line
+bind --mode=insert <C-u> text.backward_kill_line
+bind --mode=input <C-u> text.backward_kill_line
+bind --mode=ex <C-V> composite getclip selection | text.insert_text
+bind --mode=insert <C-V> composite getclip selection | text.insert_text
+bind --mode=input <C-V> composite getclip selection | text.insert_text
+bind --mode=ex <C-w> text.backward_kill_word
+bind --mode=insert <C-w> text.backward_kill_word
+bind --mode=input <C-w> text.backward_kill_word
+
+" Quick Marks
+
+bind 'r tabopen https://www.reddit.com/
+bind 'g tabopen https://www.github.com/
+bind 'o tabopen https://nix-community.github.io/home-manager/options.html
+bind 'O tabopen https://search.nixos.org/options
+bind 'i tabopen https://imgur.com/
+bind 'y tabopen https://youtube.com/
+
+"
+" Auto-Commands
+"
+
+autocmd DocStart mail.google.com mode ignore

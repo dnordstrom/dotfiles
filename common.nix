@@ -10,11 +10,13 @@
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     "broadcom-sta"
-    "firefox-devedition-bin"
-    "firefox-devedition-bin-unwrapped"
     "slack"
     "steam-runtime"
   ];
+
+  nixpkgs.config.firefox.enablePlasmaBrowserIntegration = true;
+  nixpkgs.config.firefox.enableGnomeExtensions = true;
+  nixpkgs.config.firefox.enableTridactylNative = true;
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -37,11 +39,13 @@
   services.xserver.desktopManager.gnome.enable = true;
   services.xserver.desktopManager.plasma5.enable = true;
   services.xserver.libinput.enable = true;
-  
+
   services.xserver = {
     layout = "us,se";
     xkbOptions = "caps:escape,grp:shifts_toggle";
   };
+
+  services.gnome.chrome-gnome-shell.enable = true;
 
   sound.enable = true;
   hardware.pulseaudio = {

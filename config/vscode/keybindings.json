@@ -1,0 +1,196 @@
+[
+  {
+    "key": "ctrl+space",
+    "command": "workbench.action.showCommands",
+    "when": "!inQuickOpen"
+  },
+  {
+    "key": "ctrl+space",
+    "command": "workbench.action.quickOpen",
+    "when": "inQuickOpen && inCommandsPicker"
+  },
+  {
+    "key": "ctrl+space",
+    "command": "workbench.action.gotoSymbol",
+    "when": "inQuickOpen && inFilesPicker"
+  },
+  {
+    "key": "ctrl+space",
+    "command": "editor.action.showSnippets",
+    "when": "inQuickOpen && inFileSymbolsPicker"
+  },
+  {
+    "key": "ctrl+space",
+    "command": "workbench.action.closeQuickOpen",
+    "when": "inQuickOpen && !inCommandsPicker && !inFilesPicker && !inFileSymbolsPicker"
+  },
+
+
+
+  {
+    "key": "ctrl+q",
+    "command": "workbench.action.navigateBack"
+  },
+  {
+    "key": "ctrl+shift+q",
+    "command": "workbench.action.navigateForward"
+  },
+  {
+    "key": "alt+ctrl+h",
+    "command": "workbench.action.previousEditor"
+  },
+  {
+    "key": "alt+ctrl+l",
+    "command": "workbench.action.nextEditor"
+  },
+  {
+    "key": "alt+ctrl+j",
+    "command": "workbench.action.focusPreviousGroup"
+  },
+  {
+    "key": "alt+ctrl+k",
+    "command": "workbench.action.focusNextGroup"
+  },
+
+
+
+  {
+    "key": "ctrl+alt+b",
+    "command": "workbench.action.toggleActivityBarVisibility"
+  },
+  {
+    "key": "alt+b",
+    "command": "workbench.action.toggleStatusbarVisibility"
+  },
+  {
+    "key": "ctrl+b",
+    "command": "workbench.action.toggleSidebarVisibility"
+  },
+
+
+
+  {
+    "key": "shift+ctrl+alt+left",
+    "command": "cursorHomeSelect",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+ctrl+alt+right",
+    "command": "cursorEndSelect",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+space",
+    "command": "editor.action.triggerSuggest"
+  },
+  {
+    "key": "shift+space",
+    "command": "toggleSuggestionDetails",
+    "when": "suggestWidgetVisible && textInputFocus"
+  },
+  {
+    "key": "ctrl+s",
+    "command": "workbench.action.tasks.build",
+    "when":"editorTextFocus && editorLangId == 'ahk'"
+  },
+
+
+
+  {
+    "key": "ctrl+p",
+    "command": "markdown.showPreview",
+    "when": "editorLangId == 'markdown'"
+  },
+  {
+    "key": "ctrl+p",
+    "command": "workbench.action.closeActiveEditor",
+    "when": "markdownPreviewFocus"
+  },
+  {
+    "key": "ctrl+shift+p",
+    "command": "markdown.showPreviewToSide",
+    "when": "editorLangId == 'markdown'"
+  },
+  
+
+  
+  {
+    "key": "alt+c",
+    "command": "extension.changeCase.camel"
+  },
+  {
+    "key": "alt+w",
+    "command": "rewrap.rewrapComment",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "alt+shift+w",
+    "command": "rewrap.rewrapCommentAt",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "alt+q",
+    "command": "extension.quote-flipper"
+  },
+
+
+
+  {
+    "key": "ctrl+shift+p",
+    "command": "-workbench.action.quickOpenNavigatePreviousInFilePicker",
+    "when": "inFilesPicker && inQuickOpen"
+  },
+  {
+    "key": "alt+c",
+    "command": "-workbench.action.terminal.toggleFindCaseSensitiveTerminalFocus",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "alt+c",
+    "command": "-workbench.action.terminal.toggleFindCaseSensitive",
+    "when": "terminalFindWidgetFocused"
+  },
+  {
+    "key": "alt+c",
+    "command": "-toggleFindCaseSensitive",
+    "when": "editorFocus"
+  },
+  {
+    "key": "alt+c",
+    "command": "-toggleSearchCaseSensitive",
+    "when": "searchViewletFocus && searchViewletVisible && !fileMatchOrFolderMatchFocus"
+  },
+  {
+    "key": "ctrl+shift+p",
+    "command": "-workbench.action.showCommands"
+  },
+  {
+    "key": "alt+w",
+    "command": "-workbench.action.terminal.toggleFindWholeWordTerminalFocus",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "alt+w",
+    "command": "-workbench.action.terminal.toggleFindWholeWord",
+    "when": "terminalFindWidgetFocused"
+  },
+  {
+    "key": "alt+w",
+    "command": "-toggleFindWholeWord",
+    "when": "editorFocus"
+  },
+  {
+    "key": "alt+w",
+    "command": "-toggleSearchWholeWord",
+    "when": "searchViewletFocus && searchViewletVisible"
+  },
+  {
+    "key": "alt+q",
+    "command": "-rewrap.rewrapComment",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+q",
+    "command": "-workbench.action.quickOpenView"
+  }
+]
