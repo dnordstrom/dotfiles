@@ -29,10 +29,12 @@
   with pkgs; [
     bitwarden
     bitwarden-cli
+    fd
     guvcview
     kate
     qbittorrent
     qutebrowser
+    ripgrep
     slack
     swayidle
     swaylock
@@ -47,7 +49,35 @@
 
     nodePackages.bash-language-server
     nodePackages.eslint
+    nodePackages.typescript
     nodePackages.typescript-language-server
+
+    corefonts
+    input-fonts
+    powerline-fonts
+
+    arc-icon-theme
+    faba-icon-theme
+    faba-mono-icons
+    flat-remix-icon-theme
+    kora-icon-theme
+    luna-icons
+    maia-icon-theme
+    moka-icon-theme
+    numix-icon-theme
+    numix-icon-theme-circle
+    numix-icon-theme-square
+    paper-icon-theme
+    papirus-icon-theme
+    pop-icon-theme
+    qogir-icon-theme
+    zafiro-icons
+
+    numix-cursor-theme
+
+    arc-kde-theme
+    arc-theme
+    nordic
 
     convox
   ];
@@ -83,13 +113,13 @@
 
       font:
         normal:
-          family: 'Hack'
+          family: 'CaskaydiaCove Nerd Font'
         bold:
-          family: 'Hack'
+          family: 'CaskaydiaCove Nerd Font'
         italic:
-          family: 'Hack'
+          family: 'CaskaydiaCove Nerd Font'
         bold_italic:
-          family: 'Hack'
+          family: 'CaskaydiaCove Nerd Font'
         size: 9
         offset:
           x: 0
@@ -159,13 +189,23 @@
     vimAlias = true;
     extraConfig = "lua require('init')";
     plugins = with pkgs.vimPlugins; [
+      lualine-nvim
+      nerdcommenter
+      nerdtree
+      nord-nvim
       nvim-compe
+      nvim-lspconfig
+      nvim-treesitter
+      nvim-web-devicons
+      telescope-frecency-nvim
+      telescope-fzf-native-nvim
+      telescope-nvim
+      telescope-symbols-nvim
+      trouble-nvim
       vim-javascript
       vim-markdown
       vim-nix
       vim-surround
-      nvim-lspconfig
-      nerdtree
     ];
   };
 
@@ -190,24 +230,6 @@
       nixvim = "nvim /etc/nixos";
       nixrb = "sudo nixos-rebuild switch --flake /etc/nixos";
     };
-
-    initExtra = ''
-      ga () {
-        git add .
-      }
-
-      gc () {
-        git commit -am "$1"
-      }
-
-      gf () {
-        git fetch && git pull
-      }
-
-      gp () {
-        git push
-      }
-    '';
   };
 
   #

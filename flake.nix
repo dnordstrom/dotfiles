@@ -2,13 +2,19 @@
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   inputs.nur.url = "github:nix-community/NUR";
   inputs.home-manager.url = "github:nix-community/home-manager";
+  inputs.neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
 
-  outputs = { self, nixpkgs, nur, home-manager }: rec {
+  outputs = { self, nixpkgs, nur, home-manager, neovim-nightly-overlay }: rec {
     nixosConfigurations.nordix = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
 
       modules = [
-        { nixpkgs.overlays = [ nur.overlay ]; }
+        {
+          nixpkgs.overlays = [
+            neovim-nightly-overlay.overlay
+            nur.overlay
+          ];
+        }
         ({ pkgs, ... }:
           let
             nur-no-pkgs = import nur {

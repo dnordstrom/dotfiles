@@ -15,7 +15,7 @@ set visualenterauto false
 
 set searchurls.mdn https://developer.mozilla.org/en-US/search?q=%s&topic=api&topic=js
 set searchurls.npm https://www.npmjs.com/search?q=%s
-set searchurls.nix https://search.nixos.org/packages?channel=unstable&query=%s
+set searchurls.nix https://search.nixos.org/packages?channel=unstable&size=500&query=%s
 set searchurls.s https://searx.be/?q=%s
 set searchurls.sp https://www.startpage.com/do/search?query=%s
 set searchurls.d https://duckduckgo.com/?kp=-2&q=test&ia=web
@@ -81,3 +81,4 @@ bind 'y tabopen https://youtube.com/
 "
 
 autocmd DocStart mail.google.com mode ignore
+

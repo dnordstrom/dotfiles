@@ -10,9 +10,13 @@
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     "broadcom-sta"
+    "corefonts"
+    "input-fonts"
     "slack"
     "steam-runtime"
   ];
+
+  nixpkgs.config.input-fonts.acceptLicense = true;
 
   nixpkgs.config.firefox.enablePlasmaBrowserIntegration = true;
   nixpkgs.config.firefox.enableGnomeExtensions = true;
@@ -46,6 +50,25 @@
   };
 
   services.gnome.chrome-gnome-shell.enable = true;
+
+  fonts.fonts = with pkgs; [
+    cascadia-code
+    noto-fonts
+    noto-fonts-emoji
+    fira-code
+    fira-code-symbols
+
+    # Nerd Fonts to install. Available fonts:
+    # https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts
+    (nerdfonts.override {
+      fonts = [
+        "Iosevka"
+        "FiraCode"
+        "CascadiaCode"
+        "Hack"
+      ];
+    })
+  ];
 
   sound.enable = true;
   hardware.pulseaudio = {
