@@ -31,7 +31,6 @@
     libnotify
     qbittorrent
     quaternion
-    qutebrowser
     ripgrep
     signal-desktop
     slack
@@ -333,6 +332,9 @@
     enable = true;
     enableZshIntegration = true;
   };
+
+  # Qutebrowser
+  programs.qutebrowser.enable = true;
 
   # Direnv
   programs.direnv = {
