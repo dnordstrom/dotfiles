@@ -44,12 +44,30 @@
   services.xserver.desktopManager.plasma5.enable = true;
   services.xserver.libinput.enable = true;
 
+  services.xserver.displayManager.sddm = {
+    enable = false;
+    settings.Wayland.SessionDir = "${pkgs.libsForQt5.plasma-workspace}/share/wayland-sessions";
+  };
+
+  # services.greetd = {
+  #   enable = true;
+  #   restart = false;
+  #   settings = {
+  #     default_session = {
+  #       command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd sway";
+  #       # command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd XDG_SESSION_TYPE=wayland dbus-run-session startplasma-wayland";
+  #     };
+  #   };
+  # };
+
   services.xserver = {
     layout = "us,se";
     xkbOptions = "caps:escape,grp:shifts_toggle";
   };
 
   services.gnome.chrome-gnome-shell.enable = true;
+
+  services.blueman.enable = true;
 
   fonts.fonts = with pkgs; [
     cascadia-code
@@ -71,21 +89,28 @@
   ];
 
   sound.enable = true;
-  hardware.pulseaudio = {
-    enable = true;
-    extraModules = [ pkgs.pulseaudio-modules-bt ]; # More codecs, e.g. APTX
-    package = pkgs.pulseaudioFull;
-  };
 
-  hardware.bluetooth = {
-    enable = true;
-    settings = {
-      General = {
-        Enable = "Source,Sink,Media,Socket";
+  hardware = {
+    opengl = {
+      enable = true;
+      driSupport = true;
+    };
+
+    pulseaudio = {
+      enable = true;
+      extraModules = [ pkgs.pulseaudio-modules-bt ]; # More codecs, e.g. APTX
+      package = pkgs.pulseaudioFull;
+    };
+
+    bluetooth = {
+      enable = true;
+      settings = {
+        General = {
+          Enable = "Source,Sink,Media,Socket";
+        };
       };
     };
   };
-  services.blueman.enable = true;
 
   users.users.dnordstrom = {
     isNormalUser = true;

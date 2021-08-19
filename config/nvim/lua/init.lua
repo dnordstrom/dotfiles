@@ -146,7 +146,7 @@ local opts = { noremap = true, silent = true }
 remap('n', '<C-b>', ':NERDTreeToggle<CR>', opts)
 
 ---- Clear search highlights
-remap('n', '<Leader><h>', ':set hlsearch!<CR>', opts)
+remap('n', '<Leader>h', ':set hlsearch!<CR>', opts)
 
 ---- Go to buffer
 remap('n', 'gb', ':ls<CR>:b<Space>', opts)

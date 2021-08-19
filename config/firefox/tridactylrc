@@ -2,8 +2,9 @@
 " Settings
 "
 
+colorscheme --url https://raw.githubusercontent.com/bezmi/base16-tridactyl/master/base16-nord.css nord
+
 set allowautofocus false
-set colorscheme dark
 set editorcmd alacritty -e nvim %f '+normal!%lGzv%c|'
 set hintchars fdsqjklmrezauiopwxcvghtybn
 set searchengine g
@@ -13,14 +14,15 @@ set visualenterauto false
 
 " Custom searches
 
+set searchurls.g https://www.google.com/search?q=%s&num=100&tbs=qdr:y
 set searchurls.mdn https://developer.mozilla.org/en-US/search?q=%s&topic=api&topic=js
 set searchurls.npm https://www.npmjs.com/search?q=%s
 set searchurls.nix https://search.nixos.org/packages?channel=unstable&size=500&query=%s
 set searchurls.s https://searx.be/?q=%s
 set searchurls.sp https://www.startpage.com/do/search?query=%s
-set searchurls.d https://duckduckgo.com/?kp=-2&q=test&ia=web
+set searchurls.ddg https://duckduckgo.com/?kp=-2&q=%s&ia=web
 
-set searchengine d
+set searchengine g
 
 "
 " Key Binds
@@ -33,7 +35,7 @@ bind / fillcmdline find
 bind ? fillcmdline find -?
 bind n findnext 1
 bind N findnext -1
-bind ,<Space> nohlsearch
+bind <Space><Space> nohlsearch
 
 " Tabs
 
@@ -69,16 +71,32 @@ bind --mode=input <C-w> text.backward_kill_word
 
 " Quick Marks
 
-bind 'r tabopen https://www.reddit.com/
-bind 'g tabopen https://www.github.com/
-bind 'o tabopen https://nix-community.github.io/home-manager/options.html
-bind 'O tabopen https://search.nixos.org/options
-bind 'i tabopen https://imgur.com/
-bind 'y tabopen https://youtube.com/
+quickmark r https://www.reddit.com/
+quickmark g https://www.github.com/
+quickmark o https://nix-community.github.io/home-manager/options.html
+quickmark O https://search.nixos.org/options
+quickmark i https://imgur.com/
+quickmark y https://youtube.com/
+
+"
+" Commands
+"
+
+command notify js -p tri.native.run(`notify-send ${JS_ARG}`);
+
+"
+" Blacklist
+"
+
+blacklistadd mail.google.com mode ignore
+blacklistadd leeroy-group.atlassian.net mode ignore
 
 "
 " Auto-Commands
 "
 
-autocmd DocStart mail.google.com mode ignore
+autocmd DocStart .*google\.com/search.+ js if (!location.search.includes('modified=true')) { const params = new URL(location.href).searchParams; params.set('tbs', 'qdr:y'); params.set('num', '100'); params.set('modified', 'true'); location.search = params.toString(); console.info('TRIDACTYL: Changed to results from the past year, and to show 100 results per page.') };
+autocmd DocLoad .*search\.nixos\.org/(packages|options).+ js setTimeout(() => { const node = document.createElement('li'); const link = document.createElement('a'); node.appendChild(link); link.href = '#'; link.classList.add('copy-to-clipboard'); link.innerText = 'Copy to clipboard'; document.querySelectorAll('.package ul').forEach(links => { const clone = node.cloneNode(true); clone.firstElementChild.title = links.querySelector('li:first-of-type').textContent; links.appendChild(clone); }); document.addEventListener('click', event => { event.preventDefault(); if (event.target.classList.contains('copy-to-clipboard')) tri.excmds.yank(event.target.title); }) }, 3000);
 
+" vim: set filetype=vim:
+" -*- mode: vim -*-

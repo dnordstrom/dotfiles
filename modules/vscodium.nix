@@ -6,7 +6,7 @@
     package = pkgs.vscodium;
     extensions = with pkgs.vscode-extensions; [
       editorconfig.editorconfig
-      bbenoist.Nix
+      bbenoist.nix
       foxundermoon.shell-format
       skyapps.fish-vscode
       graphql.vscode-graphql
@@ -49,6 +49,12 @@
         publisher = "vincaslt";
         version = "0.10.1";
         sha256 = "sha256-gcuBQsLItH2MP9GRgZ3jibb89Onwp+zfQKer7iO/Mi0=";
+      }
+      {
+        name = "viml";
+        publisher = "XadillaX";
+        version = "1.0.1";
+        sha256 = "sha256-mzf2PBSbvmgPjchyKmTaf3nASUi5/S9Djpoeh0y8gH0=";
       }
     ];
     userSettings = builtins.fromJSON (builtins.readFile ../config/vscode/settings.json);

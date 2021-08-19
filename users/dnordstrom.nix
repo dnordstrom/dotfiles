@@ -10,15 +10,6 @@
   ];
 
   #
-  # Sway
-  #
-
-  wayland.windowManager.sway = {
-    enable = true;
-    wrapperFeatures.gtk = true;
-  };
-
-  #
   # Packages
   #
 
@@ -27,60 +18,132 @@
     convox = pkgs.callPackage ../packages/convox.nix {};
   in
   with pkgs; [
+    # Programs
     bitwarden
     bitwarden-cli
+    bustle # GTK-based D-Bus inspector
+    dfeet # GTK-based D-Bus inspector
+    element-desktop
     fd
+    fractal
     guvcview
     kate
+    libnotify
     qbittorrent
+    quaternion
     qutebrowser
     ripgrep
+    signal-desktop
     slack
+    tor-browser-bundle-bin
+    usbutils # For `lsusb`
+
+    # Desktop integration portals
+    xdg-desktop-portal
+    xdg-desktop-portal-wlr
+    xdg-desktop-portal-kde
+    xdg-desktop-portal-gtk
+
+    # Sway
+    fnott
+    grim
+    libsForQt5.qt5.qtwayland
+    nwg-drawer
+    nwg-launchers
+    nwg-menu
+    nwg-panel
+    nwg-panel
+    slurp
     swayidle
     swaylock
-    tor-browser-bundle-bin
     wl-clipboard
     wofi
-    yubikey-manager
+    workstyle
+    wtype
 
-    tridactyl-native
-    plasma-browser-integration
+    # Plasma
+    libsForQt5.akonadi-contacts
+    libsForQt5.kaccounts-integration
+    libsForQt5.kcontacts
+    libsForQt5.kaccounts-providers
+    libsForQt5.kdeconnect-kde
+    libsForQt5.kio-gdrive
+    libsForQt5.parachute
+    libsForQt5.plasma-applet-virtual-desktop-bar
+
+    # Gnome
+    gnomeExtensions.gsconnect
+
+    # Display manager
+    greetd.tuigreet
+
+    # Browser tools
     chrome-gnome-shell
+    plasma-browser-integration
+    tridactyl-native
 
+    # Multimedia
+    celluloid
+    haruna
+    smplayer
+
+    # Tryouts
+    quaternion # Matrix client
+    nheko # Matrix client
+    neochat # Matrix client
+    weechat
+    weechatScripts.wee-slack
+    weechatScripts.weechat-matrix
+
+    # Node packages and language servers
     nodePackages.bash-language-server
     nodePackages.eslint
     nodePackages.typescript
     nodePackages.typescript-language-server
 
+    # Fonts
     corefonts
     input-fonts
     powerline-fonts
 
-    arc-icon-theme
-    faba-icon-theme
-    faba-mono-icons
-    flat-remix-icon-theme
-    kora-icon-theme
-    luna-icons
-    maia-icon-theme
-    moka-icon-theme
-    numix-icon-theme
-    numix-icon-theme-circle
-    numix-icon-theme-square
-    paper-icon-theme
-    papirus-icon-theme
-    pop-icon-theme
-    qogir-icon-theme
-    zafiro-icons
-
-    numix-cursor-theme
-
+    # Themes
     arc-kde-theme
     arc-theme
     nordic
 
+    # Icon themes
+    arc-icon-theme
+    faba-icon-theme
+    faba-mono-icons
+    kora-icon-theme
+    luna-icons
+    numix-icon-theme
+    numix-icon-theme-circle
+    numix-icon-theme-square
+    paper-icon-theme
+
+    # Custom packages
     convox
   ];
+
+  #
+  # Sway
+  #
+
+  xdg.enable = true;
+
+  wayland.windowManager.sway = {
+    enable = true;
+    wrapperFeatures.gtk = true;
+    extraConfig = builtins.readFile ../config/firefox/tridactylrc;
+    extraSessionCommands = ''
+      export GDK_BACKEND=wayland
+      export SDL_VIDEODRIVER=wayland
+      export QT_QPA_PLATFORM=wayland
+      export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+      export _JAVA_AWT_WM_NONREPARENTING=1
+    '';
+  };
 
   #
   # Firefox
@@ -96,7 +159,7 @@
     enable = true;
     extensions =
       with pkgs.nur.repos.rycee.firefox-addons; [
-        https-everywhere
+        # Using Firefox Sync for extensions
       ];
   };
 
@@ -138,6 +201,26 @@
 
   programs.alacritty = {
     enable = true;
+  };
+
+  #
+  # GTK
+  #
+
+  gtk = {
+    enable = true;
+    font.name = "Noto Sans 10";
+    iconTheme = {
+      package = pkgs.numix-icon-theme-circle;
+      name = "Numix Circle";
+    };
+    theme = {
+      package = pkgs.nordic;
+      name = "Nordic-v40";
+    };
+    gtk3.extraConfig = {
+      gtk-application-prefer-dark-theme = "true";
+    };
   };
 
   #
@@ -291,6 +374,18 @@
     enable = true;
     enableZshIntegration = true;
   };
+
+  # Image viewer
+  programs.feh.enable = true;
+
+  # Alternative terminal
+  programs.foot.enable = true;
+
+  # Command line JSON parser
+  programs.jq.enable = true;
+
+  # Video player
+  programs.mpv.enable = true;
 
   #
   # Environment
