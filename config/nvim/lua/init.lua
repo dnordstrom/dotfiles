@@ -296,14 +296,6 @@ require'nvim-autopairs.completion.compe'.setup({
 g.dashboard_preview_command = 'bat'
 g.dashboard_default_executive = 'telescope'
 g.dashboard_custom_footer = { ' Neovim ' .. version }
-g.dashboard_custom_header = {
-  '███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗',
-  '████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║',
-  '██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║',
-  '██║╚██╗██║ ██╔══╝  ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║',
-  '██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║',
-  '╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝',
-}
 
 vim.api.nvim_exec([[
   augroup init_dashboard
