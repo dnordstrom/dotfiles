@@ -3,7 +3,7 @@
 #
 
 # Font
-set $font SF Pro Text Semibold 9
+set $font Noto Sans 9
 
 # Color scheme
 set $colors ayu

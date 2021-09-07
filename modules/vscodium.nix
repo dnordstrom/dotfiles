@@ -5,12 +5,14 @@
     enable = true;
     package = pkgs.vscodium;
     extensions = with pkgs.vscode-extensions; [
-      editorconfig.editorconfig
-      bbenoist.nix
-      foxundermoon.shell-format
-      skyapps.fish-vscode
-      graphql.vscode-graphql
+      arrterian.nix-env-selector
       dbaeumer.vscode-eslint
+      editorconfig.editorconfig
+      foxundermoon.shell-format
+      graphql.vscode-graphql
+      jnoortheen.nix-ide
+      mikestead.dotenv
+      skyapps.fish-vscode
     ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
       # Run the update script at config/vscode/update_installed_exts.sh to get
       # the latest versions and hashes of these manually fetched extensions.
@@ -45,16 +47,40 @@
         sha256 = "sha256-MHXj98zgPAZKXEwdubAdrZV4F00/ffpFTsM740Mzd/A=";
       }
       {
-        name = "highlight-matching-tag";
-        publisher = "vincaslt";
-        version = "0.10.1";
-        sha256 = "sha256-gcuBQsLItH2MP9GRgZ3jibb89Onwp+zfQKer7iO/Mi0=";
-      }
-      {
         name = "viml";
         publisher = "XadillaX";
         version = "1.0.1";
         sha256 = "sha256-mzf2PBSbvmgPjchyKmTaf3nASUi5/S9Djpoeh0y8gH0=";
+      }
+      {
+        name = "toggler";
+        publisher = "hideoo";
+        version = "0.2.0";
+        sha256 = "sha256-7b4ii7cPVHg0UnHW5PnEXJp7QOc9Jae56/tEtoN/M14=";
+      }
+      {
+        name = "vscode-toggle-quotes";
+        publisher = "britesnow";
+        version = "0.3.4";
+        sha256 = "sha256-KpTk2IWpVqrJeOlplU4knir6J62N+z0RNB8PsnxfMa8=";
+      }
+      {
+        name = "js-auto-backticks";
+        publisher = "chamboug";
+        version = "0.0.1";
+        sha256 = "sha256-l3xDkd9DcOLeATvvXd6DqX5mPTn0na79yd+12qZQnM4=";
+      }
+      {
+        name = "Bookmarks";
+        publisher = "alefragnani";
+        version = "13.1.0";
+        sha256 = "sha256-dj454ZLzoKPktT8LCP0h8zAMIVkKGDrbHrOQfejaIEE=";
+      }
+      {
+        name = "better-comments";
+        publisher = "aaron-bond";
+        version = "2.1.0";
+        sha256 = "sha256-l7MG2bpfTgVgC+xLal6ygbxrrRoNONzOWjs3fZeZtU4=";
       }
     ];
     userSettings = builtins.fromJSON (builtins.readFile ../config/vscode/settings.json);

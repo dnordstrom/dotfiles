@@ -10,6 +10,12 @@
   ];
 
   #
+  # General
+  #
+
+  xdg.enable = true;
+
+  #
   # Packages
   #
 
@@ -27,15 +33,23 @@
     fd
     fractal
     guvcview
+    ideogram # From ElementaryOS, while Plasma's emoji picker doesn't work
     kate
     libnotify
     qbittorrent
     quaternion
     ripgrep
+    shfmt
     signal-desktop
     slack
+    sqlite
     tor-browser-bundle-bin
     usbutils # For `lsusb`
+    weechat
+    weechatScripts.wee-slack
+    weechatScripts.weechat-matrix
+    weechatScripts.weechat-notify-send
+    xdotool
 
     # Desktop integration portals
     xdg-desktop-portal
@@ -57,11 +71,15 @@
     swaylock
     wl-clipboard
     wofi
+    wofi-emoji
     workstyle
     wtype
+    ydotool
 
     # Plasma
     libsForQt5.akonadi-contacts
+    libsForQt5.breeze-gtk
+    libsForQt5.breeze-qt5
     libsForQt5.kaccounts-integration
     libsForQt5.kcontacts
     libsForQt5.kaccounts-providers
@@ -71,6 +89,7 @@
     libsForQt5.plasma-applet-virtual-desktop-bar
 
     # Gnome
+    gnome-breeze
     gnomeExtensions.gsconnect
 
     # Display manager
@@ -94,11 +113,17 @@
     weechatScripts.wee-slack
     weechatScripts.weechat-matrix
 
-    # Node packages and language servers
+    # NPM packages
     nodePackages.bash-language-server
     nodePackages.eslint
+    nodePackages.diagnostic-languageserver
     nodePackages.typescript
     nodePackages.typescript-language-server
+    nodePackages.vscode-langservers-extracted # HTML, CSS, and JSON
+    nodePackages.yaml-language-server
+
+    # Language servers
+    gopls
 
     # Fonts
     corefonts
@@ -111,15 +136,13 @@
     nordic
 
     # Icon themes
-    arc-icon-theme
-    faba-icon-theme
-    faba-mono-icons
-    kora-icon-theme
-    luna-icons
-    numix-icon-theme
     numix-icon-theme-circle
-    numix-icon-theme-square
-    paper-icon-theme
+
+    # Unnecessary utilities
+    neo-cowsay
+    fortune
+    lolcat
+    toilet
 
     # Custom packages
     convox
@@ -129,12 +152,12 @@
   # Sway
   #
 
-  xdg.enable = true;
+  xdg.configFile."swaylock/config".source = ../config/swaylock/config;
 
   wayland.windowManager.sway = {
     enable = true;
     wrapperFeatures.gtk = true;
-    extraConfig = builtins.readFile ../config/firefox/tridactylrc;
+    extraConfig = builtins.readFile ../config/sway/config;
     extraSessionCommands = ''
       export GDK_BACKEND=wayland
       export SDL_VIDEODRIVER=wayland
@@ -194,7 +217,7 @@
           x: 12
           y: 8
         dynamic_padding: false
-      background_opacity: 0.92
+      background_opacity: 0.98
     ''
   );
 
@@ -271,10 +294,14 @@
     vimAlias = true;
     extraConfig = "lua require('init')";
     plugins = with pkgs.vimPlugins; [
+      dashboard-nvim
       lualine-nvim
+      luasnip
       nerdcommenter
       nerdtree
       nord-nvim
+      numb-nvim
+      nvim-autopairs
       nvim-compe
       nvim-lspconfig
       nvim-treesitter
@@ -288,6 +315,10 @@
       vim-markdown
       vim-nix
       vim-surround
+      {
+        plugin = sql-nvim;
+        config = "let g:sql_clib_path = '${pkgs.sqlite.out}/lib/libsqlite3.so'";
+      }
     ];
   };
 
@@ -296,13 +327,24 @@
   #
 
   programs.zsh = {
+    autocd = true;
     enable = true;
     enableAutosuggestions = true;
     enableSyntaxHighlighting = true;
+    enableVteIntegration = true;
+
+    cdpath = [
+      "/etc/nixos"
+      "/home/dnordstrom/Code"
+      "/home/dnordstrom/Code/ticker"
+      "/home/dnordstrom/Code/ticker-backend"
+      "/home/dnordstrom/Code/scripts"
+    ];
 
     oh-my-zsh = {
       enable = true;
       theme = "agnoster";
+      plugins =  [ "sudo" ];
     };
 
     shellAliases = {
@@ -310,8 +352,15 @@
       nixkate = "kate /etc/nixos";
       nixcode = "codium /etc/nixos";
       nixvim = "nvim /etc/nixos";
-      nixrb = "sudo nixos-rebuild switch --flake /etc/nixos";
+      nixswitch = "sudo nixos-rebuild switch --flake /etc/nixos";
     };
+
+    initExtra = ''
+      # Prepend list item to notes
+      note() {
+        echo "$(echo "- $@"; cat ~/.notes.md)" > ~/.notes.md
+      }
+    '';
   };
 
   #
@@ -345,8 +394,8 @@
 
   # Mako notification daemon
   programs.mako = {
-    backgroundColor = "#F3F3F3FF";
-    borderColor = "#000000BB";
+    backgroundColor = "#434C5E";
+    borderColor = "#E5E9F0BB";
     borderRadius = 0;
     borderSize = 2;
     defaultTimeout = 5000;
@@ -361,7 +410,7 @@
     maxIconSize = 24;
     padding = "12";
     sort = "-time";
-    textColor = "#222222";
+    textColor = "#E5E9F0";
     width = 300;
   };
 

@@ -111,12 +111,13 @@
     "command": "markdown.showPreviewToSide",
     "when": "editorLangId == 'markdown'"
   },
-  
 
-  
+
+
   {
-    "key": "alt+c",
-    "command": "extension.changeCase.camel"
+    "key": "alt+q",
+    "command": "editor.togglequotes",
+    "when": "editorTextFocus"
   },
   {
     "key": "alt+w",
@@ -129,8 +130,9 @@
     "when": "editorTextFocus"
   },
   {
-    "key": "alt+q",
-    "command": "extension.quote-flipper"
+    "key": "alt+t",
+    "command": "extension.toggle",
+    "when": "editorTextFocus"
   },
 
 

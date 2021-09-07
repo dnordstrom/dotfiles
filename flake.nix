@@ -4,10 +4,10 @@
   inputs.home-manager.url = "github:nix-community/home-manager";
   inputs.neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
 
-  outputs = { self, nixpkgs, nur, home-manager, neovim-nightly-overlay }: rec {
+  outputs = inputs@{ self, nixpkgs, nur, home-manager, neovim-nightly-overlay }: rec {
     nixosConfigurations.nordix = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-
+      specialArgs = { inherit inputs; };
       modules = [
         {
           nixpkgs.overlays = [

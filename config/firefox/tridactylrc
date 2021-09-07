@@ -4,6 +4,7 @@
 
 colorscheme --url https://raw.githubusercontent.com/bezmi/base16-tridactyl/master/base16-nord.css nord
 
+set newtab about:blank
 set allowautofocus false
 set editorcmd alacritty -e nvim %f '+normal!%lGzv%c|'
 set hintchars fdsqjklmrezauiopwxcvghtybn
@@ -11,10 +12,13 @@ set searchengine g
 set smoothscroll true
 set tabopencontaineraware true
 set visualenterauto false
+set minincsearchlen 2
 
 " Custom searches
 
-set searchurls.g https://www.google.com/search?q=%s&num=100&tbs=qdr:y
+set searchurls.g https://www.google.com/search?q=%s&num=100
+set searchurls.gy https://www.google.com/search?q=%s&num=100&tbs=qdr:y
+set searchurls.r https://www.google.com/search?q=%s%20site:reddit.com&num=100
 set searchurls.mdn https://developer.mozilla.org/en-US/search?q=%s&topic=api&topic=js
 set searchurls.npm https://www.npmjs.com/search?q=%s
 set searchurls.nix https://search.nixos.org/packages?channel=unstable&size=500&query=%s
@@ -25,17 +29,41 @@ set searchurls.ddg https://duckduckgo.com/?kp=-2&q=%s&ia=web
 set searchengine g
 
 "
+" Commands
+"
+
+" Convenience
+command withurl composite get_current_url |
+
+" Replace binds with another prefix (exclamation point removes old binds)
+command bindreplaceprefix js -d% const [_, oldPrefix, newPrefix] = JS_ARGS; Object.entries(tri.config.get('nmaps')).map(([key, cmd]) => ({ key, cmd })).filter(({ key }) => key.startsWith(oldPrefix)).map(({ key, cmd }) => { tri.excmds.bind('--mode=normal', key.replace(oldPrefix, newPrefix), cmd); }) %
+command bindreplaceprefix! js -d% const [_, oldPrefix, newPrefix] = JS_ARGS; Object.entries(tri.config.get('nmaps')).map(([key, cmd]) => ({ key, cmd })).filter(({ key }) => key.startsWith(oldPrefix)).map(({ key, cmd }) => { tri.excmds.bind('--mode=normal', key.replace(oldPrefix, newPrefix), cmd); tri.excmds.unbind(key); }) %
+
+" Shows standard OS notification on Linux and always logs to console
+command notify js -p tri.excmds.exclaim_quiet(`notify-send ${JS_ARG}`); console.info(`TRIDACTYL: ${JS_ARG}`);
+
+" Inspect a JavaScript object in the console
+command jsp js -p tri.excmds.js(`console.dir(${JS_ARG})`);
+command jsbp js -p tri.excmds.js(`console.dir(${JS_ARG})`);
+
+"
 " Key Binds
 "
 
+" Preserve defaults
+unbind <C-f>
+unbind <C-e>
+
+bind <Space><Space> fillcmdline_notrail
+bind <Space>b !s xdotool search "Mozilla Firefox" windowactivate --sync key --clearmodifiers ctrl+e
+
 " Vim-like search
 
-unbind <C-f>
 bind / fillcmdline find
 bind ? fillcmdline find -?
 bind n findnext 1
 bind N findnext -1
-bind <Space><Space> nohlsearch
+bind <Space>h nohlsearch
 
 " Tabs
 
@@ -69,7 +97,10 @@ bind --mode=ex <C-w> text.backward_kill_word
 bind --mode=insert <C-w> text.backward_kill_word
 bind --mode=input <C-w> text.backward_kill_word
 
-" Quick Marks
+" Sanitize on exit
+bind ZZ composite sanitise tridactyllocal tridactylsync; qall
+
+" Marks
 
 quickmark r https://www.reddit.com/
 quickmark g https://www.github.com/
@@ -78,11 +109,8 @@ quickmark O https://search.nixos.org/options
 quickmark i https://imgur.com/
 quickmark y https://youtube.com/
 
-"
-" Commands
-"
-
-command notify js -p tri.native.run(`notify-send ${JS_ARG}`);
+" Marks on ' like in Vim
+bindreplaceprefix go '
 
 "
 " Blacklist
@@ -95,8 +123,18 @@ blacklistadd leeroy-group.atlassian.net mode ignore
 " Auto-Commands
 "
 
-autocmd DocStart .*google\.com/search.+ js if (!location.search.includes('modified=true')) { const params = new URL(location.href).searchParams; params.set('tbs', 'qdr:y'); params.set('num', '100'); params.set('modified', 'true'); location.search = params.toString(); console.info('TRIDACTYL: Changed to results from the past year, and to show 100 results per page.') };
-autocmd DocLoad .*search\.nixos\.org/(packages|options).+ js setTimeout(() => { const node = document.createElement('li'); const link = document.createElement('a'); node.appendChild(link); link.href = '#'; link.classList.add('copy-to-clipboard'); link.innerText = 'Copy to clipboard'; document.querySelectorAll('.package ul').forEach(links => { const clone = node.cloneNode(true); clone.firstElementChild.title = links.querySelector('li:first-of-type').textContent; links.appendChild(clone); }); document.addEventListener('click', event => { event.preventDefault(); if (event.target.classList.contains('copy-to-clipboard')) tri.excmds.yank(event.target.title); }) }, 3000);
+" Add button to Nix package search results to copy package name to clipboard
+autocmd DocLoad .*search\.nixos\.org/packages.+ js setTimeout(() => { const node = document.createElement('li'); const link = document.createElement('a'); node.appendChild(link); link.href = '#'; link.classList.add('copy-to-clipboard'); link.innerText = 'Copy to clipboard'; document.querySelectorAll('.package ul').forEach(links => { const clone = node.cloneNode(true); clone.firstElementChild.title = links.parentElement.getElementsByClassName('search-result-button')[0].textContent; links.appendChild(clone); }); document.addEventListener('click', event => {  if (event.target.classList.contains('copy-to-clipboard')) { navigator.clipboard.writeText(event.target.title); event.preventDefault(); } }) }, 3000);
+
+" Add button to home manager options page to copy option including example
+autocmd DocLoad .*nix-community\.github\.io/home-manager/options\.html.* js document.querySelectorAll('dt span.term').forEach(node => { const dt = node.parentElement.nextElementSibling; const textEl = dt.querySelector('.programlisting') || dt.querySelector('.literal'); if (textEl) { const copy = document.createElement('span'); copy.appendChild(document.createTextNode(' - ')); copy.style.cursor = 'pointer'; const code = document.createElement('code'); code.className = 'copy'; code.setAttribute('data-copy', `${node.textContent} = ${textEl.textContent.trim()};`); code.appendChild(document.createTextNode('Copy to clipboard')); copy.appendChild(code); node.appendChild(copy); } }); document.querySelector('dl').addEventListener('click', event => { if (event.target.className === 'copy') { const text = event.target.getAttribute('data-copy'); navigator.clipboard.writeText(text); console.log(text); }});
+
+"
+" Notes
+"
+
+" If it becomes possible to use data-URI's as new tab page, something like this:
+" set newtab data:text/html,<html><head><title>New tab</title><style>body { background: rgb(46, 52, 64); color: white; padding: 60px 20px; text-align: center; font: 1rem sans; } h1 { margin: 0 0 20px; } body > div { display: inline-block; text-align: left; } div > div {} span { display: inline-block; } span:first-child { margin: 0 20px 0 0; } pre { margin: 0; } a,a:hover { color: white; display: inline-block; text-decoration: none; top: 12px; right: 12px; position: absolute; }</style></head><body><h1>Where to?</h1><div><div><span><pre>:o</pre></span><span>Open...</span></div><div><span><pre>:t</pre></span><span>Open in tab...</span></div></div><a href="">?</a></body></html>
 
 " vim: set filetype=vim:
 " -*- mode: vim -*-

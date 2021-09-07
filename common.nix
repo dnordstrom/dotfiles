@@ -34,12 +34,13 @@
     ***REMOVED***
     ***REMOVED***
     ***REMOVED***
+    ***REMOVED***
   '';
 
   time.timeZone = "Europe/Amsterdam";
 
   services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.displayManager.gdm.enable = false;
   services.xserver.desktopManager.gnome.enable = true;
   services.xserver.desktopManager.plasma5.enable = true;
   services.xserver.libinput.enable = true;
@@ -49,16 +50,16 @@
     settings.Wayland.SessionDir = "${pkgs.libsForQt5.plasma-workspace}/share/wayland-sessions";
   };
 
-  # services.greetd = {
-  #   enable = true;
-  #   restart = false;
-  #   settings = {
-  #     default_session = {
-  #       command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd sway";
-  #       # command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd XDG_SESSION_TYPE=wayland dbus-run-session startplasma-wayland";
-  #     };
-  #   };
-  # };
+  services.greetd = {
+    enable = true;
+    restart = false;
+    settings = {
+      default_session = {
+        # command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd sway";
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --remember --time --asterisks --cmd XDG_SESSION_TYPE=wayland dbus-run-session startplasma-wayland";
+      };
+    };
+  };
 
   services.xserver = {
     layout = "us,se";
@@ -118,34 +119,11 @@
     shell = pkgs.zsh;
   };
 
-  security.sudo.extraRules = [{
-    users = [ "dnordstrom" ];
-    commands = [
-      {
-        command = "/run/current-system/sw/bin/chown";
-        options = [ "SETENV" "NOPASSWD" ];
-      }
-      {
-        command = "/run/current-system/sw/bin/chmod";
-        options = [ "SETENV" "NOPASSWD" ];
-      }
-      {
-        command = "/run/current-system/sw/bin/nvim";
-        options = [ "SETENV" "NOPASSWD" ];
-      }
-      {
-        command = "/run/current-system/sw/bin/vim";
-        options = [ "SETENV" "NOPASSWD" ];
-      }
-      {
-        command = "/run/current-system/sw/bin/nixos-rebuild";
-        options = [ "SETENV" "NOPASSWD" ];
-      }
-    ];
-  }];
+  security.sudo.wheelNeedsPassword = false;
 
   environment.systemPackages = with pkgs; [
     git
+    greetd.tuigreet
     wget
     nodejs
     yarn
