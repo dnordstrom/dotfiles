@@ -40,19 +40,19 @@
   time.timeZone = "Europe/Amsterdam";
 
   services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = false;
+  # services.xserver.displayManager.gdm.enable = false;
   services.xserver.desktopManager.gnome.enable = true;
   services.xserver.desktopManager.plasma5.enable = true;
   services.xserver.libinput.enable = true;
 
-  services.xserver.displayManager.sddm = {
-    enable = false;
-    settings.Wayland.SessionDir = "${pkgs.libsForQt5.plasma-workspace}/share/wayland-sessions";
-  };
+  #  services.xserver.displayManager.sddm = {
+  #    enable = false;
+  #    settings.Wayland.SessionDir = "${pkgs.libsForQt5.plasma-workspace}/share/wayland-sessions";
+  #  };
 
   services.greetd = {
     enable = true;
-    restart = false;
+    restart = true;
     settings = {
       default_session = {
         # command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd sway";

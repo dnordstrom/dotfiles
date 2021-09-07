@@ -198,13 +198,13 @@
 
       font:
         normal:
-          family: 'CaskaydiaCove Nerd Font'
+          family: 'Iosevka Nerd Font'
         bold:
-          family: 'CaskaydiaCove Nerd Font'
+          family: 'Iosevka Nerd Font'
         italic:
-          family: 'CaskaydiaCove Nerd Font'
+          family: 'Iosevka Nerd Font'
         bold_italic:
-          family: 'CaskaydiaCove Nerd Font'
+          family: 'Iosevka Nerd Font'
         size: 9
         offset:
           x: 0
