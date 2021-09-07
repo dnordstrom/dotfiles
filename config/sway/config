@@ -3,7 +3,7 @@
 #
 
 # Font
-set $font Noto Sans 9
+set $font Iosevka Nerd Font
 
 # Color scheme
 set $colors ayu

@@ -205,13 +205,13 @@
           family: 'Iosevka Nerd Font'
         bold_italic:
           family: 'Iosevka Nerd Font'
-        size: 9
+        size: 10
         offset:
           x: 0
-          y: 4
+          y: 0
         glyph_offset:
           x: 0
-          y: 2
+          y: 0
       window:
         padding:
           x: 12
@@ -220,6 +220,8 @@
       background_opacity: 0.98
     ''
   );
+  
+  # Use offset y 4 and glyph_offset 4 if it looks weird, depending on font used
 
   programs.alacritty = {
     enable = true;

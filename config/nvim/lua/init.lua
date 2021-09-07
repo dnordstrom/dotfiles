@@ -101,7 +101,7 @@ require'telescope'.setup{
         mirror = false,
       },
       vertical = {
-        mirror = false,
+        mirror = true,
       },
     },
     generic_sorter =  require'telescope.sorters'.get_generic_fuzzy_sorter,
@@ -329,16 +329,6 @@ local on_attach = function(client, bufnr)
   elseif client.resolved_capabilities.document_range_formatting then
     vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>df', 'vim.lsp.buf.range_formatting()', opts)
   end
-
-  if client.resolved_capabilities.signature_help then
-    vim.api.nvim_exec([[
-      augroup info_on_hold
-        autocmd! * <Buffer>
-        autocmd CursorHold <Buffer> silent! lua vim.lsp.diagnostic.show_line_diagnostics({ focusable = false })
-        autocmd CursorHoldI <Buffer> silent! lua vim.lsp.buf.signature_help()
-      augroup end
-    ]], false)
-  end
 end
 
 lspconfig = require'lspconfig'
@@ -353,6 +343,10 @@ for _, lsp in ipairs(servers) do
     capabilities = capabilities,
   }
 end
+
+vim.api.nvim_exec([[
+    autocmd CursorHold silent! lua vim.lsp.diagnostic.show_line_diagnostics({ focusable = false })
+]], false)
 
 require('compe').setup {
   source = {
