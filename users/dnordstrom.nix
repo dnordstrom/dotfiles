@@ -295,7 +295,7 @@
   # Neovim
   #
 
-  xdg.configFile."nvim/lua".source = ../config/nvim/lua;
+  xdg.configFile."nvim/init.lua".source = ../config/nvim/init.lua;
 
   programs.neovim = {
     enable = true;
@@ -303,46 +303,38 @@
     vimAlias = true;
     extraConfig = "lua require('init')"; # Imports `config/nvim/lua/init.lua`
     plugins = with pkgs.vimPlugins; [
-      # chadtree
-      # dashboard-nvim
-      # lualine-nvim
-      # luasnip
-      # nerdcommenter
-      # nord-nvim
-      # numb-nvim
-      # nvim-autopairs
-      # nvim-lspconfig
-      # nvim-treesitter
-      # nvim-web-devicons
-      # packer-nvim
-      # telescope-frecency-nvim
-      # telescope-fzf-native-nvim
-      # telescope-nvim
-      # telescope-symbols-nvim
-      # todo-comments-nvim
-      # trouble-nvim
-      # vim-javascript
-      # vim-markdown
-      # vim-nix
-      # vim-surround
+      chadtree
+      dashboard-nvim
+      lualine-nvim
+      luasnip
+      nerdcommenter
+      nord-nvim
+      numb-nvim
+      nvim-autopairs
+      nvim-lspconfig
+      nvim-treesitter
+      nvim-web-devicons
+      packer-nvim
+      telescope-frecency-nvim
+      telescope-fzf-native-nvim
+      telescope-nvim
+      telescope-symbols-nvim
+      todo-comments-nvim
+      trouble-nvim
+      vim-javascript
+      vim-jsx-typescript
+      vim-markdown
+      vim-nix
+      vim-surround
+      typescript-vim
 
-      # Plugins requiring path configuration
-      # {
-      #   plugin = sql-nvim;
-      #   config = "let g:sql_clib_path = '${pkgs.sqlite.out}/lib/libsqlite3.so'";
-      # }
+      # Plugins requiring setup
+      {
+        plugin = sql-nvim;
+        config = "let g:sql_clib_path = '${pkgs.sqlite.out}/lib/libsqlite3.so'";
+      }
 
       # Plugins built from source
-      # (pkgs.vimUtils.buildVimPlugin {
-      #   name = "coq_nvim";
-      #   src = pkgs.fetchFromGitHub {
-      #     owner = "ms-jpq";
-      #     repo = "coq_nvim";
-      #     rev = "301f69492ce0e27fa264eb9a97377e085bad32c5";
-      #     sha256 = "0m2dwcl9nc9kv2dmyazz9xrv19dzkdwkvkdyh2naycpbr1sj2w0b";
-      #   };
-      #   meta.homepage = "https://github.com/ms-jpq/coq_nvim/";
-      # })
     ];
   };
 

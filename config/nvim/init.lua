@@ -1,94 +1,4 @@
 --
--- Plugin management
---
-
--- Install packer
-local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
-
-if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-  vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
-end
-
-vim.api.nvim_exec(
-  [[
-  augroup Packer
-    autocmd!
-    autocmd BufWritePost init.lua PackerCompile
-  augroup end
-]],
-  false
-)
-
-local use = require('packer').use
-require('packer').startup(function()
-  use 'wbthomason/packer.nvim' -- Package manager
-  use { 'ms-jpq/coq_nvim', branch = 'coq'}
-  use 'shaunsingh/nord.nvim'
-  use 'nacro90/numb.nvim'
-  use 'windwp/nvim-autopairs'
-  use 'kyazdani42/nvim-web-devicons'
-  use {
-    "nvim-telescope/telescope-frecency.nvim",
-    config = function()
-      require"telescope".load_extension("frecency")
-    end,
-    requires = {"tami5/sqlite.lua"}
-  }
-  use 'glepnir/dashboard-nvim'
-  use {
-    'hoob3rt/lualine.nvim',
-    requires = {'kyazdani42/nvim-web-devicons', opt = true}
-  }
-  use 'preservim/nerdcommenter'
-  use {
-    "folke/todo-comments.nvim",
-    requires = "nvim-lua/plenary.nvim",
-    config = function()
-      require("todo-comments").setup {
-        -- your configuration comes here
-      }
-    end
-  }
-  use { "tami5/sqlite.lua" }
-  use 'godlygeek/tabular'
-  use 'plasticboy/vim-markdown'
-
-  use 'pangloss/vim-javascript'
-  -- use 'tpope/vim-fugitive' -- Git commands in nvim
-  -- use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
-  -- use 'tpope/vim-commentary' -- "gc" to comment visual regions/lines
-  ---- see nerdcommenter above as well
-  -- use 'tpope/vim-vinegar'
-  use 'tpope/vim-surround'
-  -- use 'tpope/vim-unimpaired'
-  -- use 'tpope/vim-sleuth'
-  -- use 'tpope/vim-repeat'
-  -- use 'ludovicchabant/vim-gutentags'
-  -- use 'justinmk/vim-dirvish'
-  -- use 'christoomey/vim-tmux-navigator'
-  -- UI to select things (files, grep results, open buffers...)
-  use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
-  use 'nvim-telescope/telescope-fzf-native.nvim'
-  use 'nvim-telescope/telescope-symbols.nvim'
-  -- Add indentation guides even on blank lines
-  use 'lukas-reineke/indent-blankline.nvim'
-  -- Add git related info in the signs columns and popups
-  use { 'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' } }
-  -- Highlight, edit, and navigate code using a fast incremental parsing library
-  use 'nvim-treesitter/nvim-treesitter'
-  -- Additional textobjects for treesitter
-  use 'nvim-treesitter/nvim-treesitter-textobjects'
-  -- use 'mfussenegger/nvim-lint'
-  use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client
-  use 'folke/which-key.nvim'
-  -- use 'bfredl/nvim-luadev'
-  -- use 'kristijanhusak/orgmode.nvim'
-  use 'tbastos/vim-lua'
-  use 'LnL7/vim-nix'
-  -- use 'L3MON4D3/LuaSnip' -- Snippets plugin
-end)
-
---
 -- Imports
 --
 
@@ -329,10 +239,10 @@ nvim_set_keymap("n", "<Leader>vn", "<Cmd>DashboardNewFile<CR>", opts.silent)
 --
 
 -- Line peek
--- require("numb").setup()
+require("numb").setup()
 
 -- Comment labels
--- require("todo-comments").setup {
+require("todo-comments").setup {
   -- All options can be found here:
   -- https://github.com/folke/todo-comments.nvim/blob/main/lua/todo-comments/config.lua
 
@@ -340,10 +250,7 @@ nvim_set_keymap("n", "<Leader>vn", "<Cmd>DashboardNewFile<CR>", opts.silent)
   --   keywords = {
   --     WARN = {icon = " ", color = "warning", alt = {"@warn", "@WARNING", "warning", "WARNING", "XXX"}},
   --   }
--- }
-
--- Indent blank lines
-g.indent_blankline_filetype_exclude = {'help', 'packer'}
+}
 
 -- Autopairs
 require("nvim-autopairs").setup({
