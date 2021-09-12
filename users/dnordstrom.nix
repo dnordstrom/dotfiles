@@ -301,12 +301,21 @@
     enable = true;
     viAlias = true;
     vimAlias = true;
-    extraConfig = "lua require('init')"; # Imports `config/nvim/lua/init.lua`
+    extraConfig = ''
+      lua require("init")
+    '';
     plugins = with pkgs.vimPlugins; [
       chadtree
       dashboard-nvim
       lualine-nvim
       luasnip
+      ncm2
+      ncm2-bufword
+      ncm2-cssomni
+      ncm2-neosnippet
+      ncm2-path
+      ncm2-syntax
+      ncm2-ultisnips
       nerdcommenter
       nord-nvim
       numb-nvim
@@ -314,6 +323,7 @@
       nvim-lspconfig
       nvim-treesitter
       nvim-web-devicons
+      nvim-yarp
       packer-nvim
       telescope-frecency-nvim
       telescope-fzf-native-nvim
