@@ -98,8 +98,30 @@ input type:keyboard {
   repeat_delay 250
   repeat_rate 35
 
+  # General settings
+  # Useful to list current xkb settings: `setxkbmap -print -verbose 10`
+  # You can then migrate current settings or use Plasma's or Gnome's system
+  # settings for a more explanatory setup.
   xkb_layout us,se
-  xkb_options caps:escape,grp:menu_toggle,grp:alt_shift_toggle
+  xkb_numlock enable
+
+  # Layout variants
+  xkb_variant ,us
+
+  # Activate NumLock
+
+
+  # CapsLock to Escape (and use Shift-CapsLock for CapsLock)
+  # Both Shift keys to change keyboard layout
+
+	xkb_keycodes  { include "evdev+aliases(qwerty)"	};
+	xkb_types     { include "complete"	};
+	xkb_compat    { include "complete+lednum(group_lock)+ledcaps(group_lock)+ledscroll(group_lock)+ledcompose(compose)"	};
+	xkb_symbols   { include "pc+us+se(us):2+inet(evdev)+group(shifts_toggle)+group(sclk_toggle)+level3(ralt_switch_multikey)+capslock(escape_shifted_capslock)"	};
+	xkb_geometry  { include "pc(pc86)"	};
+};
+
+  xkb_options "caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey"
 }
 
 

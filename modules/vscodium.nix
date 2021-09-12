@@ -82,6 +82,18 @@
         version = "2.1.0";
         sha256 = "sha256-l7MG2bpfTgVgC+xLal6ygbxrrRoNONzOWjs3fZeZtU4=";
       }
+      {
+        name = "i3";
+        publisher = "dcasella";
+        version = "0.0.1";
+        sha256 = "sha256-Mn1QnwFOC5Gy9jnXJsoKt5S6/aKUJjxni4PR8RTVZlM=";
+      }
+      {
+        name = "vscode-todo-plus";
+        publisher = "fabiospampinato";
+        version = "4.18.4";
+        sha256 = "sha256-daKMeFUPZSanrFu9J6mk3ZVmlz8ZZquZa3qaWSTbSjs=";
+      }
     ];
     userSettings = builtins.fromJSON (builtins.readFile ../config/vscode/settings.json);
     keybindings = builtins.fromJSON (builtins.readFile ../config/vscode/keybindings.json);

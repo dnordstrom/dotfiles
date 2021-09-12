@@ -24,7 +24,7 @@
     convox = pkgs.callPackage ../packages/convox.nix {};
   in
   with pkgs; [
-    # Programs
+    # General
     bitwarden
     bitwarden-cli
     bustle # GTK-based D-Bus inspector
@@ -46,10 +46,11 @@
     tor-browser-bundle-bin
     usbutils # For `lsusb`
     weechat
-    weechatScripts.wee-slack
-    weechatScripts.weechat-matrix
-    weechatScripts.weechat-notify-send
+    xorg.xev # Keyboard event viewer
     xdotool
+
+    # Command line
+    t-rec
 
     # Desktop integration portals
     xdg-desktop-portal
@@ -69,6 +70,8 @@
     slurp
     swayidle
     swaylock
+    wev
+    wf-recorder
     wl-clipboard
     wofi
     wofi-emoji
@@ -91,6 +94,7 @@
     # Gnome
     gnome-breeze
     gnomeExtensions.gsconnect
+    peek
 
     # Display manager
     greetd.tuigreet
@@ -101,17 +105,15 @@
     tridactyl-native
 
     # Multimedia
-    celluloid
-    haruna
-    smplayer
+    celluloid # GTK frontend for MPV
+    haruna # QT frontend for MPV
+    smplayer # QT frontend for MPV
+    sayonara
 
     # Tryouts
     quaternion # Matrix client
     nheko # Matrix client
     neochat # Matrix client
-    weechat
-    weechatScripts.wee-slack
-    weechatScripts.weechat-matrix
 
     # NPM packages
     nodePackages.bash-language-server
@@ -121,6 +123,9 @@
     nodePackages.typescript-language-server
     nodePackages.vscode-langservers-extracted # HTML, CSS, and JSON
     nodePackages.yaml-language-server
+
+    # Lua
+    luajit
 
     # Language servers
     gopls
@@ -139,7 +144,9 @@
     numix-icon-theme-circle
 
     # Unnecessary utilities
+    arcan.espeak
     neo-cowsay
+    figlet
     fortune
     lolcat
     toilet
@@ -220,7 +227,7 @@
       background_opacity: 0.98
     ''
   );
-  
+
   # Use offset y 4 and glyph_offset 4 if it looks weird, depending on font used
 
   programs.alacritty = {
@@ -294,33 +301,48 @@
     enable = true;
     viAlias = true;
     vimAlias = true;
-    extraConfig = "lua require('init')";
+    extraConfig = "lua require('init')"; # Imports `config/nvim/lua/init.lua`
     plugins = with pkgs.vimPlugins; [
+      chadtree
       dashboard-nvim
       lualine-nvim
       luasnip
       nerdcommenter
-      nerdtree
       nord-nvim
       numb-nvim
       nvim-autopairs
-      nvim-compe
       nvim-lspconfig
       nvim-treesitter
       nvim-web-devicons
+      packer-nvim
       telescope-frecency-nvim
       telescope-fzf-native-nvim
       telescope-nvim
       telescope-symbols-nvim
+      todo-comments-nvim
       trouble-nvim
       vim-javascript
       vim-markdown
       vim-nix
       vim-surround
+
+      # Plugins requiring path configuration
       {
         plugin = sql-nvim;
         config = "let g:sql_clib_path = '${pkgs.sqlite.out}/lib/libsqlite3.so'";
       }
+
+      # Plugins built from source
+      (pkgs.vimUtils.buildVimPlugin {
+        name = "coq_nvim";
+        src = pkgs.fetchFromGitHub {
+          owner = "ms-jpq";
+          repo = "coq_nvim";
+          rev = "301f69492ce0e27fa264eb9a97377e085bad32c5";
+          sha256 = "0m2dwcl9nc9kv2dmyazz9xrv19dzkdwkvkdyh2naycpbr1sj2w0b";
+        };
+        meta.homepage = "https://github.com/ms-jpq/coq_nvim/";
+      })
     ];
   };
 
@@ -349,12 +371,13 @@
       plugins =  [ "sudo" ];
     };
 
+
     shellAliases = {
       ll = "ls -Al";
       nixkate = "kate /etc/nixos";
       nixcode = "codium /etc/nixos";
       nixvim = "nvim /etc/nixos";
-      nixswitch = "sudo nixos-rebuild switch --flake /etc/nixos";
+      nixswitch = "rm /home/dnordstrom/.gtkrc-2.0; sudo nixos-rebuild switch --flake /etc/nixos --upgrade-all";
     };
 
     initExtra = ''

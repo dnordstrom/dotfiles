@@ -22,7 +22,8 @@
             };
           in {
             imports = [ ];
-         })
+          })
+
 
         ./hosts/ryzen.nix
         ./common.nix
