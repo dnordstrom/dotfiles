@@ -1,0 +1,92 @@
+* {
+  font-weight: 700;
+  font-family: 'Iosevka Nerd Font', sans-serif;
+  font-size: 13px;
+}
+
+#waybar {
+  background: transparent;
+  color: #eceff4;
+  transition: background-color 0.2s;
+}
+
+#waybar:first-child > box {
+  margin: 10px;
+  padding: 0;
+  border-radius: 6px;
+  background: #3b4252;
+  box-shadow: 0px 0px 3px rgba(46, 52, 64, 0.6);
+}
+
+#workspaces {
+  margin: 0 3px 0 0;
+}
+
+#workspaces button {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0 8px;
+}
+
+#workspaces button:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+#workspaces button:hover {
+  box-shadow: inherit;
+  text-shadow: inherit;
+  color: #eceff4;
+}
+
+#workspaces button.focused {
+  background: #4c566a;
+  color: #8fbcbb;
+}
+
+#workspaces button.urgent {
+  color: #f51818;
+}
+
+#battery,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#backlight,
+#network,
+#pulseaudio,
+#custom-media,
+#tray,
+#idle_inhibitor,
+#custom-browser,
+#custom-terminal,
+#custom-files,
+#custom-editor,
+#custom-keyboard,
+#custom-disks,
+#custom-wttr,
+#custom-darksky,
+#custom-system,
+#custom-separator,
+#mode {
+  padding: 0 12px;
+}
+
+#idle_inhibitor {
+  padding: 0 18px;
+}
+
+#tray {
+  opacity: 0.8;
+  padding: 8px;
+}
+
+#custom-system {
+  margin-right: 6px;
+}
+
+/* This sets vertical padding of the bar */
+#clock {
+  padding: 8px 12px 7px;
+}

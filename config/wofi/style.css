@@ -1,0 +1,92 @@
+/**
+Widget layout
+
+window - #window
+  box - #outer-box
+    entry - #input
+    scrolledwindow - #scroll
+      viewport
+        box
+          flowbox - #inner-box
+            flowboxchild - #entry
+              .entry - #unselected or #selected
+                 This only exists if there's ONLY 1 action. This is a WofiPropertyBox which has no CSS node and should probably not be used, the name is dependent on whether or not the entry is selected. See wofi(5) on #selected and #unselected for info.
+                  image
+                    This is only present if an image is present in the entry and might occur multiple times if multiple images are present.
+                  label
+                    This is only present if text is present in the entry and might occur multiple times if there are multiple text objects in a single entry.
+                expander
+                  This and its children only exist if there are multiple actions on the entry
+                  .entry - #unselected or #selected
+                    The main action. This is a WofiPropertyBox which has no CSS node and should probably not be used, the name is dependent on whether or not the entry is selected. See wofi(5) on #selected and #unselected for info.
+                    image
+                      This is only present if an image is present in the entry and might occur multiple times if multiple images are present.
+                    label
+                      This is only present if text is present in the entry and might occur multiple times if there are multiple text objects in a single entry.
+                  list
+                    This contains all the secondary actions
+                    row - #entry
+
+                    .entry - #unselected or #selected
+                      This is a WofiPropertyBox which has no CSS node and should probably not be used, the name is dependent on whether or not the entry is selected. See wofi(5) on #selected and #unselected for info.
+                        image
+                          This is only present if an image is present in the entry and might occur multiple times if multiple images are present.
+
+                        label
+                          This is only present if text is present in the entry and might occur multiple times if there are multiple text objects in a single entry.
+
+      scrollbar
+*/
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 0.92; }
+}
+
+window {
+  margin: 0;
+  background: #1f2430;
+  border: none;
+  opacity: 0.92;
+  animation-name: fadeIn;
+  animation-duration: 0.25s;
+}
+
+#input {
+  margin: 5px;
+  border: none;
+  color: #bfbab0;
+}
+
+#inner-box {
+  margin: 5px;
+  border: none;
+}
+
+#outer-box {
+  margin: 5px;
+  border: none;
+}
+
+#scroll {
+  margin: 0px;
+  border: none;
+}
+
+#text {
+  margin: 8px;
+  background: none;
+  border: none;
+  color: #bfbab0;
+}
+
+#entry:selected {
+  background: #33415e;
+  border: none;
+  font-weight: normal;
+  outline: none;
+}
+
+.entry {
+  margin: 5px;
+}

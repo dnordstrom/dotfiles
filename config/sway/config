@@ -6,7 +6,7 @@
 set $font Iosevka Nerd Font
 
 # Color scheme
-set $colors ayu
+set $colors nord
 
 # Use super as modifier key (Mod1 for Alt)
 set $mod Mod4
@@ -29,7 +29,7 @@ set $workspace6 6
 set $term alacritty
 set $menu wofi --show=drun,run | xargs swaymsg exec
 set $files nautilus
-set $powermenu wlogout-init # Use `scripts/powermenu/powermenu.sh` for wofi menu
+set $powermenu wlogout-init
 set $screenshot-region screensnap
 set $screenshot-window screensnap --window
 set $screenshot-screen screensnap --screen
@@ -43,7 +43,7 @@ set $screenshot-screen screensnap --screen
 font pango:$font
 
 gaps inner 14
-gaps outer 0
+gaps outer 12
 
 default_border pixel 2
 default_floating_border pixel 2
@@ -72,6 +72,9 @@ workspace $workspace6 output DVI-D-1
 # Outputs
 #
 
+# All monitors
+output "*" bg ~/Pictures/Wallpapers/active.jpg fill
+
 # Primary monitor
 output DP-1 {
   mode 1920x1080@144.001007Hz
@@ -90,7 +93,6 @@ output DVI-D-1 {
 # Inputs
 #
 
-# seat seat0 xcursor_theme Quintom_Snow 24
 seat seat0 hide_cursor when-typing enable
 seat seat0 idle_wake keyboard
 
@@ -102,25 +104,15 @@ input type:keyboard {
   # Useful to list current xkb settings: `setxkbmap -print -verbose 10`
   # You can then migrate current settings or use Plasma's or Gnome's system
   # settings for a more explanatory setup.
-  xkb_layout us,se
   xkb_numlock enable
-
-  # Layout variants
+  xkb_layout us,se
   xkb_variant ,us
-
-  # Activate NumLock
 
 
   # CapsLock to Escape (and use Shift-CapsLock for CapsLock)
   # Both Shift keys to change keyboard layout
-
-  # xkb_keycodes  { include "evdev+aliases(qwerty)"	};
-  # xkb_types     { include "complete"	};
-  # xkb_compat    { include "complete+lednum(group_lock)+ledcaps(group_lock)+ledscroll(group_lock)+ledcompose(compose)"	};
-  # xkb_symbols   { include "pc+us+se(us):2+inet(evdev)+group(shifts_toggle)+group(sclk_toggle)+level3(ralt_switch_multikey)+capslock(escape_shifted_capslock)"	};
-  # xkb_geometry  { include "pc(pc86)"	};
-};
-
+  # Terminate X server on Ctrl-Alt-Del
+  # Right Alt to AltGr
   xkb_options caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey
 }
 
@@ -257,7 +249,7 @@ bindsym {
   XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 
   # Show keyboard shortcuts
-  $mod+Slash exec remontoire -c ~/.config/sway/config -t ~/.config/remontoire/styles.css
+  # $mod+Slash exec remontoire -c ~/.config/sway/config -t ~/.config/remontoire/styles.css
 }
 
 
@@ -312,11 +304,13 @@ bindsym $mod+Shift+Backspace mode "$mode_system"
 # Autostart
 #
 
-# Start `sway-session` systemd target
-exec_always "systemctl --user import-environment; systemctl --user start sway-session.target"
+# Systemd targets
+exec_always "systemctl --user import-environment"
+exec "systemctl --user start sway-session.target"
+exec "systemctl --user start graphical-session.target"
 
 # Open a terminal on scratchpad
-exec $term --title scratchpad_term
+exec $term --title scratchpad_term --class scratchpad_term
 
 
 
@@ -336,16 +330,18 @@ bar {
 
 assign [class="^Steam$"] $workspace5
 
-for_window [title="^scratchpad_term$"] move scratchpad
-for_window [class="dolphin"] floating enable
+for_window [app_id="org.gnome.Nautilus"] floating enable
+for_window [app_id="org.kde.dolphin"] floating enable
 for_window [class="qimgv"] floating enable
 for_window [class="qview"] floating enable
-for_window [app_id="org.gnome.Nautilus"] floating enable
 for_window [app_id="pavucontrol"] floating enable
 for_window [app_id="remontoire"] floating enable
-for_window [title="transparent_term"] border none
-for_window [title="popup_term"] floating enable, resize set 920 720
-for_window [title="scratchpad_term"] floating enable, resize set 720 540
+
+# Terminals
+for_window [app_id="scratchpad_term"] move scratchpad
+for_window [app_id="transparent_term"] border none
+for_window [app_id="popup_term"] floating enable, resize set 920 720
+for_window [app_id="scratchpad_term"] floating enable, resize set 720 540
 
 
 
@@ -354,4 +350,3 @@ for_window [title="scratchpad_term"] floating enable, resize set 720 540
 #
 
 include colors.$colors
-include /etc/sway/config.d/*

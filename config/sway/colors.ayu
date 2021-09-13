@@ -1,0 +1,37 @@
+#
+# Ayu
+#
+
+set $border #ff9940
+set $border_inactive #959da61a
+set $foreground #6c7680
+set $foreground_inactive #bfbab0
+set $transparent #00000000
+
+# class
+#   border
+#   background
+#   text
+#   indicator
+#   child_border
+
+client.focused \
+  $border \
+  $border \
+  $foreground \
+  $border \
+  $border
+
+client.unfocused \
+  $border_inactive \
+  $border_inactive \
+  $foreground_inactive \
+  $border_inactive \
+  $border_inactive
+  
+client.focused_inactive \
+  $border_inactive \
+  $border_inactive \
+  $foreground_inactive \
+  $border_inactive \
+  $border_inactive

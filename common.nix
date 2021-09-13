@@ -41,10 +41,13 @@
 
   services.xserver = {
     enable = true;
-    autorun = false;
+    # autorun = false;
 
     displayManager = {
-      startx.enable = true;
+      # startx.enable = true;
+      # lightdm.enable = true;
+      # sddm.enable = true;
+      gdm.enable = true;
     };
 
     desktopManager = {
@@ -57,17 +60,6 @@
     layout = "us,se";
     xkbOptions = "caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey";
     xkbVariant = ",us";
-  };
-
-  services.greetd = {
-    enable = true;
-    restart = true;
-    settings = {
-      default_session = {
-        # command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd sway";
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --remember --time --asterisks --cmd \"XDG_SESSION_TYPE=wayland dbus-run-session startplasma-wayland\"";
-      };
-    };
   };
 
   services.gnome.chrome-gnome-shell.enable = true;

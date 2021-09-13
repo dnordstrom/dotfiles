@@ -1,4 +1,4 @@
-{ pkgs, nixpkgs, ... }:
+{ pkgs, nixpkgs, lib, ... }:
 
 {
   #
@@ -72,9 +72,11 @@
     swayidle
     swaylock
     swaywsr
+    wdisplays # GUI display manager
     wev
     wf-recorder
     wl-clipboard
+    wlogout
     wofi
     wofi-emoji
     workstyle
@@ -162,17 +164,28 @@
   #
 
   xdg.configFile."swaylock/config".source = ../config/swaylock/config;
+  xdg.configFile."swaynag/config".source = ../config/swaynag/config;
+
+  xdg.configFile."sway/colors.ayu".source = ../config/sway/colors.ayu;
+  xdg.configFile."sway/colors.ayu-mirage".source = ../config/sway/colors.ayu-mirage;
+  xdg.configFile."sway/colors.ayu-dark".source = ../config/sway/colors.ayu-dark;
+  xdg.configFile."sway/colors.nord".source = ../config/sway/colors.nord;
 
   wayland.windowManager.sway = {
     enable = true;
+    config.bars = []; # Waybar is managed in Sway config
     wrapperFeatures.gtk = true;
     extraConfig = builtins.readFile ../config/sway/config;
     extraSessionCommands = ''
+      export _JAVA_AWT_WM_NONREPARENTING=1
       export GDK_BACKEND=wayland
-      export SDL_VIDEODRIVER=wayland
+      export MOZ_ENABLE_WAYLAND=1
       export QT_QPA_PLATFORM=wayland
       export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
-      export _JAVA_AWT_WM_NONREPARENTING=1
+      export SDL_VIDEODRIVER=wayland
+      export XDG_CURRENT_DESKTOP=sway
+      export XDG_SESSION_DESKTOP=sway
+      export XDG_SESSION_TYPE=wayland
     '';
   };
 
@@ -427,8 +440,18 @@
   };
 
   #
-  # Other
+  # Miscellaneous
   #
+
+  # Wofi launcher configuration
+  xdg.configFile."wofi/config".source = ../config/wofi/config;
+  xdg.configFile."wofi/style.css".source = ../config/wofi/style.css;
+
+  # Status bar
+  programs.waybar.enable = true;
+
+  xdg.configFile."waybar/config".source = ../config/waybar/config;
+  xdg.configFile."waybar/style.css".source = ../config/waybar/style.css;
 
   # A flying `cat`
   programs.bat = {
@@ -502,6 +525,27 @@
   programs.mpv.enable = true;
 
   #
+  # Systemd
+  #
+
+  systemd.user.services.sway = {
+    Unit = {
+      Description = "Sway - Wayland window manager";
+      Documentation = [ "man:sway(5)" ];
+      BindsTo = [ "graphical-session.target" ];
+      Wants = [ "graphical-session-pre.target" ];
+      After = [ "graphical-session-pre.target" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.sway}/bin/sway";
+      Restart = "on-failure";
+      RestartSec = 1;
+      TimeoutStopSec = 10;
+    };
+  };
+
+  #
   # Environment
   #
 
@@ -509,5 +553,5 @@
     EDITOR = "nvim";
   };
 
-  home.file.".xinitrc".source = ../config/xinitrc.sh;
+  home.file.".xinitrc".source = ../config/xorg/xinitrc.sh;
 }
