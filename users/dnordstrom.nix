@@ -50,6 +50,7 @@
     xdotool
 
     # Command line
+    glow
     t-rec
 
     # Desktop integration portals
@@ -70,6 +71,7 @@
     slurp
     swayidle
     swaylock
+    swaywsr
     wev
     wf-recorder
     wl-clipboard
@@ -188,7 +190,8 @@
     enable = true;
     extensions =
       with pkgs.nur.repos.rycee.firefox-addons; [
-        # Using Firefox Sync for extensions
+        # Using Firefox Sync for addons but they can also be managed here, see:
+        # https://github.com/nix-community/nur-combined/blob/master/repos/rycee/pkgs/firefox-addons/generated-firefox-addons.nix
       ];
   };
 
@@ -196,6 +199,12 @@
   # Alacritty
   #
 
+  programs.alacritty = {
+    enable = true;
+  };
+
+  # Create configuration file by downloading the contents of the Nord theme and
+  # appending our own options to it.
   xdg.configFile."alacritty/alacritty.yml".source = builtins.toFile "alacritty.yml" (
     builtins.readFile (
       builtins.fetchurl {
@@ -227,12 +236,6 @@
       background_opacity: 0.98
     ''
   );
-
-  # Use offset y 4 and glyph_offset 4 if it looks weird, depending on font used
-
-  programs.alacritty = {
-    enable = true;
-  };
 
   #
   # GTK
@@ -295,7 +298,7 @@
   # Neovim
   #
 
-  xdg.configFile."nvim/init.lua".source = ../config/nvim/init.lua;
+  xdg.configFile."nvim/lua/init.lua".source = ../config/nvim/lua/init.lua;
 
   programs.neovim = {
     enable = true;
@@ -307,6 +310,7 @@
     plugins = with pkgs.vimPlugins; [
       chadtree
       dashboard-nvim
+      glow-nvim
       lualine-nvim
       luasnip
       ncm2
@@ -315,7 +319,6 @@
       ncm2-neosnippet
       ncm2-path
       ncm2-syntax
-      ncm2-ultisnips
       nerdcommenter
       nord-nvim
       numb-nvim
@@ -331,20 +334,18 @@
       telescope-symbols-nvim
       todo-comments-nvim
       trouble-nvim
+      typescript-vim
       vim-javascript
       vim-jsx-typescript
       vim-markdown
       vim-nix
       vim-surround
-      typescript-vim
 
       # Plugins requiring setup
       {
         plugin = sql-nvim;
         config = "let g:sql_clib_path = '${pkgs.sqlite.out}/lib/libsqlite3.so'";
       }
-
-      # Plugins built from source
     ];
   };
 
@@ -360,11 +361,8 @@
     enableVteIntegration = true;
 
     cdpath = [
-      "/etc/nixos"
+      "/home"
       "/home/dnordstrom/Code"
-      "/home/dnordstrom/Code/ticker"
-      "/home/dnordstrom/Code/ticker-backend"
-      "/home/dnordstrom/Code/scripts"
     ];
 
     oh-my-zsh = {
@@ -375,17 +373,55 @@
 
 
     shellAliases = {
-      ll = "ls -Al";
-      nixkate = "kate /etc/nixos";
-      nixcode = "codium /etc/nixos";
-      nixvim = "nvim /etc/nixos";
-      nixswitch = "rm /home/dnordstrom/.gtkrc-2.0; sudo nixos-rebuild switch --flake /etc/nixos --upgrade-all";
+      ll = "ls -lah"; # Same as built-in `l` (muscle memory reasons)
+
+      # Open Nix configuration in various editors with `/etc/nixos` working dir
+      cdnix = "cd /etc/nixos"; cdn = "cdnix";
+      nixkate = "nixwith kate";
+      nixcode = "nixwith codium";
+      nixvim = "nixwith vim";
+
+      # Nix
+      nixswitch-pre = "rm /home/dnordstrom/.gtkrc-2.0";
+      nixswitch = "nixswitch-pre; sudo nixos-rebuild switch --flake /etc/nixos --upgrade; nixswitch-post";
+      nixswitch-post = "";
+      nb = "nixswitch";
     };
 
     initExtra = ''
       # Prepend list item to notes
       note() {
         echo "$(echo "- $@"; cat ~/.notes.md)" > ~/.notes.md
+      }
+
+      # Run command in specified directory then return (use with care)
+      runindir() {
+        if ! [ $# -eq 2 ]; then
+          echo "Expected 2 arguments."
+          echo
+          echo "Usage: $0 \"~/my_dir\" \"echo someting\""
+          echo
+          echo "Note that both arguments are quoted."
+          return 1
+        fi
+
+        local prev_dir=$(pwd)
+        local dir="$(realpath $1)"; shift
+        local cmd="$*"
+
+        cd "$dir"
+        eval "$cmd"
+        cd "$prev_dir"
+      }
+
+      # Open Nix configuration directory with specified app
+      nixwith() {
+        if ! [ $# -eq 2 ]; then
+          echo "Expected a single argument."
+          return 1
+        fi
+
+        runindir "/etc/nixos" "$1"
       }
     '';
   };
@@ -472,4 +508,6 @@
   home.sessionVariables = {
     EDITOR = "nvim";
   };
+
+  home.file.".xinitrc".source = ../config/xinitrc.sh;
 }

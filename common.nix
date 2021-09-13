@@ -39,10 +39,25 @@
 
   time.timeZone = "Europe/Amsterdam";
 
-  services.xserver.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
-  services.xserver.libinput.enable = true;
+  services.xserver = {
+    enable = true;
+    autorun = false;
+
+    displayManager = {
+      startx.enable = true;
+    };
+
+    desktopManager = {
+      gnome.enable = true;
+      plasma5.enable = true;
+    };
+
+    libinput.enable = true;
+
+    layout = "us,se";
+    xkbOptions = "caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey";
+    xkbVariant = ",us";
+  };
 
   services.greetd = {
     enable = true;
@@ -53,11 +68,6 @@
         command = "${pkgs.greetd.tuigreet}/bin/tuigreet --remember --time --asterisks --cmd \"XDG_SESSION_TYPE=wayland dbus-run-session startplasma-wayland\"";
       };
     };
-  };
-
-  services.xserver = {
-    layout = "us,se";
-    xkbOptions = "caps:escape,grp:shifts_toggle";
   };
 
   services.gnome.chrome-gnome-shell.enable = true;

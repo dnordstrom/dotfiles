@@ -94,6 +94,12 @@
         version = "4.18.4";
         sha256 = "sha256-daKMeFUPZSanrFu9J6mk3ZVmlz8ZZquZa3qaWSTbSjs=";
       }
+      {
+        name = "auto-comment-next-line";
+        publisher = "ctf0";
+        version = "0.1.1";
+        sha256 = "sha256-OjnhsZFA2rkobFz8px6X829vd7rTbcUzeZAwcHEmDm0=";
+      }
     ];
     userSettings = builtins.fromJSON (builtins.readFile ../config/vscode/settings.json);
     keybindings = builtins.fromJSON (builtins.readFile ../config/vscode/keybindings.json);

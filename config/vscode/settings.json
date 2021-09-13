@@ -8,6 +8,32 @@
   "[plaintext]": {
     "editor.wordWrap": "off"
   },
+  "autoCommentNextLine.list": [
+    {
+      "char": "//",
+      "languages": [
+        "javascriptreact",
+        "javascript",
+        "typescript",
+        "typescriptreact",
+        "jsonc"
+      ]
+    },
+    {
+      "char": "#",
+      "languages": [
+        "nix",
+        "shellscript",
+        "dockerfile"
+      ]
+    },
+    {
+      "char": "--",
+      "languages": [
+          "lua"
+      ]
+    }
+  ],
   "breadcrumbs.enabled": false,
   "editor.acceptSuggestionOnCommitCharacter": false,
   "editor.acceptSuggestionOnEnter": "smart",

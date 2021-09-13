@@ -90,7 +90,7 @@ output DVI-D-1 {
 # Inputs
 #
 
-seat seat0 xcursor_theme Quintom_Snow 24
+# seat seat0 xcursor_theme Quintom_Snow 24
 seat seat0 hide_cursor when-typing enable
 seat seat0 idle_wake keyboard
 
@@ -114,14 +114,14 @@ input type:keyboard {
   # CapsLock to Escape (and use Shift-CapsLock for CapsLock)
   # Both Shift keys to change keyboard layout
 
-	xkb_keycodes  { include "evdev+aliases(qwerty)"	};
-	xkb_types     { include "complete"	};
-	xkb_compat    { include "complete+lednum(group_lock)+ledcaps(group_lock)+ledscroll(group_lock)+ledcompose(compose)"	};
-	xkb_symbols   { include "pc+us+se(us):2+inet(evdev)+group(shifts_toggle)+group(sclk_toggle)+level3(ralt_switch_multikey)+capslock(escape_shifted_capslock)"	};
-	xkb_geometry  { include "pc(pc86)"	};
+  # xkb_keycodes  { include "evdev+aliases(qwerty)"	};
+  # xkb_types     { include "complete"	};
+  # xkb_compat    { include "complete+lednum(group_lock)+ledcaps(group_lock)+ledscroll(group_lock)+ledcompose(compose)"	};
+  # xkb_symbols   { include "pc+us+se(us):2+inet(evdev)+group(shifts_toggle)+group(sclk_toggle)+level3(ralt_switch_multikey)+capslock(escape_shifted_capslock)"	};
+  # xkb_geometry  { include "pc(pc86)"	};
 };
 
-  xkb_options "caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey"
+  xkb_options caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey
 }
 
 

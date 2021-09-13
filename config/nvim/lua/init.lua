@@ -7,28 +7,13 @@ local npairs = require("nvim-autopairs") -- Pair brackets and similar
 local luasnip = require("luasnip") -- Snippets
 
 --
--- Global Variables
+-- Helpers
 --
 
--- Accessed via `v:lua.NORDUtils.method()` or `<Cmd>lua NORDUtils.method()<CR>`
-_G.NORDUtils = {}
-
--- Shortcut
-NORDUtils = _G.NORDUtils
-
--- Autopair
-NORDUtils.autopair = function()
-  if vim.fn.pumvisible() ~= 0  then
-      return npairs.esc("<CR>")
-  else
-    return npairs.autopairs_cr()
-  end
+-- Replace Vim termcodes in string
+local function t(str)
+  return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
-
--- Neovim version string in `v0.6.0` format
-NORDUtils.nvim_version = vim.api.nvim_exec([[
-  echo matchstr(execute("version"), "NVIM \zs[^\n]*")
-]], true)
 
 --
 -- Local Variables
@@ -48,6 +33,45 @@ local nvim_buf_set_keymap = api.nvim_buf_set_keymap
 local home = os.getenv("HOME")
 
 --
+-- Global Variables
+--
+
+-- Accessed via `v:lua.NORDUtils.method()` or `<Cmd>lua NORDUtils.method()<CR>`
+_G.NORDUtils = {}
+
+-- Shortcut
+NORDUtils = _G.NORDUtils
+
+NORDUtils.smart_tab = function()
+  if vim.fn.pumvisible() ~= 0 then
+    return t("<C-n>");
+  else
+    return t("<Tab>");
+  end
+end
+
+NORDUtils.smart_tab_shift = function()
+  if vim.fn.pumvisible() ~= 0 then
+    return t("<C-p>");
+  else
+    return t("<S-Tab>");
+  end
+end
+
+NORDUtils.smart_return = function()
+  if vim.fn.pumvisible() ~= 0 then
+    return t("<C-y>"); -- Complete without appending newline
+  else
+    return t("<CR>");
+  end
+end
+
+-- Neovim version string in `v0.6.0` format
+NORDUtils.nvim_version = vim.api.nvim_exec([[
+  echo matchstr(execute("version"), "NVIM \\zs[^\\n]*")
+]], true)
+
+--
 -- Options
 --
 
@@ -62,6 +86,13 @@ o.relativenumber = true
 o.swapfile = false
 o.completeopt = "noinsert,menuone,noselect"
 o.mouse = "a"
+
+-- Explorer
+g.netrw_liststyle = 4 -- Open in previous window
+g.netrw_browse_split = 2 -- Split vertically
+g.netrw_winsize = 25 -- In percent, ignored by `:Texplore` windows
+g.netrw_altv = 1 -- Open file to the right
+g.netrw_banner = 0 -- Hide banner
 
 -- Formatting
 o.autoindent = true
@@ -176,72 +207,67 @@ require("telescope").load_extension("fzf")
 --
 
 local opts = {
-  normal = {noremap = true},
-  input = {inoremap = true},
-  silent = {noremap = true, silent = true},
-  normalExpr = {noremap = true, expr = true},
-  inputExpr = {inoremap = true, expr = true},
-  silentExpr = {noremap = true, silent = true, expr = true},
+  nore = {noremap = true},
+  noreExpr = {noremap = true, expr = true},
+  noreSilent = {noremap = true, silent = true},
+  noreSilentExpr = {noremap = true, silent = true, expr = true},
 }
 
 ---- Insert mode navigation
-nvim_set_keymap("i", "<C-h>", "<Left>", opts.silent)
-nvim_set_keymap("i", "<C-j>", "<Down>", opts.silent)
-nvim_set_keymap("i", "<C-k>", "<Up>", opts.silent)
-nvim_set_keymap("i", "<C-l>", "<Right>", opts.silent)
+nvim_set_keymap("i", "<C-h>", "<Left>", opts.nore)
+nvim_set_keymap("i", "<C-j>", "<Down>", opts.nore)
+nvim_set_keymap("i", "<C-k>", "<Up>", opts.nore)
+nvim_set_keymap("i", "<C-l>", "<Right>", opts.nore)
 
 ---- Make `Y` behave like `D` and `C`, yanking to end of line
-nvim_set_keymap("n", "Y", "y$", opts.silent)
+nvim_set_keymap("n", "Y", "y$", opts.nore)
 
 ---- Toggle sidebar
-nvim_set_keymap("n", "<C-b>", "<Cmd>NERDTreeToggle<CR>", opts.silent)
+nvim_set_keymap("n", "<C-b>", "<Cmd>Lex<CR>", opts.nore)
+
 
 ---- Clear search highlights
-nvim_set_keymap("n", "<Leader>h", "<Cmd>set hlsearch!<CR>", opts.silent)
+nvim_set_keymap("n", "<Leader>h", "<Cmd>set hlsearch!<CR>", opts.nore)
 
 ---- Go to buffer
-nvim_set_keymap("n", "gb", "<Cmd>ls<CR><Cmd>b<Space>", opts.silent)
+nvim_set_keymap("n", "gb", "<Cmd>ls<CR><Cmd>b<Space>", opts.nore)
 
 ---- Go to definition
-nvim_set_keymap("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", opts.silent)
-nvim_set_keymap("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts.silent)
-nvim_set_keymap("n", "F12", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts.silent)
-nvim_set_keymap("i", "F12", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts.silent)
-
----- Auto pair
-nvim_set_keymap("i", "<CR>", "<Cmd>lua NORDUtils.autojoin()<CR>", opts.silent)
+nvim_set_keymap("n", "gD", "v:lua.vim.lsp.buf.declaration()", opts.noreExpr)
+nvim_set_keymap("n", "gd", "v:lua.vim.lsp.buf.definition()", opts.noreExpr)
+nvim_set_keymap("n", "F12", "v:lua.vim.lsp.buf.definition()", opts.noreExpr)
+nvim_set_keymap("i", "F12", "v:lua.vim.lsp.buf.definition()", opts.noreExpr)
 
 ---- Telescope
-nvim_set_keymap("n", "<Leader>ff", '<Cmd>lua require("telescope.builtin").fd()<CR>', opts.silent)
-nvim_set_keymap("n", "<Leader>fg", '<Cmd>lua require("telescope.builtin").live_grep()<CR>', opts.silent)
-nvim_set_keymap("n", "<Leader>fe", '<Cmd>lua require("telescope.builtin").file_browser()<CR>', opts.silent)
-nvim_set_keymap("n", "<Leader>fb", '<Cmd>lua require("telescope.builtin").buffers()<CR>', opts.silent)
-nvim_set_keymap("n", "<Leader>fh", '<Cmd>lua require("telescope.builtin").help_tags()<CR>', opts.silent)
-nvim_set_keymap("n", "<Leader>fs", '<Cmd>lua require("telescope.builtin").lsp_document_symbols()<CR>', opts.silent)
-nvim_set_keymap("n", "<Leader>fd", '<Cmd>lua require("telescope.builtin").lsp_definitions()<CR>', opts.silent)
-nvim_set_keymap("n", "<Leader><Leader>", '<Cmd>lua require"telescope".extensions.frecency.frecency()<CR>', opts.silent)
-nvim_set_keymap("n", "<C-Space>", '<Cmd>lua require"telescope".extensions.frecency.frecency()<CR>', opts.silent)
+nvim_set_keymap("n", "<Leader>ff", '<Cmd>lua require("telescope.builtin").fd()<CR>', opts.nore)
+nvim_set_keymap("n", "<Leader>fg", '<Cmd>lua require("telescope.builtin").live_grep()<CR>', opts.nore)
+nvim_set_keymap("n", "<Leader>fe", '<Cmd>lua require("telescope.builtin").file_browser()<CR>', opts.nore)
+nvim_set_keymap("n", "<Leader>fb", '<Cmd>lua require("telescope.builtin").buffers()<CR>', opts.nore)
+nvim_set_keymap("n", "<Leader>fh", '<Cmd>lua require("telescope.builtin").help_tags()<CR>', opts.nore)
+nvim_set_keymap("n", "<Leader>fs", '<Cmd>lua require("telescope.builtin").lsp_document_symbols()<CR>', opts.nore)
+nvim_set_keymap("n", "<Leader>fd", '<Cmd>lua require("telescope.builtin").lsp_definitions()<CR>', opts.nore)
+nvim_set_keymap("n", "<Leader><Leader>", '<Cmd>lua require"telescope".extensions.frecency.frecency()<CR>', opts.nore)
+nvim_set_keymap("n", "<C-Space>", '<Cmd>lua require"telescope".extensions.frecency.frecency()<CR>', opts.nore)
 
 ---- Diagnostic
-nvim_set_keymap("n", "<Leader>dd", "<Cmd>TroubleToggle lsp_document_diagnostics<CR>", opts.silent)
-nvim_set_keymap("n", "<Leader>dn", "<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>", opts.silent)
-nvim_set_keymap("n", "<Leader>dN", "<Cmd>lua vim.lsp.diagnostic.goto_next()<CR>", opts.silent)
-nvim_set_keymap("n", "<Leader>dl", "<Cmd>lua vim.lsp.diagnostic.show_line_diagnostics({focusable = false})<CR>", opts.silent)
+nvim_set_keymap("n", "<Leader>dd", "<Cmd>TroubleToggle lsp_document_diagnostics<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>dn", "v:lua.vim.lsp.diagnostic.goto_prev()", opts.noreExpr)
+nvim_set_keymap("n", "<Leader>dN", "v:lua.vim.lsp.diagnostic.goto_next()", opts.noreExpr)
+nvim_set_keymap("n", "<Leader>dl", "v:lua.vim.lsp.diagnostic.show_line_diagnostics({focusable = false})", opts.noreExpr)
 
 ---- Dashboard
-nvim_set_keymap("n", "<Leader>vh", "<Cmd>DashboardFindHistory<CR>", opts.silent)
-nvim_set_keymap("n", "<Leader>vf", "<Cmd>DashboardFindFile<CR>", opts.silent)
-nvim_set_keymap("n", "<Leader>vc", "<Cmd>DashboardChangeColorscheme<CR>", opts.silent)
-nvim_set_keymap("n", "<Leader>va", "<Cmd>DashboardFindWord<CR>", opts.silent)
-nvim_set_keymap("n", "<Leader>vm", "<Cmd>DashboardJumpMark<CR>", opts.silent)
-nvim_set_keymap("n", "<Leader>vn", "<Cmd>DashboardNewFile<CR>", opts.silent)
+nvim_set_keymap("n", "<Leader>vh", "<Cmd>DashboardFindHistory<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>vf", "<Cmd>DashboardFindFile<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>vc", "<Cmd>DashboardChangeColorscheme<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>va", "<Cmd>DashboardFindWord<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>vm", "<Cmd>DashboardJumpMark<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>vn", "<Cmd>DashboardNewFile<CR>", opts.nore)
 
 ---- NCM2
 
-nvim_set_keymap("i", "<C-c>", "<ESC>", opts.input);
-nvim_set_keymap("i", "<CR>", '(pumvisible() ? "\\<C-y>\\<CR>" : "\\<CR>")', opts.inputExpr);
-nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "\\<C-n>" : "\\<Tab>"', opts.inputExpr);
-nvim_set_keymap("i", "<S-Tab>", 'pumvisible() ? "\\<C-p>" : "\\<Tab>"', opts.inputExpr);
+nvim_set_keymap("i", "<Tab>", "v:lua.NORDUtils.smart_tab()", opts.noreExpr)
+nvim_set_keymap("i", "<S-Tab>", "v:lua.NORDUtils.smart_tab_shift()", opts.noreExpr)
+nvim_set_keymap("i", "<CR>", "v:lua.NORDUtils.smart_return()", opts.noreExpr)
 
 --
 -- Plugins
@@ -271,7 +297,7 @@ require("nvim-autopairs").setup({
 
 g.dashboard_preview_command = "bat"
 g.dashboard_default_executive = "telescope"
-g.dashboard_custom_footer = {" Neovim " .. NORDUtils.nvim_version}
+g.dashboard_custom_footer = {"  Neovim " .. NORDUtils.nvim_version}
 
 nvim_exec([[
   augroup init_dashboard
@@ -294,9 +320,9 @@ nvim_exec([[
 -- Runs after the servers have attached to a buffer
 local on_attach = function(client, bufnr)
   if client.resolved_capabilities.document_formatting then
-    nvim_buf_set_keymap(bufnr, "n", "<Leader>df", "vim.lsp.buf.formatting()", opts.silent)
+    nvim_buf_set_keymap(bufnr, "n", "<Leader>df", "vim.lsp.buf.formatting()", opts.nore)
   elseif client.resolved_capabilities.document_range_formatting then
-    nvim_buf_set_keymap(bufnr, "n", "<Leader>df", "vim.lsp.buf.range_formatting()", opts.silent)
+    nvim_buf_set_keymap(bufnr, "n", "<Leader>df", "vim.lsp.buf.range_formatting()", opts.nore)
   end
 end
 
