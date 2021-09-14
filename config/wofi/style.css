@@ -78,6 +78,7 @@ window {
   background: none;
   border: none;
   color: #bfbab0;
+  font-weight: normal;
 }
 
 #entry:selected {

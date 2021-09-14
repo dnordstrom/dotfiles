@@ -68,9 +68,10 @@
     nwg-menu
     nwg-panel
     nwg-panel
+    qt5ct
     slurp
     swayidle
-    swaylock
+    swaylock-effects
     swaywsr
     wdisplays # GUI display manager
     wev
@@ -173,14 +174,14 @@
 
   wayland.windowManager.sway = {
     enable = true;
-    config.bars = []; # Waybar is managed in Sway config
-    wrapperFeatures.gtk = true;
+    config = null; # Remove default config since we provide our own
     extraConfig = builtins.readFile ../config/sway/config;
     extraSessionCommands = ''
       export _JAVA_AWT_WM_NONREPARENTING=1
       export GDK_BACKEND=wayland
       export MOZ_ENABLE_WAYLAND=1
       export QT_QPA_PLATFORM=wayland
+      export QT_QPA_PLATFORMTHEME=qt5ct
       export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
       export SDL_VIDEODRIVER=wayland
       export XDG_CURRENT_DESKTOP=sway
@@ -453,6 +454,14 @@
   xdg.configFile."waybar/config".source = ../config/waybar/config;
   xdg.configFile."waybar/style.css".source = ../config/waybar/style.css;
 
+  # Power menu
+  xdg.configFile."wlogout/layout".source = ../config/wlogout/layout;
+  xdg.configFile."wlogout/style.css".source = ../config/wlogout/style.css;
+  xdg.configFile."wlogout/lock.png".source = ../config/wlogout/lock.png;
+  xdg.configFile."wlogout/logout.png".source = ../config/wlogout/logout.png;
+  xdg.configFile."wlogout/reboot.png".source = ../config/wlogout/reboot.png;
+  xdg.configFile."wlogout/shutdown.png".source = ../config/wlogout/shutdown.png;
+
   # A flying `cat`
   programs.bat = {
     enable = true;
@@ -523,27 +532,6 @@
 
   # Video player
   programs.mpv.enable = true;
-
-  #
-  # Systemd
-  #
-
-  systemd.user.services.sway = {
-    Unit = {
-      Description = "Sway - Wayland window manager";
-      Documentation = [ "man:sway(5)" ];
-      BindsTo = [ "graphical-session.target" ];
-      Wants = [ "graphical-session-pre.target" ];
-      After = [ "graphical-session-pre.target" ];
-    };
-    Service = {
-      Type = "simple";
-      ExecStart = "${pkgs.sway}/bin/sway";
-      Restart = "on-failure";
-      RestartSec = 1;
-      TimeoutStopSec = 10;
-    };
-  };
 
   #
   # Environment

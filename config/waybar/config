@@ -53,7 +53,7 @@
   },
   "custom/system": {
     "format": "", /*   */
-    "on-click": "swaynag -t nord -m '' -b 'Exit' 'swaymsg exit' -b 'Reload' 'swaymsg reload' -b 'Reboot' 'swaymsg exec systemctl reboot' -b 'Shut down' 'systemctl poweroff'",
+    "on-click": "swaynag -t nord -s '' -m 'System' -b 'Log out ' 'swaymsg exit' -b 'Reload 勒' 'swaymsg reload' -b 'Reboot ﰇ' 'swaymsg exec systemctl reboot' -b 'Shut down 襤' 'systemctl poweroff'",
     "on-click-right": "swaymsg mode System"
   },
   "custom/browser": {

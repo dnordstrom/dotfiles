@@ -1,0 +1,46 @@
+* {
+  background-image: none;
+}
+
+window {
+  background-color: #2e3440;
+}
+
+button {
+  color: #e5e9f0;
+  background-color: #3b4252;
+  border-style: solid;
+  border-width: 1px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 15%;
+}
+
+button:focus, button:active, button:hover {
+  background-color: #434c5e;
+  color: #eceff4;
+  outline-style: none;
+}
+
+#lock {
+  background-image: image(url("/home/dnordstrom/.config/wlogout/lock.png"));
+}
+
+#logout {
+  background-image: image(url("/home/dnordstrom/.config/wlogout/logout.png"));
+}
+
+#shutdown {
+  background-image: image(url("/home/dnordstrom/.config/wlogout/shutdown.png"));
+}
+
+#reboot {
+  background-image: image(url("/home/dnordstrom/.config/wlogout/reboot.png"));
+}
+
+#suspend {
+  background-image: image(url("/home/dnordstrom/.config/wlogout/suspend.png"));
+}
+#hibernate {
+  background-image: image(url("/home/dnordstrom/.config/wlogout/hibernate.png"));
+}

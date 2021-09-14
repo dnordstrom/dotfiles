@@ -41,13 +41,14 @@
 
   services.xserver = {
     enable = true;
-    # autorun = false;
 
     displayManager = {
-      # startx.enable = true;
-      # lightdm.enable = true;
-      # sddm.enable = true;
-      gdm.enable = true;
+      sddm = {
+        enable = true;
+
+        # To enable Sway in SDDM:
+        settings.Wayland.SessionDir = "${pkgs.sway}/share/wayland-sessions";
+      };
     };
 
     desktopManager = {
@@ -60,6 +61,13 @@
     layout = "us,se";
     xkbOptions = "caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey";
     xkbVariant = ",us";
+  };
+
+  # Make `swaylock` accept correct password
+  security.pam.services.swaylock = {
+    text = ''
+      auth include login
+    '';
   };
 
   services.gnome.chrome-gnome-shell.enable = true;
@@ -85,7 +93,15 @@
     })
   ];
 
-  sound.enable = true;
+  # Recommended in wiki, for Pipewire
+  security.rtkit.enable = true;
+
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+  };
 
   hardware = {
     opengl = {
@@ -93,10 +109,9 @@
       driSupport = true;
     };
 
+    # Using Pipewire instead
     pulseaudio = {
-      enable = true;
-      extraModules = [ pkgs.pulseaudio-modules-bt ]; # More codecs, e.g. APTX
-      package = pkgs.pulseaudioFull;
+      enable = false;
     };
 
     bluetooth = {
@@ -119,7 +134,6 @@
 
   environment.systemPackages = with pkgs; [
     git
-    greetd.tuigreet
     wget
     nodejs
     yarn

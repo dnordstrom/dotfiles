@@ -29,12 +29,44 @@ set $workspace6 6
 set $term alacritty
 set $menu wofi --show=drun,run | xargs swaymsg exec
 set $files nautilus
-set $powermenu wlogout-init
 set $screenshot-region screensnap
 set $screenshot-window screensnap --window
 set $screenshot-screen screensnap --screen
 
+set $lock swaylock \
+  --font "Iosevka Nerd Font" \
+  --font-size 14 \
+  --scaling fill \
+  --ignore-empty-password \
+  --indicator-radius 150 \
+  --indicator-thickness 10 \
+  --inside-color "#2e3440" \
+  --inside-ver-color "#2e3440" \
+  --key-hl-color "#88c0d0" \
+  --ring-color "#2e3440" \
+  --ring-ver-color "#2e3440" \
+  --separator-color "#2e3440" \
+  --line-uses-inside \
+  --layout-bg-color "#00000000" \
+  --layout-border-color "#00000000" \
+  --layout-text-color "#eceff4" \
+  --clock \
+  --screenshots \
+  --indicator-idle-visible \
+  --datestr "%H:%M" \
+  --timestr "%A" \
+  --grace 1 \
+  --fade-in 1 \
+  --effect-greyscale \
+  --effect-blur 6x8 \
+  --effect-vignette 0.6:0.8
 
+set $powermenu wlogout \
+  --buttons-per-row 2 \
+  --row-spacing 34 \
+  --column-spacing 34 \
+  --margin 34 \
+  --protocol layer-shell
 
 #
 # Appearance
@@ -51,8 +83,6 @@ default_floating_border pixel 2
 hide_edge_borders smart
 smart_borders on
 
-
-
 #
 # Workspaces
 #
@@ -65,8 +95,6 @@ workspace $workspace3 output DP-1
 workspace $workspace4 output DVI-D-1
 workspace $workspace5 output DVI-D-1
 workspace $workspace6 output DVI-D-1
-
-
 
 #
 # Outputs
@@ -87,8 +115,6 @@ output DVI-D-1 {
   position 0,0
 }
 
-
-
 #
 # Inputs
 #
@@ -108,32 +134,12 @@ input type:keyboard {
   xkb_layout us,se
   xkb_variant ,us
 
-
   # CapsLock to Escape (and use Shift-CapsLock for CapsLock)
   # Both Shift keys to change keyboard layout
   # Terminate X server on Ctrl-Alt-Del
   # Right Alt to AltGr
   xkb_options caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey
 }
-
-
-
-#
-# Idle
-#
-
-# Turn off monitor after 10 minutes, and lock screen after 30 minutes and before
-# going into sleep mode
-exec swayidle -w \
-  timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-  timeout 1800 'swaylock-init' \
-  before-sleep 'swaylock-init'
-
-# Ignore idle if any window is in fullscreen mode
-for_window [class="^.*"] inhibit_idle fullscreen
-for_window [app_id="^.*"] inhibit_idle fullscreen
-
-
 
 #
 # Key Binds
@@ -252,8 +258,6 @@ bindsym {
   # $mod+Slash exec remontoire -c ~/.config/sway/config -t ~/.config/remontoire/styles.css
 }
 
-
-
 #
 # Resize Mode
 #
@@ -278,8 +282,6 @@ mode "$mode_resize" {
 
 bindsym $mod+r mode "$mode_resize"
 
-
-
 #
 # System Mode
 #
@@ -298,21 +300,27 @@ mode "$mode_system" {
 
 bindsym $mod+Shift+Backspace mode "$mode_system"
 
-
-
 #
 # Autostart
 #
 
-# Systemd targets
-exec_always "systemctl --user import-environment"
-exec "systemctl --user start sway-session.target"
-exec "systemctl --user start graphical-session.target"
+# Start systemd targets
+exec systemctl --user start sway-session.target
+exec systemctl --user start graphical-session.target
 
 # Open a terminal on scratchpad
 exec $term --title scratchpad_term --class scratchpad_term
 
+# Turn off monitor after 10 minutes, and lock screen after 30 minutes and before
+# going into sleep mode
+exec swayidle -w \
+  timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+  timeout 1800 '$lock' \
+  before-sleep '$lock'
 
+# Fullscreen windows inhibits idle
+for_window [class="^.*"] inhibit_idle fullscreen
+for_window [app_id="^.*"] inhibit_idle fullscreen
 
 #
 # Status Bar
@@ -321,8 +329,6 @@ exec $term --title scratchpad_term --class scratchpad_term
 bar {
   swaybar_command waybar
 }
-
-
 
 #
 # Window Specific
@@ -335,15 +341,12 @@ for_window [app_id="org.kde.dolphin"] floating enable
 for_window [class="qimgv"] floating enable
 for_window [class="qview"] floating enable
 for_window [app_id="pavucontrol"] floating enable
-for_window [app_id="remontoire"] floating enable
 
 # Terminals
 for_window [app_id="scratchpad_term"] move scratchpad
 for_window [app_id="transparent_term"] border none
 for_window [app_id="popup_term"] floating enable, resize set 920 720
 for_window [app_id="scratchpad_term"] floating enable, resize set 720 540
-
-
 
 #
 # Load other configuration files
