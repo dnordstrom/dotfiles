@@ -1,5 +1,5 @@
 [Desktop Entry]
-Exec=Code/dotfiles/scripts/screensnap/screensnap.sh --copy
+Exec=screensnap.sh --copy
 Icon=display
 Type=Application
 Name=Screen Snap (Copy)
