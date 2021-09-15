@@ -26,12 +26,14 @@ set $workspace5 5
 set $workspace6 6
 
 # Commands
-set $term alacritty
+set $term alacritty --class "terminal"
 set $menu wofi --show=drun,run | xargs swaymsg exec
 set $files nautilus
-set $screenshot-region screensnap
-set $screenshot-window screensnap --window
-set $screenshot-screen screensnap --screen
+set $screenshot-region grim -g "$(slurp)"
+set $screenshot-window grim -g \
+  "$(swaymsg -t get_tree | jq -j '.. | select(.type?) | select(.focused).rect | "\(.x),\(.y) \(.width)x\(.height)"')"
+set $screenshot-screen grim -o \
+  "$(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name')"
 
 set $lock swaylock \
   --font "Iosevka Nerd Font" \
@@ -228,7 +230,7 @@ bindsym {
   # $mod+s layout stacking
 
   ## Window Manager // Layout → Tabbed // Mod+T ##
-  $mod+t layout tabbed
+  $mod+w layout tabbed
 
   ## Window Manager // Layout → Split // Mod+S ##
   $mod+s layout toggle split

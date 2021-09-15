@@ -163,6 +163,12 @@
   ];
 
   #
+  # Scripts
+  #
+
+  home.file.".scripts".source = ../config/scripts;
+
+  #
   # Sway
   #
 
