@@ -11,7 +11,7 @@
 }
 
 #waybar:first-child > box {
-  margin: 10px;
+  margin: 10px 10px 0;
   padding: 0;
   border-radius: 6px;
   background: #3b4252;

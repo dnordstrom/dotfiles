@@ -36,6 +36,8 @@
     ideogram # From ElementaryOS, while Plasma's emoji picker doesn't work
     kate
     libnotify
+    pavucontrol
+    pulseaudio # Just to get `pactl` since `pw-cli` is too complicated
     qbittorrent
     quaternion
     ripgrep
@@ -430,7 +432,7 @@
 
       # Open Nix configuration directory with specified app
       nixwith() {
-        if ! [ $# -eq 2 ]; then
+        if ! [ $# -eq 1 ]; then
           echo "Expected a single argument."
           return 1
         fi

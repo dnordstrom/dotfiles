@@ -19,7 +19,6 @@
     "custom/wttr",
     "disk",
     "memory",
-    "cpu",
     "temperature",
     "pulseaudio",
     "network",
@@ -137,7 +136,6 @@
     "scroll-step": 5,
     "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
     "on-click-middle": "pavucontrol",
-    "on-click-right": "alacritty --title popup_term --class popup_term -e alsamixer --card 1",
     "tooltip": false
   },
   "temperature": {
@@ -151,7 +149,8 @@
   "cpu": {
     "on-click": "alacritty --title popup_term --class popup_term -e gotop",
     "tooltip": false,
-    "format": "ﮕ  {}%"
+    "format": "  {usage}%",
+    "interval": 10
   },
   "network": {
     "format": "{icon}  {ifname}",
