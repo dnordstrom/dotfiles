@@ -1,5 +1,5 @@
 [Desktop Entry]
-Exec=screensnap.sh --upload
+Exec=screensnap --upload
 Icon=display
 Type=Application
 Name=Screen Snap (Upload)

@@ -6,7 +6,7 @@
   #
 
   imports = [
-    ../modules/vscodium.nix
+    ../modules/vscode.nix
   ];
 
   #
@@ -396,6 +396,7 @@
 
     shellAliases = {
       ll = "ls -lah"; # Same as built-in `l` (muscle memory reasons)
+      cat = "bat"; # For syntax highlighting
 
       # Open Nix configuration in various editors with `/etc/nixos` working dir
       cdnix = "cd /etc/nixos"; cdn = "cdnix";

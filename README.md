@@ -1,10 +1,10 @@
-# My Nix Configurations
+# My NixOS Configuration
 
-This is a flake-based configuration is used on my Dell XPS work laptop as well as my Ryzen 7 home desktop. It uses the unstable channel (which is actually very stable) for packages, and it's a constant work in progress. See the links below for further information on Nix and NixOS.
+This is a flake based configuration is used on my Dell XPS work laptop as well as my Ryzen 7 home desktop. It uses the unstable channel (which is actually very stable) for packages, and it's a constant work in progress. See the links below for further information on Nix and NixOS.
 
-## Notes to self
+## Notes to Self
 
-* [This script](https://github.com/NixOS/nixpkgs/blob/master/pkgs/misc/vscode-extensions/update_installed_exts.sh) updates VSCodium/VSCode extensions not available as Nix packages.
+* [This script](https://github.com/NixOS/nixpkgs/blob/master/pkgs/misc/vscode-extensions/update_installed_exts.sh) checks for updates VSCodium/VSCode extensions not available as Nix packages.
 
 ## Links
 
