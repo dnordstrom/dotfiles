@@ -154,26 +154,14 @@ floating_modifier $mod normal
 
 bindsym {
   # Applications
-
-  ## Applications // Terminal // Mod+Return ##
   $mod+Return exec $term
-
-  ## Applications // Launcher // Mod+D ##
   $mod+d exec $menu
-
-  ## Applications // Launcher // Mod+Space ##
   $mod+Space exec $menu
-
-  ## Applications // Files // Mod+G ##
   $mod+g exec $files
-
-  ## System // Power Menu // Mod+Backspace ##
   $mod+Backspace exec $powermenu
 
-  ## Window Manager // Kill active window // Mod+Q ##
   $mod+q kill
-
-  ## Window Manager // Reload configuration // Mod+Shift-C ##
+  $mod+Shift+q kill
   $mod+Shift+c reload
 
   # Move focus
@@ -213,6 +201,8 @@ bindsym {
 
   $mod+Tab workspace next_on_output
   $mod+Shift+Tab workspace prev_on_output
+  Alt+Tab workspace next_on_output
+  Alt+Shift+Tab workspace prev_on_output
 
   # Move window to workspace and focus
   $mod+Shift+1 move container to workspace $workspace1, workspace $workspace1
@@ -226,25 +216,14 @@ bindsym {
   $mod+b splith
   $mod+v splitv
 
-  # Layout style
-  # $mod+s layout stacking
-
-  ## Window Manager // Layout → Tabbed // Mod+T ##
+  # Layout
+  $mod+e layout toggle split
   $mod+w layout tabbed
-
-  ## Window Manager // Layout → Split // Mod+S ##
-  $mod+s layout toggle split
-
-  ## Window Manager // Layout → Toggle Floating Mode // Mod+Shift+F ##
+  $mod+s layout stacking
   $mod+Shift+f floating toggle
-
-  ## Window Manager // Layout → Fullscreen // Mod+F ##
+  $mod+Shift+Space floating toggle
   $mod+f fullscreen
-
-  ## Window Manager // Layout → Toggle between tiling and floating areas // Mod+X ##
   $mod+x focus mode_toggle
-
-  # Move focus to parent
   $mod+u focus parent
 
   # Scratchpad
@@ -255,9 +234,6 @@ bindsym {
   XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
   XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
   XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
-
-  # Show keyboard shortcuts
-  # $mod+Slash exec remontoire -c ~/.config/sway/config -t ~/.config/remontoire/styles.css
 }
 
 #

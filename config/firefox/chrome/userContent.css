@@ -1,5 +1,13 @@
 /* Use dark background for Tridactyl new tabs */
 :root {
-  --tridactyl-bg: #2e3440 !important;
-  --tridactyl-fg: #e5e9f0 !important;
+  --nord-bg: #2e3440;
+  --nord-fg: #e5e9f0;
+  --tridactyl-bg: var(--nord-bg) !important;
+  --tridactyl-fg: var(--nord-fg) !important;
+}
+
+@-moz-document url-prefix(about:home), url-prefix(about:newtab) {
+  body {
+    background: var(--nord-bg);
+  }
 }

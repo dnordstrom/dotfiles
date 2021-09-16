@@ -141,7 +141,7 @@ autocmd DocLoad .*nix-community\.github\.io/home-manager/options\.html.* js docu
 " #2e3440
 
 " If it becomes possible to use data-URI's as new tab page, something like this:
-set newtab data:text/html,<html><head><title>New tab</title><style>body { background: rgb(46, 52, 64); color: white; padding: 60px 20px; text-align: center; font: 1rem sans; } h1 { margin: 0 0 20px; } body > div { display: inline-block; text-align: left; } div > div {} span { display: inline-block; } span:first-child { margin: 0 20px 0 0; } pre { margin: 0; } a,a:hover { color: white; display: inline-block; text-decoration: none; top: 12px; right: 12px; position: absolute; }</style></head><body><h1>Where to?</h1><div><div><span><pre>:o</pre></span><span>Open...</span></div><div><span><pre>:t</pre></span><span>Open in tab...</span></div></div><a href="">?</a></body></html>
+" set newtab data:text/html,<html><head><title>New tab</title><style>body { background: rgb(46, 52, 64); color: white; padding: 60px 20px; text-align: center; font: 1rem sans; } h1 { margin: 0 0 20px; } body > div { display: inline-block; text-align: left; } div > div {} span { display: inline-block; } span:first-child { margin: 0 20px 0 0; } pre { margin: 0; } a,a:hover { color: white; display: inline-block; text-decoration: none; top: 12px; right: 12px; position: absolute; }</style></head><body><h1>Where to?</h1><div><div><span><pre>:o</pre></span><span>Open...</span></div><div><span><pre>:t</pre></span><span>Open in tab...</span></div></div><a href="">?</a></body></html>
 
 " vim: set filetype=vim:
 " -*- mode: vim -*-
