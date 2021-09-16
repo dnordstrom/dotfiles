@@ -1,0 +1,5 @@
+/* Use dark background for Tridactyl new tabs */
+:root {
+  --tridactyl-bg: #2e3440 !important;
+  --tridactyl-fg: #e5e9f0 !important;
+}
