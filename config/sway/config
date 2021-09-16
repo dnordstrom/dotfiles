@@ -8,7 +8,7 @@ set $font Input Sans 10
 # Color scheme
 set $colors nord
 
-# Use super as modifier key (Mod1 for Alt)
+# Super as modifier (Mod1 for Alt)
 set $mod Mod4
 
 # Vim navigation keys
