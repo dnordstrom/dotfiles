@@ -121,7 +121,7 @@ blacklistadd leeroy-group.atlassian.net mode ignore
 
 "
 " Auto-Commands
-"#2e3440
+"
 
 " Change new tab page title and favicon
 autocmd DocStart moz-extension://.*/static/newtab.html js document.head.querySelector('link[rel="shortcut icon"]').href = "https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/sumo/img/favicon-32x32.png"; document.title = "New tab"; document.body.innerHTML = '';
