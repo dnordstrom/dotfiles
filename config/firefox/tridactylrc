@@ -2,9 +2,10 @@
 " Settings
 "
 
-colorscheme --url https://raw.githubusercontent.com/bezmi/base16-tridactyl/master/base16-nord.css nord
+colorscheme --url https://raw.githubusercontent.com/dnordstrom/dotfiles/main/config/firefox/nord.css nord
 
-set newtab about:blank
+unset newtab " Shows Tridactyl's about:blank page
+
 set allowautofocus false
 set editorcmd alacritty -e nvim %f '+normal!%lGzv%c|'
 set hintchars fdsqjklmrezauiopwxcvghtybn
