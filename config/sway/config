@@ -276,6 +276,7 @@ mode "$mode_system" {
   bindsym Space mode "default"
 }
 
+bindsym $mod+Shift+e mode "$mode_system"
 bindsym $mod+Shift+Backspace mode "$mode_system"
 
 #
