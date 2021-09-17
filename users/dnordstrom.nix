@@ -166,7 +166,7 @@
   # Scripts
   #
 
-  home.file.".scripts".source = ../config/scripts;
+  home.file.".scripts".source = ../scripts;
 
   #
   # Sway
@@ -332,6 +332,7 @@
     plugins = with pkgs.vimPlugins; [
       chadtree
       dashboard-nvim
+      friendly-snippets
       glow-nvim
       lualine-nvim
       luasnip

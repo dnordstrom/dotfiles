@@ -102,6 +102,12 @@ o.softtabstop = 2
 o.tabstop = 2
 o.textwidth = 80
 
+-- Markdown
+g.vim_markdown_folding_disabled = 0
+g.vim_markdown_folding_level = 2
+g.vim_markdown_no_extensions_in_markdown = 0
+g.vim_markdown_autowrite = 1
+
 -- Theme
 g.nord_contrast = true
 g.nord_borders = false
