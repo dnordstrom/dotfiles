@@ -413,17 +413,96 @@
     };
 
     initExtra = ''
-      # Prepend list item to notes
-      note() {
-        echo "$(echo "- $@"; cat ~/.notes.md)" > ~/.notes.md
+      #
+      # Variables
+      #
+
+      export NOTES_FILE="$HOME/.notes.md"
+      export NOTES_EDITOR="$EDITOR"
+      export NOTES_VIEWER="glow -p"
+
+      #
+      # Notes
+      #
+
+      view-notes() {
+        eval "${NOTES_VIEWER:-cat} $NOTES_FILE"
       }
 
-      # Prepend `sudo` on Alt+s
-      insert-sudo() {
-        zle beginning-of-line; zle -U "sudo "
+      edit-notes() {
+        eval "${NOTES_EDITOR:-$EDITOR} $NOTES_FILE"
       }
-      zle -N insert-sudo # Add function as widget
-      bindkey "^[s" insert-sudo # Bind key to widget
+
+      prepend-note() {
+        local note="${@:-$BUFFER}"
+
+        if ! [ -z "$note" ]; then
+          backup-notes
+          printf "- $note\n$(cat "$NOTES_FILE")" > "$NOTES_FILE"
+          [ $# -eq 0 ] && zle kill-whole-line
+        fi
+      }
+
+      backup-notes() {
+        cp --backup=numbered "$NOTES_FILE" "$NOTES_FILE.$(date +%Y%m%d)"
+      }
+
+      clear-backup-notes() {
+        rm $NOTES_FILE.*.*
+      }
+
+      #
+      # Scripting
+      #
+
+      append-to-history() {
+        fc -R =(printf "%s\n" "$@")
+      }
+
+      await-any-key() {
+        printf "%s" "${*:-Press any key to continue...}"
+        read -ks
+      }
+
+      await-confirm() {
+        local prompt="${*:-Would you like to continue?} [Y/n] "
+        local output="false"
+        local code=1
+
+        read -qs "key?$prompt"
+        code=$?
+        [ $code -eq 0 ] && output="true"
+
+        printf "%s" "$output"
+        return $code
+      }
+
+      await-enter-key() {
+        printf "%s" "${*:-Press ENTER to continue...}"
+
+        # Simply `read -s` works as well, if delimiter is newline
+        while read -ks key; do
+          [ "$key" = $'\x0a' ] && break
+        done
+      }
+
+      await-string-input() {
+        printf "%s " "${*:->}"
+        read input
+        printf "%s" "$input"
+      }
+
+      to-lowercase() {
+        printf "%s" "$(printf "%s" "$*" | tr '[:upper:]' '[:lower:]')"
+      }
+
+      to-uppercase() {
+        printf "%s" "$(printf "%s" "$*" | tr '[:lower:]' '[:upper:]')"
+      }
+
+      #
+      # Commands
+      #
 
       # Run command in specified directory then return (use with care)
       runindir() {
@@ -454,6 +533,25 @@
 
         runindir "/etc/nixos" "$1"
       }
+
+      #
+      # Widgets
+      #
+
+      zle -N view-notes
+      zle -N prepend-note
+      zle -N edit-notes
+      zle -N backup-notes
+      zle -N clear-backup-notes
+
+      #
+      # Key Binds
+      #
+
+      bindkey "^[s" sudo-command-line
+      bindkey "^[e" edit-notes
+      bindkey "^[E" prepend-note
+      bindkey "^[^E" view-notes
     '';
   };
 
