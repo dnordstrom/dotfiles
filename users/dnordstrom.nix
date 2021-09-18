@@ -439,7 +439,7 @@
         if ! [ -z "$note" ]; then
           backup-notes
           printf "- $note\n$(cat "$NOTES_FILE")" > "$NOTES_FILE"
-          [ $# -eq 0 ] && is-command zle && zle kill-whole-line
+          [ $# -eq 0 ] && zle kill-whole-line > /dev/null 2>&1
         fi
       }
 
@@ -458,7 +458,7 @@
       function is-command() {
         if [ -n "$ZSH_VERSION" ]; then
           builtin whence -p "$1" &> /dev/null
-        else  # bash:
+        else
           builtin type -P "$1" &> /dev/null
         fi
 
