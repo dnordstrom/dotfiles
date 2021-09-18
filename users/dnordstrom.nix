@@ -426,20 +426,20 @@
       #
 
       view-notes() {
-        eval "${NOTES_VIEWER:-cat} $NOTES_FILE"
+        eval "''${NOTES_VIEWER:-cat} $NOTES_FILE"
       }
 
       edit-notes() {
-        eval "${NOTES_EDITOR:-$EDITOR} $NOTES_FILE"
+        eval "''${NOTES_EDITOR:-$EDITOR} $NOTES_FILE"
       }
 
       prepend-note() {
-        local note="${@:-$BUFFER}"
+        local note="''${@:-$BUFFER}"
 
         if ! [ -z "$note" ]; then
           backup-notes
           printf "- $note\n$(cat "$NOTES_FILE")" > "$NOTES_FILE"
-          [ $# -eq 0 ] && zle kill-whole-line
+          [ $# -eq 0 ] && [ -x "$(is-command zle)" ] && zle kill-whole-line
         fi
       }
 
@@ -455,17 +455,32 @@
       # Scripting
       #
 
+      function is-command() {
+        if [ -n "$ZSH_VERSION" ]; then
+          builtin whence -p "$1" &> /dev/null
+        else  # bash:
+          builtin type -P "$1" &> /dev/null
+        fi
+
+        [ $? -ne 0 ] && return 1
+
+        if [ $# -gt 1 ]; then
+          shift
+          is-command "$@"
+        fi
+      }
+
       append-to-history() {
         fc -R =(printf "%s\n" "$@")
       }
 
       await-any-key() {
-        printf "%s" "${*:-Press any key to continue...}"
+        printf "%s" "''${*:-Press any key to continue...}"
         read -ks
       }
 
       await-confirm() {
-        local prompt="${*:-Would you like to continue?} [Y/n] "
+        local prompt="''${*:-Would you like to continue?} [Y/n] "
         local output="false"
         local code=1
 
@@ -478,7 +493,7 @@
       }
 
       await-enter-key() {
-        printf "%s" "${*:-Press ENTER to continue...}"
+        printf "%s" "''${*:-Press ENTER to continue...}"
 
         # Simply `read -s` works as well, if delimiter is newline
         while read -ks key; do
@@ -487,7 +502,7 @@
       }
 
       await-string-input() {
-        printf "%s " "${*:->}"
+        printf "%s " "''${*:->}"
         read input
         printf "%s" "$input"
       }
