@@ -418,6 +418,13 @@
         echo "$(echo "- $@"; cat ~/.notes.md)" > ~/.notes.md
       }
 
+      # Prepend `sudo` on Alt+s
+      insert-sudo() {
+        zle beginning-of-line; zle -U "sudo "
+      }
+      zle -N insert-sudo # Add function as widget
+      bindkey "^[s" insert-sudo # Bind key to widget
+
       # Run command in specified directory then return (use with care)
       runindir() {
         if ! [ $# -eq 2 ]; then
