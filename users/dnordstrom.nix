@@ -439,7 +439,7 @@
         if ! [ -z "$note" ]; then
           backup-notes
           printf "- $note\n$(cat "$NOTES_FILE")" > "$NOTES_FILE"
-          [ $# -eq 0 ] && [ -x "$(is-command zle)" ] && zle kill-whole-line
+          [ $# -eq 0 ] && is-command zle && zle kill-whole-line
         fi
       }
 
