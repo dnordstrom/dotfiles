@@ -102,12 +102,6 @@ o.softtabstop = 2
 o.tabstop = 2
 o.textwidth = 80
 
--- Markdown
-g.vim_markdown_folding_disabled = 0
-g.vim_markdown_folding_level = 2
-g.vim_markdown_no_extensions_in_markdown = 0
-g.vim_markdown_autowrite = 1
-
 -- Theme
 g.nord_contrast = true
 g.nord_borders = false
@@ -275,6 +269,10 @@ nvim_set_keymap("i", "<Tab>", "v:lua.NORDUtils.smart_tab()", opts.noreExpr)
 nvim_set_keymap("i", "<S-Tab>", "v:lua.NORDUtils.smart_tab_shift()", opts.noreExpr)
 nvim_set_keymap("i", "<CR>", "v:lua.NORDUtils.smart_return()", opts.noreExpr)
 
+---- Markdown
+
+nvim_buf_set_keymap(buf, "n", "<Space>p", "<Cmd>lua require('glow').close_window()<CR>", opts.nore)
+
 --
 -- Plugins
 --
@@ -306,14 +304,14 @@ g.dashboard_default_executive = "telescope"
 g.dashboard_custom_footer = {"  Neovim " .. NORDUtils.nvim_version}
 
 nvim_exec([[
-  augroup init_dashboard
+  augroup dashboard
     autocmd!
     autocmd User TelescopePreviewerLoaded setlocal wrap
     autocmd FileType dashboard set showtabline=0
     autocmd WinLeave <Buffer> set showtabline=2
   augroup end
 
-  augroup highlight_yank
+  augroup yankhighlight
     autocmd!
     autocmd TextYankPost * silent! lua require("vim.highlight").on_yank({timeout = 100})
   augroup end

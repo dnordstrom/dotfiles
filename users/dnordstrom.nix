@@ -321,6 +321,7 @@
   #
 
   xdg.configFile."nvim/lua/init.lua".source = ../config/nvim/lua/init.lua;
+  xdg.configFile."nvim/ftplugins".source = ../config/nvim/ftplugins;
 
   programs.neovim = {
     enable = true;
