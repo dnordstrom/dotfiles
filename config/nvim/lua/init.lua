@@ -23,6 +23,7 @@ end
 local g = vim.g
 local o = vim.opt
 local api = vim.api
+local fn = vim.fn
 
 -- Skip namespaces (keep original name)
 local nvim_exec = api.nvim_exec
@@ -41,6 +42,7 @@ _G.NORDUtils = {}
 
 -- Shortcut
 NORDUtils = _G.NORDUtils
+_N = _G.NORDUtils
 
 NORDUtils.smart_tab = function()
   if vim.fn.pumvisible() ~= 0 then
@@ -71,6 +73,62 @@ NORDUtils.nvim_version = vim.api.nvim_exec([[
   echo matchstr(execute("version"), "NVIM \\zs[^\\n]*")
 ]], true)
 
+-- Inspect variables (e.g., tables)
+NORDUtils.log = function(var)
+  print(vim.inspect(var))
+end
+
+-- Show a simple message
+NORDUtils.msg = function(message, highlight, label_highlight)
+  label = "NORDUtils"
+  message = message or "Empty message."
+
+  highlight = highlight or "Comment"
+  label_highlight = label_highlight or "healthSuccess"
+
+  vim.api.nvim_echo(
+    {
+      { "NORDUtils", label_highlight },
+      { ": ", highlight },
+      { message, highlight }
+    },
+    true,
+    {}
+  )
+end
+
+-- Custom yank/copy function
+NORDUtils.yank = function()
+  vim.api.nvim_put({ "line one", "line two" }, "", false, true)
+end
+
+-- Custom put/paste function
+NORDUtils.put = function()
+  vim.api.nvim_put({ "line one", "line two" }, "", false, true)
+end
+
+-- Reload configuration (defaults to /etc/nixos as source)
+NORDUtils.reload = function(live)
+  if live == false then
+    api.nvim_command("source /etc/nixos/config/nvim/lua/init.lua")
+  else
+    api.nvim_command("source " .. home .. "/.config/nvim/lua/init.lua")
+  end
+
+  NORDUtils.msg("Config reloaded.")
+end
+
+-- Same as above but uses require instead of API
+NORDUtils.reload_req = function(live)
+  if live == false then
+    require(home .. "/.config/nvim/lua/init.lua")
+  else
+    require("/etc/nixos/config/nvim/lua/init.lua")
+  end
+
+  NORDUtils.msg("Config reloaded.")
+end
+
 --
 -- Options
 --
@@ -86,6 +144,7 @@ o.relativenumber = true
 o.swapfile = false
 o.completeopt = "noinsert,menuone,noselect"
 o.mouse = "a"
+o.clipboard = "unnamedplus"
 
 -- Explorer
 g.netrw_liststyle = 4 -- Open in previous window
@@ -101,6 +160,19 @@ o.shiftwidth = 2
 o.softtabstop = 2
 o.tabstop = 2
 o.textwidth = 80
+
+-- Custon clipboard (just wraps system clipboard for now)
+o.clipboard = {
+  name = 'nordboard',
+  copy = {
+    ["+"] = "vim.api.nvim_put({ 'test', 'test2' }, '', false, true)",
+    ["*"] = "echo testing*"
+   }
+  -- paste = {
+  --    '+': {-> get(g:, 'nordboard', [])},
+  --    '*': {-> get(g:, 'nordboard', [])},
+  -- },
+}
 
 -- Theme
 g.nord_contrast = true
@@ -213,6 +285,9 @@ local opts = {
   noreSilentExpr = {noremap = true, silent = true, expr = true},
 }
 
+---- Reload config
+nvim_set_keymap("n", "<Leader>rr", "<Cmd>lua NORDUtils.reload()<CR>", opts.nore)
+
 ---- Insert mode navigation
 nvim_set_keymap("i", "<C-h>", "<Left>", opts.nore)
 nvim_set_keymap("i", "<C-j>", "<Down>", opts.nore)
@@ -277,6 +352,9 @@ nvim_buf_set_keymap(buf, "n", "<Space>p", "<Cmd>lua require('glow').close_window
 -- Plugins
 --
 
+-- Show possible key binds when typing
+require("which-key").setup({})
+
 -- Line peek
 require("numb").setup()
 
@@ -313,7 +391,7 @@ nvim_exec([[
 
   augroup yankhighlight
     autocmd!
-    autocmd TextYankPost * silent! lua require("vim.highlight").on_yank({timeout = 100})
+    autocmd TextYankPost * silent! lua vim.highlight.on_yank({ timeout = 100 })
   augroup end
 ]], false)
 

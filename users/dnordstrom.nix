@@ -46,6 +46,7 @@
     slack
     sqlite
     tor-browser-bundle-bin
+    tree
     usbutils # For `lsusb`
     weechat
     xorg.xev # Keyboard event viewer
@@ -321,7 +322,7 @@
   #
 
   xdg.configFile."nvim/lua/init.lua".source = ../config/nvim/lua/init.lua;
-  xdg.configFile."nvim/ftplugins".source = ../config/nvim/ftplugins;
+  xdg.configFile."nvim/ftplugin".source = ../config/nvim/ftplugin;
 
   programs.neovim = {
     enable = true;
@@ -364,6 +365,7 @@
       vim-markdown
       vim-nix
       vim-surround
+      which-key-nvim
 
       # Plugins requiring setup
       {
@@ -418,9 +420,45 @@
       # Variables
       #
 
+      local statusline="\ ?f\ %f:藍\ STDIN"
+      export LESS="-iR -Pm$statusline\$ -Ps$statusline\$"
+      export PAGER="less $LESS"
+
+      export LESS_TERMCAP_mb=$’\E[1;31m’ # begin bold
+      export LESS_TERMCAP_md=$’\E[1;36m’ # begin blink
+      export LESS_TERMCAP_me=$’\E[0m’ # reset bold/blink
+      export LESS_TERMCAP_so=$’\E[01;44;33m’ # begin reverse video
+      export LESS_TERMCAP_se=$’\E[0m’ # reset reverse video
+      export LESS_TERMCAP_us=$’\E[1;32m’ # begin underline
+      export LESS_TERMCAP_ue=$’\E[0m’ # reset underline
+
       export NOTES_FILE="$HOME/.notes.md"
       export NOTES_EDITOR="$EDITOR"
       export NOTES_VIEWER="glow -p"
+
+      export BAT_STYLE="changes"
+      export BAT_THEME="Nord"
+
+      export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*" --glob "!node_modules/*"'
+      export FZF_DEFAULT_OPTS="--ansi --color='bg+:-1' --no-info --prompt '› ' --pointer '» ' --marker '✓ ' --bind 'ctrl-b:toggle-preview,tab:down,btab:up,ctrl-y:execute-silent(echo {} | wl-copy),ctrl-o:execute-silent(xdg-open {})' --preview-window ':hidden' --preview '([[ -f {} ]] && (bat --style=changes --color=always {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'"
+      export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+      export FZF_CTRL_T_OPTS="$FZF_DEFAULT_OPTS"
+      export FZF_ALT_C_OPTS="$FZF_DEFAULT_OPTS"
+      export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS"
+
+      #
+      # Sway helpers
+      #
+test
+      set-keyboard-layout() {
+        local default="'us,se,se'"
+        swaymsg input type:keyboard xkb_layout "${@:-$default}"
+      }
+
+      set-keyboard-variant() {
+        local default="',,us'" # Swedish-US variant layout as third choice
+        swaymsg input type:keyboard xkb_variant "${@:-$default}"
+      }
 
       #
       # Notes
