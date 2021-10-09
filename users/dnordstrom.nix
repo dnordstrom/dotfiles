@@ -115,6 +115,7 @@
     chrome-gnome-shell
     plasma-browser-integration
     tridactyl-native
+    luakit
 
     # Multimedia
     celluloid # GTK frontend for MPV
