@@ -30,10 +30,11 @@
     bustle # GTK-based D-Bus inspector
     dfeet # GTK-based D-Bus inspector
     element-desktop
+    emote # GTK-based emote picker
     fd
     fractal
     guvcview
-    ideogram # From ElementaryOS, while Plasma's emoji picker doesn't work
+    ideogram # ElementaryOS emote picker since Plasma's emoji picker doesn't work
     kate
     libnotify
     pavucontrol
@@ -53,8 +54,9 @@
     xdotool
 
     # Command line
-    glow
-    t-rec
+    asciinema # Terminal recorder for asciinema.org
+    glow # Markdown reader
+    t-rec # Another terminal recorder
 
     # Desktop integration portals
     xdg-desktop-portal
@@ -64,7 +66,9 @@
 
     # Sway
     fnott
-    grim
+    green-recorder # TODO: Check if this even works in Sway
+    grim # Command line screenshot tool
+    kooha # GUI screen recorder with video support
     libsForQt5.qt5.qtwayland
     nwg-drawer
     nwg-launchers
