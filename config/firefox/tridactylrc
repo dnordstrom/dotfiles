@@ -7,7 +7,7 @@ colorscheme --url https://raw.githubusercontent.com/dnordstrom/dotfiles/main/con
 unset newtab " Shows Tridactyl's about:blank page
 
 set allowautofocus false
-set editorcmd alacritty -e nvim %f '+normal!%lGzv%c|'
+set editorcmd alacritty --class 'Terminal' -e nvim %f '+normal!%lGzv%c|'
 set hintchars fdsqjklmrezauiopwxcvghtybn
 set searchengine g
 set smoothscroll true
@@ -51,14 +51,14 @@ command jsbp js -p tri.excmds.js(`console.dir(${JS_ARG})`);
 " Key Binds
 "
 
-" Preserve defaults
-unbind <C-f>
-unbind <C-e>
+" Firefox binds to keep
+unbind <C-f> " Search
+unbind <C-e> " Sideberry
 
 bind <Space><Space> fillcmdline_notrail
 bind <Space>b !s xdotool search "Mozilla Firefox" windowactivate --sync key --clearmodifiers ctrl+e
 
-" Vim-like search
+" Search
 
 bind / fillcmdline find
 bind ? fillcmdline find -?
@@ -99,24 +99,33 @@ bind --mode=insert <C-w> text.backward_kill_word
 bind --mode=input <C-w> text.backward_kill_word
 
 " Sanitize on exit
+
 bind ZZ composite sanitise tridactyllocal tridactylsync; qall
 
 " Marks
 
-quickmark r https://www.reddit.com/
-quickmark g https://www.github.com/
-quickmark o https://nix-community.github.io/home-manager/options.html
-quickmark O https://search.nixos.org/options
-quickmark i https://imgur.com/
-quickmark y https://youtube.com/
+quickmark i https://imgur.com
+quickmark y https://youtube.com
 
-" Marks on ' like in Vim
+quickmark r https://www.reddit.com
+quickmark g https://www.github.com/
+
+quickmark n https://search.nixos.org
+quickmark O https://search.nixos.org/options
+quickmark o https://nix-community.github.io/home-manager/options.html
+quickmark N https://nix-community.github.io/home-manager
+
+
+
+" Marks on ' and ` like in Vim
 bindreplaceprefix go '
+bindreplaceprefix go `
 
 "
 " Blacklist
 "
 
+blacklistadd localhost
 blacklistadd mail.google.com mode ignore
 blacklistadd leeroy-group.atlassian.net mode ignore
 

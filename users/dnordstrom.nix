@@ -419,18 +419,24 @@
       #
       # Variables
       #
+ 
+      export LESS_TERMCAP_md=$(tput bold; tput setaf 6)
+      export LESS_TERMCAP_me=$(tput sgr0)
+      export LESS_TERMCAP_so=$(tput bold; tput setaf 3; tput setab 4)
+      export LESS_TERMCAP_se=$(tput rmso; tput sgr0)
+      export LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 7)
+      export LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
+      export LESS_TERMCAP_mr=$(tput rev)
+      export LESS_TERMCAP_mh=$(tput dim)
 
-      local statusline="\ ?f\ %f:藍\ STDIN"
+      export LESS_TERMCAP_status=$(tput bold; tput setaf 0; tput setab 3)
+      export LESS_TERMCAP_status_end=$(tput sgr0)
+
+      local statusline=$LESS_TERMCAP_status"\ ?f\ %f:藍\ STDIN"$LESS_TERMCAP_status_end
+
       export LESS="-iR -Pm$statusline\$ -Ps$statusline\$"
-      export PAGER="less $LESS"
-
-      export LESS_TERMCAP_mb=$’\E[1;31m’ # begin bold
-      export LESS_TERMCAP_md=$’\E[1;36m’ # begin blink
-      export LESS_TERMCAP_me=$’\E[0m’ # reset bold/blink
-      export LESS_TERMCAP_so=$’\E[01;44;33m’ # begin reverse video
-      export LESS_TERMCAP_se=$’\E[0m’ # reset reverse video
-      export LESS_TERMCAP_us=$’\E[1;32m’ # begin underline
-      export LESS_TERMCAP_ue=$’\E[0m’ # reset underline
+      export LESSEDIT="%E ?lm+%lm. %g"
+      export PAGER="less"
 
       export NOTES_FILE="$HOME/.notes.md"
       export NOTES_EDITOR="$EDITOR"
@@ -452,12 +458,12 @@
 test
       set-keyboard-layout() {
         local default="'us,se,se'"
-        swaymsg input type:keyboard xkb_layout "${@:-$default}"
+        swaymsg input type:keyboard xkb_layout "''${@:-$default}"
       }
 
       set-keyboard-variant() {
         local default="',,us'" # Swedish-US variant layout as third choice
-        swaymsg input type:keyboard xkb_variant "${@:-$default}"
+        swaymsg input type:keyboard xkb_variant "''${@:-$default}"
       }
 
       #

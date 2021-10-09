@@ -1,5 +1,8 @@
 { config, pkgs, stdenv, lib, nodePackages, ... }:
 
+let
+  udev-rules = pkgs.callPackage ./packages/udev-rules.nix {};
+in
 {
   nix.package = pkgs.nixUnstable;
   nix.extraOptions =  ''
@@ -30,6 +33,12 @@
   networking.networkmanager.enable = true;
   networking.useDHCP = false;
   networking.extraHosts = ''
+    ***REMOVED***
+    ***REMOVED***
+    ***REMOVED***
+    ***REMOVED***
+    ***REMOVED***
+
     ***REMOVED***
     ***REMOVED***
     ***REMOVED***
@@ -73,6 +82,8 @@
   services.gnome.chrome-gnome-shell.enable = true;
 
   services.blueman.enable = true;
+
+  services.udev.packages = [ udev-rules ];
 
   fonts.fonts = with pkgs; [
     cascadia-code
@@ -126,7 +137,10 @@
 
   users.users.dnordstrom = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ];
+    extraGroups = [
+      "wheel"
+      "input" # For ydotool udev rule
+    ];
     shell = pkgs.zsh;
   };
 

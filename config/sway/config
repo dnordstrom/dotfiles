@@ -128,13 +128,10 @@ input type:keyboard {
   repeat_delay 250
   repeat_rate 35
 
-  # General settings
-  # Useful to list current xkb settings: `setxkbmap -print -verbose 10`
-  # You can then migrate current settings or use Plasma's or Gnome's system
-  # settings for a more explanatory setup.
+  # `setxkbmap -print -verbose 10` to show current settings for migrating current settings or after using Plasma or Gnome settings apps settings for a more explanatory setup.
   xkb_numlock enable
-  xkb_layout us,se
-  xkb_variant ,us
+  xkb_layout us,se,se
+  xkb_variant ,,us
 
   # CapsLock to Escape (and use Shift-CapsLock for CapsLock)
   # Both Shift keys to change keyboard layout
