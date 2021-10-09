@@ -30,7 +30,6 @@
     bustle # GTK-based D-Bus inspector
     dfeet # GTK-based D-Bus inspector
     element-desktop
-    emote
     fd
     fractal
     guvcview
@@ -66,7 +65,6 @@
 
     # Sway
     fnott
-    green-recorder # TODO: Check if this even works in Sway
     grim # Command line screenshot tool
     kooha # GUI screen recorder with video support
     libsForQt5.qt5.qtwayland
