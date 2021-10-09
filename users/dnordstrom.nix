@@ -30,7 +30,7 @@
     bustle # GTK-based D-Bus inspector
     dfeet # GTK-based D-Bus inspector
     element-desktop
-    emote # GTK-based emote picker
+    emote
     fd
     fractal
     guvcview
