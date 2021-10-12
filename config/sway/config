@@ -290,7 +290,7 @@ exec $term --title scratchpad_term --class scratchpad_term
 # Turn off monitor after 10 minutes, and lock screen after 30 minutes and before
 # going into sleep mode
 exec swayidle -w \
-  timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+  timeout 900 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
   timeout 1800 '$lock' \
   before-sleep '$lock'
 

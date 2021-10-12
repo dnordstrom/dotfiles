@@ -143,7 +143,6 @@
 
     # Fonts
     corefonts
-    input-fonts
     powerline-fonts
 
     # Themes

@@ -167,9 +167,6 @@ vim.api.nvim_set_keymap("", "<Leader>gs", "<Cmd>lua NORDUtils.operators.browsers
 g.mapleader = " "
 
 -- General
-o.backup = true -- Delete old backup file
-o.writebackup = true -- Backup edited file
-o.swapfile = true -- Store unsaved edits
 o.ignorecase = true
 o.number = true
 o.relativenumber = true

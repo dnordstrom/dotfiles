@@ -2,7 +2,7 @@
   "name": "nord-defaults",
   "displayName": "NORD.Defaults",
   "description": "VSCode/VSCodium configuration.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "dnordstrom",
   "engines": {
     "vscode": "^1.41.0"
