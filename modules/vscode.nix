@@ -19,7 +19,7 @@
       {
         name = "nord-defaults";
         publisher = "dnordstrom";
-        version = "0.0.2";
+        version = "0.0.3";
         sha256 = "sha256-B+yDKfbCBALb1LDUI1w+pUTc2W194kR8JFJ+h8f5XlQ==";
       }
       # Run the update script at config/vscode/update_installed_exts.sh to get
