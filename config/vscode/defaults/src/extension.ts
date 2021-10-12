@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
-  const config = vscode.workspace.getConfiguration();
-  const cfg = JSON.parse(`
+  const currentConfig = vscode.workspace.getConfiguration();
+  const initialConfig = JSON.parse(`
       {
         "[json]": {
           "editor.wordWrap": "off"
@@ -182,10 +182,11 @@ export function activate(context: vscode.ExtensionContext) {
       }
   `)
 
-  for (const [key, value] of Object.entries(cfg)) {
-    const key_settings = config.inspect(key);
-    if (key_settings?.globalValue === undefined) {
-      config.update(key, value, vscode.ConfigurationTarget.Global);
+  for (const [setting, value] of Object.entries(initialConfig)) {
+    const settings = currentConfig.inspect(setting);
+    
+    if (settings?.globalValue === undefined) {
+      currentConfig.update(setting, value, vscode.ConfigurationTarget.Global);
     }
   }
 }

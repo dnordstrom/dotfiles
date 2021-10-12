@@ -1,8 +1,8 @@
 {
   "name": "nord-defaults",
   "displayName": "NORD.Defaults",
-  "description": "VSCode/VSCodium configuration.",
-  "version": "0.0.2",
+  "description": "This extension resets my VSCode/VSCodium configuration values to my preferred details on activation. This is a workaround for the issue of `settings.json` being immutable on NixOS.",
+  "version": "0.0.3",
   "publisher": "dnordstrom",
   "engines": {
     "vscode": "^1.41.0"
