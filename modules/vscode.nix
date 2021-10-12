@@ -14,6 +14,14 @@
       mikestead.dotenv
       skyapps.fish-vscode
     ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+      # My own configuration initializer instead of providing settings as JSON,
+      # to allow options to be toggled normally (mutable `settings.json`).
+      {
+        name = "nord-defaults";
+        publisher = "dnordstrom";
+        version = "0.0.2";
+        sha256 = "sha256-B+yDKfbCBALb1LDUI1w+pUTc2W194kR8JFJ+h8f5XlQ==";
+      }
       # Run the update script at config/vscode/update_installed_exts.sh to get
       # the latest versions and hashes of these manually fetched extensions.
       {
@@ -101,7 +109,6 @@
         sha256 = "sha256-OjnhsZFA2rkobFz8px6X829vd7rTbcUzeZAwcHEmDm0=";
       }
     ];
-    userSettings = builtins.fromJSON (builtins.readFile ../config/vscode/settings.json);
     keybindings = builtins.fromJSON (builtins.readFile ../config/vscode/keybindings.json);
   };
 }
