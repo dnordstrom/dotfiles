@@ -239,13 +239,13 @@
 
       font:
         normal:
-          family: 'Iosevka Nerd Font'
+          family: 'Input Mono Condensed'
         bold:
-          family: 'Iosevka Nerd Font'
+          family: 'Input Mono Condensed'
         italic:
-          family: 'Iosevka Nerd Font'
+          family: 'Input Mono Condensed'
         bold_italic:
-          family: 'Iosevka Nerd Font'
+          family: 'Input Mono Condensed'
         size: 10
         offset:
           x: 0
@@ -421,7 +421,7 @@
       #
       # Variables
       #
- 
+
       export LESS_TERMCAP_md=$(tput bold; tput setaf 6)
       export LESS_TERMCAP_me=$(tput sgr0)
       export LESS_TERMCAP_so=$(tput bold; tput setaf 3; tput setab 4)
