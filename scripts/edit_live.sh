@@ -4,8 +4,10 @@
 # prevent any accidents.
 #
 
-rm -ri .config/waybar
-ln -s /etc/nixos/config/waybar ~/.config/waybar
+# Remove local directories (symbolic links to NixOS build outputs)
+rm -ri ~/.config/waybar
+rm -ri ~/.config/sway
 
-rm -ri .config/sway
+# Symlink files from NixOS configuration directory
 ln -s /etc/nixos/config/sway ~/.config/sway
+ln -s /etc/nixos/config/waybar ~/.config/waybar
