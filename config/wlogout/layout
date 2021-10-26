@@ -1,6 +1,6 @@
 {
     "label" : "lock",
-    "action" : "swaylock --font 'Iosevka Nerd Font' --font-size 14 --scaling fill --ignore-empty-password --indicator-radius 150 --indicator-thickness 10 --inside-color '#2e3440' --inside-ver-color '#2e3440' --key-hl-color '#88c0d0' --ring-color '#2e3440' --ring-ver-color '#2e3440' --separator-color '#2e3440' --line-uses-inside --layout-bg-color '#00000000' --layout-border-color '#00000000' --layout-text-color '#eceff4' --clock --screenshots --indicator-idle-visible --datestr '%H:%M' --timestr '%A' --fade-in 1 --effect-greyscale --effect-blur 6x8 --effect-vignette 0.6:0.8",
+    "action" : "swaylock --font 'Input Sans Condensed' --font-size 14 --scaling fill --ignore-empty-password --indicator-radius 150 --indicator-thickness 10 --inside-color '#2e3440' --inside-ver-color '#2e3440' --key-hl-color '#88c0d0' --ring-color '#2e3440' --ring-ver-color '#2e3440' --separator-color '#2e3440' --line-uses-inside --layout-bg-color '#00000000' --layout-border-color '#00000000' --layout-text-color '#eceff4' --clock --screenshots --indicator-idle-visible --datestr '%H:%M' --timestr '%A' --fade-in 1 --effect-greyscale --effect-blur 6x8 --effect-vignette 0.6:0.8",
     "keybind" : "l"
 }
 {

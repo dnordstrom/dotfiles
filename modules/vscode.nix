@@ -5,21 +5,26 @@
     enable = true;
     package = pkgs.vscodium;
     extensions = with pkgs.vscode-extensions; [
+      arcticicestudio.nord-visual-studio-code
       arrterian.nix-env-selector
+      asvetliakov.vscode-neovim
+      b4dm4n.vscode-nixpkgs-fmt
       dbaeumer.vscode-eslint
       editorconfig.editorconfig
       foxundermoon.shell-format
       graphql.vscode-graphql
+      hookyqr.beautify
       jnoortheen.nix-ide
       mikestead.dotenv
       skyapps.fish-vscode
+      yzhang.markdown-all-in-one
     ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
       # My own configuration initializer instead of providing settings as JSON,
       # to allow options to be toggled normally (mutable `settings.json`).
       {
         name = "nord-defaults";
         publisher = "dnordstrom";
-        version = "0.0.3";
+        version = "0.0.4";
         sha256 = "1slim65yhmv7j307kyznns1n8gisp7x7qbkbpzyd66syqas94mfv";
       }
       # Run the update script at config/vscode/update_installed_exts.sh to get
@@ -29,24 +34,6 @@
         publisher = "stkb";
         version = "1.14.0";
         sha256 = "sha256-qRwKX36a1aLzE1tqaOkH7JfE//pvKdPZ07zasPF3Dl4=";
-      }
-      {
-        name = "ayu";
-        publisher = "teabyii";
-        version = "0.20.2";
-        sha256 = "1ca6m6li6p63nylzppanmqfi10ss9swrmfk3yj2zsv0hrl959s81";
-      }
-      {
-        name = "raiju";
-        publisher = "TobiasTimm";
-        version = "2.2.2";
-        sha256 = "sha256-Pl7qwHXOOu9joEKICPros8NFcCVRgBDEu55PJHl/Ajg=";
-      }
-      {
-        name = "nord-visual-studio-code";
-        publisher = "arcticicestudio";
-        version = "0.18.0";
-        sha256 = "sha256-Uo6peR+2ZNX6nwJ0Yar32Pe0rfBZ+f6ef1cYhUvVUbE=";
       }
       {
         name = "vscode-nonicons";
@@ -106,6 +93,18 @@
         name = "auto-comment-next-line";
         publisher = "ctf0";
         version = "0.1.1";
+        sha256 = "sha256-OjnhsZFA2rkobFz8px6X829vd7rTbcUzeZAwcHEmDm0=";
+      }
+      {
+        name = "turbo-console-log";
+        publisher = "ChakrounAnas";
+        version = "2.1.7";
+        sha256 = "sha256-OjnhsZFA2rkobFz8px6X829vd7rTbcUzeZAwcHEmDm0=";
+      }
+      {
+        name = "text-power-tools";
+        publisher = "qcz";
+        version = "1.30.0";
         sha256 = "sha256-OjnhsZFA2rkobFz8px6X829vd7rTbcUzeZAwcHEmDm0=";
       }
     ];

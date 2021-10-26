@@ -3,7 +3,7 @@
 #
 
 # Font
-set $font Input Sans 10
+set $font Input Sans Condensed 9
 
 # Color scheme
 set $colors nord
@@ -36,7 +36,7 @@ set $screenshot-screen grim -o \
   "$(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name')"
 
 set $lock swaylock \
-  --font "Input Sans" \
+  --font "Input Sans Condensed" \
   --font-size 12 \
   --scaling fill \
   --ignore-empty-password \

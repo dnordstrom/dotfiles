@@ -153,6 +153,9 @@
     # Icon themes
     numix-icon-theme-circle
 
+    # Nix
+    nixpkgs-fmt
+
     # Unnecessary utilities
     arcan.espeak
     neo-cowsay
@@ -246,7 +249,7 @@
           family: 'Input Mono Condensed'
         bold_italic:
           family: 'Input Mono Condensed'
-        size: 10
+        size: 9
         offset:
           x: 0
           y: 0
@@ -268,7 +271,7 @@
 
   gtk = {
     enable = true;
-    font.name = "Noto Sans 10";
+    font.name = "Input Sans Condensed 10";
     iconTheme = {
       package = pkgs.numix-icon-theme-circle;
       name = "Numix Circle";
