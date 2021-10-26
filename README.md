@@ -1,6 +1,6 @@
-# My NixOS configuration
+# NixOS system setup
 
-This is a flake based configuration is used on my Dell XPS work laptop as well as my Ryzen 7 home desktop. It uses the unstable channel (which is actually very stable) for packages, and it's a constant work in progress. See the links below for further information on Nix and NixOS.
+Flake based configuration used on a Dell XPS work laptop as well as my Ryzen 7 home desktop. It uses the unstable channel (which is actually very stable) for packages, and it's a constant work in progress. See the links below for further information on Nix and NixOS.
 
 ## Notes to self
 

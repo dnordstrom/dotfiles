@@ -5,9 +5,7 @@
     enable = true;
     package = pkgs.vscodium;
     extensions = with pkgs.vscode-extensions; [
-      arcticicestudio.nord-visual-studio-code
       arrterian.nix-env-selector
-      asvetliakov.vscode-neovim
       b4dm4n.vscode-nixpkgs-fmt
       dbaeumer.vscode-eslint
       editorconfig.editorconfig
@@ -29,6 +27,12 @@
       }
       # Run the update script at config/vscode/update_installed_exts.sh to get
       # the latest versions and hashes of these manually fetched extensions.
+      {
+        name = "nord-visual-studio-code";
+        publisher = "arcticicestudio";
+        version = "0.18.0";
+        sha256 = "sha256-Uo6peR+2ZNX6nwJ0Yar32Pe0rfBZ+f6ef1cYhUvVUbE=";
+      }
       {
         name = "rewrap";
         publisher = "stkb";
@@ -99,13 +103,19 @@
         name = "turbo-console-log";
         publisher = "ChakrounAnas";
         version = "2.1.7";
-        sha256 = "sha256-OjnhsZFA2rkobFz8px6X829vd7rTbcUzeZAwcHEmDm0=";
+        sha256 = "sha256-JE6vjMwzca9/2mzCZwNiGbBiC2JKm4m/zK/B483Wfwo=";
       }
       {
         name = "text-power-tools";
         publisher = "qcz";
         version = "1.30.0";
-        sha256 = "sha256-OjnhsZFA2rkobFz8px6X829vd7rTbcUzeZAwcHEmDm0=";
+        sha256 = "sha256-uAZVkapfmkb5RlGAljGRxVuOMxNLG1OPXiurx5KNgL8=";
+      }
+      {
+        name = "vscode-neovim";
+        publisher = "asvetliakov";
+        version = "0.0.82";
+        sha256 = "sha256-YUlygCPleF+/Ttyd2PeebAoZkcAhFmatbHi1nd6XwJ0=";
       }
     ];
     keybindings = builtins.fromJSON (builtins.readFile ../config/vscode/keybindings.json);
