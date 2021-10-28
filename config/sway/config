@@ -27,13 +27,23 @@ set $workspace6 6
 
 # Commands
 set $term alacritty --class "terminal"
+set $scratchpad_term alacritty --class "scratchpad_term" --title "scratchpad_term"
 set $menu wofi --show=drun,run | xargs swaymsg exec
 set $files nautilus
-set $screenshot-region grim -g "$(slurp)"
-set $screenshot-window grim -g \
-  "$(swaymsg -t get_tree | jq -j '.. | select(.type?) | select(.focused).rect | "\(.x),\(.y) \(.width)x\(.height)"')"
-set $screenshot-screen grim -o \
-  "$(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name')"
+
+set $screenshot_area sleep 3 && grim -g "$(slurp)" - \
+  | wl-copy && wl-paste -t image/png > \
+  "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png"
+
+set $screenshot_window sleep 3 && grim -g \
+  "$(swaymsg -t get_tree | jq -j '.. | select(.type?) | select(.focused).rect | "\(.x),\(.y) \(.width)x\(.height)"')" - \
+  | wl-copy && wl-paste -t image/png > \
+  "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_window.png"
+
+set $screenshot_screen sleep 3 && grim -o \
+  "$(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name')" - \
+  | wl-copy && wl-paste -t image/png > \
+  "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png"
 
 set $lock swaylock \
   --font "Input Sans Condensed" \
@@ -130,8 +140,7 @@ input type:keyboard {
 
   # `setxkbmap -print -verbose 10` to show current settings for migrating current settings or after using Plasma or Gnome settings apps settings for a more explanatory setup.
   xkb_numlock enable
-  xkb_layout us,se,se
-  xkb_variant ,,us
+  xkb_layout us,se
 
   # CapsLock to Escape (and use Shift-CapsLock for CapsLock)
   # Both Shift keys to change keyboard layout
@@ -231,6 +240,11 @@ bindsym {
   XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
   XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
   XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+
+  # Screenshot
+  Print exec $screenshot_area
+  Shift+Print exec $screenshot_window
+  Ctrl+Print exec $screenshot_screen
 }
 
 #
@@ -285,7 +299,7 @@ exec systemctl --user start sway-session.target
 exec systemctl --user start graphical-session.target
 
 # Open a terminal on scratchpad
-exec $term --title scratchpad_term --class scratchpad_term
+exec $scratchpad_term
 
 # Turn off monitor after 10 minutes, and lock screen after 30 minutes and before
 # going into sleep mode

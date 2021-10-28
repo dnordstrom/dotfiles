@@ -240,8 +240,8 @@ if (1) {
       ['+', 'zi'],    // zoom in
       ['-', 'zo'],    // zoom out
       ['0', 'g0'],    // first tab
-      ['K', 'S'],     // history >>
-      ['J', 'D'],     // history <<
+      ['L', 'D'],     // history >>
+      ['H', 'S'],     // history <<
       ['[', '<<'],    // move current tab to left
       [']', '>>'],    // move current tab to right
 
@@ -258,8 +258,8 @@ if (1) {
     //['B', 'b'],     // search bookmarks
       ['E', 'su'],    // edit current url and load in new tab
       ['F', 'C'],     // follow link in new tab
-      ['H', 'E'],     // go one tab left
-      ['L', 'R'],     // go one tab right
+      ['J', 'E'],     // go one tab left
+      ['K', 'R'],     // go one tab right
       ['P', 'cc'],    // open link from clipboard in new tab
       ['S', 'cS'],    // reset scroll target
       ['T', 'af'],    // open link in new tab and switch to it immediately
