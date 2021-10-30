@@ -21,25 +21,36 @@ local function t(str)
 end
 
 --
--- Local Variables
+-- Shortcut variables
 --
 
--- Common namespaces
+-- Keeping the original names instead of shortening them because it makes it 
+-- easier to learn and remember them. The right hand side never uses other
+-- shortcut variables since that could break if some are removed.
+
+-- Options
+local opt = vim.opt
+local opt_local = vim.opt_local
+local opt_global = vim.opt_global
+
+-- Variables
 local g = vim.g
-local o = vim.opt
+
+-- API
 local api = vim.api
 local fn = vim.fn
+local nvim_exec = vim.api.nvim_exec
+local nvim_set_keymap = vim.api.nvim_set_keymap
+local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
 
--- Skip namespaces (keep original name)
-local nvim_exec = api.nvim_exec
-local nvim_set_keymap = api.nvim_set_keymap
-local nvim_buf_set_keymap = api.nvim_buf_set_keymap
+--
+-- Local variables
+--
 
--- Other variables
 local home = os.getenv("HOME")
 
 --
--- Global Variables
+-- Global variables
 --
 
 -- Accessed via `v:lua.NORDUtils.method()` or `<Cmd>lua NORDUtils.method()<CR>`
@@ -78,13 +89,13 @@ NORDUtils.nvim_version = vim.api.nvim_exec([[
   echo matchstr(execute("version"), "NVIM \\zs[^\\n]*")
 ]], true)
 
--- Inspect variables (e.g., tables)
-NORDUtils.log = function(var)
+-- Inspect variables such as tables
+NORDUtils.inspect = function(var)
   print(vim.inspect(var))
 end
 
 -- Show a simple message
-NORDUtils.msg = function(message, highlight, label_highlight)
+NORDUtils.echo = function(message, highlight, label_highlight)
   label = "NORDUtils"
   message = message or "Empty message."
 
@@ -102,27 +113,30 @@ NORDUtils.msg = function(message, highlight, label_highlight)
   )
 end
 
--- Custom yank/copy function
---NORDUtils.yank = function()
-  --vim.api.nvim_put({ "line one", "line two" }, "", false, true)
---end
-
--- Custom put/paste function
---NORDUtils.put = function()
-  --vim.api.nvim_put({ "line one", "line two" }, "", false, true)
---end
-
--- Reload configuration (defaults to /etc/nixos as source)
+-- Reload configuration
+-- Sources from `/etc/nixos` by default since it's usually used to test
+-- configuration edits. Passing `false` sources from home directory.
 NORDUtils.reload = function(live)
   if live == false then
     api.nvim_command("source " .. home .. "/.config/nvim/lua/init.lua")
+    NORDUtils.echo("Home configuration reloaded.")
   else
     api.nvim_command("source /etc/nixos/config/nvim/lua/init.lua")
+    NORDUtils.echo("Live configuration reloaded.")
   end
-
-  NORDUtils.msg("Config reloaded.")
 end
 
+-- Get word under cursor
+NORDUtils.get_word = function()
+  local first_line_num, last_line_num = vim.fn.getpos("'<")[2], vim.fn.getpos("'>")[2]
+  local first_col, last_col = vim.fn.getpos("'<")[3], vim.fn.getpos("'>")[3]
+  local current_word = vim.fn.getline(first_line_num, last_line_num)[1]:sub(first_col, last_col)
+
+  return current_word
+end
+
+-- Web search operator
+-- Uses the function below to perform searches using web browser.
 NORDUtils.operators.browsersearch = function(mode)
   if mode == nil then
     vim.go.operatorfunc = 'v:lua.NORDUtils.operators.browsersearch'
@@ -145,6 +159,7 @@ NORDUtils.operators.browsersearch = function(mode)
   NORDUtils.browsersearch(query)
 end
 
+-- Web search
 NORDUtils.browsersearch = function(query)
   local command = "firefox"
   local url = "https://google.com/search?q="
@@ -158,22 +173,19 @@ NORDUtils.browsersearch = function(query)
   io.popen(command .. " '" .. url .. query .. "'")
 end
 
-vim.api.nvim_set_keymap("", "<Leader>gs", "<Cmd>lua NORDUtils.operators.browsersearch()<CR>", {})
-
 --
 -- Options
 --
 
-g.mapleader = " "
+vim.g.mapleader = " "
 
 -- General
-o.ignorecase = true
-o.number = true
-o.relativenumber = true
-o.completeopt = "noinsert,menuone,noselect"
-o.mouse = "a"
-o.clipboard = "unnamedplus"
-
+opt.ignorecase = true
+opt.number = true
+opt.relativenumber = true
+opt.completeopt = "noinsert,menuone,noselect"
+opt.mouse = "a"
+opt.clipboard = "unnamedplus"
 
 -- Explorer
 g.netrw_liststyle = 4 -- Open in previous window
@@ -183,19 +195,19 @@ g.netrw_altv = 1 -- Open file to the right
 g.netrw_banner = 0 -- Hide banner
 
 -- Formatting
-o.autoindent = true
-o.expandtab = true
-o.shiftwidth = 2
-o.softtabstop = 2
-o.tabstop = 2
+opt.autoindent = true
+opt.expandtab = true
+opt.shiftwidth = 2
+opt.softtabstop = 2
+opt.tabstop = 2
 
----- Wrapping
-o.wrap = true -- Soft wrap
-o.wrapmargin = 80 -- Soft wrap column
-o.textwidth = 80 -- Hard wrap column when `formatoptions~=t` or `gq` is used
-o.formatoptions = 'cjroql'
+-- Wrapping
+opt.wrap = true -- Soft wrap
+opt.wrapmargin = 80 -- Soft wrap column
+opt.textwidth = 80 -- Hard wrap column when `formatoptions~=t` or `gq` is used
+opt.formatoptions = 'cjroql'
 
----- Reference:
+-- Reference:
 -- t -> auto-wrap at textwidth
 -- c -> comments auto-wrap at textwidth
 -- r -> auto-insert comment leader on <Enter>
@@ -308,7 +320,7 @@ require("telescope").load_extension("frecency")
 require("telescope").load_extension("fzf")
 
 --
--- Global key maps
+-- Key maps
 --
 
 local opts = {
@@ -318,19 +330,20 @@ local opts = {
   noreSilentExpr = {noremap = true, silent = true, expr = true},
 }
 
----- Reload config
+-- Reload config
 nvim_set_keymap("n", "<Leader>rr", "<Cmd>lua NORDUtils.reload(true)<CR>", opts.nore)
 nvim_set_keymap("n", "<Leader>rR", "<Cmd>lua NORDUtils.reload(false)<CR>", opts.nore)
 
----- Save
+-- Save
 nvim_set_keymap("n", "ZW", "<Cmd>w<CR>", opts.nore)
----- Insert mode navigation
+
+-- Insert mode navigation
 nvim_set_keymap("i", "<C-h>", "<Left>", opts.nore)
 nvim_set_keymap("i", "<C-j>", "<Down>", opts.nore)
 nvim_set_keymap("i", "<C-k>", "<Up>", opts.nore)
 nvim_set_keymap("i", "<C-l>", "<Right>", opts.nore)
 
----- Command mode navigation
+-- Command mode navigation
 nvim_set_keymap("c", "<C-a>", "<Home>", opts.nore)
 nvim_set_keymap("c", "<C-e>", "<End>", opts.nore)
 nvim_set_keymap("c", "<C-f>", "<Right>", opts.nore)
@@ -341,25 +354,25 @@ nvim_set_keymap("n", "<Leader>vi", ":lua print(vim.inspect())<Left><Left>", opts
 nvim_set_keymap("n", "<Leader>vl", ":lua ", opts.nore)
 nvim_set_keymap("n", "<Leader>vh", "<Cmd>help ", opts.nore)
 
----- Make `Y` behave like `D` and `C`, yanking to end of line
+-- Make `Y` behave like `D` and `C`, yanking to end of line
 nvim_set_keymap("n", "Y", "y$", opts.nore)
 
----- Toggle sidebar
+-- Toggle sidebar
 nvim_set_keymap("n", "<C-b>", "<Cmd>Lex<CR>", opts.nore)
 
----- Clear search highlights
+-- Clear search highlights
 nvim_set_keymap("n", "<Leader>h", "<Cmd>set hlsearch!<CR>", opts.nore)
 
----- Go to buffer
+-- Go to buffer
 nvim_set_keymap("n", "gb", "<Cmd>ls<CR>:b<Space>", opts.nore)
 
----- Go to definition
+-- Go to definition
 nvim_set_keymap("n", "gD", "v:lua.vim.lsp.buf.declaration()", opts.noreExpr)
 nvim_set_keymap("n", "gd", "v:lua.vim.lsp.buf.definition()", opts.noreExpr)
 nvim_set_keymap("n", "F12", "v:lua.vim.lsp.buf.definition()", opts.noreExpr)
 nvim_set_keymap("i", "F12", "v:lua.vim.lsp.buf.definition()", opts.noreExpr)
 
----- Telescope
+-- Telescope
 nvim_set_keymap("n", "<Leader>ff", '<Cmd>lua require("telescope.builtin").fd()<CR>', opts.nore)
 nvim_set_keymap("n", "<Leader>fg", '<Cmd>lua require("telescope.builtin").live_grep()<CR>', opts.nore)
 nvim_set_keymap("n", "<Leader>fe", '<Cmd>lua require("telescope.builtin").file_browser()<CR>', opts.nore)
@@ -370,13 +383,13 @@ nvim_set_keymap("n", "<Leader>fd", '<Cmd>lua require("telescope.builtin").lsp_de
 nvim_set_keymap("n", "<Leader><Leader>", '<Cmd>lua require"telescope".extensions.frecency.frecency()<CR>', opts.nore)
 nvim_set_keymap("n", "<C-Space>", '<Cmd>lua require"telescope".extensions.frecency.frecency()<CR>', opts.nore)
 
----- Diagnostic
+-- Diagnostic
 nvim_set_keymap("n", "<Leader>dd", "<Cmd>TroubleToggle lsp_document_diagnostics<CR>", opts.nore)
 nvim_set_keymap("n", "<Leader>dn", "v:lua.vim.lsp.diagnostic.goto_prev()", opts.noreExpr)
 nvim_set_keymap("n", "<Leader>dN", "v:lua.vim.lsp.diagnostic.goto_next()", opts.noreExpr)
 nvim_set_keymap("n", "<Leader>dl", "v:lua.vim.lsp.diagnostic.show_line_diagnostics({focusable = false})", opts.noreExpr)
 
----- Dashboard
+-- Dashboard
 nvim_set_keymap("n", "<Leader>vh", "<Cmd>DashboardFindHistory<CR>", opts.nore)
 nvim_set_keymap("n", "<Leader>vf", "<Cmd>DashboardFindFile<CR>", opts.nore)
 nvim_set_keymap("n", "<Leader>vc", "<Cmd>DashboardChangeColorscheme<CR>", opts.nore)
@@ -384,38 +397,14 @@ nvim_set_keymap("n", "<Leader>va", "<Cmd>DashboardFindWord<CR>", opts.nore)
 nvim_set_keymap("n", "<Leader>vm", "<Cmd>DashboardJumpMark<CR>", opts.nore)
 nvim_set_keymap("n", "<Leader>vn", "<Cmd>DashboardNewFile<CR>", opts.nore)
 
----- NCM2
+-- NCM2
 
 nvim_set_keymap("i", "<Tab>", "v:lua.NORDUtils.smart_tab()", opts.noreExpr)
 nvim_set_keymap("i", "<S-Tab>", "v:lua.NORDUtils.smart_tab_shift()", opts.noreExpr)
 nvim_set_keymap("i", "<CR>", "v:lua.NORDUtils.smart_return()", opts.noreExpr)
 
----- Markdown
-
-nvim_buf_set_keymap(buf, "n", "<Space>p", "<Cmd>lua require('glow').close_window()<CR>", opts.nore)
-
----- Abbreviation maps
-
-nvim_buf_set_keymap(0, "i", ",clg", "console.log()<Left>", opts.nore)
-nvim_buf_set_keymap(0, "i", ",cld", "console.dir()<Left>", opts.nore)
-nvim_buf_set_keymap(0, "i", ",clo", "console.log('Object:', )<Left>", opts.nore)
-
-NORDUtils.get_word = function()
-  local first_line_num, last_line_num = vim.fn.getpos("'<")[2], vim.fn.getpos("'>")[2]
-  local first_col, last_col = vim.fn.getpos("'<")[3], vim.fn.getpos("'>")[3]
-  local current_word = vim.fn.getline(first_line_num, last_line_num)[1]:sub(first_col, last_col)
-
-  return current_word
-end
-
-NORDUtils.search = function(mode)
-  local word = NORDUtils.get_word()
-  vim.loop.spawn("firefox", {args = {word}})
-end
-
-NORDUtils.translate = function()
-
-end
+-- Custom operators
+nvim_set_keymap("n", "<Leader>gs", "<Cmd>lua NORDUtils.operators.browsersearch()<CR>", opts.nore)
 
 --
 -- Plugins

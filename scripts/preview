@@ -7,6 +7,17 @@
 
 set -eu
 
+# Set up error and interruption traps to show if toggle fails or is cancelled
+trap 'printf "\n\n%s\n\n" "Error: Preview mode not enabled."; exit 1;' ERR
+trap 'printf "\n\n%s\n\n" "Cancelled: Preview mode not enabled."; exit 1;' SIGINT
+
+notestart=$(tput bold; tput setaf 0; tput setab 3)
+noteend=$(tput sgr0)
+titlestart=$(tput bold; tput setaf 0; tput setab 6)
+titleend=$(tput sgr0)
+cleanupfile="$HOME/.nix-preview-cleanup"
+cleanupbang="#!/usr/bin/env sh"
+cleanup=""
 usage="USAGE:
     $(basename "$0")
 
@@ -14,23 +25,35 @@ DESCRIPTION:
     Removes symlinks to currently installed configurations and replaces them with symlinks to the /etc/nixos configurations for previewing changes without first needing to run a NixOS rebuild. Warns before deleting files.
 
 OPTIONS:
-    --help, -h        Show this help text
+    --help, -h          Show this help text
+    --cleanup-file, -c  Path to generate cleanup script at (default: ~/.nix-preview-cleanup)
 "
 
 for arg in "$@"
 do
   case $arg in
+    # Cleanup script path
+    -c|--cleanup-file)
+    shift
+    cleanup="$1"
+    ;;
     -h|--help)
     printf "\n%s\n" "$usage"
     exit 0
-    shift
     ;;
   esac
 done
 
-# Set up error and interruption traps to show if toggle fails or is cancelled
-trap 'printf "\n\n%s\n\n" "Error: Preview mode not enabled."; exit 1;' ERR
-trap 'printf "\n\n%s\n\n" "Cancelled: Preview mode not enabled."; exit 1;' SIGINT
+# Print title
+printf "\n%s\n" $titlestart" Configuration preview mode "$titleend
+
+# Get full cleanup file path and make sure it's valid
+if ! realpath "$cleanupfile" > /dev/null 2>&1; then
+  printf "\n%s\n\n" "Error: Invalid cleanup script path."
+  exit 1
+else
+  cleanupfile=$(realpath "$cleanupfile")
+fi
 
 # Customizable confirmation prompt
 confirm() {
@@ -110,6 +133,7 @@ confirm() {
   fi
 }
 
+# Print and run command
 loudly() {
   if [ $# -gt 0 ]; then
     printf "\$ %s\n" "$@"
@@ -120,35 +144,53 @@ loudly() {
   fi
 }
 
-# ANSI color coding
-notestart=$(tput bold; tput setaf 0; tput setab 3)
-noteend=$(tput sgr0)
-titlestart=$(tput bold; tput setaf 0; tput setab 6)
-titleend=$(tput sgr0)
-
-# Print title
-printf "\n%s\n\n" $titlestart" Configuration preview mode "$titleend
+# Print cleanup
+printf "\n%s\n\n" "Any symlinks created need to be removed before a nixos-rebuild. A cleanup script for this will be generated at $cleanupfile. For convenience, create a prebuild script or alias, e.g. aliasing \"nb\" to \"$cleanupfile; nixos-rebuild switch --upgrade;\"."
 
 # Ask about Sway
-if confirm --strict "Enable for sway (rm -rf ~/.config/sway)?"; then
+if confirm --strict "Enable for Sway (rm -rf ~/.config/sway)?"; then
   printf "\n"
   loudly "rm -rf ~/.config/sway"
   loudly "ln -s /etc/nixos/config/sway ~/.config/sway"
+  cleanup="$cleanup\nrm ~/.config/sway"
 fi
 
 printf "\n"
 
 # Ask about Waybar
-if confirm "Enable for waybar (rm -rf ~/.config/waybar)?"; then
+if confirm --strict "Enable for Waybar (rm -rf ~/.config/waybar)?"; then
   printf "\n"
   loudly "rm -rf ~/.config/waybar"
   loudly "ln -s /etc/nixos/config/waybar ~/.config/waybar"
+  cleanup="$cleanup\nrm ~/.config/waybar"
+fi
+
+printf "\n"
+
+# Ask about Neovim
+if confirm --strict "Enable for Neovim (rm -rf ~/.config/nvim)?"; then
+  printf "\n"
+  loudly "rm -rf ~/.config/nvim"
+  loudly "ln -s /etc/nixos/config/nvim ~/.config/nvim"
+  cleanup="$cleanup\nrm ~/.config/nvim"
 else
+  # This else clause should only be on the last confirm
   printf "\n"
 fi
 
 printf "\n"
 
-# Show result message
-printf "%s\n\n" "Preview mode enabled!"
-printf "%s\n\n" $notestart" NOTE: "$noteend" Modifying these local files will now change the /etc/nixos sources. Rebuilding NixOS returns life back to normal."
+# Write cleanup script to disk and show message if preview was enabled for at
+# least one configuration
+if [ -n "$cleanup" ]; then
+  # Write script
+  printf "$cleanupbang\n$cleanup" > $cleanupfile
+  chmod u+x $cleanupfile
+
+  # Show result message
+  printf "%s\n\n" "Preview mode enabled!"
+  printf "%s\n\n" $notestart" NOTE: "$noteend" Modifying these local files will now change the /etc/nixos sources. Rebuilding NixOS returns life back to normal."
+else
+  printf "%s\n\n" "No configurations selected!"
+fi
+

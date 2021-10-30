@@ -1,6 +1,6 @@
 * {
   font-weight: 500;
-  font-family: 'Input Sans Condensed', sans-serif;
+  font-family: 'Input Sans Compressed', sans-serif;
   font-size: 13px;
 }
 
@@ -73,11 +73,17 @@
   padding: 0 12px;
 }
 
+#custom-keyboard,
+#custom-disks,
+#custom-wttr,
+#custom-darksky,
+#custom-system,
 #custom-browser,
 #custom-terminal,
 #custom-files,
 #custom-editor {
-  font-family: 'Iosevka Nerd Font', sans-serif;
+  font-family: 'Antipasto Pro', sans-serif;
+  font-weight: 600;
 }
 
 #idle_inhibitor {

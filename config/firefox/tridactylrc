@@ -47,6 +47,13 @@ command notify js -p tri.excmds.exclaim_quiet(`notify-send ${JS_ARG}`); console.
 command jsp js -p tri.excmds.js(`console.dir(${JS_ARG})`);
 command jsbp js -p tri.excmds.js(`console.dir(${JS_ARG})`);
 
+" Saves text argument to file
+command note js -d% const link = `[${document.title}](${document.location.toString()})`; const note = JS_ARGS.join(' '); if (note) { tri.native.run(`touch ~/.notes.firefox.md && echo "- \"${note}\" --- ${link}\n\$(cat ~/.notes.firefox.md)" > ~/.notes.firefox.md`); } else { tri.native.run(`touch ~/.notes.firefox.md && echo "- ${link}\n$(cat ~/.notes.firefox.md)" > ~/.notes.firefox.md`); } %
+
+" Prefills command line current selection appended to "note", for binding to
+" quickly save the selection to file
+command note_selection js const selection = `${window.getSelection().toString()}`; tri.excmds.fillcmdline_notrail(`note ${selection}`)
+
 "
 " Key Binds
 "
@@ -58,6 +65,8 @@ unbind <C-e> " Sideberry
 bind <Space><Space> fillcmdline_notrail
 bind <Space>b !s xdotool search "Mozilla Firefox" windowactivate --sync key --clearmodifiers ctrl+e
 
+" Prefill command line for note taking
+bind <Space>n note_selection
 " Search
 
 bind / fillcmdline find

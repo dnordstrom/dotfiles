@@ -143,6 +143,7 @@
 
     # Fonts
     corefonts
+    line-awesome
     powerline-fonts
 
     # Themes
@@ -216,11 +217,6 @@
 
   programs.firefox = {
     enable = true;
-    extensions =
-      with pkgs.nur.repos.rycee.firefox-addons; [
-        # Using Firefox Sync for addons but they can also be managed here, see:
-        # https://github.com/nix-community/nur-combined/blob/master/repos/rycee/pkgs/firefox-addons/generated-firefox-addons.nix
-      ];
   };
 
   #
@@ -271,7 +267,7 @@
 
   gtk = {
     enable = true;
-    font.name = "Input Sans Condensed 10";
+    font.name = "Input Sans Condensed 9";
     iconTheme = {
       package = pkgs.numix-icon-theme-circle;
       name = "Numix Circle";
@@ -333,9 +329,7 @@
     enable = true;
     viAlias = true;
     vimAlias = true;
-    extraConfig = ''
-      lua require("init")
-    '';
+    extraConfig = builtins.readFile ../config/nvim/init.vim;
     plugins = with pkgs.vimPlugins; [
       chadtree
       dashboard-nvim
@@ -392,7 +386,7 @@
     enableVteIntegration = true;
 
     cdpath = [
-      "/home"
+      "/home/dnordstrom"
       "/home/dnordstrom/Code"
     ];
 
@@ -401,7 +395,6 @@
       theme = "agnoster";
       plugins =  [ "sudo" ];
     };
-
 
     shellAliases = {
       ll = "ls -lah"; # Same as built-in `l` (muscle memory reasons)
@@ -414,10 +407,7 @@
       nixvim = "nixwith vim";
 
       # Nix
-      nixswitch-pre = "rm /home/dnordstrom/.gtkrc-2.0";
-      nixswitch = "nixswitch-pre; sudo nixos-rebuild switch --flake /etc/nixos --upgrade; nixswitch-post";
-      nixswitch-post = "";
-      nb = "nixswitch";
+      nb = "$HOME/.nix-prebuild; sudo nixos-rebuild switch --flake /etc/nixos --upgrade";
     };
 
     initExtra = ''
@@ -618,6 +608,14 @@ test
       bindkey "^[E" prepend-note
       bindkey "^[^E" view-notes
     '';
+  };
+
+  #
+  # Tmux
+  #
+  
+  tmux = {
+    enable = true;
   };
 
   #

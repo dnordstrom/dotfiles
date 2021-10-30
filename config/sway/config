@@ -46,7 +46,7 @@ set $screenshot_screen sleep 3 && grim -o \
   "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png"
 
 set $lock swaylock \
-  --font "Input Sans Condensed" \
+  --font "Input Sans Compressed" \
   --font-size 12 \
   --scaling fill \
   --ignore-empty-password \
@@ -294,6 +294,10 @@ bindsym $mod+Shift+Backspace mode "$mode_system"
 # Autostart
 #
 
+# Import environment
+exec systemctl --user import-environment XDG_SESSION_TYPE XDG_CURRENT_DESKTOP
+exec dbus-update-activation-environment WAYLAND_DISPLAY
+
 # Start systemd targets
 exec systemctl --user start sway-session.target
 exec systemctl --user start graphical-session.target
@@ -328,15 +332,15 @@ assign [class="^Steam$"] $workspace5
 
 for_window [app_id="org.gnome.Nautilus"] floating enable
 for_window [app_id="org.kde.dolphin"] floating enable
+for_window [app_id="pavucontrol"] floating enable
 for_window [class="qimgv"] floating enable
 for_window [class="qview"] floating enable
-for_window [app_id="pavucontrol"] floating enable
 
 # Terminals
-for_window [app_id="scratchpad_term"] move scratchpad
 for_window [app_id="transparent_term"] border none
+for_window [app_id="scratchpad_term"] move scratchpad
+for_window [app_id="scratchpad_term"] floating enable, resize set 1280 720
 for_window [app_id="popup_term"] floating enable, resize set 920 720
-for_window [app_id="scratchpad_term"] floating enable, resize set 720 540
 
 #
 # Load other configuration files
