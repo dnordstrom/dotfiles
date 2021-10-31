@@ -18,6 +18,7 @@
     "idle_inhibitor",
     "custom/wttr",
     "disk",
+    "cpu",
     "memory",
     "temperature",
     "pulseaudio",
@@ -51,50 +52,50 @@
     "tooltip": false
   },
   "custom/system": {
-    "format": "", /*   */
+    "format": "",
     "on-click": "swaynag -t nord -s '' -m 'System' -b 'Log out ' 'swaymsg exit' -b 'Reload 勒' 'swaymsg reload' -b 'Reboot ﰇ' 'swaymsg exec systemctl reboot' -b 'Shut down 襤' 'systemctl poweroff'",
     "on-click-right": "swaymsg mode System"
   },
   "custom/browser": {
-    "format": "", /* nf-dev:  */
+    "format": "", /* nf-dev:  Remixicon: firefox-fill  earth-fill  */
     "tooltip": false,
     "on-click": "if pgrep firefox; then swaymsg [app_id=\"firefox\"] focus; else firefox; fi",
     "on-click-right": "firefox --new-window"
   },
   "custom/files": {
-    "format": "",
+    "format": "", /* Remixicon: home-fill  folder-3-fill  folder-user-fill   */
     "tooltip": false,
     "on-click": "nautilus",
     "on-click-right": "dolphin"
   },
   "custom/editor": {
-    "format": "", /*     */
+    "format": "", /*      Remixicon: code-box-fill  code-fill  code-slash-fill  */
     "tooltip": false,
     "on-click": "if pgrep codium; then swaymsg [instance=\"vscodium\"] focus; else codium; fi"
   },
   "custom/terminal": {
-    "format": "", /* oct:  */
+    "format": "", /* oct:   */
     "tooltip": false,
     "on-click": "swaymsg scratchpad show",
     "on-click-right": "alacritty --title transparent_term --class transparent_term"
   },
   "custom/keyboard": {
     "exec": "/home/dnordstrom/Code/dotfiles/scripts/keyboard/keyboard.sh",
-    "format": "  {}",
+    "format": "  {}", /* Remixicon: keyboard-box-fill  keyboard-fill  */
     "interval": 30,
     "tooltip": false
   },
   "custom/disks": {
     "exec": "/home/dnordstrom/Code/dotfiles/scripts/disks/disks.sh",
     "return-type": "json",
-    "format": "  {}", /*   */
+    "format": " {}",
     "on-click": "alacritty --title popup_term --class popup_term -e gotop",
     "interval": 30,
     "tooltip": true
   },
   "disk": {
     "interval": 30,
-    "format": "  {percentage_used}%", /*   */
+    "format": "  {percentage_used}%",
     "path": "/",
     "on-click": "alacritty --title popup_term --class popup_term -e gotop",
     "tooltip": true,
@@ -116,22 +117,22 @@
     "format": "{icon}",
     "tooltip": false,
     "format-icons": {
-      "activated": "",
-      "deactivated": ""
+      "activated": "",
+      "deactivated": ""
     }
   },
   "pulseaudio": {
-    "format": "{icon}  {volume}%",
-    "format-bluetooth": "{icon} ",
-    "format-muted": "ﱝ",
+    "format": "{icon} {volume}%",
+    "format-bluetooth": "{icon} ",
+    "format-muted": "",
     "format-icons": {
-      "headphones": "墳",
-      "handsfree": "墳",
-      "headset": "墳",
-      "phone": "墳",
-      "portable": "墳",
-      "car": "墳",
-      "default": ["奔", "墳"]
+      "headphones": "",
+      "handsfree": "",
+      "headset": "",
+      "phone": "",
+      "portable": "",
+      "car": "",
+      "default": ["", ""]
     },
     "scroll-step": 5,
     "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
@@ -149,17 +150,17 @@
   "cpu": {
     "on-click": "alacritty --title popup_term --class popup_term -e gotop",
     "tooltip": false,
-    "format": "  {usage}%",
+    "format": " {usage}%",
     "interval": 10
   },
   "network": {
-    "format": "{icon}  {ifname}",
-    "format-wifi": "{icon}  {essid}",
-    "format-ethernet": "{icon}  {ifname}",
-    "format-disconnected": "{icon}  Offline",
+    "format": "{icon} {ifname}",
+    "format-wifi": "{icon} {essid}",
+    "format-ethernet": "{icon} {ifname}",
+    "format-disconnected": "{icon} Offline",
     "format-icons": {
-      "wifi": ["直"],
-      "ethernet": [""],
+      "wifi": [""],
+      "ethernet": [""],
       "disconnected": [""]
     },
     "tooltip": true,
@@ -167,7 +168,7 @@
   },
   "memory": {
     "interval": 30,
-    "format": "  {avail:0.1f}GB",
+    "format": " {avail:0.1f}GB",
     "tooltip": true,
     "tooltip-format": "{used:0.1f}GB / {total:0.1f}GB"
   },
@@ -178,11 +179,11 @@
       "critical": 15
     },
     "format": "{icon} {capacity}%",
-    "format-charging": " {capacity}%",
-    "format-plugged": "ﮣ {capacity}%", /*  */
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%", /*  */
     "format-alt": "{icon} {time}",
     "format-good": "{icon} {capacity}%",
     "format-full": "{icon} {capacity}%",
-    "format-icons": ["", "", "", "", ""]
+    "format-icons": ["", "", "", "", ""]
   }
 }

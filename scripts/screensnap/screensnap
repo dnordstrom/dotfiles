@@ -8,22 +8,22 @@
 
 set -eu
 
-ERRORS=false
-FILE_MANAGER="nautilus"
-IMAGE_VIEWER="imv"
-OPTION_OPEN_FILE=false
-OPTION_OPEN_DIR=false
-OPTION_UPLOAD=false
-OPTION_COPY=false
-OPTION_HELP=false
-OPTION_WINDOW=false
-OPTION_SCREEN=false
-HAS_CURL=false
-AREA=""
-TIMESTAMP="$(date '+%Y%m%d_%H_%M_%S')"
-TARGET_DIR=${SCREENSNAP_TARGET_DIR:-"$HOME/Pictures/Screensnap"}
-TARGET="$TARGET_DIR/$TIMESTAMP.png"
-IMGUR_CLIENT_ID="${IMGUR_CLIENT_ID:=e4ab8199be97038}"
+errors=false
+file_manager="nautilus"
+image_viewer="feh"
+option_open_file=false
+option_open_dir=false
+option_upload=false
+option_copy=false
+option_help=false
+option_window=false
+option_screen=false
+has_curl=false
+area=""
+timestamp="$(date '+%Y%m%d_%H_%M_%S')"
+target_dir=${SCREENSNAP_TARGET_DIR:-"$HOME/Pictures/Screensnap"}
+target="$target_dir/$timestamp.png"
+imgur_client_id="${IMGUR_CLIENT_ID:=e4ab8199be97038}"
 USAGE="USAGE:
     $(basename "$0") [options]
     $(basename "$0") [options] [target file]
@@ -41,7 +41,7 @@ OPTIONS:
     --directory, -d   Open containing directory"
 
 # Check if cURL is available
-! [ -x "$(command -v curl)" ] || HAS_CURL=true
+! [ -x "$(command -v curl)" ] || has_curl=true
 
 # Parse flags and parameters. Credit to Richard Blechinger, see article at:
 # https://pretzelhands.com/posts/command-line-flags
@@ -49,48 +49,48 @@ for arg in "$@"
 do
   case $arg in
     -r|--region)
-    OPTION_REGION=true
+    option_region=true
     shift
     ;;
     -s|--screen)
-    OPTION_SCREEN=true
+    option_screen=true
     shift
     ;;
     -w|--window)
-    OPTION_WINDOW=true
+    option_window=true
     shift
     ;;
     -o|--open)
-    OPTION_OPEN_FILE=true
+    option_open_file=true
     shift
     ;;
     -d|--directory)
-    OPTION_OPEN_DIR=true
+    option_open_dir=true
     shift
     ;;
     -u|--upload)
-    OPTION_UPLOAD=true
+    option_upload=true
     shift
     ;;
     -c|--copy)
-    OPTION_COPY=true
+    option_copy=true
     shift
     ;;
     -h|--help)
-    OPTION_HELP=true
+    option_help=true
     shift
     ;;
     *)
     if [ -d "$(realpath "$1" > /dev/null 2>&1)" ]; then
       # Target is an existing directory
-      TARGET="$(realpath "$1")/$TIMESTAMP.png"
+      target="$(realpath "$1")/$timestamp.png"
     elif [ -d "$(dirname "$(realpath "$1" > /dev/null 2>&1)")" ]; then
       # Target parent is an existing directory, use as full file path
-      TARGET="$(realpath "$(dirname "$1")")/$(basename "$1")"
-      echo "$TARGET"
+      target="$(realpath "$(dirname "$1")")/$(basename "$1")"
+      echo "$target"
     else
       # Target is invalid
-      TARGET=false
+      target=false
     fi
     shift
     ;;
@@ -98,85 +98,84 @@ do
 done
 
 # Show help if the --help (or -h) flag is used
-if [ "$OPTION_HELP" = true ]; then
-  echo "$USAGE"
+if [ "$option_help" = true ]; then
+  echo "$usage"
   exit 0
 fi
 
 # Checking if target is writable
-if ! [ "$TARGET" = "false" ] && touch "$TARGET" > /dev/null 2>&1; then
-  rm "$TARGET" > /dev/null 2>&1 # Remove temporary file
+if ! [ "$target" = "false" ] && touch "$target" > /dev/null 2>&1; then
+  rm "$target" > /dev/null 2>&1 # Remove temporary file
 else
-  echo "Cannot write to $TARGET. Please check that the directory exists and is writable."
+  echo "Cannot write to $target. Please check that the directory exists and is writable."
 fi
 
 # Use slurp to select a screen, region, or window
-if [ "$OPTION_WINDOW" = true ]; then
-  AREA="$(swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp)"
-elif [ "$OPTION_SCREEN" = true ]; then
-  AREA="$(swaymsg -t get_outputs | jq -r '.[] | select(.active) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp)"
+if [ "$option_window" = true ]; then
+  area="$(swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp)"
+elif [ "$option_screen" = true ]; then
+  area="$(swaymsg -t get_outputs | jq -r '.[] | select(.active) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp)"
 else
-  AREA="$(slurp)"
+  area="$(slurp)"
 fi
 
 # Take the screenshot
-grim -g "$AREA" "$TARGET"
+grim -g "$area" "$target"
 
-# Uses cURL to upload an image to Imgur. Credit to Bart Nagel, see script:
-# https://github.com/tremby/imgur.sh
+# Uses cURL to upload an image to Imgur
 upload() {
-  curl -s -H "Authorization: Client-ID $IMGUR_CLIENT_ID" -H "Expect: " -F "image=$1" https://api.imgur.com/3/image.xml
+  curl -s -H "Authorization: Client-ID $imgur_client_id" -H "Expect: " -F "image=$1" https://api.imgur.com/3/image.xml
 }
 
 # Upload the screenshot to Imgur if the --upload (or -u) flag is used
-if [ "$OPTION_UPLOAD" = true ] && [ "$HAS_CURL" = true ]; then
-  RESPONSE=$(upload "@$TARGET") 2>/dev/null
+if [ "$option_upload" = true ] && [ "$has_curl" = true ]; then
+  response=$(upload "@$target") 2>/dev/null
 
   # The cURL command failed
-  if RESPONSE=$(upload "@$TARGET"); then
+  if response=$(upload "@$target"); then
     echo "Upload failed." >&2
-    ERRORS=true
+    errors=true
   fi
 
   # The cURL command succeeded but Imgur responded with error
-  if echo "$RESPONSE" | grep -q 'success="0"'; then
-    ERRORS=true
-    MESSAGE="${RESPONSE##*<error>}"
+  if echo "$response" | grep -q 'success="0"'; then
+    errors=true
+    message="${response##*<error>}"
 
     echo "Error message from Imgur:" >&2
-    echo "${MESSAGE%%</error>*}" >&2
+    echo "${message%%</error>*}" >&2
   fi
 
   # Parse the response
-  URL="${RESPONSE##*<link>}"
-  URL="${URL%%</link>*}"
-  DELETE_HASH="${RESPONSE##*<deletehash>}"
-  DELETE_HASH="${DELETE_HASH%%</deletehash>*}"
+  url="${RESPONSE##*<link>}"
+  url="${url%%</link>*}"
+  delete_hash="${response##*<deletehash>}"
+  delete_hash="${delete_hash%%</deletehash>*}"
 
   # Get the image URL
-  URL="${URL//http:/https:}" # | sed 's/^http:/https:/'
-  TARGET="$URL"
-elif [ "$OPTION_UPLOAD" = true ]; then
+  url="${url//http:/https:}" # | sed 's/^http:/https:/'
+  target="$url"
+elif [ "$option_upload" = true ]; then
   # The upload flag was used but cURL is not available
   echo "Cannot find cURL, aborting upload. The screenshot is still saved locally." >&2
 fi
 
-if [ "$OPTION_COPY" = true ]; then
+if [ "$option_copy" = true ]; then
   # If the --copy (or -c) flag is used, copy the entire image to clipboard
-  wl-copy < "$TARGET"
+  wl-copy < "$target"
 else
   # Otherwise copy the output (file path or image URL) to clipboard
-  wl-copy "$TARGET"
+  wl-copy "$target"
 fi
 
 # Open the screenshot with image viewer if the --open (or -o) flag is used
-[ "$OPTION_OPEN_FILE" = "true" ] || "$IMAGE_VIEWER" "$TARGET" 2> /dev/null &
+[ "$option_open_file" = "true" ] || "$image_viewer" "$target" 2> /dev/null &
 
 # Open the containing directory if --directory (or -d) flag is used
-[ "$OPTION_OPEN_DIR" = "true" ] || "$FILE_MANAGER" "$(basedir "$TARGET")" 2> /dev/null &
+[ "$option_open_dir" = "true" ] || "$file_manager" "$(basedir "$target")" 2> /dev/null &
 
-echo "$TARGET"
+echo "$target"
 
-if $ERRORS; then
+if $errors; then
 	exit 1
 fi

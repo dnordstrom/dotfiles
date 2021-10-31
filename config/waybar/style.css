@@ -71,19 +71,7 @@
 #custom-separator,
 #mode {
   padding: 0 12px;
-}
-
-#custom-keyboard,
-#custom-disks,
-#custom-wttr,
-#custom-darksky,
-#custom-system,
-#custom-browser,
-#custom-terminal,
-#custom-files,
-#custom-editor {
-  font-family: 'Antipasto Pro', sans-serif;
-  font-weight: 600;
+  font-family: 'remixicon', 'Iosevka Nerd Font', sans-serif;
 }
 
 #idle_inhibitor {

@@ -56,6 +56,7 @@
     asciinema # Terminal recorder for asciinema.org
     glow # Markdown reader
     t-rec # Another terminal recorder
+    gotop
 
     # Desktop integration portals
     xdg-desktop-portal
@@ -116,6 +117,7 @@
     luakit
 
     # Multimedia
+    imagemagick
     celluloid # GTK frontend for MPV
     haruna # QT frontend for MPV
     smplayer # QT frontend for MPV
@@ -614,7 +616,7 @@ test
   # Tmux
   #
   
-  tmux = {
+  programs.tmux = {
     enable = true;
   };
 

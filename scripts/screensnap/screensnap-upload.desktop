@@ -1,7 +1,0 @@
-[Desktop Entry]
-Exec=screensnap --upload
-Icon=display
-Type=Application
-Name=Screen Snap (Upload)
-Comment=Screen Snap
-Categories=Utility;

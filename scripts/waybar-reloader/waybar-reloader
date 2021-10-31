@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+#
+# Watches for changes to Waybar configuration and reloads it on change. Must
+# be used with the live previewing script.
+#
+
+set -eu
+
+eventstart=$(tput bold; tput setaf 0; tput setab 3)
+eventend=$(tput sgr0)
+titlestart=$(tput bold; tput setaf 0; tput setab 6)
+titleend=$(tput sgr0)
+
+printf "\n%s\n\n" $titlestart" Waybar reloader "$titleend
+printf "%s\n" $eventstart"STARTED:"$eventend" Watching for changes..."
+
+modtime=$(stat -c %Z /etc/nixos/config/waybar)
+
+while true; do
+  newtime=$(stat -c %Z /etc/nixos/config/waybar)
+
+  if [ "$modtime" != "$newtime" ]; then    
+    printf "%s\n" $eventstart"CHANGE DETECTED:"$eventend" Reloading configuration."
+    pkill -SIGUSR2 waybar
+    modtime=$newtime
+  fi
+
+  sleep 5
+done

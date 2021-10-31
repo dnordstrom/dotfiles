@@ -1,0 +1,88 @@
+#!/usr/bin/env sh
+#
+# Simple color picker that will copy the color to clipboard (and show it in a
+# notification, if such a daemon is installed). By default it copies the color
+# in hex format, but flags can be used to specify another format.
+#
+
+set -eu
+
+errors=false
+option_hex=true
+option_rgb=false
+option_help=false
+has_notify=false
+has_convert=false
+has_copy=false
+usage="USAGE:
+    $(basename "$0") [options]
+
+DESCRIPTION:
+    Click anywhere on the screen to get the color copied to clipboard (and a notificaion shown on screen if mako or similar is installed). You may specify which color format to receive using the flags (hex is default).
+
+OPTIONS:
+    --help, -h    Show this help text
+    --hex, -x     Get color in hex format (default)
+    --rgb, r      Get color in RGB format"
+
+# Check dependencies
+! [ -x "$(command -v notify-send)" ] || has_notify=true
+! [ -x "$(command -v convert)" ] || has_convert=true
+! [ -x "$(command -v wl-copy)" ] || has_copy=true
+
+if [ "$has_convert" = false ]; then
+  echo "Cannot find convert command. Please make sure ImageMagick is installed."
+  exit 1
+fi
+
+for arg in "$@"
+do
+  case $arg in
+    -h|--help)
+    option_help=true
+    shift
+    ;;
+    -x|--hex)
+    option_hex=true
+    shift
+    ;;
+    -r|--rgb)
+    option_rgb=true
+    shift
+    ;;
+    *)
+    TARGET+=("$1")
+    shift
+    ;;
+  esac
+done
+
+# Show help if the --help (or -h) flag is used
+if [ "$option_help" = true ]; then
+  echo "$usage"
+  exit 0
+fi
+
+color=$(grim -g "$(slurp -p)" -t ppm - | convert - -format '%[pixel:p{0,0}]' txt:- | tail -n 1) 2>/dev/null
+
+if [ "$option_rgb" = true ]; then
+  # RGB value
+  output="rgb$(echo $color | cut -d' ' -f2)"
+else
+  # Hex value
+  output="$(echo $color | cut -d' ' -f3)"
+fi
+
+if [ "$has_notify" = true ]; then
+  notify-send -a "Color Snap" -t 2000 --urgency=low --icon=gtk-dialog-info "$output"
+fi
+
+if [ "$has_copy" = true ]; then
+  wl-copy "$output"
+fi
+
+if $errors; then
+	exit 1
+fi
+
+exit 0

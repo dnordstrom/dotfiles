@@ -1,7 +1,0 @@
-[Desktop Entry]
-Exec=screensnap --copy
-Icon=display
-Type=Application
-Name=Screen Snap (Copy)
-Comment=Screen Snap
-Categories=Utility;
