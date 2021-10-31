@@ -269,7 +269,7 @@
 
   gtk = {
     enable = true;
-    font.name = "Input Sans Condensed 9";
+    font.name = "Input Sans Compressed 8";
     iconTheme = {
       package = pkgs.numix-icon-theme-circle;
       name = "Numix Circle";

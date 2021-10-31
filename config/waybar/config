@@ -17,12 +17,8 @@
     "tray",
     "idle_inhibitor",
     "custom/wttr",
-    "disk",
     "cpu",
-    "memory",
-    "temperature",
     "pulseaudio",
-    "network",
     "custom/system"
   ],
   "custom/separator": {
@@ -30,7 +26,7 @@
     "tooltip": false
   },
   "sway/mode": {
-    "format": "<span style=\"italic\">{}</span>"
+    "format": "{}"
   },
   "sway/workspaces": {
     "persistent_workspaces": {
@@ -52,63 +48,64 @@
     "tooltip": false
   },
   "custom/system": {
-    "format": "",
-    "on-click": "swaynag -t nord -s '' -m 'System' -b 'Log out ' 'swaymsg exit' -b 'Reload 勒' 'swaymsg reload' -b 'Reboot ﰇ' 'swaymsg exec systemctl reboot' -b 'Shut down 襤' 'systemctl poweroff'",
+    "format": "<span rise=\"-1550\"></span>",
+    "on-click": "swaynag -t nord -s '' -m 'System' -b 'Log out ' 'swaymsg exit' -b 'Reload ' 'swaymsg reload' -b 'Reboot ' 'swaymsg exec systemctl reboot' -b 'Shut down ' 'systemctl poweroff'",
     "on-click-right": "swaymsg mode System"
   },
   "custom/browser": {
-    "format": "", /* nf-dev:  Remixicon: firefox-fill  earth-fill  */
+    "format": "<span rise=\"-1550\"></span>",
     "tooltip": false,
     "on-click": "if pgrep firefox; then swaymsg [app_id=\"firefox\"] focus; else firefox; fi",
     "on-click-right": "firefox --new-window"
   },
   "custom/files": {
-    "format": "", /* Remixicon: home-fill  folder-3-fill  folder-user-fill   */
+    "format": "<span rise=\"-1550\"></span>",
     "tooltip": false,
     "on-click": "nautilus",
     "on-click-right": "dolphin"
   },
   "custom/editor": {
-    "format": "", /*      Remixicon: code-box-fill  code-fill  code-slash-fill  */
+    "format": "<span rise=\"-1550\"></span>",
     "tooltip": false,
     "on-click": "if pgrep codium; then swaymsg [instance=\"vscodium\"] focus; else codium; fi"
   },
   "custom/terminal": {
-    "format": "", /* oct:   */
+    "format": "<span rise=\"-1550\"></span>",
     "tooltip": false,
     "on-click": "swaymsg scratchpad show",
     "on-click-right": "alacritty --title transparent_term --class transparent_term"
   },
   "custom/keyboard": {
-    "exec": "/home/dnordstrom/Code/dotfiles/scripts/keyboard/keyboard.sh",
-    "format": "  {}", /* Remixicon: keyboard-box-fill  keyboard-fill  */
+    "exec": "/etc/nixos/scripts/keyboard-layout/keyboard-layout",
+    "format": "<span rise=\"-1550\"></span> {}",
     "interval": 30,
     "tooltip": false
   },
   "custom/disks": {
-    "exec": "/home/dnordstrom/Code/dotfiles/scripts/disks/disks.sh",
+    "exec": "/etc/nixos/scripts/disk-info/disk-info",
     "return-type": "json",
-    "format": " {}",
+    "format": "<span rise=\"-1550\"></span> {}",
     "on-click": "alacritty --title popup_term --class popup_term -e gotop",
     "interval": 30,
     "tooltip": true
   },
   "disk": {
     "interval": 30,
-    "format": "  {percentage_used}%",
+    "format": "<span rise=\"-1550\"></span> {percentage_used}%",
     "path": "/",
     "on-click": "alacritty --title popup_term --class popup_term -e gotop",
     "tooltip": true,
     "tooltip-format": "{used} / {total}"
   },
   "custom/wttr": {
-    "exec": "curl wttr.in/Sundsvall,Sweden?format=\"%c+%t\"",
+    "format": "{}",
+    "exec": "curl https://wttr.in/Sundsvall,Sweden?format=%c%3Cspan%20rise=%22-1750%22%3E%t%3C/span%3E",
     "on-click": "alacritty --title popup_term --class popup_term -e curl wttr.in/Sundsvall,Sweden",
     "interval": 1800,
     "tooltip": false
   },
   "custom/darksky": {
-    "exec": "/home/dnordstrom/Code/dotfiles/scripts/weather/weather.sh",
+    "exec": "/etc/nixos/scripts/weather-darksky",
     "on-click": "alacritty --title popup_term --class popup_term -e curl wttr.in/Sundsvall",
     "interval": 1800,
     "tooltip": false
@@ -117,14 +114,14 @@
     "format": "{icon}",
     "tooltip": false,
     "format-icons": {
-      "activated": "",
-      "deactivated": ""
+      "activated": "",
+      "deactivated": ""
     }
   },
   "pulseaudio": {
-    "format": "{icon} {volume}%",
-    "format-bluetooth": "{icon} ",
-    "format-muted": "",
+    "format": "<span rise=\"-1550\">{icon}</span> {volume}%",
+    "format-bluetooth": "<span rise=\"-1550\">{icon}</span> ",
+    "format-muted": "<span rise=\"-1550\"></span>",
     "format-icons": {
       "headphones": "",
       "handsfree": "",
@@ -144,20 +141,20 @@
     "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
     "critical-threshold": 80,
     "on-click": "alacritty --title popup_term --class popup_term -e gotop",
-    "format-critical": "{temperatureC}°C ",
+    "format-critical": "{temperatureC}°C <span rise=\"-1550\"></span>",
     "format": " {temperatureC}°C"
   },
   "cpu": {
     "on-click": "alacritty --title popup_term --class popup_term -e gotop",
     "tooltip": false,
-    "format": " {usage}%",
+    "format": "<span rise=\"-1550\"></span> {usage}%",
     "interval": 10
   },
   "network": {
-    "format": "{icon} {ifname}",
-    "format-wifi": "{icon} {essid}",
-    "format-ethernet": "{icon} {ifname}",
-    "format-disconnected": "{icon} Offline",
+    "format": "<span rise=\"-1550\">{icon}</span> {ifname}",
+    "format-wifi": "<span rise=\"-1550\">{icon}</span> {essid}",
+    "format-ethernet": "<span rise=\"-1550\">{icon}</span> {ifname}",
+    "format-disconnected": "<span rise=\"-1550\">{icon}</span> Offline",
     "format-icons": {
       "wifi": [""],
       "ethernet": [""],
@@ -168,7 +165,7 @@
   },
   "memory": {
     "interval": 30,
-    "format": " {avail:0.1f}GB",
+    "format": "<span rise=\"-1550\"></span> {avail:0.1f}GB",
     "tooltip": true,
     "tooltip-format": "{used:0.1f}GB / {total:0.1f}GB"
   },
@@ -178,12 +175,12 @@
       "warning": 30,
       "critical": 15
     },
-    "format": "{icon} {capacity}%",
-    "format-charging": " {capacity}%",
-    "format-plugged": " {capacity}%", /*  */
-    "format-alt": "{icon} {time}",
-    "format-good": "{icon} {capacity}%",
-    "format-full": "{icon} {capacity}%",
+    "format": "<span rise=\"-1550\">{icon}</span> {capacity}%",
+    "format-charging": "<span rise=\"-1550\"></span> {capacity}%",
+    "format-plugged": "<span rise=\"-1550\"></span> {capacity}%", /*  */
+    "format-alt": "<span rise=\"-1550\">{icon}</span> {time}",
+    "format-good": "<span rise=\"-1550\">{icon}</span> {capacity}%",
+    "format-full": "<span rise=\"-1550\">{icon}</span> {capacity}%",
     "format-icons": ["", "", "", "", ""]
   }
 }

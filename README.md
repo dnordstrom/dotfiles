@@ -2,9 +2,9 @@
 
 Flake based configuration used on a Dell XPS work laptop as well as my Ryzen 7 home desktop. It uses the unstable channel (which is actually very stable) for packages, and it's a constant work in progress. See the links below for further information on Nix and NixOS.
 
-## Notes to self
+## Notes
 
-* [This script](https://github.com/NixOS/nixpkgs/blob/master/pkgs/misc/vscode-extensions/update_installed_exts.sh) checks for updates VSCodium/VSCode extensions not available as Nix packages.
+* [This script](https://github.com/NixOS/nixpkgs/blob/master/pkgs/misc/vscode-extensions/update_installed_exts.sh) checks for VSCodium/VSCode extension updates so that one can update the version numbers and hashes accordingly in the module file.
 
 ## Links
 

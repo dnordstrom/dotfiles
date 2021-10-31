@@ -10,6 +10,12 @@ search-fill 
 settings-5-fill 
 shut-down-fill 
 shut-down-line 
+restart-fill 
+restart-line 
+logout-circle-r-fill 
+logout-circle-r-line 
+close-circle-fill 
+close-circle-line 
 door-open-fill 
 wifi-fill 
 slack-fill 

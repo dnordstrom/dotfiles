@@ -6,7 +6,7 @@
 
 #waybar {
   background: transparent;
-  color: #eceff4;
+  color: #d8dee9;
   transition: background-color 0.2s;
 }
 
@@ -56,9 +56,9 @@
 #backlight,
 #network,
 #pulseaudio,
-#custom-media,
 #tray,
 #idle_inhibitor,
+#custom-media,
 #custom-browser,
 #custom-terminal,
 #custom-files,
@@ -68,19 +68,28 @@
 #custom-wttr,
 #custom-darksky,
 #custom-system,
-#custom-separator,
+#custom-separator {
+  padding: 0 12px 0 12px;
+  font-family: 'remixicon', 'Input Sans Compressed', sans-serif;
+}
+
+#pulseaudio span {
+  padding: 0 30px;
+}
+
 #mode {
+  color: #ebcb8b;
   padding: 0 12px;
-  font-family: 'remixicon', 'Iosevka Nerd Font', sans-serif;
 }
 
 #idle_inhibitor {
-  padding: 0 18px;
+  padding: 0 8px 0 16px;
+  font-size: 16px;
 }
 
 #tray {
   opacity: 0.8;
-  padding: 8px;
+  padding: 9px;
 }
 
 #custom-system {
