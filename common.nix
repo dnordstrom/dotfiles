@@ -65,7 +65,13 @@ in
       plasma5.enable = true;
     };
 
-    libinput.enable = true;
+    libinput = {
+      enable = true;
+      touchpad = {
+        tapping = true;
+	clickMethod = "clickfinger";
+      };
+    };
 
     layout = "us,se";
     xkbOptions = "caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey";

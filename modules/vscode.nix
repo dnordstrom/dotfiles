@@ -23,7 +23,7 @@
         name = "nord-defaults";
         publisher = "dnordstrom";
         version = "0.0.4";
-        sha256 = "1slim65yhmv7j307kyznns1n8gisp7x7qbkbpzyd66syqas94mfv";
+        sha256 = "sha256-kA889DB8Q2cmfxUfd64i/HYnkRYWYAbbcta1jjilkE4=";
       }
       # Run the update script at config/vscode/update_installed_exts.sh to get
       # the latest versions and hashes of these manually fetched extensions.

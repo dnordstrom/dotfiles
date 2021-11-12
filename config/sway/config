@@ -149,6 +149,11 @@ input type:keyboard {
   xkb_options caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey
 }
 
+input type:touchpad {
+  tap enable
+  click_method clickfinger
+}
+
 #
 # Key Binds
 #
