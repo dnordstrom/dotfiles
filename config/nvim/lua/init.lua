@@ -199,7 +199,7 @@ opt.tabstop = 2
 -- Wrapping
 opt.wrap = true -- Soft wrap
 opt.wrapmargin = 80 -- Soft wrap column
-opt.textwidth = 80 -- Hard wrap column when `formatoptions~=t` or `gq` is used
+-- opt.textwidth = 80 -- Hard wrap column when `formatoptions~=t` or `gq` is used
 opt.formatoptions = 'cjroql'
 
 -- Reference:
@@ -337,6 +337,10 @@ nvim_set_keymap("i", "<C-h>", "<Left>", opts.nore)
 nvim_set_keymap("i", "<C-j>", "<Down>", opts.nore)
 nvim_set_keymap("i", "<C-k>", "<Up>", opts.nore)
 nvim_set_keymap("i", "<C-l>", "<Right>", opts.nore)
+
+-- Move by line even when soft wrapped
+nvim_set_keymap("n", "j", "gj", opts.nore)
+nvim_set_keymap("n", "k", "gk", opts.nore)
 
 -- Command mode navigation
 nvim_set_keymap("c", "<C-a>", "<Home>", opts.nore)

@@ -168,11 +168,13 @@ fi
 printf "\n"
 
 # Ask about Neovim
-if confirm --strict "Enable for Neovim (rm -rf ~/.config/nvim)?"; then
+if confirm --strict "Enable for Neovim (rm -rf ~/.config/nvim/ftplugin + lua)?"; then
   printf "\n"
-  loudly "rm -rf ~/.config/nvim"
-  loudly "ln -s /etc/nixos/config/nvim ~/.config/nvim"
-  cleanup="$cleanup\nrm ~/.config/nvim"
+  loudly "rm -rf ~/.config/nvim/ftplugin"
+  loudly "rm -rf ~/.config/nvim/lua"
+  loudly "ln -s /etc/nixos/config/nvim/ftplugin ~/.config/nvim/ftplugin"
+  loudly "ln -s /etc/nixos/config/nvim/lua ~/.config/nvim/lua"
+  cleanup="$cleanup\nrm ~/.config/nvim/ftplugin\nrm ~/.config/nvim/lua"
 else
   # This else clause should only be on the last confirm
   printf "\n"

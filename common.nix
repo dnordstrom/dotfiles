@@ -17,6 +17,8 @@ in
     "input-fonts"
     "slack"
     "steam-runtime"
+    "spotify"
+    "spotify-unwrapped"
   ];
 
   nixpkgs.config.input-fonts.acceptLicense = true;

@@ -44,6 +44,7 @@
     shfmt
     signal-desktop
     slack
+    spotify
     sqlite
     tor-browser-bundle-bin
     tree
@@ -269,7 +270,10 @@
 
   gtk = {
     enable = true;
-    font.name = "Input Sans Condensed 8";
+    font = {
+      name = "Input Sans Condensed";
+      size = 9;
+    };
     iconTheme = {
       package = pkgs.numix-icon-theme-circle;
       name = "Numix Circle";
