@@ -1,72 +1,104 @@
 "
+" Tridactyl configuration
+"
+" Author: Daniel Nordstrom <d@mrnordstrom.com>
+" Repository: https://github.com/dnordstrom/dotfiles
+"
+
+" Reset
+sanitise tridactyllocal tridactylsync
+
+"
 " Settings
 "
 
 colorscheme --url https://raw.githubusercontent.com/dnordstrom/dotfiles/main/config/firefox/nord.css nord
 
-unset newtab " Shows Tridactyl's about:blank page
+" General
 
+set newtab about:blank
 set allowautofocus false
-set editorcmd alacritty --class 'Terminal' -e nvim %f '+normal!%lGzv%c|'
+set editorcmd alacritty --class 'terminal' --title 'terminal' -e nvim %f '+normal!%lGzv%c|'
 set hintchars fdsqjklmrezauiopwxcvghtybn
-set searchengine g
+set hintuppercase false
+set minincsearchlen 2
+set searchengine google
 set smoothscroll true
 set tabopencontaineraware true
-set visualenterauto false
-set minincsearchlen 2
+set visualenterauto true
+set viewsource default
 
-" Custom searches
+" Search
 
 set searchurls.g https://www.google.com/search?q=%s&num=100
-set searchurls.gy https://www.google.com/search?q=%s&num=100&tbs=qdr:y
-set searchurls.r https://www.google.com/search?q=%s%20site:reddit.com&num=100
+set searchurls.google https://www.google.com/search?q=%s&num=100
+set searchurls.googlerecent https://www.google.com/search?q=%s&num=100&tbs=qdr:y
+set searchurls.reddit https://www.google.com/search?q=%s%20site:reddit.com&num=100
 set searchurls.mdn https://developer.mozilla.org/en-US/search?q=%s&topic=api&topic=js
 set searchurls.npm https://www.npmjs.com/search?q=%s
+set searchurls.n https://search.nixos.org/packages?channel=unstable&size=500&query=%s
 set searchurls.nix https://search.nixos.org/packages?channel=unstable&size=500&query=%s
-set searchurls.s https://searx.be/?q=%s
-set searchurls.sp https://www.startpage.com/do/search?query=%s
-set searchurls.ddg https://duckduckgo.com/?kp=-2&q=%s&ia=web
-
-set searchengine g
+set searchurls.searx https://searx.be/?q=%s
+set searchurls.startpage https://www.startpage.com/do/search?query=%s
+set searchurls.duckduckgo https://duckduckgo.com/?kp=-2&q=%s&ia=web
 
 "
 " Commands
 "
 
-" Convenience
+" Pass current URL to command
 command withurl composite get_current_url |
 
 " Replace binds with another prefix (exclamation point removes old binds)
 command bindreplaceprefix js -d% const [_, oldPrefix, newPrefix] = JS_ARGS; Object.entries(tri.config.get('nmaps')).map(([key, cmd]) => ({ key, cmd })).filter(({ key }) => key.startsWith(oldPrefix)).map(({ key, cmd }) => { tri.excmds.bind('--mode=normal', key.replace(oldPrefix, newPrefix), cmd); }) %
 command bindreplaceprefix! js -d% const [_, oldPrefix, newPrefix] = JS_ARGS; Object.entries(tri.config.get('nmaps')).map(([key, cmd]) => ({ key, cmd })).filter(({ key }) => key.startsWith(oldPrefix)).map(({ key, cmd }) => { tri.excmds.bind('--mode=normal', key.replace(oldPrefix, newPrefix), cmd); tri.excmds.unbind(key); }) %
 
-" Shows standard OS notification on Linux and always logs to console
-command notify js -p tri.excmds.exclaim_quiet(`notify-send ${JS_ARG}`); console.info(`TRIDACTYL: ${JS_ARG}`);
+" Show system notification (on Linux) and log to console
+command notify js -d% const message = JS_ARGS.join(' ').trim(); tri.native.run(`notify-send "Tridactyl" "${message}"`); console.info(`TRIDACTYL: ${message}`); %
 
-" Inspect a JavaScript object in the console
+" Inspect JavaScript object in console
 command jsp js -p tri.excmds.js(`console.dir(${JS_ARG})`);
 command jsbp js -p tri.excmds.js(`console.dir(${JS_ARG})`);
 
-" Saves text argument to file
+" Append note to ~/.notes.firefox.md (only URL and title if no argument)
 command note js -d% const link = `[${document.title}](${document.location.toString()})`; const note = JS_ARGS.join(' '); if (note) { tri.native.run(`touch ~/.notes.firefox.md && echo "- \"${note}\" --- ${link}\n\$(cat ~/.notes.firefox.md)" > ~/.notes.firefox.md`); } else { tri.native.run(`touch ~/.notes.firefox.md && echo "- ${link}\n$(cat ~/.notes.firefox.md)" > ~/.notes.firefox.md`); } %
 
-" Prefills command line current selection appended to "note", for binding to
-" quickly save the selection to file
-command note_selection js const selection = `${window.getSelection().toString()}`; tri.excmds.fillcmdline_notrail(`note ${selection}`)
+" Prefill note command
+command fillcmdline_note js -p tri.excmds.fillcmdline_notrail(`note ${JS_ARG}`)
+
+" Prefill note command with selection (using JS because of Wayland)
+command fillcmdline_note_selection js tri.excmds.fillcmdline_notrail(`note ${window.getSelection()}`);
+
+" Prefill note command with clipboard
+command fillcmdline_note_clipboard js tri.excmds.fillcmdline_notrail(`note ${await tri.excmds.getclip()}`);
+
+" Reload config from /etc/nixos
+command reconfiglive source /etc/nixos/config/firefox/tridactylrc
+
+" Reload config from ~/.config/tridactyl
+command reconfig source
 
 "
-" Key Binds
+" Key binds
 "
 
-" Firefox binds to keep
-unbind <C-f> " Search
-unbind <C-e> " Sideberry
+" Configuration
+
+bind <Space>rr composite reconfiglive ; notify Live configuration reloaded.
+bind <Space>rR composite reconfig ; notify Configuration reloaded.
+
+" Notes
+
+bind <Space>nn fillcmdline note
+bind <Space>ny fillcmdline_note_selection
+bind <Space>np fillcmdline_note_clipboard
+
+" Buffers/tabs
 
 bind <Space><Space> fillcmdline_notrail
-bind <Space>b !s xdotool search "Mozilla Firefox" windowactivate --sync key --clearmodifiers ctrl+e
+bind <Space>bb fillcmdline taball
+bind <Space>bd tabdetach
 
-" Prefill command line for note taking
-bind <Space>n note_selection
 " Search
 
 bind / fillcmdline find
@@ -75,58 +107,71 @@ bind n findnext 1
 bind N findnext -1
 bind <Space>h nohlsearch
 
-" Tabs
+" Change
+
+bind cp open about:profiles
+bind cs fillcmdline set
+
+" Navigation
 
 bind H tabprev
-bind L tabnext
-bind K forward
 bind J back
+bind K forward
+bind L tabnext
+
+" Movement
+
 bind x tabclose
 
-" Classic text binds
+bind gd tabdetach
+bind gD composite tabduplicate ; tabdetach
 
-bind --mode=ex <C-a> text.beginning_of_line
-bind --mode=insert <C-a> text.beginning_of_line
-bind --mode=input <C-a> text.beginning_of_line
-bind --mode=ex <C-e> text.end_of_line
-bind --mode=insert <C-e> text.end_of_line
-bind --mode=input <C-e> text.end_of_line
-bind --mode=ex <C-f> text.forward_word
-bind --mode=insert <C-f> text.forward_word
-bind --mode=input <C-f> text.forward_word
-bind --mode=ex <C-k> text.kill_line
-bind --mode=insert <C-k> text.kill_line
-bind --mode=input <C-k> text.kill_line
-bind --mode=ex <C-u> text.backward_kill_line
-bind --mode=insert <C-u> text.backward_kill_line
-bind --mode=input <C-u> text.backward_kill_line
-bind --mode=ex <C-V> composite getclip selection | text.insert_text
-bind --mode=insert <C-V> composite getclip selection | text.insert_text
-bind --mode=input <C-V> composite getclip selection | text.insert_text
-bind --mode=ex <C-w> text.backward_kill_word
-bind --mode=insert <C-w> text.backward_kill_word
-bind --mode=input <C-w> text.backward_kill_word
+bind ZQ composite sanitise tridactyllocal tridactylsync ; exclaim_quiet killall firefox
+bind ZZ exclaim_quiet killall firefox
 
-" Sanitize on exit
+" Command mode
 
-bind ZZ composite sanitise tridactyllocal tridactylsync; qall
+" Vim style
+bind --mode=ex <C-h> exclaim_quiet wtype -k left
+bind --mode=ex <C-j> exclaim_quiet wtype -k down
+bind --mode=ex <C-k> exclaim_quiet wtype -k up
+bind --mode=ex <C-l> exclaim_quiet wtype -k right
+
+" Emacs style
+bind --mode=ex <C-a> exclaim_quiet wtype -k home
+bind --mode=ex <C-e> exclaim_quiet wtype -k end
+
+" Compromise style
+bind --mode=ex <A-n> exclaim_quiet wtype -k down
+bind --mode=ex <A-p> exclaim_quiet wtype -k up
+
+" Insert mode
+
+" Vim style
+bind --mode=insert <C-h> exclaim_quiet wtype -k left
+bind --mode=insert <C-j> exclaim_quiet wtype -k down
+bind --mode=insert <C-k> exclaim_quiet wtype -k up
 
 " Marks
 
+" Personal
 quickmark i https://imgur.com
 quickmark y https://youtube.com
-
 quickmark r https://www.reddit.com
 quickmark g https://www.github.com/
-
 quickmark n https://search.nixos.org
-quickmark O https://search.nixos.org/options
-quickmark o https://nix-community.github.io/home-manager/options.html
-quickmark N https://nix-community.github.io/home-manager
+quickmark m https://mail.protonmail.com/u/0/inbox
+quickmark c https://calendar.protonmail.com/u/0/
 
+" Work
+quickmark J https://leeroy-group.atlassian.net/jira/software/c/projects/OF/boards/69
+quickmark C https://calendar.google.com/calendar/r?pli=1
+quickmark P https://leeroy-group.atlassian.net/wiki/spaces/BI/overview
+quickmark M https://mail.google.com/mail/u/0/#inbox
+quickmark G https://github.com/LeeroyGroup
+quickmark A https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-1#Instances:sort=instanceId
 
-
-" Marks on ' and ` like in Vim
+" Marks on ' and ` like Vim
 bindreplaceprefix go '
 bindreplaceprefix go `
 
@@ -135,20 +180,27 @@ bindreplaceprefix go `
 "
 
 blacklistadd localhost
+blacklistadd mail.protonmail.com mode ignore
 blacklistadd mail.google.com mode ignore
 blacklistadd leeroy-group.atlassian.net mode ignore
 
 "
-" Auto-Commands
+" Auto Commands
 "
 
-" Change new tab page title and favicon
-autocmd DocStart moz-extension://.*/static/newtab.html js document.head.querySelector('link[rel="shortcut icon"]').href = "https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/sumo/img/favicon-32x32.png"; document.title = "New tab"; document.body.innerHTML = '';
+" DocStart
 
-" Add button to Nix package search results to copy package name to clipboard
+" autocmd DocStart .* js ...
+
+" Change new tab page title and favicon
+autocmd DocStart moz-extension://.*/static/newtab.html js document.head.querySelector('link[rel="shortcut icon"]').href = 'https://static-media-prod-cdn.itsre-sumo.mozilla.net/static/sumo/img/favicon-32x32.png'; document.title = "New tab"; document.body.innerHTML = '';
+
+" DocLoad
+
+" search.nixos.org: Add copy to clipboard button
 autocmd DocLoad .*search\.nixos\.org/packages.+ js setTimeout(() => { const node = document.createElement('li'); const link = document.createElement('a'); node.appendChild(link); link.href = '#'; link.classList.add('copy-to-clipboard'); link.innerText = 'Copy to clipboard'; document.querySelectorAll('.package ul').forEach(links => { const clone = node.cloneNode(true); clone.firstElementChild.title = links.parentElement.getElementsByClassName('search-result-button')[0].textContent; links.appendChild(clone); }); document.addEventListener('click', event => {  if (event.target.classList.contains('copy-to-clipboard')) { navigator.clipboard.writeText(event.target.title); event.preventDefault(); } }) }, 3000);
 
-" Add button to home manager options page to copy option including example
+" nix-community.github.io/home-manager: Add copy to clipboard button
 autocmd DocLoad .*nix-community\.github\.io/home-manager/options\.html.* js document.querySelectorAll('dt span.term').forEach(node => { const dt = node.parentElement.nextElementSibling; const textEl = dt.querySelector('.programlisting') || dt.querySelector('.literal'); if (textEl) { const copy = document.createElement('span'); copy.appendChild(document.createTextNode(' - ')); copy.style.cursor = 'pointer'; const code = document.createElement('code'); code.className = 'copy'; code.setAttribute('data-copy', `${node.textContent} = ${textEl.textContent.trim()};`); code.appendChild(document.createTextNode('Copy to clipboard')); copy.appendChild(code); node.appendChild(copy); } }); document.querySelector('dl').addEventListener('click', event => { if (event.target.className === 'copy') { const text = event.target.getAttribute('data-copy'); navigator.clipboard.writeText(text); console.log(text); }});
 
 "
@@ -158,7 +210,7 @@ autocmd DocLoad .*nix-community\.github\.io/home-manager/options\.html.* js docu
 " Nord base00 color (background)
 " #2e3440
 
-" If it becomes possible to use data-URI's as new tab page, something like this:
+" If it becomes possible to use data-uri's as new tab page, something like this:
 " set newtab data:text/html,<html><head><title>New tab</title><style>body { background: rgb(46, 52, 64); color: white; padding: 60px 20px; text-align: center; font: 1rem sans; } h1 { margin: 0 0 20px; } body > div { display: inline-block; text-align: left; } div > div {} span { display: inline-block; } span:first-child { margin: 0 20px 0 0; } pre { margin: 0; } a,a:hover { color: white; display: inline-block; text-decoration: none; top: 12px; right: 12px; position: absolute; }</style></head><body><h1>Where to?</h1><div><div><span><pre>:o</pre></span><span>Open...</span></div><div><span><pre>:t</pre></span><span>Open in tab...</span></div></div><a href="">?</a></body></html>
 
 " vim: set filetype=vim:

@@ -13,14 +13,18 @@ if fn.empty(fn.glob(install_path)) > 0 then
 end
 
 return require('packer').startup(function(use)
+  use 'wbthomason/packer.nvim'
+
+  use 'shaunsingh/nord.nvim'
+  use 'rmehri01/onenord.nvim'
+
   use 'tpope/vim-fugitive'
   use 'tpope/vim-surround'
   use 'tpope/vim-markdown'
-
+  use 'christoomey/vim-tmux-navigator'
   use 'norcalli/nvim-colorizer.lua'
   use 'ellisonleao/glow.nvim'
   use 'b3nj5m1n/kommentary'
-  use 'shaunsingh/nord.nvim'
   use 'famiu/feline.nvim'
   use 'kyazdani42/nvim-web-devicons'
   use 'neovim/nvim-lspconfig'

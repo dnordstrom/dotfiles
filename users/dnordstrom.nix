@@ -25,12 +25,18 @@
   in
   with pkgs; [
     # General
+    appimage-run
     bitwarden
+    electron-mail
     element-desktop
     fractal
+    gcc
     guvcview
     kate
     pavucontrol
+    pinentry
+    pinentry-curses
+    protonmail-bridge
     pulseaudio # For pactl since pw-cli makes me cry
     qbittorrent
     signal-desktop
@@ -39,7 +45,6 @@
     sqlite
     tor-browser-bundle-bin
     zathura
-    vimb
 
     # Command line
     arcan.espeak
@@ -62,8 +67,10 @@
     usbutils # For lsusb
     vifm-full
     weechat
+    xclip
     xdotool
     xorg.xev
+    xsel
 
     # Desktop integration portals
     xdg-desktop-portal
@@ -114,9 +121,11 @@
     gnomeExtensions.gsconnect
     peek
 
-    # Browser tools
+    # Web browsing
     tridactyl-native
     luakit
+    vieb
+    vimb
 
     # Multimedia
     celluloid
@@ -223,6 +232,10 @@
   xdg.configFile."sway/colors.ayu-dark".source = ../config/sway/colors.ayu-dark;
   xdg.configFile."sway/colors.nord".source = ../config/sway/colors.nord;
 
+  # tmux
+
+  home.file.".tmux.conf".source = ../config/tmux/tmux.conf;
+
   # Firefox
 
   xdg.configFile."tridactyl/tridactylrc".source = ../config/firefox/tridactylrc;
@@ -323,7 +336,10 @@
           "browser.bookmarks.restore_default_bookmarks" = false;
           "browser.shell.checkDefaultBrowser" = false;
           "extensions.webextensions.restrictedDomains" = "";
-          "privacy.resistFingerprinting.block_mozAddonManager" = true;
+
+          # Needed to make certain key combinations work with Tridactyl
+          "privacy.resistFingerprinting" = false;
+          "privacy.resistFingerprinting.block_mozAddonManager" = false;
         };
       };
       private = {
@@ -334,7 +350,10 @@
           "browser.bookmarks.restore_default_bookmarks" = false;
           "browser.shell.checkDefaultBrowser" = false;
           "extensions.webextensions.restrictedDomains" = "";
-          "privacy.resistFingerprinting.block_mozAddonManager" = true;
+
+          # Needed to make certain key combinations work with Tridactyl
+          "privacy.resistFingerprinting" = false;
+          "privacy.resistFingerprinting.block_mozAddonManager" = false;
         };
       };
       testing = {
@@ -345,7 +364,10 @@
           "browser.bookmarks.restore_default_bookmarks" = false;
           "browser.shell.checkDefaultBrowser" = false;
           "extensions.webextensions.restrictedDomains" = "";
-          "privacy.resistFingerprinting.block_mozAddonManager" = true;
+
+          # Needed to make certain key combinations work with Tridactyl
+          "privacy.resistFingerprinting" = false;
+          "privacy.resistFingerprinting.block_mozAddonManager" = false;
         };
       };
     };
@@ -714,19 +736,6 @@
     shortcut = "a";
     terminal = "screen-256color";
     secureSocket = false;
-    extraConfig = ''
-      set-option -g mouse on
-      set-option -s set-clipboard off
-
-      set -s copy-command "wl-copy"
-
-      bind P paste-buffer
-
-      bind-key -t vi-copy MouseDragEnd1Pane copy-pipe "wl-copy"
-      bind-key -T copy-mode-vi v send-keys -X begin-selection
-      bind-key -T copy-mode-vi y send-keys -X copy-selection
-      bind-key -T copy-mode-vi r send-keys -X rectangle-toggle
-    '';
   };
 
   programs.bat = {
@@ -786,7 +795,6 @@
     };
   };
 
-  # RSS reader
   programs.newsboat = {
     enable = true;
     autoReload = true;
@@ -797,6 +805,22 @@
     #     url = "http://example.com";
     #   }
     # ];
+  };
+
+  programs.gpg = {
+    enable = true;
+  };
+
+  #
+  # Services
+  #
+
+  services.gpg-agent = {
+    enable = true;
+    pinentryFlavor = "curses";
+    # extraConfig = ''
+    #   pinentry-program ${pkgs.pinentry-curses}/bin/pinentry-curses
+    # '';
   };
 
   #
@@ -810,11 +834,14 @@
     notmuch.enable = true;
     mbsync.enable = true;
     mbsync.create = "both";
+
     realName= "Daniel Nordstrom";
     userName= "d@mrnordstrom.com";
     address = "d@mrnordstrom.com";
+
     imap.host = "mail.mrnordstrom.com";
     smtp.host = "mail.mrnordstrom.com";
+
     signature = {
       text = ''
         Daniel Nordstrom
@@ -822,7 +849,8 @@
       '';
       showSignature = "append";
     };
-    passwordCommand = "${pkgs.pass}/bin/pass mrnordstrom/email";
+
+    passwordCommand = "${pkgs.pass}/bin/pass home/email/d@mrnordstrom.com";
   };
 
   accounts.email.accounts.leeroy = {
@@ -831,11 +859,14 @@
     notmuch.enable = true;
     mbsync.enable = true;
     mbsync.create = "both";
+
     realName= "Daniel Nordstrom";
     userName= "daniel.nordstrom@leeroy.se";
     address = "daniel.nordstrom@leeroy.se";
+
     imap.host = "mail.leeroy.se";
     smtp.host = "mail.leeroy.se";
+
     signature = {
       text = ''
         Daniel Nordstrom
@@ -844,7 +875,8 @@
       '';
       showSignature = "append";
     };
-    passwordCommand = "${pkgs.pass}/bin/pass leeroy/email";
+
+    passwordCommand = "${pkgs.pass}/bin/pass work/email/daniel.nordstrom@leeroy.se";
   };
 
   #

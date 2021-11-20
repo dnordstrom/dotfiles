@@ -167,6 +167,26 @@ fi
 
 printf "\n"
 
+# Ask about tmux
+if confirm --strict "Enable for tmux (rm -rf ~/.tmux.conf)?"; then
+  printf "\n"
+  loudly "rm -rf ~/.tmux.conf"
+  loudly "ln -s /etc/nixos/config/tmux/tmux.conf ~/.tmux.conf"
+  cleanup="$cleanup\nrm ~/.tmux.conf"
+fi
+
+printf "\n"
+
+# Ask about Tridactyl
+if confirm --strict "Enable for Tridactyl (rm -rf ~/.config/tridactyl/tridactylrc)?"; then
+  printf "\n"
+  loudly "rm -rf ~/.config/tridactyl/tridactylrc"
+  loudly "ln -s /etc/nixos/config/firefox/tridactylrc ~/.config/tridactyl/tridactylrc"
+  cleanup="$cleanup\nrm ~/.config/tridactyl/tridactylrc"
+fi
+
+printf "\n"
+
 # Ask about Neovim
 if confirm --strict "Enable for Neovim (rm -rf ~/.config/nvim/ftplugin + lua)?"; then
   printf "\n"
