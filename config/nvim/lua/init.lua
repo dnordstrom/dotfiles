@@ -2,9 +2,7 @@
 -- Imports
 --
 
-local lspconfig = require("lspconfig") -- Language server configuration tool
-local npairs = require("nvim-autopairs") -- Pair brackets and similar
-local luasnip = require("luasnip") -- Snippets
+require ("plugins")
 
 --
 -- Helpers
@@ -19,7 +17,7 @@ end
 -- Shortcut variables
 --
 
--- Keeping the original names instead of shortening them because it makes it 
+-- Keeping the original names instead of shortening them because it makes it
 -- easier to learn and remember them. The right hand side never uses other
 -- shortcut variables since that could break if some are removed.
 
@@ -109,7 +107,7 @@ NORDUtils.echo = function(message, highlight, label_highlight)
 end
 
 -- Reload configuration
--- Sources from `/etc/nixos` by default since it's usually used to test
+-- Sources from `/etc/nixos` by default since it"s usually used to test
 -- configuration edits. Passing `false` sources from home directory.
 NORDUtils.reload = function(live)
   if live == false then
@@ -134,14 +132,14 @@ end
 -- Uses the function below to perform searches using web browser.
 NORDUtils.operators.browsersearch = function(mode)
   if mode == nil then
-    vim.go.operatorfunc = 'v:lua.NORDUtils.operators.browsersearch'
-    vim.api.nvim_feedkeys('g@', 'n', false)
+    vim.go.operatorfunc = "v:lua.NORDUtils.operators.browsersearch"
+    vim.api.nvim_feedkeys("g@", "n", false)
   end
 
   local command = "firefox"
   local url = "https://google.com/search?q="
-  local start = vim.api.nvim_buf_get_mark(0, '[')
-  local finish = vim.api.nvim_buf_get_mark(0, ']')
+  local start = vim.api.nvim_buf_get_mark(0, "[")
+  local finish = vim.api.nvim_buf_get_mark(0, "]")
   local lines = vim.api.nvim_buf_get_lines(0, start[1] - 1, finish[1], false)
   local query
 
@@ -165,7 +163,7 @@ NORDUtils.browsersearch = function(query)
   query = query:gsub("([^%w ])", tohex)
   query = query:gsub("%s+", "+")
 
-  io.popen(command .. " '" .. url .. query .. "'")
+  io.popen(command .. ' "' .. url .. query .. '"')
 end
 
 --
@@ -198,9 +196,9 @@ opt.tabstop = 2
 
 -- Wrapping
 opt.wrap = true -- Soft wrap
-opt.wrapmargin = 80 -- Soft wrap column
--- opt.textwidth = 80 -- Hard wrap column when `formatoptions~=t` or `gq` is used
-opt.formatoptions = 'cjroql'
+opt.wrapmargin = 100 -- Soft wrap column
+-- opt.textwidth = 100 -- Hard wrap column when `formatoptions~=t` or `gq` is used
+opt.formatoptions = "cjroql"
 
 -- Reference:
 -- t -> auto-wrap at textwidth
@@ -221,98 +219,121 @@ g.nord_italic = true
 require("nord").set()
 
 --
+-- Plugins
+--
+
+-- Kommentary
+require("kommentary.config").use_extended_mappings()
+
+-- Show possible key binds when typing
+require("which-key").setup({})
+
+-- Comment labels
+require("todo-comments").setup({})
+
+-- Autopairs
+require("nvim-autopairs").setup({
+  check_ts = true,
+})
+
+-- Trouble
+require("trouble").setup({
+  mode = "lsp_document_diagnostics",
+  use_lsp_diagnostic_signs = true,
+})
+
 -- Status line
---
-require("lualine").setup{
-  options = {
-    icons_enabled = true,
-    theme = "nord",
-    component_separators = {"", ""},
-    section_separators = {"", ""},
-    disabled_filetypes = {"dashboard"}
+require("feline").setup()
+
+-- Completion
+local cmp = require("cmp")
+
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      vim.fn["vsnip#anonymous"](args.body)
+    end,
   },
-  sections = {
-    lualine_a = {"mode"},
-    lualine_b = {"branch"},
-    lualine_c = {'vim.fn.fnamemodify(vim.fn.getcwd(), ":t")', "filename"},
-    lualine_x = {"encoding", "fileformat", "filetype"},
-    lualine_y = {"progress"},
-    lualine_z = {"location"}
+  mapping = {
+    ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
+    ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
+    ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
+    ["<C-y>"] = cmp.config.disable,
+    ["<C-e>"] = cmp.mapping({
+      i = cmp.mapping.abort(),
+      c = cmp.mapping.close(),
+    }),
+    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+    ["<TAB>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }),
+    ["<S-TAB>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" })
   },
-  inactive_sections = {
-    lualine_a = {},
-    lualine_b = {},
-    lualine_c = {"filename"},
-    lualine_x = {"location"},
-    lualine_y = {},
-    lualine_z = {}
+  sources = cmp.config.sources({
+    { name = "nvim_lsp" },
+    { name = "vsnip" },
+  }, {
+    { name = "buffer" },
+  })
+})
+
+-- Use buffer source for `/` (if you enabled `native_menu`, this won"t work anymore).
+cmp.setup.cmdline("/", {
+  sources = {
+    { name = "buffer" }
+  }
+})
+
+-- Use cmdline & path source for ":" (if you enabled `native_menu`, this won"t work anymore).
+cmp.setup.cmdline(":", {
+  sources = cmp.config.sources({
+    { name = "path" }
+  }, {
+    { name = "cmdline" }
+  })
+})
+
+-- Renamer
+
+local mappings_utils = require('renamer.mappings.utils')
+
+require('renamer').setup {
+  -- The popup title, shown if `border` is true
+  title = 'Rename',
+  -- The padding around the popup content
+  padding = {
+      top = 0,
+      left = 0,
+      bottom = 0,
+      right = 0,
   },
-  tabline = {},
-  extensions = {}
+  -- Whether or not to shown a border around the popup
+  border = true,
+  -- The characters which make up the border
+  border_chars = { '─', '│', '─', '│', '╭', '╮', '╯', '╰' },
+  -- Whether or not to highlight the current word references through LSP
+  show_refs = true,
+  -- Whether or not to add resulting changes to the quickfix list
+  with_qf_list = true,
+  -- Whether or not to enter the new name through the UI or Neovim's `input`
+  -- prompt
+  with_popup = true,
+  -- The keymaps available while in the `renamer` buffer. The example below
+  -- overrides the default values, but you can add others as well.
+  mappings = {
+      ['<c-i>'] = mappings_utils.set_cursor_to_start,
+      ['<c-a>'] = mappings_utils.set_cursor_to_end,
+      ['<c-e>'] = mappings_utils.set_cursor_to_word_end,
+      ['<c-b>'] = mappings_utils.set_cursor_to_word_start,
+      ['<c-c>'] = mappings_utils.clear_line,
+      ['<c-u>'] = mappings_utils.undo,
+      ['<c-r>'] = mappings_utils.redo,
+  },
+  -- Custom handler to be run after successfully renaming the word. Receives
+  -- the LSP 'textDocument/rename' raw response as its parameter.
+  handler = nil,
 }
 
---
--- Telescope
---
-
-require("telescope").setup{
-  defaults = {
-    vimgrep_arguments = {
-      "rg",
-      "--color=never",
-      "--no-heading",
-      "--with-filename",
-      "--line-number",
-      "--column",
-      "--smart-case"
-    },
-    prompt_prefix = " ",
-    selection_caret = "ﱣ ",
-    entry_prefix = "ﱤ ",
-    initial_mode = "insert",
-    selection_strategy = "reset",
-    sorting_strategy = "descending",
-    layout_strategy = "vertical",
-    layout_config = {
-      horizontal = {
-        mirror = false,
-      },
-      vertical = {
-        mirror = true,
-      },
-    },
-    generic_sorter =  require("telescope.sorters").get_generic_fuzzy_sorter,
-    winblend = 0,
-    border = {},
-    borderchars = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"},
-    color_devicons = true,
-    use_less = true,
-    path_display = {},
-    set_env = {["COLORTERM"] = "truecolor"}, -- default = nil,
-    file_previewer = require("telescope.previewers").vim_buffer_cat.new,
-    grep_previewer = require("telescope.previewers").vim_buffer_vimgrep.new,
-    qflist_previewer = require("telescope.previewers").vim_buffer_qflist.new,
-  },
-  extensions = {
-    fzf = {
-      fuzzy = true,
-      override_generic_sorter = true,
-      override_file_sorter = true,
-      case_mode = "smart_case",
-    },
-    frecency = {
-      workspaces = {
-        ["code"]    = "/home/dnordstrom/Code",
-        ["nix"]    = "/etc/nixos",
-        ["t"] = "/home/dnordstrom/Code/ticker",
-        ["tb"]    = "/home/dnordstrom/Code/ticker-backend"
-      }
-    }
-  },
-}
-
-require("telescope").load_extension("frecency")
-require("telescope").load_extension("fzf")
+-- Colorizer
+require("colorizer").setup()
 
 --
 -- Key maps
@@ -365,96 +386,40 @@ nvim_set_keymap("n", "<Leader>h", "<Cmd>set hlsearch!<CR>", opts.nore)
 -- Go to buffer
 nvim_set_keymap("n", "gb", "<Cmd>ls<CR>:b<Space>", opts.nore)
 
--- Go to definition
-nvim_set_keymap("n", "gD", "v:lua.vim.lsp.buf.declaration()", opts.noreExpr)
-nvim_set_keymap("n", "gd", "v:lua.vim.lsp.buf.definition()", opts.noreExpr)
-nvim_set_keymap("n", "F12", "v:lua.vim.lsp.buf.definition()", opts.noreExpr)
-nvim_set_keymap("i", "F12", "v:lua.vim.lsp.buf.definition()", opts.noreExpr)
-
--- Telescope
-nvim_set_keymap("n", "<Leader>ff", '<Cmd>lua require("telescope.builtin").fd()<CR>', opts.nore)
-nvim_set_keymap("n", "<Leader>fg", '<Cmd>lua require("telescope.builtin").live_grep()<CR>', opts.nore)
-nvim_set_keymap("n", "<Leader>fe", '<Cmd>lua require("telescope.builtin").file_browser()<CR>', opts.nore)
-nvim_set_keymap("n", "<Leader>fb", '<Cmd>lua require("telescope.builtin").buffers()<CR>', opts.nore)
-nvim_set_keymap("n", "<Leader>fh", '<Cmd>lua require("telescope.builtin").help_tags()<CR>', opts.nore)
-nvim_set_keymap("n", "<Leader>fs", '<Cmd>lua require("telescope.builtin").lsp_document_symbols()<CR>', opts.nore)
-nvim_set_keymap("n", "<Leader>fd", '<Cmd>lua require("telescope.builtin").lsp_definitions()<CR>', opts.nore)
-nvim_set_keymap("n", "<Leader><Leader>", '<Cmd>lua require"telescope".extensions.frecency.frecency()<CR>', opts.nore)
-nvim_set_keymap("n", "<C-Space>", '<Cmd>lua require"telescope".extensions.frecency.frecency()<CR>', opts.nore)
+-- FZF
+nvim_set_keymap("n", "<Leader>ff", "<Cmd>FzfLua files<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>fb", "<Cmd>FzfLua buffers<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>fg", "<Cmd>FzfLua grep<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>fl", "<Cmd>FzfLua live_grep<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>ft", "<Cmd>FzfLua tags<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>fm", "<Cmd>FzfLua marks<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>fc", "<Cmd>FzfLua commands<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>fh", "<Cmd>FzfLua help_tags<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>fh", "<Cmd>FzfLua help_tags<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>fz", "<Cmd>FzfLua<CR>", opts.nore)
 
 -- Diagnostic
-nvim_set_keymap("n", "<Leader>dd", "<Cmd>TroubleToggle lsp_document_diagnostics<CR>", opts.nore)
-nvim_set_keymap("n", "<Leader>dn", "v:lua.vim.lsp.diagnostic.goto_prev()", opts.noreExpr)
-nvim_set_keymap("n", "<Leader>dN", "v:lua.vim.lsp.diagnostic.goto_next()", opts.noreExpr)
-nvim_set_keymap("n", "<Leader>dl", "v:lua.vim.lsp.diagnostic.show_line_diagnostics({focusable = false})", opts.noreExpr)
-
--- Dashboard
-nvim_set_keymap("n", "<Leader>vh", "<Cmd>DashboardFindHistory<CR>", opts.nore)
-nvim_set_keymap("n", "<Leader>vf", "<Cmd>DashboardFindFile<CR>", opts.nore)
-nvim_set_keymap("n", "<Leader>vc", "<Cmd>DashboardChangeColorscheme<CR>", opts.nore)
-nvim_set_keymap("n", "<Leader>va", "<Cmd>DashboardFindWord<CR>", opts.nore)
-nvim_set_keymap("n", "<Leader>vm", "<Cmd>DashboardJumpMark<CR>", opts.nore)
-nvim_set_keymap("n", "<Leader>vn", "<Cmd>DashboardNewFile<CR>", opts.nore)
-
--- NCM2
-
-nvim_set_keymap("i", "<Tab>", "v:lua.NORDUtils.smart_tab()", opts.noreExpr)
-nvim_set_keymap("i", "<S-Tab>", "v:lua.NORDUtils.smart_tab_shift()", opts.noreExpr)
-nvim_set_keymap("i", "<CR>", "v:lua.NORDUtils.smart_return()", opts.noreExpr)
+nvim_set_keymap("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", opts.nore)
+nvim_set_keymap("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts.nore)
+nvim_set_keymap("n", "F12", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts.nore)
+nvim_set_keymap("i", "F12", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>dN", "<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>dn", "<Cmd>lua vim.lsp.diagnostic.goto_next()<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>dd", "<Cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>", opts.nore)
 
 -- Custom operators
 nvim_set_keymap("n", "<Leader>gs", "<Cmd>lua NORDUtils.operators.browsersearch()<CR>", opts.nore)
 
---
--- Plugins
---
-
--- Show possible key binds when typing
-require("which-key").setup({})
-
--- Line peek
-require("numb").setup()
-
--- Comment labels
-require("todo-comments").setup {
-  -- All options can be found here:
-  -- https://github.com/folke/todo-comments.nvim/blob/main/lua/todo-comments/config.lua
-
-  -- Example extending existing keywords:
-  --   keywords = {
-  --     WARN = {icon = " ", color = "warning", alt = {"@warn", "@WARNING", "warning", "WARNING", "XXX"}},
-  --   }
-}
-
--- Autopairs
-require("nvim-autopairs").setup({
-  disable_filetype = {"TelescopePrompt", "dashboard"},
-  check_ts = true,
-})
-
--- Dashboard
-
-g.dashboard_preview_command = "bat"
-g.dashboard_default_executive = "telescope"
-g.dashboard_custom_footer = {"  Neovim " .. NORDUtils.nvim_version}
-
-nvim_exec([[
-  augroup dashboard
-    autocmd!
-    autocmd User TelescopePreviewerLoaded setlocal wrap
-    autocmd FileType dashboard set showtabline=0
-    autocmd WinLeave <Buffer> set showtabline=2
-  augroup end
-
-  augroup yankhighlight
-    autocmd!
-    autocmd TextYankPost * silent! lua vim.highlight.on_yank({ timeout = 100 })
-  augroup end
-]], false)
+-- Renamer
+nvim_set_keymap('i', '<F2>', '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.noreSilent)
+nvim_set_keymap('n', '<Leader>rn', '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.noreSilent)
+nvim_set_keymap('v', '<Leader>rn', '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.noreSilent)
 
 --
 -- Language Server Protocols
 --
+
+local lspconfig = require("lspconfig") -- Language server configuration tool
 
 -- Runs after the servers have attached to a buffer
 local on_attach = function(client, bufnr)
@@ -465,7 +430,8 @@ local on_attach = function(client, bufnr)
   end
 end
 
-local capabilities = vim.lsp.protocol.make_client_capabilities()
+-- Use nvim-cmp capabilities for completion
+local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
@@ -477,10 +443,6 @@ for _, lsp in ipairs(servers) do
     capabilities = capabilities
   })
 end
-
-nvim_exec([[
-    autocmd CursorHold silent! lua vim.lsp.diagnostic.show_line_diagnostics({focusable = false})
-]], false)
 
 lspconfig.diagnosticls.setup{
   on_attach = on_attach,
@@ -555,34 +517,15 @@ for type, icon in pairs(signs) do
   })
 end
 
-require("trouble").setup{
-  mode = "lsp_document_diagnostics",
-  use_lsp_diagnostic_signs = true,
-}
-
 --
--- Finalize global variables
---
-
--- Source or view configurations either live from `/etc/nixos` to test before
--- builds, or the currently installed configuration in `~/.config`. Setting
--- `live` to `true` will source the live configuration.
-NORDUtils.config_reload = function(live)
-  if live == true then
-    require("/etc/nixos/config/nvim/lua/init.lua")
-  else
-    -- `~/.config/nvim/init.lua` is generated by Home Manager and just loads
-    -- the following `~/.config/nvim/lua/init.lua`.
-    require(home .. "/.config/nvim/lua/init.lua")
-  end
-end
-
---
--- Vim script
+-- Vimscript
 --
 
 nvim_exec([[
-  autocmd BufEnter * call ncm2#enable_for_buffer()
+  augroup line_diagnostics
+    autocmd!
+    autocmd CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()
+  augroup end
 
   augroup highlight_yank
     autocmd!

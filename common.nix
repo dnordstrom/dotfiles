@@ -4,6 +4,16 @@ let
   udev-rules = pkgs.callPackage ./packages/udev-rules.nix {};
 in
 {
+  #
+  # General
+  #
+
+  time.timeZone = "Europe/Amsterdam";
+
+  #
+  # Nixpkgs
+  #
+
   nix.package = pkgs.nixUnstable;
   nix.extraOptions =  ''
     keep-outputs = true
@@ -22,13 +32,18 @@ in
   ];
 
   nixpkgs.config.input-fonts.acceptLicense = true;
-
-  nixpkgs.config.firefox.enablePlasmaBrowserIntegration = true;
-  nixpkgs.config.firefox.enableGnomeExtensions = true;
   nixpkgs.config.firefox.enableTridactylNative = true;
+
+  #
+  # Booting
+  #
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  #
+  # Networking
+  #
 
   networking.hostName = "nordix";
   networking.wireless.enable = false;
@@ -48,50 +63,9 @@ in
     ***REMOVED***
   '';
 
-  time.timeZone = "Europe/Amsterdam";
-
-  services.xserver = {
-    enable = true;
-
-    displayManager = {
-      sddm = {
-        enable = true;
-
-        # To enable Sway in SDDM:
-        settings.Wayland.SessionDir = "${pkgs.sway}/share/wayland-sessions";
-      };
-    };
-
-    desktopManager = {
-      gnome.enable = true;
-      plasma5.enable = true;
-    };
-
-    libinput = {
-      enable = true;
-      touchpad = {
-        tapping = true;
-	clickMethod = "clickfinger";
-      };
-    };
-
-    layout = "us,se";
-    xkbOptions = "caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey";
-    xkbVariant = ",us";
-  };
-
-  # Make `swaylock` accept correct password
-  security.pam.services.swaylock = {
-    text = ''
-      auth include login
-    '';
-  };
-
-  services.gnome.chrome-gnome-shell.enable = true;
-
-  services.blueman.enable = true;
-
-  services.udev.packages = [ udev-rules ];
+  #
+  # Fonts
+  #
 
   fonts.fonts = with pkgs; [
     cascadia-code
@@ -100,8 +74,6 @@ in
     fira-code
     fira-code-symbols
 
-    # Nerd Fonts to install. Available fonts:
-    # https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts
     (nerdfonts.override {
       fonts = [
         "Iosevka"
@@ -112,8 +84,42 @@ in
     })
   ];
 
-  # Recommended in wiki, for Pipewire
-  security.rtkit.enable = true;
+  #
+  # Services
+  #
+
+  services.xserver = {
+    enable = true;
+
+    displayManager = {
+      sddm = {
+        enable = true;
+        settings.Wayland.SessionDir = "${pkgs.sway}/share/wayland-sessions"; # Enable Sway
+      };
+    };
+
+    # For their utilities
+    desktopManager = {
+      gnome.enable = true;
+      plasma5.enable = true;
+    };
+
+    libinput = {
+      enable = true;
+      touchpad = {
+        tapping = true;
+      	clickMethod = "clickfinger";
+      };
+    };
+
+    layout = "us,se";
+    xkbOptions = "caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey";
+    xkbVariant = ",us";
+  };
+
+  services.gnome.chrome-gnome-shell.enable = true;
+  services.blueman.enable = true;
+  services.udev.packages = [ udev-rules ];
 
   services.pipewire = {
     enable = true;
@@ -122,15 +128,30 @@ in
     pulse.enable = true;
   };
 
+  #
+  # Security
+  #
+
+  security.sudo.wheelNeedsPassword = false;
+  security.rtkit.enable = true; # For Pipewire (recommended in Nix wiki)
+
+  # Make swaylock accept correct password
+  security.pam.services.swaylock = {
+    text = ''
+      auth include login
+    '';
+  };
+
+  #
+  # Hardware
+  #
+
   hardware = {
+    pulseaudio.enable = false;
+
     opengl = {
       enable = true;
       driSupport = true;
-    };
-
-    # Using Pipewire instead
-    pulseaudio = {
-      enable = false;
     };
 
     bluetooth = {
@@ -143,6 +164,10 @@ in
     };
   };
 
+  #
+  # XDG
+  #
+
   xdg = {
     portal = {
       enable = true;
@@ -153,9 +178,12 @@ in
       wlr = {
         enable = true;
       };
-      gtkUsePortal = true;
     };
   };
+
+  #
+  # Users
+  #
 
   users.users.dnordstrom = {
     isNormalUser = true;
@@ -166,7 +194,9 @@ in
     shell = pkgs.zsh;
   };
 
-  security.sudo.wheelNeedsPassword = false;
+  #
+  # System-wide packages
+  #
 
   environment.systemPackages = with pkgs; [
     git

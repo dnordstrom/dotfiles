@@ -26,38 +26,44 @@
   with pkgs; [
     # General
     bitwarden
-    bitwarden-cli
-    bustle # GTK-based D-Bus inspector
-    dfeet # GTK-based D-Bus inspector
     element-desktop
-    fd
     fractal
     guvcview
-    ideogram # ElementaryOS emote picker since Plasma's emoji picker doesn't work
     kate
-    libnotify
     pavucontrol
-    pulseaudio # Just to get `pactl` since `pw-cli` is too complicated
+    pulseaudio # For pactl since pw-cli makes me cry
     qbittorrent
-    quaternion
-    ripgrep
-    shfmt
     signal-desktop
     slack
     spotify
     sqlite
     tor-browser-bundle-bin
-    tree
-    usbutils # For `lsusb`
-    weechat
-    xorg.xev # Keyboard event viewer
-    xdotool
+    zathura
+    vimb
 
     # Command line
-    asciinema # Terminal recorder for asciinema.org
-    glow # Markdown reader
-    t-rec # Another terminal recorder
+    arcan.espeak
+    asciinema # For asciinema.org
+    bitwarden-cli
+    fd
+    figlet
+    fortune
+    glow
     gotop
+    libnotify
+    lolcat
+    neo-cowsay
+    nixpkgs-fmt
+    ripgrep
+    shfmt
+    t-rec
+    toilet
+    tree
+    usbutils # For lsusb
+    vifm-full
+    weechat
+    xdotool
+    xorg.xev
 
     # Desktop integration portals
     xdg-desktop-portal
@@ -65,10 +71,10 @@
     xdg-desktop-portal-kde
     xdg-desktop-portal-gtk
 
-    # Sway
+    # Sway and Wayland specific
     fnott
-    grim # Command line screenshot tool
-    kooha # GUI screen recorder with video support
+    grim
+    imagemagick
     libsForQt5.qt5.qtwayland
     nwg-drawer
     nwg-launchers
@@ -80,7 +86,7 @@
     swayidle
     swaylock-effects
     swaywsr
-    wdisplays # GUI display manager
+    wdisplays
     wev
     wf-recorder
     wl-clipboard
@@ -108,26 +114,20 @@
     gnomeExtensions.gsconnect
     peek
 
-    # Display manager
-    greetd.tuigreet
-
     # Browser tools
-    chrome-gnome-shell
-    plasma-browser-integration
     tridactyl-native
     luakit
 
     # Multimedia
-    imagemagick
-    celluloid # GTK frontend for MPV
-    haruna # QT frontend for MPV
-    smplayer # QT frontend for MPV
+    celluloid
+    haruna
+    smplayer
     sayonara
 
     # Tryouts
-    quaternion # Matrix client
-    nheko # Matrix client
-    neochat # Matrix client
+    quaternion
+    nheko
+    neochat
 
     # NPM packages
     nodePackages.bash-language-server
@@ -141,8 +141,9 @@
     # Lua
     luajit
 
-    # Language servers
+    # Language servers and tools
     gopls
+    tree-sitter
 
     # Fonts
     corefonts
@@ -150,45 +151,18 @@
     powerline-fonts
 
     # Themes
-    arc-kde-theme
-    arc-theme
     nordic
 
-    # Icon themes
+    # Icons
     numix-icon-theme-circle
 
-    # Nix
-    nixpkgs-fmt
-
-    # Unnecessary utilities
-    arcan.espeak
-    neo-cowsay
-    figlet
-    fortune
-    lolcat
-    toilet
-
-    # Custom packages
+    # Custom
     convox
   ];
 
   #
-  # Scripts
-  #
-
-  home.file.".scripts".source = ../scripts;
-
-  #
   # Sway
   #
-
-  xdg.configFile."swaylock/config".source = ../config/swaylock/config;
-  xdg.configFile."swaynag/config".source = ../config/swaynag/config;
-
-  xdg.configFile."sway/colors.ayu".source = ../config/sway/colors.ayu;
-  xdg.configFile."sway/colors.ayu-mirage".source = ../config/sway/colors.ayu-mirage;
-  xdg.configFile."sway/colors.ayu-dark".source = ../config/sway/colors.ayu-dark;
-  xdg.configFile."sway/colors.nord".source = ../config/sway/colors.nord;
 
   wayland.windowManager.sway = {
     enable = true;
@@ -209,35 +183,95 @@
   };
 
   #
-  # Firefox
+  # GTK
   #
+
+  gtk = {
+    enable = true;
+    font = {
+      name = "Input Sans Condensed";
+      size = 8;
+    };
+    iconTheme = {
+      package = pkgs.numix-icon-theme-circle;
+      name = "Numix Circle";
+    };
+    theme = {
+      package = pkgs.nordic;
+      name = "Nordic-v40";
+    };
+    gtk3.extraConfig = {
+      gtk-application-prefer-dark-theme = "true";
+    };
+  };
+
+  #
+  # Configuration files
+  #
+ 
+  # Scripts
+
+  home.file.".scripts".source = ../scripts;
+
+  # Sway
+
+  xdg.configFile."swaylock/config".source = ../config/swaylock/config;
+  xdg.configFile."swaynag/config".source = ../config/swaynag/config;
+
+  xdg.configFile."sway/colors.ayu".source = ../config/sway/colors.ayu;
+  xdg.configFile."sway/colors.ayu-mirage".source = ../config/sway/colors.ayu-mirage;
+  xdg.configFile."sway/colors.ayu-dark".source = ../config/sway/colors.ayu-dark;
+  xdg.configFile."sway/colors.nord".source = ../config/sway/colors.nord;
+
+  # Firefox
 
   xdg.configFile."tridactyl/tridactylrc".source = ../config/firefox/tridactylrc;
 
-  home.file.".mozilla/native-messaging-hosts/org.kde.plasma.browser_integration.json".source = "${pkgs.plasma-browser-integration}/lib/mozilla/native-messaging-hosts/org.kde.plasma.browser_integration.json";
-  home.file.".mozilla/native-messaging-hosts/org.gnome.chrome_gnome_shell.json".source = "${pkgs.plasma-browser-integration}/lib/mozilla/native-messaging-hosts/org.gnome.chrome_gnome_shell.json";
   home.file.".mozilla/native-messaging-hosts/tridactyl.json".source = "${pkgs.tridactyl-native}/lib/mozilla/native-messaging-hosts/tridactyl.json";
 
-  programs.firefox = {
-    enable = true;
+  # Neovim
+
+  xdg.configFile."nvim/lua/init.lua".source = ../config/nvim/lua/init.lua;
+  xdg.configFile."nvim/ftplugin".source = ../config/nvim/ftplugin;
+
+  # Xorg
+
+  home.file.".xinitrc".source = ../config/xorg/xinitrc.sh;
+
+  # Wofi
+
+  xdg.configFile."wofi/config".source = ../config/wofi/config;
+  xdg.configFile."wofi/style.css".source = ../config/wofi/style.css;
+
+  # Waybar
+
+  xdg.configFile."waybar/config".source = ../config/waybar/config;
+  xdg.configFile."waybar/style.css".source = ../config/waybar/style.css;
+
+  # wlogout
+
+  xdg.configFile."wlogout/layout".source = ../config/wlogout/layout;
+  xdg.configFile."wlogout/style.css".source = ../config/wlogout/style.css;
+  xdg.configFile."wlogout/lock.png".source = ../config/wlogout/lock.png;
+  xdg.configFile."wlogout/logout.png".source = ../config/wlogout/logout.png;
+  xdg.configFile."wlogout/reboot.png".source = ../config/wlogout/reboot.png;
+  xdg.configFile."wlogout/shutdown.png".source = ../config/wlogout/shutdown.png;
+
+  # dircolors
+
+  home.file.".dir_colors".source = builtins.fetchurl {
+    url = "https://github.com/arcticicestudio/nord-dircolors/releases/download/v0.2.0/dir_colors";
+    sha256 = "0a6i9pvl4lj2k1snmc5ckip86akl6c0svzmc5x0vnpl4id0f3raw";
   };
 
-  #
   # Alacritty
-  #
 
-  programs.alacritty = {
-    enable = true;
-  };
-
-  # Create configuration file by downloading the contents of the Nord theme and
-  # appending our own options to it.
+  # Create configuration file by downloading the contents of the Nord theme and appending our
+  # own options to it
   xdg.configFile."alacritty/alacritty.yml".source = builtins.toFile "alacritty.yml" (
-    builtins.readFile (
-      builtins.fetchurl {
-        url = "https://raw.githubusercontent.com/arcticicestudio/nord-alacritty/d4b6d2049157a23958dd0e7ecc4d18f64eaa36f3/src/nord.yml";
-        sha256 = "0adp4v2d5w6j4j2lavgwbq2x8gnvmxk4lnmlrvl9hy62rxrqp561";
-      }) + ''
+    builtins.readFile ( builtins.fetchurl { url =
+      "https://raw.githubusercontent.com/arcticicestudio/nord-alacritty/d4b6d2049157a23958dd0e7ecc4d18f64eaa36f3/src/nord.yml";
+      sha256 = "0adp4v2d5w6j4j2lavgwbq2x8gnvmxk4lnmlrvl9hy62rxrqp561"; }) + ''
 
       font:
         normal:
@@ -265,31 +299,60 @@
   );
 
   #
-  # GTK
+  # Programs
   #
 
-  gtk = {
+  programs.waybar.enable = true;
+  programs.qutebrowser.enable = true;
+  programs.feh.enable = true;
+  programs.jq.enable = true;
+  programs.mpv.enable = true;
+  programs.password-store.enable = true;
+  programs.afew.enable = true;
+  programs.mbsync.enable = true;
+
+  programs.firefox = {
     enable = true;
-    font = {
-      name = "Input Sans Condensed";
-      size = 9;
-    };
-    iconTheme = {
-      package = pkgs.numix-icon-theme-circle;
-      name = "Numix Circle";
-    };
-    theme = {
-      package = pkgs.nordic;
-      name = "Nordic-v40";
-    };
-    gtk3.extraConfig = {
-      gtk-application-prefer-dark-theme = "true";
+    profiles = {
+      default = {
+        id = 0;
+        name = "Default";
+        settings = {
+          "browser.aboutConfig.showWarning" = false;
+          "browser.bookmarks.restore_default_bookmarks" = false;
+          "browser.shell.checkDefaultBrowser" = false;
+          "extensions.webextensions.restrictedDomains" = "";
+          "privacy.resistFingerprinting.block_mozAddonManager" = true;
+        };
+      };
+      private = {
+        id = 1;
+        name = "Private";
+        settings = {
+          "browser.aboutConfig.showWarning" = false;
+          "browser.bookmarks.restore_default_bookmarks" = false;
+          "browser.shell.checkDefaultBrowser" = false;
+          "extensions.webextensions.restrictedDomains" = "";
+          "privacy.resistFingerprinting.block_mozAddonManager" = true;
+        };
+      };
+      testing = {
+        id = 2;
+        name = "Testing";
+        settings = {
+          "browser.aboutConfig.showWarning" = false;
+          "browser.bookmarks.restore_default_bookmarks" = false;
+          "browser.shell.checkDefaultBrowser" = false;
+          "extensions.webextensions.restrictedDomains" = "";
+          "privacy.resistFingerprinting.block_mozAddonManager" = true;
+        };
+      };
     };
   };
 
-  #
-  # Git
-  #
+  programs.alacritty = {
+    enable = true;
+  };
 
   programs.git = {
     userName  = "dnordstrom";
@@ -306,10 +369,6 @@
     };
   };
 
-  #
-  # Chromium
-  #
-
   programs.chromium = {
     enable = true;
     extensions = [
@@ -324,65 +383,12 @@
     ];
   };
 
-  #
-  # Neovim
-  #
-
-  xdg.configFile."nvim/lua/init.lua".source = ../config/nvim/lua/init.lua;
-  xdg.configFile."nvim/ftplugin".source = ../config/nvim/ftplugin;
-
   programs.neovim = {
     enable = true;
     viAlias = true;
     vimAlias = true;
     extraConfig = builtins.readFile ../config/nvim/init.vim;
-    plugins = with pkgs.vimPlugins; [
-      chadtree
-      dashboard-nvim
-      friendly-snippets
-      glow-nvim
-      lualine-nvim
-      luasnip
-      ncm2
-      ncm2-bufword
-      ncm2-cssomni
-      ncm2-neosnippet
-      ncm2-path
-      ncm2-syntax
-      nerdcommenter
-      nord-nvim
-      numb-nvim
-      nvim-autopairs
-      nvim-lspconfig
-      nvim-treesitter
-      nvim-web-devicons
-      nvim-yarp
-      packer-nvim
-      telescope-frecency-nvim
-      telescope-fzf-native-nvim
-      telescope-nvim
-      telescope-symbols-nvim
-      todo-comments-nvim
-      trouble-nvim
-      typescript-vim
-      vim-javascript
-      vim-jsx-typescript
-      vim-markdown
-      vim-nix
-      vim-surround
-      which-key-nvim
-
-      # Plugins requiring setup
-      {
-        plugin = sql-nvim;
-        config = "let g:sql_clib_path = '${pkgs.sqlite.out}/lib/libsqlite3.so'";
-      }
-    ];
   };
-
-  #
-  # ZSH and Plugins
-  #
 
   programs.zsh = {
     autocd = true;
@@ -417,34 +423,47 @@
     };
 
     initExtra = ''
+      # Zsh configuration
+      #
+      # * Manual available at https://zsh.sourceforge.io/Doc
+
       #
       # Variables
       #
 
-      export LESS_TERMCAP_md=$(tput bold; tput setaf 6)
-      export LESS_TERMCAP_me=$(tput sgr0)
-      export LESS_TERMCAP_so=$(tput bold; tput setaf 3; tput setab 4)
-      export LESS_TERMCAP_se=$(tput rmso; tput sgr0)
-      export LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 7)
-      export LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
-      export LESS_TERMCAP_mr=$(tput rev)
-      export LESS_TERMCAP_mh=$(tput dim)
+      # ANSI color code helpers
+  
+      export ANSI_STYLE_MD=$(tput bold; tput setaf 6)
+      export ANSI_STYLE_ME=$(tput sgr0)
+      export ANSI_STYLE_SO=$(tput bold; tput setaf 3; tput setab 4)
+      export ANSI_STYLE_SE=$(tput rmso; tput sgr0)
+      export ANSI_STYLE_US=$(tput smul; tput bold; tput setaf 7)
+      export ANSI_STYLE_UE=$(tput rmul; tput sgr0)
+      export ANSI_STYLE_MR=$(tput rev)
+      export ANSI_STYLE_MH=$(tput dim)
+      export ANSI_STYLE_STATUS=$(tput bold; tput setaf 0; tput setab 3)
+      export ANSI_STYLE_STATUS_END=$(tput sgr0)
 
-      export LESS_TERMCAP_status=$(tput bold; tput setaf 0; tput setab 3)
-      export LESS_TERMCAP_status_end=$(tput sgr0)
+      # less
 
-      local statusline=$LESS_TERMCAP_status"\ ?f\ %f:藍\ STDIN"$LESS_TERMCAP_status_end
+      local statusline=$ANSI_STYLE_STATUS"\ ?f\ %f:藍\ STDIN"$ANSI_STYLE_STATUS_END
 
       export LESS="-iR -Pm$statusline\$ -Ps$statusline\$"
       export LESSEDIT="%E ?lm+%lm. %g"
       export PAGER="less"
 
+      # Notes
+
       export NOTES_FILE="$HOME/.notes.md"
       export NOTES_EDITOR="$EDITOR"
       export NOTES_VIEWER="glow -p"
 
+      # bat
+
       export BAT_STYLE="changes"
       export BAT_THEME="Nord"
+
+      # fzf
 
       export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*" --glob "!node_modules/*"'
       export FZF_DEFAULT_OPTS="--ansi --color='bg+:-1' --no-info --prompt '› ' --pointer '» ' --marker '✓ ' --bind 'ctrl-b:toggle-preview,tab:down,btab:up,ctrl-y:execute-silent(echo {} | wl-copy),ctrl-o:execute-silent(xdg-open {})' --preview-window ':hidden' --preview '([[ -f {} ]] && (bat --style=changes --color=always {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'"
@@ -454,16 +473,16 @@
       export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS"
 
       #
-      # Sway helpers
+      # Functions
       #
-test
+
       set-keyboard-layout() {
-        local default="'us,se,se'"
+        local default="'us,se'"
         swaymsg input type:keyboard xkb_layout "''${@:-$default}"
       }
 
       set-keyboard-variant() {
-        local default="',,us'" # Swedish-US variant layout as third choice
+        local default="','"
         swaymsg input type:keyboard xkb_variant "''${@:-$default}"
       }
 
@@ -471,14 +490,29 @@ test
       # Notes
       #
 
+      # Open the notes file for viewing.
+      #
+      # Globals:
+      #   NOTES_FILE
+      #   NOTES_VIEWER
       view-notes() {
         eval "''${NOTES_VIEWER:-cat} $NOTES_FILE"
       }
 
+      # Open the notes file for editing.
+      #
+      # Globals:
+      #   EDITOR
+      #   NOTES_FILE
+      #   NOTES_EDITOR
       edit-notes() {
         eval "''${NOTES_EDITOR:-$EDITOR} $NOTES_FILE"
       }
 
+      # Prepend a list item to the notes file.
+      #
+      # Globals:
+      #   NOTES_FILE
       prepend-note() {
         local note="''${@:-$BUFFER}"
 
@@ -489,19 +523,27 @@ test
         fi
       }
 
+      # Create a new backup of the notes file.
+      #
+      # Globals:
+      #   NOTES_FILE
       backup-notes() {
         cp --backup=numbered "$NOTES_FILE" "$NOTES_FILE.$(date +%Y%m%d)"
       }
 
+      # Removes all note backup files except the most recent.
+      #
+      # Globals:
+      #   NOTES_FILE
       clear-backup-notes() {
         rm $NOTES_FILE.*.*
       }
 
+      # Checks if the given argument is a valid command or shell builtin.
       #
-      # Scripting
-      #
-
-      function is-command() {
+      # Arguments:
+      #   Command to check for
+      is-command() {
         if [ -n "$ZSH_VERSION" ]; then
           builtin whence -p "$1" &> /dev/null
         else
@@ -516,15 +558,25 @@ test
         fi
       }
 
+      # Inserts a string to command history without executing it.
       append-to-history() {
         fc -R =(printf "%s\n" "$@")
       }
 
+      # Print a message and wait single key input, for use in command substitution.
+      #
+      # Arguments:
+      #   Prompt message
       await-any-key() {
         printf "%s" "''${*:-Press any key to continue...}"
         read -ks
       }
 
+      # Print a message and wait for y or n response, for use in command substitution. Outputs
+      # true or false depending on response.
+      #
+      # Arguments:
+      #   Prompt message
       await-confirm() {
         local prompt="''${*:-Would you like to continue?} [Y/n] "
         local output="false"
@@ -538,6 +590,10 @@ test
         return $code
       }
 
+      # Print a message and wait for enter key, for use in command substitution.
+      #
+      # Arguments:
+      #   Prompt message
       await-enter-key() {
         printf "%s" "''${*:-Press ENTER to continue...}"
 
@@ -547,25 +603,39 @@ test
         done
       }
 
+      # Print a message and wait for user input then output it, for use in command substitution.
+      #
+      # Arguments:
+      #   Prompt message
       await-string-input() {
         printf "%s " "''${*:->}"
         read input
         printf "%s" "$input"
       }
 
+      # Convert text to lowercase.
+      #
+      # Arguments:
+      #   Text to convert
       to-lowercase() {
         printf "%s" "$(printf "%s" "$*" | tr '[:upper:]' '[:lower:]')"
       }
 
+      # Convert text to uppercase.
+      #
+      # Arguments:
+      #   Text to convert
       to-uppercase() {
         printf "%s" "$(printf "%s" "$*" | tr '[:lower:]' '[:upper:]')"
       }
 
+      # Run command in specified directory then return (use with care).
       #
-      # Commands
-      #
-
-      # Run command in specified directory then return (use with care)
+      # Arguments:
+      #   Directory to run command in
+      #   Command to run
+      # Returns:
+      #   0 on success, 1 on invalid argument count
       runindir() {
         if ! [ $# -eq 2 ]; then
           echo "Expected 2 arguments."
@@ -585,7 +655,14 @@ test
         cd "$prev_dir"
       }
 
-      # Open Nix configuration directory with specified app
+      # Open /etc/nixos directory with specified program
+      #
+      # Arguments:
+      #   Command or program to open directory with
+      # Returns:
+      #   0 on success, 1 on invalid argument count
+      # Dependencies:
+      #   runindir()
       nixwith() {
         if ! [ $# -eq 1 ]; then
           echo "Expected a single argument."
@@ -595,10 +672,22 @@ test
         runindir "/etc/nixos" "$1"
       }
 
+      # Run fg command if buffer line is empty, otherwise save input to stack
+      fancy-ctrl-z () {
+        if [ $#BUFFER -eq 0 ]; then
+          BUFFER="fg"
+          zle accept-line
+        else
+          zle push-input
+          zle clear-screen
+        fi
+      }
+
       #
       # Widgets
       #
 
+      zle -N fancy-ctrl-z
       zle -N view-notes
       zle -N prepend-note
       zle -N edit-notes
@@ -609,6 +698,7 @@ test
       # Key Binds
       #
 
+      bindkey '^Z' fancy-ctrl-z
       bindkey "^[s" sudo-command-line
       bindkey "^[e" edit-notes
       bindkey "^[E" prepend-note
@@ -616,37 +706,28 @@ test
     '';
   };
 
-  #
-  # Tmux
-  #
-  
   programs.tmux = {
     enable = true;
+    keyMode = "vi";
+    sensibleOnTop = true;
+    shortcut = "a";
+    terminal = "screen-256color";
+    secureSocket = false;
+    extraConfig = ''
+      set-option -g mouse on
+      set-option -s set-clipboard off
+
+      set -s copy-command "wl-copy"
+
+      bind P paste-buffer
+
+      bind-key -t vi-copy MouseDragEnd1Pane copy-pipe "wl-copy"
+      bind-key -T copy-mode-vi v send-keys -X begin-selection
+      bind-key -T copy-mode-vi y send-keys -X copy-selection
+      bind-key -T copy-mode-vi r send-keys -X rectangle-toggle
+    '';
   };
 
-  #
-  # Miscellaneous
-  #
-
-  # Wofi launcher configuration
-  xdg.configFile."wofi/config".source = ../config/wofi/config;
-  xdg.configFile."wofi/style.css".source = ../config/wofi/style.css;
-
-  # Status bar
-  programs.waybar.enable = true;
-
-  xdg.configFile."waybar/config".source = ../config/waybar/config;
-  xdg.configFile."waybar/style.css".source = ../config/waybar/style.css;
-
-  # Power menu
-  xdg.configFile."wlogout/layout".source = ../config/wlogout/layout;
-  xdg.configFile."wlogout/style.css".source = ../config/wlogout/style.css;
-  xdg.configFile."wlogout/lock.png".source = ../config/wlogout/lock.png;
-  xdg.configFile."wlogout/logout.png".source = ../config/wlogout/logout.png;
-  xdg.configFile."wlogout/reboot.png".source = ../config/wlogout/reboot.png;
-  xdg.configFile."wlogout/shutdown.png".source = ../config/wlogout/shutdown.png;
-
-  # A flying `cat`
   programs.bat = {
     enable = true;
     config = {
@@ -655,23 +736,17 @@ test
     };
   };
 
-  # Fuzzy finder
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
   };
 
-  # Qutebrowser
-  programs.qutebrowser.enable = true;
-
-  # Direnv
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
     nix-direnv.enableFlakes = true;
   };
 
-  # Mako notification daemon
   programs.mako = {
     backgroundColor = "#434C5E";
     borderColor = "#E5E9F0BB";
@@ -693,29 +768,83 @@ test
     width = 300;
   };
 
-  # Dircolors terminal `LS_COLOR` manager
-
-  home.file.".dir_colors".source = builtins.fetchurl {
-    url = "https://github.com/arcticicestudio/nord-dircolors/releases/download/v0.2.0/dir_colors";
-    sha256 = "0a6i9pvl4lj2k1snmc5ckip86akl6c0svzmc5x0vnpl4id0f3raw";
-  };
-
   programs.dircolors = {
     enable = true;
     enableZshIntegration = true;
   };
 
-  # Image viewer
-  programs.feh.enable = true;
+  programs.neomutt = {
+    enable = true;
+    vimKeys = true;
+  };
 
-  # Alternative terminal
-  programs.foot.enable = true;
+  programs.notmuch = {
+    enable = true;
+    hooks = {
+      preNew = "mbsync --all";
+    };
+  };
 
-  # Command line JSON parser
-  programs.jq.enable = true;
+  # RSS reader
+  programs.newsboat = {
+    enable = true;
+    autoReload = true;
+    # To add feeds:
+    # urls = [
+    #   {
+    #     tags = [ "foo" "bar" ];
+    #     url = "http://example.com";
+    #   }
+    # ];
+  };
 
-  # Video player
-  programs.mpv.enable = true;
+  #
+  # Email accounts
+  #
+
+  accounts.email.accounts.mrnordstrom = {
+    primary = true;
+    neomutt.enable = true;
+    lieer.enable = true;
+    notmuch.enable = true;
+    mbsync.enable = true;
+    mbsync.create = "both";
+    realName= "Daniel Nordstrom";
+    userName= "d@mrnordstrom.com";
+    address = "d@mrnordstrom.com";
+    imap.host = "mail.mrnordstrom.com";
+    smtp.host = "mail.mrnordstrom.com";
+    signature = {
+      text = ''
+        Daniel Nordstrom
+        d@mrnordstrom.com
+      '';
+      showSignature = "append";
+    };
+    passwordCommand = "${pkgs.pass}/bin/pass mrnordstrom/email";
+  };
+
+  accounts.email.accounts.leeroy = {
+    neomutt.enable = true;
+    lieer.enable = true;
+    notmuch.enable = true;
+    mbsync.enable = true;
+    mbsync.create = "both";
+    realName= "Daniel Nordstrom";
+    userName= "daniel.nordstrom@leeroy.se";
+    address = "daniel.nordstrom@leeroy.se";
+    imap.host = "mail.leeroy.se";
+    smtp.host = "mail.leeroy.se";
+    signature = {
+      text = ''
+        Daniel Nordstrom
+        Developer
+        Leeroy Group
+      '';
+      showSignature = "append";
+    };
+    passwordCommand = "${pkgs.pass}/bin/pass leeroy/email";
+  };
 
   #
   # Environment
@@ -724,6 +853,4 @@ test
   home.sessionVariables = {
     EDITOR = "nvim";
   };
-
-  home.file.".xinitrc".source = ../config/xorg/xinitrc.sh;
 }
