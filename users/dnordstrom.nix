@@ -22,6 +22,7 @@
   home.packages =
   let
     convox = pkgs.callPackage ../packages/convox.nix {};
+    jira-cli = pkgs.callPackage ../packages/jira-cli.nix {};
   in
   with pkgs; [
     # General
@@ -33,6 +34,7 @@
     gcc
     guvcview
     kate
+    nextcloud-client
     pavucontrol
     pinentry
     pinentry-curses
@@ -53,6 +55,7 @@
     fd
     figlet
     fortune
+    gh
     glow
     gotop
     libnotify
@@ -138,21 +141,19 @@
     nheko
     neochat
 
-    # NPM packages
+    # LSP and language tools
+    vgo2nix
+    gopls
+    luajit
     nodePackages.bash-language-server
-    nodePackages.eslint
     nodePackages.diagnostic-languageserver
+    nodePackages.eslint
     nodePackages.typescript
     nodePackages.typescript-language-server
     nodePackages.vscode-langservers-extracted # HTML, CSS, and JSON
     nodePackages.yaml-language-server
-
-    # Lua
-    luajit
-
-    # Language servers and tools
-    gopls
     tree-sitter
+
 
     # Fonts
     corefonts
@@ -337,6 +338,9 @@
           "browser.shell.checkDefaultBrowser" = false;
           "extensions.webextensions.restrictedDomains" = "";
 
+          # Use screen share indicator that works better in Wayland
+          "privacy.webrtc.legacyGlobalIndicator" = false;
+
           # Needed to make certain key combinations work with Tridactyl
           "privacy.resistFingerprinting" = false;
           "privacy.resistFingerprinting.block_mozAddonManager" = false;
@@ -351,6 +355,9 @@
           "browser.shell.checkDefaultBrowser" = false;
           "extensions.webextensions.restrictedDomains" = "";
 
+          # Use screen share indicator that works better in Wayland
+          "privacy.webrtc.legacyGlobalIndicator" = false;
+
           # Needed to make certain key combinations work with Tridactyl
           "privacy.resistFingerprinting" = false;
           "privacy.resistFingerprinting.block_mozAddonManager" = false;
@@ -364,6 +371,9 @@
           "browser.bookmarks.restore_default_bookmarks" = false;
           "browser.shell.checkDefaultBrowser" = false;
           "extensions.webextensions.restrictedDomains" = "";
+
+          # Use screen share indicator that works better in Wayland
+          "privacy.webrtc.legacyGlobalIndicator" = false;
 
           # Needed to make certain key combinations work with Tridactyl
           "privacy.resistFingerprinting" = false;
@@ -726,6 +736,14 @@
       bindkey "^[e" edit-notes
       bindkey "^[E" prepend-note
       bindkey "^[^E" view-notes
+
+      #
+      # Source local secret tokens if file exists
+      #
+
+      if [ -f "$HOME/.zsh-secrets" ]; then
+        source "$HOME/.zsh-secrets"
+      fi
     '';
   };
 
@@ -749,6 +767,11 @@
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
+  };
+
+  programs.go = {
+    enable = true;
+    goPath = "Applications/Go";
   };
 
   programs.direnv = {

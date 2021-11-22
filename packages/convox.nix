@@ -1,24 +1,25 @@
 { stdenv, pkgs }:
 
-let
- name = "convox";
- version = "3.0.0";
-in
-stdenv.mkDerivation {
-  name = "${name}";
-  pname = "${name}-${version}";
-  system = "x86_64-linux";
+buildGoModule rec {
+  pname = "jira-cli";
+  version = "0.2.0";
 
-  src = pkgs.fetchurl {
-    url = "https://convox.com/cli/linux/convox";
-    sha256 = "sha256-aBSV2Au1W8WLkJdatM4CNwRFEBNShqOX1Dl1k2Wf/BU=";
+  src = fetchFromGitHub {
+    owner = "ankitpokhrel";
+    repo = "jira-cli";
+    rev = "v${version}";
+    sha256 = "0m2fzpqxk7hrbxsgqplkg7h2p7gv6s1miymv3gvw0cz039skag0s";
   };
 
-  phases = [ "installPhase" ];
+  vendorSha256 = "1879j77k96684wi554rkjxydrj8g3hpp0kvxz03sd8dmwr3lh83j";
 
-  installPhase = ''
-    mkdir -p $out/bin
-    cp $src $out/bin/convox
-    chmod 755 $out/bin/convox
-  '';
+  runVend = true;
+
+  meta = with lib; {
+    description = "Feature-rich interactive Jira command line.";
+    homepage = "https://github.com/ankitpokhrel/jira-cli";
+    license = licenses.mit;
+    maintainers = with maintainers; [ dnordstrom ];
+    platforms = platforms.linux ++ platforms.darwin;
+  };
 }
