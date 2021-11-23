@@ -28,7 +28,8 @@ set $workspace6 6
 # Commands
 set $term alacritty --class "terminal"
 set $scratchpad_term alacritty --class "scratchpad_term" --title "scratchpad_term"
-set $menu wofi --show=drun,run | xargs swaymsg exec
+set $menu wofi
+set $menuargs --show=drun,run
 set $files nautilus
 
 set $screenshot_area sleep 3 && grim -g "$(slurp)" - \
@@ -164,12 +165,12 @@ input type:touchpad {
 floating_modifier $mod normal
 
 bindsym {
-  # Applications
+  # Launch
   $mod+Return exec $term
-  $mod+d exec $menu
-  $mod+Space exec $menu
-  $mod+g exec $files
-  $mod+Backspace exec $powermenu
+  $mod+d exec $menu | xargs swaymsg exec
+  $mod+Space exec $menu | xargs swaymsg exec
+  $mod+g exec $files | xargs swaymsg exec
+  $mod+Backspace exec $powermenu | xargs swaymsg exec
 
   $mod+q kill
   $mod+Shift+q kill
@@ -251,6 +252,9 @@ bindsym {
   Shift+Print exec $screenshot_window
   Ctrl+Print exec $screenshot_screen
 }
+
+# Bind on single key release only
+bindsym --release Super_L exec (pgrep $menu 1>/dev/null 2>&1 && pkill $menu) || $menu $menuargs | xargs swaymsg exec
 
 #
 # Resize Mode

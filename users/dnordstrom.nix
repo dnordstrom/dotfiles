@@ -51,6 +51,7 @@
     # Command line
     arcan.espeak
     asciinema # For asciinema.org
+    awscli2
     bitwarden-cli
     fd
     figlet
@@ -62,6 +63,7 @@
     lolcat
     neo-cowsay
     nixpkgs-fmt
+    parallel
     ripgrep
     shfmt
     t-rec
@@ -142,21 +144,24 @@
     neochat
 
     # LSP and language tools
-    vgo2nix
     gopls
     luajit
     nodePackages.bash-language-server
     nodePackages.diagnostic-languageserver
     nodePackages.eslint
+    nodePackages.eslint_d
     nodePackages.typescript
     nodePackages.typescript-language-server
+    nodePackages.vim-language-server
     nodePackages.vscode-langservers-extracted # HTML, CSS, and JSON
     nodePackages.yaml-language-server
     tree-sitter
+    vgo2nix
 
 
-    # Fonts
+    # Font related
     corefonts
+    fontforge
     line-awesome
     powerline-fonts
 
@@ -168,6 +173,10 @@
 
     # Custom
     convox
+    jira-cli
+
+    # Remember to try out
+    swayr
   ];
 
   #
@@ -290,13 +299,21 @@
 
       font:
         normal:
+          family: 'remixicon'
           family: 'Input Mono Condensed'
+          family: 'InputMonoCondensed Nerd Font'
         bold:
+          family: 'remixicon'
           family: 'Input Mono Condensed'
+          family: 'InputMonoCondensed Nerd Font'
         italic:
+          family: 'remixicon'
           family: 'Input Mono Condensed'
+          family: 'InputMonoCondensed Nerd Font'
         bold_italic:
+          family: 'remixicon'
           family: 'Input Mono Condensed'
+          family: 'InputMonoCondensed Nerd Font'
         size: 9
         offset:
           x: 0
