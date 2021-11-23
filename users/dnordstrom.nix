@@ -254,8 +254,7 @@
 
   # Neovim
 
-  xdg.configFile."nvim/lua/init.lua".source = ../config/nvim/lua/init.lua;
-  xdg.configFile."nvim/lua/plugins.lua".source = ../config/nvim/lua/plugins.lua;
+  xdg.configFile."nvim/lua".source = ../config/nvim/lua;
   xdg.configFile."nvim/ftplugin".source = ../config/nvim/ftplugin;
 
   # Xorg
