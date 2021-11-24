@@ -248,7 +248,7 @@
 
   # Firefox
 
-  xdg.configFile."tridactyl/tridactylrc".source = ../config/firefox/tridactylrc;
+  xdg.configFile."tridactyl".source = ../config/firefox/tridactyl;
 
   home.file.".mozilla/native-messaging-hosts/tridactyl.json".source = "${pkgs.tridactyl-native}/lib/mozilla/native-messaging-hosts/tridactyl.json";
 

@@ -178,11 +178,11 @@ fi
 printf "\n"
 
 # Ask about Tridactyl
-if confirm --strict "Enable for Tridactyl (rm -rf ~/.config/tridactyl/tridactylrc)?"; then
+if confirm --strict "Enable for Tridactyl (rm -rf ~/.config/tridactyl)?"; then
   printf "\n"
-  loudly "rm -rf ~/.config/tridactyl/tridactylrc"
-  loudly "ln -s /etc/nixos/config/firefox/tridactylrc ~/.config/tridactyl/tridactylrc"
-  cleanup="$cleanup\nrm ~/.config/tridactyl/tridactylrc"
+  loudly "rm -rf ~/.config/tridactyl"
+  loudly "ln -s /etc/nixos/config/firefox/tridactyl ~/.config/tridactyl"
+  cleanup="$cleanup\nrm ~/.config/tridactyl"
 fi
 
 printf "\n"
