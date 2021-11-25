@@ -55,7 +55,7 @@ export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS"
 
 alias cat="bat"
 alias cdn="cd /etc/nixos"
-alias nb="$HOME/.nix-prebuild; sudo nixos-rebuild switch --flake /etc/nixos --upgrade"
+alias nb="$HOME/.nix-prebuild; sudo nixos-rebuild switch --flake /etc/nixos --upgrade-all"
 alias ne="nix-with nvim"
 alias nkate="nix-with kate"
 alias ncode="nix-with codium"
@@ -64,6 +64,22 @@ alias n12="nix-shell /etc/nixos/shell/node12.nix"
 #
 # Functions
 #
+
+append-date() {
+  RBUFFER+="$(date +'%Y%m%d')"
+}
+
+prepend-date() {
+  LBUFFER+="$(date +'%Y%m%d')"
+}
+
+append-timestamp() {
+  RBUFFER+="$(date +'%Y%m%d%H%M')"
+}
+
+prepend-timestamp() {
+  LBUFFER+="$(date +'%Y%m%d%H%M')"
+}
 
 set-keyboard-layout() {
   local default="'us,se'"
@@ -273,13 +289,13 @@ nix-with() {
 
 # Open NixOS configuration in Vim/Neovim
 configure-nixos() {
-  in-dir "/etc/nixos" "vim"
+  in-dir "/etc/nixos" "nvim"
 }
 
 # Open NixOS configuration in Vim/Neovim
 build-nixos() {
   $HOME/.nix-prebuild
-  sudo nixos-rebuild switch --flake /etc/nixos --upgrade
+  sudo nixos-rebuild switch --flake /etc/nixos --upgrade-all
 }
 
 # Run fg command if buffer line is empty, otherwise save input to stack,
@@ -297,7 +313,12 @@ fancy-ctrl-z () {
 # Widgets
 #
 
-zle -N nixvim
+zle -N append-timestamp
+zle -N prepend-timestamp
+zle -N append-date
+zle -N prepend-date
+zle -N configure-nixos
+zle -N build-nixos
 zle -N fancy-ctrl-z
 zle -N view-notes
 zle -N prepend-note
@@ -309,13 +330,26 @@ zle -N clear-backup-notes
 # Binds
 #
 
-bindkey "^[b" nb # Build NixOS
-bindkey "^[c" ne # Configure NixOS
+# Ctrl-Z for fg
 bindkey '^Z' fancy-ctrl-z
-bindkey "^[s" sudo-command-line
-bindkey "^[e" edit-notes
-bindkey "^[E" prepend-note
-bindkey "^[^E" view-notes
+
+# Append: Alt-A then specifier
+bindkey "^[at" append-timestamp
+bindkey "^[ad" append-date
+
+# Prepend: Shift-Alt-A then specifier
+bindkey "^[As" prepend-sudo
+bindkey "^[Ad" prepend-date
+bindkey "^[At" prepend-timestamp
+
+# Configuration: Alt-C then specifier
+bindkey "^[cb" build-nixos
+bindkey "^[ce" configure-nixos
+
+# Notes: Alt-N then specifier
+bindkey "^[ne" edit-notes
+bindkey "^[na" prepend-note
+bindkey "^[nv" view-notes
 
 #
 # Source other files
@@ -324,3 +358,4 @@ bindkey "^[^E" view-notes
 if [ -f "$HOME/.zsh-secrets" ]; then
   source "$HOME/.zsh-secrets"
 fi
+

@@ -1,6 +1,8 @@
 #
 # Alacritty configuration
 #
+# Default configuration: https://github.com/alacritty/alacritty/blob/master/alacritty.yml
+#
 # Author: Daniel Nordstrom <d@mrnordstrom.com>
 # Repository: https://github.com/dnordstrom/dotfiles
 # Credit:
@@ -94,11 +96,22 @@ key_bindings:
   - { key: L, mods: Alt, action: ScrollToBottom }
 
   # Function key shortcuts
-  - { key: L, mods: Alt, action: Fullscreen }
+  - { key: L, mods: Alt, action: ToggleFullscreen }
 
 # Mouse
 
 mouse:
-  url:
-    launcher: wl-copy
-    modifiers: Control
+  enabled: true
+  mods: Control
+
+hints:
+  enabled:
+    - regex: "(magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)[^\u0000-\u001F\u007F-\u009F<>\"\\s{-}\\^⟨⟩`]+"
+      action: Copy
+      post_processing: false
+      binding:
+        key: Y
+        mods: Control|Shift
+      mouse:
+        enabled: true
+

@@ -418,6 +418,8 @@
       theme = "agnoster";
       plugins =  [ "sudo" ];
     };
+
+    initExtra = builtins.readFile ../config/zsh/zshrc;
   };
 
   programs.tmux = {

@@ -48,9 +48,10 @@ nvim_set_keymap("n", "<Leader>P", '<Cmd>"+P<CR>', opts.nore)
 -- New line with toggled comment (if on a comment line, inserts non-comment line, and nice versa)
 nvim_set_keymap("i", "<C-CR>", '<Esc>ogccI<CR>', opts.nore)
 nvim_set_keymap("n", "<C-CR>", 'o<Esc>gcc', opts.nore)
+
 -- Duplicates current line
-nvim_set_keymap("i", "<S-Return>", '<Esc>yypI', opts.nore)
-nvim_set_keymap("n", "<S-Return>", 'yyp', opts.nore)
+nvim_set_keymap("i", "<S-CR>", '<Esc>yypI', opts.nore)
+nvim_set_keymap("n", "<S-CR>", 'yyp', opts.nore)
 
 -- Insert mode navigation
 
