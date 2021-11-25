@@ -78,6 +78,11 @@ command fillcmdline_note_selection js tri.excmds.fillcmdline_notrail(`note ${win
 " Prefill note command with clipboard
 command fillcmdline_note_clipboard js tri.excmds.fillcmdline_notrail(`note ${await tri.excmds.getclip()}`);
 
+" Get Jira issue key from URL
+command yankjira js -p if (JS_ARG.trim().toLowerCase() === 'url') N.run('yankjiraurl'); else N.run('yankjiraissue');
+command yankjiraissue js const match = N.pathMatch(/[A-Z]{2,5}-[0-9]{1,4}/); if (match) N.yankLoud(match[0]); else N.notify('No issue key found.');
+command yankjiraurl js const btn = N.query('.issue_view_permalink_button_wrapper'); if (btn) N.yankLoud(btn.previousElementSibling.querySelector('a').href); else N.notify('No issue link found.');
+
 " Reload config from /etc/nixos
 command reconfiglive source /etc/nixos/config/firefox/tridactyl/tridactylrc
 
@@ -115,7 +120,8 @@ bind <Space>h nohlsearch
 
 " Yank
 
-bind yj js if (N.pathStart('/jira')) { const issue = N.param('selectedIssue'); if (issue) N.yank(issue) && N.notify(`Yanked ${issue}`); }
+bind yj yankjiraissue
+bind yJ yankjiraurl
 
 " Change
 
@@ -200,7 +206,7 @@ blacklistadd mail.google.com mode ignore
 " DocLoad
 
 " Helpers
-autocmd DocLoad .* js N = { param(str) { new URLSearchParams(location.search).get(str); }, pathStart(str) { location.pathname.startsWith(str); }, log: console.log.bind(window, "%c N.log ", "background: #d8dee9; color: #2e3440; font-weight: bold;"), yank(str) { navigator.clipboard.writeText(str); }, run(str) { tri.excmds.composite(str); }, notify(str) { N.run(`notify ${str}`); }, query(str) { document.querySelector(); }, queryAll(str) { document.querySelectorAll(); } }
+autocmd DocLoad .* js N = { param(str) { new URLSearchParams(location.search).get(str); }, pathStart(str) { return location.pathname.startsWith(str); }, pathMatch(regex) { const matches = location.href.match(regex); return matches; }, log: console.log.bind(window, "%c N.log ", "background: #d8dee9; color: #2e3440; font-weight: bold;"), yank(str) { navigator.clipboard.writeText(str); }, yankLoud(str) { N.yank(str); N.notify(`Yanked "${str}"`); }, run(str) { tri.excmds.composite(str); }, notify(str) { N.run(`notify ${str}`); }, query(str) { return document.querySelector(str); }, queryAll(str) { return document.querySelectorAll(str); }, q(str) { return N.query(str); }, qa(str) { return N.queryAll(str); } }
 
 " search.nixos.org: Add copy to clipboard button
 autocmd DocLoad .*search\.nixos\.org/packages.+ js setTimeout(() => { const node = document.createElement('li'); const link = document.createElement('a'); node.appendChild(link); link.href = '#'; link.classList.add('copy-to-clipboard'); link.innerText = 'Copy to clipboard'; document.querySelectorAll('.package ul').forEach(links => { const clone = node.cloneNode(true); clone.firstElementChild.title = links.parentElement.getElementsByClassName('search-result-button')[0].textContent; links.appendChild(clone); }); document.addEventListener('click', event => {  if (event.target.classList.contains('copy-to-clipboard')) { navigator.clipboard.writeText(event.target.title); event.preventDefault(); } }) }, 3000);

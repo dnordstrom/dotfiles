@@ -164,19 +164,23 @@ input type:touchpad {
 # Change normal to inverse to use left button for resizing.
 floating_modifier $mod normal
 
+set $modrelease (pgrep $menu 1>/dev/null 2>&1 && pkill $menu) || $menu $menuargs | xargs swaymsg exec
+
 bindsym {
   # Launch
-  $mod+Return exec $term
-  $mod+d exec $menu | xargs swaymsg exec
-  $mod+Space exec $menu | xargs swaymsg exec
-  $mod+g exec $files | xargs swaymsg exec
-  $mod+Backspace exec $powermenu | xargs swaymsg exec
+
+  $mod+Return exec '$term'
+  $mod+d exec $menu
+  $mod+Space exec $menu
+  $mod+g exec $files
+  $mod+Backspace exec $powermenu
 
   $mod+q kill
   $mod+Shift+q kill
   $mod+Shift+c reload
 
   # Move focus
+
   $mod+$left focus left
   $mod+$down focus down
   $mod+$up focus up
@@ -188,6 +192,7 @@ bindsym {
   $mod+Right focus right
 
   # Move windows
+
   $mod+Shift+$left move left
   $mod+Shift+$down move down
   $mod+Shift+$up move up
@@ -252,9 +257,6 @@ bindsym {
   Shift+Print exec $screenshot_window
   Ctrl+Print exec $screenshot_screen
 }
-
-# Bind on single key release only
-bindsym --release Super_L exec (pgrep $menu 1>/dev/null 2>&1 && pkill $menu) || $menu $menuargs | xargs swaymsg exec
 
 #
 # Resize Mode

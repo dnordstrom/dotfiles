@@ -1,0 +1,314 @@
+#
+# Zsh configuration
+#
+# Manual available at https://zsh.sourceforge.io/Doc
+#
+
+#
+# Variables
+#
+
+# ANSI color code helpers
+
+export ANSI_STYLE_MD=$(tput bold; tput setaf 6)
+export ANSI_STYLE_ME=$(tput sgr0)
+export ANSI_STYLE_SO=$(tput bold; tput setaf 3; tput setab 4)
+export ANSI_STYLE_SE=$(tput rmso; tput sgr0)
+export ANSI_STYLE_US=$(tput smul; tput bold; tput setaf 7)
+export ANSI_STYLE_UE=$(tput rmul; tput sgr0)
+export ANSI_STYLE_MR=$(tput rev)
+export ANSI_STYLE_MH=$(tput dim)
+export ANSI_STYLE_STATUS=$(tput bold; tput setaf 0; tput setab 3)
+export ANSI_STYLE_STATUS_END=$(tput sgr0)
+
+# less
+
+local statusline=$ANSI_STYLE_STATUS"\ ?f\ %f:藍\ STDIN"$ANSI_STYLE_STATUS_END
+
+export LESS="-iR -Pm$statusline\$ -Ps$statusline\$"
+export LESSEDIT="%E ?lm+%lm. %g"
+export PAGER="less"
+
+# Notes
+
+export NOTES_FILE="$HOME/.notes.md"
+export NOTES_EDITOR="$EDITOR"
+export NOTES_VIEWER="glow -p"
+
+# bat
+
+export BAT_STYLE="changes"
+export BAT_THEME="Nord"
+
+# fzf
+
+export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*" --glob "!node_modules/*"'
+export FZF_DEFAULT_OPTS="--ansi --color='bg+:-1' --no-info --prompt '› ' --pointer '» ' --marker '✓ ' --bind 'ctrl-b:toggle-preview,tab:down,btab:up,ctrl-y:execute-silent(echo {} | wl-copy),ctrl-o:execute-silent(xdg-open {})' --preview-window ':hidden' --preview '([[ -f {} ]] && (bat --style=changes --color=always {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_OPTS="$FZF_DEFAULT_OPTS"
+export FZF_ALT_C_OPTS="$FZF_DEFAULT_OPTS"
+export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS"
+
+#
+# Functions
+#
+
+set-keyboard-layout() {
+  local default="'us,se'"
+  swaymsg input type:keyboard xkb_layout "''${@:-$default}"
+}
+
+set-keyboard-variant() {
+  local default="','"
+  swaymsg input type:keyboard xkb_variant "''${@:-$default}"
+}
+
+# Open the notes file for viewing.
+#
+# Globals:
+#   NOTES_FILE
+#   NOTES_VIEWER
+view-notes() {
+  eval "''${NOTES_VIEWER:-cat} $NOTES_FILE"
+}
+
+# Open the notes file for editing.
+#
+# Globals:
+#   EDITOR
+#   NOTES_FILE
+#   NOTES_EDITOR
+edit-notes() {
+  eval "''${NOTES_EDITOR:-$EDITOR} $NOTES_FILE"
+}
+
+# Prepend a list item to the notes file.
+#
+# Globals:
+#   NOTES_FILE
+prepend-note() {
+  local note="''${@:-$BUFFER}"
+
+  if ! [ -z "$note" ]; then
+    backup-notes
+    printf "- $note\n$(cat "$NOTES_FILE")" > "$NOTES_FILE"
+    [ $# -eq 0 ] && zle kill-whole-line > /dev/null 2>&1
+  fi
+}
+
+# Create a new backup of the notes file.
+#
+# Globals:
+#   NOTES_FILE
+backup-notes() {
+  cp --backup=numbered "$NOTES_FILE" "$NOTES_FILE.$(date +%Y%m%d)"
+}
+
+# Removes all note backup files except the most recent.
+#
+# Globals:
+#   NOTES_FILE
+clear-backup-notes() {
+  rm $NOTES_FILE.*.*
+}
+
+# Checks if the given argument is a valid command or shell builtin, outputs the result, and returns
+# 1 or 2 depending on result.
+#
+# Arguments:
+#   Command
+# Returns:
+#   1 if command exists, 0 otherwise
+is-command() {
+  # Check for builtins differently depending on shell
+  if [ -n "$ZSH_VERSION" ]; then
+    builtin whence -p "$1" &> /dev/null
+  else
+    builtin type -P "$1" &> /dev/null
+  fi
+
+  if [ $? -ne 0 ]; then
+    printf "%s\n" "Command $1 exists."
+    return 1
+  else
+    printf "%s\n" "Command $1 does not exist."
+    return 0
+  fi
+
+  # Allow use in both standalone and scripts, as scripts receive script name as $0
+  if [ $# -gt 1 ]; then
+    shift
+    is-command "$@"
+  fi
+}
+
+# Inserts arbitrary string to command history without executing it.
+#
+# Arguments:
+#   String to append
+append-to-history() {
+  fc -R =(printf "%s\n" "$@")
+}
+
+# Print a message and wait single key input, for use in command substitution.
+#
+# Arguments:
+#   Prompt message
+await-any-key() {
+  printf "%s" "''${*:-Press any key to continue...}"
+  read -ks
+}
+
+# Print a message and wait for y or n response, for use in command substitution. Outputs
+# true or false depending on response.
+#
+# Arguments:
+#   Prompt message
+await-confirm() {
+  local prompt="''${*:-Would you like to continue?} [Y/n] "
+  local output="false"
+  local code=1
+
+  read -qs "key?$prompt"
+  code=$?
+  [ $code -eq 0 ] && output="true"
+
+  printf "%s" "$output"
+  return $code
+}
+
+# Print a message and wait for enter key, for use in command substitution.
+#
+# Arguments:
+#   Prompt message
+await-enter-key() {
+  printf "%s" "''${*:-Press ENTER to continue...}"
+
+  # Simply `read -s` works as well, if delimiter is newline
+  while read -ks key; do
+    [ "$key" = $'\x0a' ] && break
+  done
+}
+
+# Print a message and wait for user input then output it, for use in command substitution.
+#
+# Arguments:
+#   Prompt message
+await-string-input() {
+  printf "%s " "''${*:->}"
+  read input
+  printf "%s" "$input"
+}
+
+# Convert text to lowercase.
+#
+# Arguments:
+#   Text to convert
+to-lowercase() {
+  printf "%s" "$(printf "%s" "$*" | tr '[:upper:]' '[:lower:]')"
+}
+
+# Convert text to uppercase.
+#
+# Arguments:
+#   Text to convert
+to-uppercase() {
+  printf "%s" "$(printf "%s" "$*" | tr '[:lower:]' '[:upper:]')"
+}
+
+# Run command in specified directory then return (use with care).
+#
+# Arguments:
+#   Directory to run command in
+#   Command to run
+# Returns:
+#   0 on success, 1 on invalid argument count
+in-dir() {
+  if ! [ $# -eq 2 ]; then
+    echo "Expected 2 arguments, got $#."
+    echo
+    echo "Usage: $0 \"~/my_dir\" \"echo someting\""
+    echo
+    echo "Note that both arguments are quoted."
+    return 1
+  fi
+
+  local prev_dir=$(pwd)
+  local dir="$(realpath $1)"; shift
+  local cmd="$*"
+
+  cd "$dir"
+  eval "$cmd"
+  cd "$prev_dir"
+}
+
+# Open /etc/nixos directory with specified program.
+#
+# Arguments:
+#   Command or program to open directory with
+# Returns:
+#   0 on success, 1 on invalid argument count
+# Dependencies:
+#   in-dir()
+nix-with() {
+  if ! [ $# -eq 1 ]; then
+    echo "Expected 1 argument, got $#."
+    return 1
+  fi
+
+  in-dir "/etc/nixos" "$1"
+}
+
+# Open NixOS configuration in Vim/Neovim
+configure-nixos() {
+  in-dir "/etc/nixos" "vim"
+}
+
+# Open NixOS configuration in Vim/Neovim
+build-nixos() {
+  $HOME/.nix-prebuild
+  sudo nixos-rebuild switch --flake /etc/nixos --upgrade
+}
+
+# Run fg command if buffer line is empty, otherwise save input to stack,
+fancy-ctrl-z () {
+  if [ $#BUFFER -eq 0 ]; then
+    BUFFER="fg"
+    zle accept-line
+  else
+    zle push-input
+    zle clear-screen
+  fi
+}
+
+#
+# Widgets
+#
+
+zle -N nixvim
+zle -N fancy-ctrl-z
+zle -N view-notes
+zle -N prepend-note
+zle -N edit-notes
+zle -N backup-notes
+zle -N clear-backup-notes
+
+#
+# Binds
+#
+
+bindkey "^[b" nb # Build NixOS
+bindkey "^[c" ne # Configure NixOS
+bindkey '^Z' fancy-ctrl-z
+bindkey "^[s" sudo-command-line
+bindkey "^[e" edit-notes
+bindkey "^[E" prepend-note
+bindkey "^[^E" view-notes
+
+#
+# Source other files
+#
+
+if [ -f "$HOME/.zsh-secrets" ]; then
+  source "$HOME/.zsh-secrets"
+fi

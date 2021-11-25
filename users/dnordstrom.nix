@@ -289,45 +289,7 @@
 
   # Alacritty
 
-  # Create configuration file by downloading the contents of the Nord theme and appending our
-  # own options to it
-  xdg.configFile."alacritty/alacritty.yml".source = builtins.toFile "alacritty.yml" (
-    builtins.readFile ( builtins.fetchurl { url =
-      "https://raw.githubusercontent.com/arcticicestudio/nord-alacritty/d4b6d2049157a23958dd0e7ecc4d18f64eaa36f3/src/nord.yml";
-      sha256 = "0adp4v2d5w6j4j2lavgwbq2x8gnvmxk4lnmlrvl9hy62rxrqp561"; }) + ''
-
-      font:
-        normal:
-          family: 'remixicon'
-          family: 'Input Mono Condensed'
-          family: 'InputMonoCondensed Nerd Font'
-        bold:
-          family: 'remixicon'
-          family: 'Input Mono Condensed'
-          family: 'InputMonoCondensed Nerd Font'
-        italic:
-          family: 'remixicon'
-          family: 'Input Mono Condensed'
-          family: 'InputMonoCondensed Nerd Font'
-        bold_italic:
-          family: 'remixicon'
-          family: 'Input Mono Condensed'
-          family: 'InputMonoCondensed Nerd Font'
-        size: 9
-        offset:
-          x: 0
-          y: 0
-        glyph_offset:
-          x: 0
-          y: 0
-      window:
-        padding:
-          x: 12
-          y: 8
-        dynamic_padding: false
-      background_opacity: 0.98
-    ''
-  );
+  xdg.configFile."alacritty/alacritty.yml".source = ../config/alacritty/alacritty.yml;
 
   #
   # Programs

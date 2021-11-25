@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+shell='zsh'
+terminal='alacritty --class terminal --title terminal -e'
+
+if [ "$1" = "windows" ]; then
+  swaymsg -t get_tree | jq -r 'recurse(.nodes[]?)|recurse(.floating_nodes[]?)|select(.type=="con"),select(.type=="floating_con")|(.id|tostring)+" "+.app_id+" -> "+.name' | fzf | awk '{print $1}' | xargs -I % "$shell" 'swaymsg [con_id=%] focus'
+elif [ "$1" = "commands" ]; then
+  cmd="$(echo -n "$PATH" | xargs -d: -I{} -r -- find -L {} -maxdepth 1 -mindepth 1 -name ".*" -prune -o -name "[" -prune -o -executable -printf "%f\n" 2> /dev/null | sort -ufd | fzf)"
+  swaymsg exec -- "$terminal" "${shell} -c ${cmd}"
+else
+  echo -n "$PATH" | xargs -d: -I{} -r -- find -L {} -maxdepth 1 -mindepth 1 -name ".*" -prune -o -name "[" -prune -o -executable -printf "%f\n" 2> /dev/null | sort -ufd | fzf | xargs swaymsg exec
+fi

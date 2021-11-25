@@ -2,17 +2,19 @@
 -- Utilities
 --
 
+local M = {utils = {}}
+local utils = M.utils
+
 -- Replace Vim termcodes in string
-local function t(str)
+local t = function(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
-_G.t = t
-_G.NORDUtils = {operators = {}}
-NORDUtils = _G.NORDUtils
+utils.t = t
+utils.operators = {}
 
--- Next or Tab depending on if menu is open
-NORDUtils.smart_tab = function()
+-- Next or Tab depending on if menu is open (not used since nvim-cmp has its own methods)
+utils.smart_tab = function()
   if vim.fn.pumvisible() ~= 0 then
     return t("<C-n>");
   else
@@ -20,8 +22,8 @@ NORDUtils.smart_tab = function()
   end
 end
 
--- Previous or Shift-Tab depending on if menu is open
-NORDUtils.smart_tab_shift = function()
+-- Previous or Shift-Tab depending on if menu is open (not used since nvim-cmp has its own methods)
+utils.smart_tab_shift = function()
   if vim.fn.pumvisible() ~= 0 then
     return t("<C-p>");
   else
@@ -29,8 +31,8 @@ NORDUtils.smart_tab_shift = function()
   end
 end
 
--- Return or accept completion depending on if menu is open
-NORDUtils.smart_return = function()
+-- Return or accept depending on if menu is open (not used since nvim-cmp has its own methods)
+utils.smart_return = function()
   if vim.fn.pumvisible() ~= 0 then
     return t("<C-y>"); -- Complete without appending newline
   else
@@ -39,22 +41,25 @@ NORDUtils.smart_return = function()
 end
 
 -- Neovim version string in `v0.6.0` format
-NORDUtils.nvim_version = vim.api.nvim_exec([[
+utils.nvim_version = vim.api.nvim_exec([[
   echo matchstr(execute("version"), "NVIM \\zs[^\\n]*")
 ]], true)
 
+-- Get date/time
+utils.date = function(format)
+  return os.date(format or '%Y-%m-%d %H:%M')
+end
+
 -- Inspect variablestables
-NORDUtils.inspect = function(var)
+utils.inspect = function(var)
   print(vim.inspect(var))
 end
 
 -- Show a simple message
-NORDUtils.echo = function(message, highlight, label_highlight)
-  label = "NORDUtils"
-  message = message or "Empty message."
-
-  highlight = highlight or "Comment"
-  label_highlight = label_highlight or "healthSuccess"
+utils.echo = function(message, highlight, label_highlight)
+  local message = message or "Empty message."
+  local highlight = highlight or "Comment"
+  local label_highlight = label_highlight or "healthSuccess"
 
   vim.api.nvim_echo(
     {
@@ -68,18 +73,20 @@ NORDUtils.echo = function(message, highlight, label_highlight)
 end
 
 -- Reload configuration from `/etc/nixos` by default, home directory if live is false
-NORDUtils.reload = function(live)
-  if live == false then
-    api.nvim_command("source " .. home .. "/.config/nvim/lua/init.lua")
-    NORDUtils.echo("Home configuration reloaded.")
+utils.reload = function(live)
+  local options = options or {live = false}
+
+  if options.live == false then
+    vim.api.nvim_command("source " .. home .. "/.config/nvim/lua/init.lua")
+    M.echo("Home configuration reloaded.")
   else
-    api.nvim_command("source /etc/nixos/config/nvim/lua/init.lua")
-    NORDUtils.echo("Live configuration reloaded.")
+    vim.api.nvim_command("source /etc/nixos/config/nvim/lua/init.lua")
+    M.echo("Live configuration reloaded.")
   end
 end
 
 -- Get word under cursor
-NORDUtils.get_word = function()
+utils.get_word = function()
   local first_line_num, last_line_num = vim.fn.getpos("'<")[2], vim.fn.getpos("'>")[2]
   local first_col, last_col = vim.fn.getpos("'<")[3], vim.fn.getpos("'>")[3]
   local current_word = vim.fn.getline(first_line_num, last_line_num)[1]:sub(first_col, last_col)
@@ -88,9 +95,9 @@ NORDUtils.get_word = function()
 end
 
 -- Web search operator
-NORDUtils.operators.browsersearch = function(mode)
+utils.operators.browsersearch = function(mode)
   if mode == nil then
-    vim.go.operatorfunc = "v:lua.NORDUtils.operators.browsersearch"
+    vim.go.operatorfunc = "v:lua.M.operators.browsersearch"
     vim.api.nvim_feedkeys("g@", "n", false)
   end
 
@@ -107,13 +114,12 @@ NORDUtils.operators.browsersearch = function(mode)
     query = lines[1]:sub(start[2] + 1, finish[2] + 1)
   end
 
-  NORDUtils.browsersearch(query)
+  M.browsersearch(query)
 end
 
 -- Web search
-
-NORDUtils.browsersearch = function(query)
-  local command = "firefox"
+utils.browsersearch = function(query)
+  local command = os.getenv("BROWSER") or "firefox"
   local url = "https://google.com/search?q="
   local tohex = function(char)
     return string.format("%%%02X", string.byte(char))
@@ -125,3 +131,4 @@ NORDUtils.browsersearch = function(query)
   io.popen(command .. ' "' .. url .. query .. '"')
 end
 
+return M

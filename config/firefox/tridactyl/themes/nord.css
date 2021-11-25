@@ -1,7 +1,14 @@
-/* Original by Avatar Shahzeb Imran (https://github.com/bezmi/base16-tridactyl) */
-/* Nord by Chris Kempson (http://chriskempson.com) */
+/**
+ * Tridactyl theme based on the Nord color palette.
+ *
+ * Author: Daniel Nordstrom <d@mrnordstrom.com>
+ * Updated: Wed Nov 24 11:11:33 PM CET 2021
+ * See also:
+ *   
+ */
 
 :root {
+  /* Color palette */
   --base00: #2e3440;
   --base01: #3b4252;
   --base02: #434c5e;
@@ -19,11 +26,14 @@
   --base0E: #a3be8c;
   --base0F: #b48ead;
 
-  --nord-padding: 10px;
-  --nord-font-size: 12px;
+  /* Options */
 
-  --tridactyl-font-family: 'Input Mono Condensed', monospace;
-  --tridactyl-font-size: 12px;
+  --nord-padding: 10px; /* Left padding for command line and autocomplete container */
+  --nord-font-size: unset !important; /* Use browser default font size */
+  --nord-font-family: monospace !important; /* Use browser default monospace font */
+
+  --tridactyl-font-family: var(--nord-font-family);
+  --tridactyl-font-size: var(--nord-font-size);
 
   --tridactyl-fg: var(--base06);
   --tridactyl-bg: var(--base00);

@@ -1,0 +1,104 @@
+#
+# Alacritty configuration
+#
+# Author: Daniel Nordstrom <d@mrnordstrom.com>
+# Repository: https://github.com/dnordstrom/dotfiles
+# Credit:
+#   - Nord theme: https://github.com/arcticicestudio/nord-alacritty
+#
+
+# General
+
+live_config_reload: true
+
+# Appearance
+
+colors:
+  primary:
+    background: '0x2E3440'
+    foreground: '0xD8DEE9'
+  cursor:
+    text: '0x2E3440'
+    cursor: '0xD8DEE9'
+  normal:
+    black: '0x3B4252'
+    red: '0xBF616A'
+    green: '0xA3BE8C'
+    yellow: '0xEBCB8B'
+    blue: '0x81A1C1'
+    magenta: '0xB48EAD'
+    cyan: '0x88C0D0'
+    white: '0xE5E9F0'
+  bright:
+    black: '0x4C566A'
+    red: '0xBF616A'
+    green: '0xA3BE8C'
+    yellow: '0xEBCB8B'
+    blue: '0x81A1C1'
+    magenta: '0xB48EAD'
+    cyan: '0x8FBCBB'
+    white: '0xECEFF4'
+
+font:
+  normal:
+    family: 'remixicon'
+    family: 'Input Mono Condensed'
+    family: 'InputMonoCondensed Nerd Font'
+    style: Regular
+  bold:
+    family: 'remixicon'
+    family: 'Input Mono Condensed'
+    family: 'InputMonoCondensed Nerd Font'
+    style: Bold
+  italic:
+    family: 'remixicon'
+    family: 'Input Mono Condensed'
+    family: 'InputMonoCondensed Nerd Font'
+    style: Italic
+  bold_italic:
+    family: 'remixicon'
+    family: 'Input Mono Condensed'
+    family: 'InputMonoCondensed Nerd Font'
+    style: Bold Italic
+  size: 9
+  offset:
+    x: 0
+    y: 0
+  glyph_offset:
+    x: 0
+    y: 0
+window:
+  padding:
+    x: 12
+    y: 8
+  dynamic_padding: false
+background_opacity: 0.98
+
+# Maps
+
+key_bindings:
+  # Allows mapping enter key with modifiers in Vim/Neovim
+  - { key: Return, mods: Shift, chars: "\x1b[13;2u" }
+  - { key: Return, mods: Control, chars: "\x1b[13;5u" }
+  - { key: Return, mods: Control|Shift, chars: "\x1b[13;6u" }
+
+  # Starts new instance in same directory instead of home
+  - { key: Return, mods: Control|Shift, action: SpawnNewInstance }
+
+  # Simplifies navigation on 60% keyboards without entering Vim mode
+  - { key: O, mods: Control, action: ScrollPageUp }
+  - { key: I, mods: Control, action: ScrollPageDown }
+  - { key: H, mods: Alt, action: ScrollToTop }
+  - { key: J, mods: Alt, action: ScrollPageDown }
+  - { key: K, mods: Alt, action: ScrollPageUp }
+  - { key: L, mods: Alt, action: ScrollToBottom }
+
+  # Function key shortcuts
+  - { key: L, mods: Alt, action: Fullscreen }
+
+# Mouse
+
+mouse:
+  url:
+    launcher: wl-copy
+    modifiers: Control

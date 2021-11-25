@@ -177,6 +177,26 @@ fi
 
 printf "\n"
 
+# Ask about Alacritty
+if confirm --strict "Enable for Alacritty (rm -rf ~/.config/alacritty)?"; then
+  printf "\n"
+  loudly "rm -rf ~/.config/alactritty"
+  loudly "ln -s /etc/nixos/config/alacritty ~/.config/alacritty"
+  cleanup="$cleanup\nrm ~/.config/alacritty"
+fi
+
+printf "\n"
+
+# Ask about Zsh
+if confirm --strict "Enable for Zsh (rm -rf ~/.zshrc)?"; then
+  printf "\n"
+  loudly "rm -rf ~/.zshrc"
+  loudly "ln -s /etc/nixos/config/zsh/zshrc ~/.zshrc"
+  cleanup="$cleanup\nrm ~/.zshrc"
+fi
+
+printf "\n"
+
 # Ask about Tridactyl
 if confirm --strict "Enable for Tridactyl (rm -rf ~/.config/tridactyl)?"; then
   printf "\n"
