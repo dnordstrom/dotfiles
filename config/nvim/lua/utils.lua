@@ -2,19 +2,19 @@
 -- Utilities
 --
 
-local M = {utils = {}}
-local utils = M.utils
+_G.utils = {
+  operators = {}
+}
 
 -- Replace Vim termcodes in string
-local t = function(str)
+_G.utils.t = function(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
-utils.t = t
-utils.operators = {}
+local t = _G.utils.t
 
 -- Next or Tab depending on if menu is open (not used since nvim-cmp has its own methods)
-utils.smart_tab = function()
+_G.utils.smart_tab = function()
   if vim.fn.pumvisible() ~= 0 then
     return t("<C-n>");
   else
@@ -23,7 +23,7 @@ utils.smart_tab = function()
 end
 
 -- Previous or Shift-Tab depending on if menu is open (not used since nvim-cmp has its own methods)
-utils.smart_tab_shift = function()
+_G.utils.smart_tab_shift = function()
   if vim.fn.pumvisible() ~= 0 then
     return t("<C-p>");
   else
@@ -32,7 +32,7 @@ utils.smart_tab_shift = function()
 end
 
 -- Return or accept depending on if menu is open (not used since nvim-cmp has its own methods)
-utils.smart_return = function()
+_G.utils.smart_return = function()
   if vim.fn.pumvisible() ~= 0 then
     return t("<C-y>"); -- Complete without appending newline
   else
@@ -41,29 +41,29 @@ utils.smart_return = function()
 end
 
 -- Neovim version string in `v0.6.0` format
-utils.nvim_version = vim.api.nvim_exec([[
+_G.utils.nvim_version = vim.api.nvim_exec([[
   echo matchstr(execute("version"), "NVIM \\zs[^\\n]*")
 ]], true)
 
 -- Get date/time
-utils.date = function(format)
+_G.utils.date = function(format)
   return os.date(format or '%Y-%m-%d %H:%M')
 end
 
 -- Inspect variablestables
-utils.inspect = function(var)
+_G.utils.inspect = function(var)
   print(vim.inspect(var))
 end
 
 -- Show a simple message
-utils.echo = function(message, highlight, label_highlight)
+_G.utils.echo = function(message, highlight, label_highlight)
   local message = message or "Empty message."
   local highlight = highlight or "Comment"
   local label_highlight = label_highlight or "healthSuccess"
 
   vim.api.nvim_echo(
     {
-      { "\r\rNORDUtils", label_highlight },
+      { "\r\rNORD_G.utils", label_highlight },
       { ": ", highlight },
       { message, highlight }
     },
@@ -73,7 +73,7 @@ utils.echo = function(message, highlight, label_highlight)
 end
 
 -- Reload configuration from `/etc/nixos` by default, home directory if live is false
-utils.reload = function(live)
+_G.utils.reload = function(live)
   local options = options or {live = false}
 
   if options.live == false then
@@ -86,7 +86,7 @@ utils.reload = function(live)
 end
 
 -- Get word under cursor
-utils.get_word = function()
+_G.utils.get_word = function()
   local first_line_num, last_line_num = vim.fn.getpos("'<")[2], vim.fn.getpos("'>")[2]
   local first_col, last_col = vim.fn.getpos("'<")[3], vim.fn.getpos("'>")[3]
   local current_word = vim.fn.getline(first_line_num, last_line_num)[1]:sub(first_col, last_col)
@@ -95,7 +95,7 @@ utils.get_word = function()
 end
 
 -- Web search operator
-utils.operators.browsersearch = function(mode)
+_G.utils.operators.browsersearch = function(mode)
   if mode == nil then
     vim.go.operatorfunc = "v:lua.M.operators.browsersearch"
     vim.api.nvim_feedkeys("g@", "n", false)
@@ -118,7 +118,7 @@ utils.operators.browsersearch = function(mode)
 end
 
 -- Web search
-utils.browsersearch = function(query)
+_G.utils.browsersearch = function(query)
   local command = os.getenv("BROWSER") or "firefox"
   local url = "https://google.com/search?q="
   local tohex = function(char)
@@ -131,4 +131,3 @@ utils.browsersearch = function(query)
   io.popen(command .. ' "' .. url .. query .. '"')
 end
 
-return M
