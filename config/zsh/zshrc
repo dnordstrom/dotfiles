@@ -50,6 +50,18 @@ export FZF_ALT_C_OPTS="$FZF_DEFAULT_OPTS"
 export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS"
 
 #
+# Aliases
+#
+
+alias cat="bat"
+alias cdn="cd /etc/nixos"
+alias nb="$HOME/.nix-prebuild; sudo nixos-rebuild switch --flake /etc/nixos --upgrade"
+alias ne="nix-with nvim"
+alias nkate="nix-with kate"
+alias ncode="nix-with codium"
+alias n12="nix-shell /etc/nixos/shell/node12.nix"
+
+#
 # Functions
 #
 
