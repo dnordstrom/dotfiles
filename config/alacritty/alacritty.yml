@@ -9,37 +9,275 @@
 #   - Nord theme: https://github.com/arcticicestudio/nord-alacritty
 #
 
+# Environment
+
+env:
+  TERM: xterm-256color
+
 # General
 
 live_config_reload: true
 
 # Appearance
 
-colors:
-  primary:
-    background: '0x2E3440'
-    foreground: '0xD8DEE9'
-  cursor:
-    text: '0x2E3440'
-    cursor: '0xD8DEE9'
-  normal:
-    black: '0x3B4252'
-    red: '0xBF616A'
-    green: '0xA3BE8C'
-    yellow: '0xEBCB8B'
-    blue: '0x81A1C1'
-    magenta: '0xB48EAD'
-    cyan: '0x88C0D0'
-    white: '0xE5E9F0'
-  bright:
-    black: '0x4C566A'
-    red: '0xBF616A'
-    green: '0xA3BE8C'
-    yellow: '0xEBCB8B'
-    blue: '0x81A1C1'
-    magenta: '0xB48EAD'
-    cyan: '0x8FBCBB'
-    white: '0xECEFF4'
+schemes:
+  nord: &nord
+    primary:
+      background: '0x2E3440'
+      foreground: '0xD8DEE9'
+    cursor:
+      text: '0x2E3440'
+      cursor: '0xD8DEE9'
+    normal:
+      black: '0x3B4252'
+      red: '0xBF616A'
+      green: '0xA3BE8C'
+      yellow: '0xEBCB8B'
+      blue: '0x81A1C1'
+      magenta: '0xB48EAD'
+      cyan: '0x88C0D0'
+      white: '0xE5E9F0'
+    bright:
+      black: '0x4C566A'
+      red: '0xBF616A'
+      green: '0xA3BE8C'
+      yellow: '0xEBCB8B'
+      blue: '0x81A1C1'
+      magenta: '0xB48EAD'
+      cyan: '0x8FBCBB'
+      white: '0xECEFF4'
+
+  doom-one: &doom-one
+    primary:
+      background: '#282c34'
+      foreground: '#bbc2cf'
+    cursor:
+      text: CellBackground
+      cursor: '#528bff'
+    selection:
+      text: CellForeground
+      background: '#3e4451'
+    normal:
+      black:   '#1c1f24'
+      red:     '#ff6c6b'
+      green:   '#98be65'
+      yellow:  '#da8548'
+      blue:    '#51afef'
+      magenta: '#c678dd'
+      cyan:    '#5699af'
+      white:   '#202328'
+    bright:
+      black:   '#5b6268'
+      red:     '#da8548'
+      green:   '#4db5bd'
+      yellow:  '#ecbe7b'
+      blue:    '#2257a0'
+      magenta: '#a9a1e1'
+      cyan:    '#46d9ff'
+      white:   '#dfdfdf'
+
+  dracula: &dracula
+    primary:
+      background: '#282a36'
+      foreground: '#f8f8f2'
+    cursor:
+      text: CellBackground
+      cursor: CellForeground
+    vi_mode_cursor:
+      text: CellBackground
+      cursor: CellForeground
+    search:
+      matches:
+        foreground: '#44475a'
+        background: '#50fa7b'
+      focused_match:
+        foreground: '#44475a'
+        background: '#ffb86c'
+      bar:
+        background: '#282a36'
+        foreground: '#f8f8f2'
+    line_indicator:
+      foreground: None
+      background: None
+    selection:
+      text: CellForeground
+      background: '#44475a'
+    normal:
+      black:   '#000000'
+      red:     '#ff5555'
+      green:   '#50fa7b'
+      yellow:  '#f1fa8c'
+      blue:    '#bd93f9'
+      magenta: '#ff79c6'
+      cyan:    '#8be9fd'
+      white:   '#bfbfbf'
+    bright:
+      black:   '#4d4d4d'
+      red:     '#ff6e67'
+      green:   '#5af78e'
+      yellow:  '#f4f99d'
+      blue:    '#caa9fa'
+      magenta: '#ff92d0'
+      cyan:    '#9aedfe'
+      white:   '#e6e6e6'
+    dim:
+      black:   '#14151b'
+      red:     '#ff2222'
+      green:   '#1ef956'
+      yellow:  '#ebf85b'
+      blue:    '#4d5b86'
+      magenta: '#ff46b0'
+      cyan:    '#59dffc'
+      white:   '#e6e6d1'
+
+  gruvbox-dark: &gruvbox-dark
+    primary:
+      background: '#282828'
+      foreground: '#ebdbb2'
+    normal:
+      black:   '#282828'
+      red:     '#cc241d'
+      green:   '#98971a'
+      yellow:  '#d79921'
+      blue:    '#458588'
+      magenta: '#b16286'
+      cyan:    '#689d6a'
+      white:   '#a89984'
+    bright:
+      black:   '#928374'
+      red:     '#fb4934'
+      green:   '#b8bb26'
+      yellow:  '#fabd2f'
+      blue:    '#83a598'
+      magenta: '#d3869b'
+      cyan:    '#8ec07c'
+      white:   '#ebdbb2'
+
+  monokai-pro: &monokai-pro
+    primary:
+      background: '#2D2A2E'
+      foreground: '#FCFCFA'
+    normal:
+      black:   '#403E41'
+      red:     '#FF6188'
+      green:   '#A9DC76'
+      yellow:  '#FFD866'
+      blue:    '#FC9867'
+      magenta: '#AB9DF2'
+      cyan:    '#78DCE8'
+      white:   '#FCFCFA'
+    bright:
+      black:   '#727072'
+      red:     '#FF6188'
+      green:   '#A9DC76'
+      yellow:  '#FFD866'
+      blue:    '#FC9867'
+      magenta: '#AB9DF2'
+      cyan:    '#78DCE8'
+      white:   '#FCFCFA'
+
+  palenight: &palenight
+    primary:
+      background: '#292d3e'
+      foreground: '#d0d0d0'
+    normal:
+      black:   '#292d3e'
+      red:     '#f07178'
+      green:   '#c3e88d'
+      yellow:  '#ffcb6b'
+      blue:    '#82aaff'
+      magenta: '#c792ea'
+      cyan:    '#89ddff'
+      white:   '#d0d0d0'
+    bright:
+      black:   '#434758'
+      red:     '#ff8b92'
+      green:   '#ddffa7'
+      yellow:  '#ffe585'
+      blue:    '#9cc4ff'
+      magenta: '#e1acff'
+      cyan:    '#a3f7ff'
+      white:   '#ffffff'
+
+  solarized-light: &solarized-light
+    primary:
+      background: '#fdf6e3' # base3
+      foreground: '#657b83' # base00
+    cursor:
+      text:   '#fdf6e3' # base3
+      cursor: '#657b83' # base00
+    normal:
+      black:   '#073642' # base02
+      red:     '#dc322f' # red
+      green:   '#859900' # green
+      yellow:  '#b58900' # yellow
+      blue:    '#268bd2' # blue
+      magenta: '#d33682' # magenta
+      cyan:    '#2aa198' # cyan
+      white:   '#eee8d5' # base2
+    bright:
+      black:   '#002b36' # base03
+      red:     '#cb4b16' # orange
+      green:   '#586e75' # base01
+      yellow:  '#657b83' # base00
+      blue:    '#839496' # base0
+      magenta: '#6c71c4' # violet
+      cyan:    '#93a1a1' # base1
+      white:   '#fdf6e3' # base3
+
+  solarized-dark: &solarized-dark
+    primary:
+      background: '#002b36' # base03
+      foreground: '#839496' # base0
+    cursor:
+      text:   '#002b36' # base03
+      cursor: '#839496' # base0
+    normal:
+      black:   '#073642' # base02
+      red:     '#dc322f' # red
+      green:   '#859900' # green
+      yellow:  '#b58900' # yellow
+      blue:    '#268bd2' # blue
+      magenta: '#d33682' # magenta
+      cyan:    '#2aa198' # cyan
+      white:   '#eee8d5' # base2
+    bright:
+      black:   '#002b36' # base03
+      red:     '#cb4b16' # orange
+      green:   '#586e75' # base01
+      yellow:  '#657b83' # base00
+      blue:    '#839496' # base0
+      magenta: '#6c71c4' # violet
+      cyan:    '#93a1a1' # base1
+      white:   '#fdf6e3' # base3
+
+  tomorrow-night: &tomorrow-night
+    primary:
+      background: '#1d1f21'
+      foreground: '#c5c8c6'
+    cursor:
+      text: '#1d1f21'
+      cursor: '#ffffff'
+    normal:
+      black:   '#1d1f21'
+      red:     '#cc6666'
+      green:   '#b5bd68'
+      yellow:  '#e6c547'
+      blue:    '#81a2be'
+      magenta: '#b294bb'
+      cyan:    '#70c0ba'
+      white:   '#373b41'
+    bright:
+      black:   '#666666'
+      red:     '#ff3334'
+      green:   '#9ec400'
+      yellow:  '#f0c674'
+      blue:    '#81a2be'
+      magenta: '#b77ee0'
+      cyan:    '#54ced6'
+      white:   '#282a2e'
+
+colors: *nord
 
 font:
   normal:
@@ -87,16 +325,9 @@ key_bindings:
   # Starts new instance in same directory instead of home
   - { key: Return, mods: Control|Shift, action: SpawnNewInstance }
 
-  # Simplifies navigation on 60% keyboards without entering Vim mode
-  - { key: O, mods: Control, action: ScrollPageUp }
-  - { key: I, mods: Control, action: ScrollPageDown }
-  - { key: H, mods: Alt, action: ScrollToTop }
+  # Simplifies scrolling on 60% keyboards without entering Vim mode
   - { key: J, mods: Alt, action: ScrollPageDown }
   - { key: K, mods: Alt, action: ScrollPageUp }
-  - { key: L, mods: Alt, action: ScrollToBottom }
-
-  # Function key shortcuts
-  - { key: L, mods: Alt, action: ToggleFullscreen }
 
 # Mouse
 
@@ -106,12 +337,13 @@ mouse:
 
 hints:
   enabled:
+    # Alt-Y for yank hint mode
     - regex: "(magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)[^\u0000-\u001F\u007F-\u009F<>\"\\s{-}\\^⟨⟩`]+"
       action: Copy
       post_processing: false
       binding:
         key: Y
-        mods: Control|Shift
+        mods: Alt
       mouse:
         enabled: true
 

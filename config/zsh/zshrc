@@ -8,6 +8,10 @@
 # Variables
 #
 
+# zsh
+
+export KEYTIMEOUT=1000
+
 # ANSI color code helpers
 
 export ANSI_STYLE_MD=$(tput bold; tput setaf 6)
@@ -65,30 +69,28 @@ alias n12="nix-shell /etc/nixos/shell/node12.nix"
 # Functions
 #
 
-append-date() {
-  RBUFFER+="$(date +'%Y%m%d')"
+insert-date() {
+  LBUFFER="$LBUFFER$(date +'%Y%m%d')"
 }
 
 prepend-date() {
-  LBUFFER+="$(date +'%Y%m%d')"
+  LBUFFER="$(date +'%Y%m%d')-$LBUFFER"
 }
 
-append-timestamp() {
-  RBUFFER+="$(date +'%Y%m%d%H%M')"
+insert-timestamp() {
+  LBUFFER="$LBUFFER$(date +'%Y%m%d%H%M')"
 }
 
 prepend-timestamp() {
-  LBUFFER+="$(date +'%Y%m%d%H%M')"
+  LBUFFER="$(date +'%Y%m%d%H%M')-$LBUFFER"
 }
 
 set-keyboard-layout() {
-  local default="'us,se'"
-  swaymsg input type:keyboard xkb_layout "''${@:-$default}"
+  swaymsg "input type:keyboard xkb_layout '${@:-"us,se"}'"
 }
 
 set-keyboard-variant() {
-  local default="','"
-  swaymsg input type:keyboard xkb_variant "''${@:-$default}"
+  swaymsg "input type:keyboard xkb_variant '${@:-","}'"
 }
 
 # Open the notes file for viewing.
@@ -97,7 +99,7 @@ set-keyboard-variant() {
 #   NOTES_FILE
 #   NOTES_VIEWER
 view-notes() {
-  eval "''${NOTES_VIEWER:-cat} $NOTES_FILE"
+  eval "${NOTES_VIEWER:-cat} $NOTES_FILE"
 }
 
 # Open the notes file for editing.
@@ -107,7 +109,7 @@ view-notes() {
 #   NOTES_FILE
 #   NOTES_EDITOR
 edit-notes() {
-  eval "''${NOTES_EDITOR:-$EDITOR} $NOTES_FILE"
+  eval "${NOTES_EDITOR:-$EDITOR} $NOTES_FILE"
 }
 
 # Prepend a list item to the notes file.
@@ -115,7 +117,7 @@ edit-notes() {
 # Globals:
 #   NOTES_FILE
 prepend-note() {
-  local note="''${@:-$BUFFER}"
+  local note="${@:-$BUFFER}"
 
   if ! [ -z "$note" ]; then
     backup-notes
@@ -183,7 +185,7 @@ append-to-history() {
 # Arguments:
 #   Prompt message
 await-any-key() {
-  printf "%s" "''${*:-Press any key to continue...}"
+  printf "%s" "${*:-Press any key to continue...}"
   read -ks
 }
 
@@ -193,7 +195,7 @@ await-any-key() {
 # Arguments:
 #   Prompt message
 await-confirm() {
-  local prompt="''${*:-Would you like to continue?} [Y/n] "
+  local prompt="${*:-Would you like to continue?} [Y/n] "
   local output="false"
   local code=1
 
@@ -210,7 +212,7 @@ await-confirm() {
 # Arguments:
 #   Prompt message
 await-enter-key() {
-  printf "%s" "''${*:-Press ENTER to continue...}"
+  printf "%s" "${*:-Press ENTER to continue...}"
 
   # Simply `read -s` works as well, if delimiter is newline
   while read -ks key; do
@@ -223,7 +225,7 @@ await-enter-key() {
 # Arguments:
 #   Prompt message
 await-string-input() {
-  printf "%s " "''${*:->}"
+  printf "%s " "${*:->}"
   read input
   printf "%s" "$input"
 }
@@ -299,7 +301,7 @@ build-nixos() {
 }
 
 # Run fg command if buffer line is empty, otherwise save input to stack,
-fancy-ctrl-z () {
+fancy-ctrl-z() {
   if [ $#BUFFER -eq 0 ]; then
     BUFFER="fg"
     zle accept-line
@@ -313,13 +315,13 @@ fancy-ctrl-z () {
 # Widgets
 #
 
-zle -N append-timestamp
-zle -N prepend-timestamp
-zle -N append-date
+zle -N insert-date
+zle -N insert-timestamp
 zle -N prepend-date
+zle -N prepend-timestamp
+zle -N fancy-ctrl-z
 zle -N configure-nixos
 zle -N build-nixos
-zle -N fancy-ctrl-z
 zle -N view-notes
 zle -N prepend-note
 zle -N edit-notes
@@ -330,17 +332,19 @@ zle -N clear-backup-notes
 # Binds
 #
 
-# Ctrl-Z for fg
-bindkey '^Z' fancy-ctrl-z
+# Rebinds
+bindkey -s '^l' "l\n" # Alt-L uses l instead of ls
 
-# Append: Alt-A then specifier
-bindkey "^[at" append-timestamp
-bindkey "^[ad" append-date
+# Ctrl-Z for fg
+bindkey "^Z" fancy-ctrl-z
+
+# Paste: Alt-A then specifier
+bindkey "^[pt" insert-timestamp
+bindkey "^[pd" insert-date
 
 # Prepend: Shift-Alt-A then specifier
-bindkey "^[As" prepend-sudo
-bindkey "^[Ad" prepend-date
-bindkey "^[At" prepend-timestamp
+bindkey "^[Pd" prepend-date
+bindkey "^[Pt" prepend-timestamp
 
 # Configuration: Alt-C then specifier
 bindkey "^[cb" build-nixos

@@ -14,6 +14,7 @@ local nvim_exec = vim.api.nvim_exec
 local nvim_set_keymap = vim.api.nvim_set_keymap
 local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
 local opts = {
+  re = {},
   nore = {noremap = true},
   noreExpr = {noremap = true, expr = true},
   noreSilent = {noremap = true, silent = true},
@@ -23,10 +24,17 @@ local opts = {
 
 -- General
 
+nvim_set_keymap("n", ";", ":", opts.nore)
 nvim_set_keymap("n", "<Leader><Leader>", "<C-^>", opts.nore)
 nvim_set_keymap("n", "<C-Space>", "<Cmd>FzfLua<CR>", opts.nore)
 nvim_set_keymap("v", "<Leader>cS", ":sort!<CR>", opts.nore)
 nvim_set_keymap("v", "<Leader>cs", ":sort<CR>", opts.nore)
+
+-- Don't yank to regular register on deletes
+nvim_set_keymap("n", "d", '"0d', opts.nore)
+nvim_set_keymap("n", "D", '"0D', opts.nore)
+nvim_set_keymap("n", "x", '"0x', opts.nore)
+nvim_set_keymap("n", "X", '"0X', opts.nore)
 
 -- Reload
 
@@ -45,13 +53,14 @@ nvim_set_keymap("n", "<Leader>P", '<Cmd>"+P<CR>', opts.nore)
 
 -- Yank
 
--- New line with toggled comment (if on a comment line, inserts non-comment line, and nice versa)
-nvim_set_keymap("i", "<C-CR>", '<Esc>ogccI<CR>', opts.nore)
-nvim_set_keymap("n", "<C-CR>", 'o<Esc>gcc', opts.nore)
+-- New line with toggled comment (if on a comment line, inserts non-comment line, and nice versa),
+-- using <Plug> to avoid problems with which-key.
+nvim_set_keymap("i", "<C-CR>", '<Esc>^o<Esc>gcci', opts.re)
+nvim_set_keymap("n", "<C-CR>", '^o<Esc>gcci', opts.re)
 
 -- Duplicates current line
-nvim_set_keymap("i", "<S-CR>", '<Esc>yypI', opts.nore)
-nvim_set_keymap("n", "<S-CR>", 'yyp', opts.nore)
+nvim_set_keymap("i", "<S-CR>", '<Esc>yypA', opts.nore)
+nvim_set_keymap("n", "<S-CR>", 'yyp$', opts.nore)
 
 -- Insert mode navigation
 
