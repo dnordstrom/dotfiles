@@ -356,6 +356,12 @@ bindkey "^[na" prepend-note
 bindkey "^[nv" view-notes
 
 #
+# Path
+#
+
+for directory in ~/.scripts/*; export PATH="$PATH:$directory"
+
+#
 # Source other files
 #
 
