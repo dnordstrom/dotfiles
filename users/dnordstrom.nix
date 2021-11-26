@@ -13,7 +13,29 @@
   # General
   #
 
-  xdg.enable = true;
+  xdg = {
+    enable = true;
+    desktopEntries = {
+      neovim-alacritty = {
+        name = "Neovim";
+        genericName = "Text Editor";
+        exec = "alacritty --class terminal --title terminal -e nvim %U";
+        terminal = false;
+        icon = "neovim";
+        categories = [ "Development" "TextEditor" ];
+        mimeType = [ "text/plain" ];
+      };
+      vifm-alacritty = {
+        name = "Vifm (Alacritty)";
+        genericName = "File Manager";
+        exec = "alacritty --class terminal --title terminal -e vifm %U";
+        terminal = false;
+        icon = "vifm";
+        categories = [ "System" "FileManager" ];
+        mimeType = [ "text/plain" ];
+      };
+    };
+  };
 
   #
   # Packages
@@ -169,7 +191,12 @@
     nordic
 
     # Icons
+    arc-icon-theme
     numix-icon-theme-circle
+    paper-icon-theme
+    papirus-icon-theme
+    pop-icon-theme
+    tela-icon-theme
 
     # Custom
     convox
@@ -256,6 +283,10 @@
 
   xdg.configFile."nvim/lua".source = ../config/nvim/lua;
   xdg.configFile."nvim/ftplugin".source = ../config/nvim/ftplugin;
+
+  # Vifm
+
+  xdg.configFile."vifm".source = ../config/vifm;
 
   # Xorg
 

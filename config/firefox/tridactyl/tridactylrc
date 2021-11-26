@@ -89,6 +89,9 @@ command reconfiglive source /etc/nixos/config/firefox/tridactyl/tridactylrc
 " Reload config from ~/.config/tridactyl
 command reconfig source
 
+" Save Instagram with proper filename
+command writeinstagram js (() => { const a = document.createElement('a'); const cv = document.createElement('canvas'); const cx = cv.getContext('2d'); const img = document.querySelector('[role="dialog"] img'); cv.width = img.width; cv.height = img.height; cx.drawImage(img, 0,0); const ext = new URL(img.src).pathname.match(/(\w+)$/)[0]; const url = cv.toDataURL(`image/${ext == 'jpg' ? 'jpeg' : ext}`); a.download = `${img.alt.toLowerCase().replace(/[^\s\w]/g, '').replace(/\s+/g, '_')}.${ext}`; a.href = url; document.body.appendChild(a); a.click(); document.body.removeChild(a); })()
+
 "
 " Key binds
 "
@@ -122,6 +125,10 @@ bind <Space>h nohlsearch
 
 bind yj yankjiraissue
 bind yJ yankjiraurl
+
+" Write/save
+
+bind <Space>wi writeinstagram
 
 " Change
 

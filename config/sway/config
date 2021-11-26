@@ -354,6 +354,19 @@ for_window [app_id="scratchpad_term"] floating enable, resize set 1280 720
 for_window [app_id="popup_term"] floating enable, resize set 920 720
 
 #
+# GTK
+#
+
+set $gnome-schema org.gnome.desktop.interface
+
+exec_always {
+  gsettings set $gnome-schema gtk-theme "Nordic-v40"
+  gsettings set $gnome-schema icon-theme "Papirus-Dark"
+  gsettings set $gnome-schema cursor-theme "breeze_cursors"
+  gsettings set $gnome-schema font-name "Input Sans Condensed 9"
+}
+
+#
 # Load other configuration files
 #
 

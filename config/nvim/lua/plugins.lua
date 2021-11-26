@@ -23,6 +23,7 @@ return require('packer').startup(function(use)
   use 'tpope/vim-markdown'
   use 'ggandor/lightspeed.nvim'
   use 'christoomey/vim-tmux-navigator'
+  use 'vifm/vifm.vim'
   use 'norcalli/nvim-colorizer.lua'
   use 'ellisonleao/glow.nvim'
   use 'b3nj5m1n/kommentary'
@@ -40,6 +41,7 @@ return require('packer').startup(function(use)
   use 'jose-elias-alvarez/nvim-lsp-ts-utils'
 
   use 'L3MON4D3/LuaSnip'
+  use 'rafamadriz/friendly-snippets'
   use 'saadparwaiz1/cmp_luasnip'
   use 'hrsh7th/cmp-nvim-lsp'
   use 'hrsh7th/cmp-buffer'

@@ -21,7 +21,7 @@ option_screen=false
 has_curl=false
 area=""
 timestamp="$(date '+%Y%m%d_%H_%M_%S')"
-target_dir=${SCREENSNAP_TARGET_DIR:-"$HOME/Pictures/Screensnap"}
+target_dir=${SCREENSNAP_TARGET_DIR:-"$HOME/Pictures/Screenshots"}
 target="$target_dir/$timestamp.png"
 imgur_client_id="${IMGUR_CLIENT_ID:=e4ab8199be97038}"
 USAGE="USAGE:
@@ -29,7 +29,7 @@ USAGE="USAGE:
     $(basename "$0") [options] [target file]
 
 DESCRIPTION:
-    Take a screenshot of a region (default), window, or screen. The file path or URL (if uploaded) will be copied to clipboard and printed on screen. Optionally the image contents can be copied to clipboard.
+    Takes a screenshot of a region (default), window, or screen. The file path or URL (if uploaded) will be copied to clipboard. Optionally the actual image can be copied to clipboard using the --copy option.
 
 OPTIONS:
     --help, -h        Show this help text
@@ -169,10 +169,10 @@ else
 fi
 
 # Open the screenshot with image viewer if the --open (or -o) flag is used
-[ "$option_open_file" = "true" ] || "$image_viewer" "$target" 2> /dev/null &
+[ "$option_open_file" = "true" ] && "$image_viewer" "$target" 2> /dev/null &
 
 # Open the containing directory if --directory (or -d) flag is used
-[ "$option_open_dir" = "true" ] || "$file_manager" "$(basedir "$target")" 2> /dev/null &
+[ "$option_open_dir" = "true" ] && "$file_manager" "$(dirname "$target")" 2> /dev/null &
 
 echo "$target"
 

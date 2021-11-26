@@ -333,7 +333,7 @@ zle -N clear-backup-notes
 #
 
 # Rebinds
-bindkey -s '^l' "l\n" # Alt-L uses l instead of ls
+bindkey -s '^[l' "l\n" # Alt-L uses l instead of ls
 
 # Ctrl-Z for fg
 bindkey "^Z" fancy-ctrl-z
