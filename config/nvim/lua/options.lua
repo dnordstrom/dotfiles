@@ -1,8 +1,10 @@
---
--- Options
---
+----
+-- OPTIONS
+----
 
+--
 -- Shortcuts
+--
 
 local g = vim.g
 local fn = vim.fn
@@ -13,18 +15,26 @@ local opt_global = vim.opt_global
 local nvim_exec = vim.api.nvim_exec
 local nvim_set_keymap = vim.api.nvim_set_keymap
 local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
+
+-- Space key as leader
 vim.g.mapleader = " "
 
+--
 -- General
+--
 
 opt.ignorecase = true
 opt.number = true
 opt.relativenumber = true
 opt.completeopt = "noinsert,menuone,noselect"
 opt.mouse = "a"
-opt.clipboard = "unnamed" -- Use selection clipboard ("unnamedplus" for primary gets annoying fast)
+opt.clipboard = "unnamed" -- Uses selection clipboard
+opt.spell = false -- Enabled for specific file types
+opt.spelllang = {"en_us"}
 
+--
 -- Explorer
+--
 
 g.netrw_liststyle = 4 -- Open in previous window
 g.netrw_browse_split = 2 -- Split vertically
@@ -32,16 +42,15 @@ g.netrw_winsize = 25 -- In percent, ignored by `:Texplore` windows
 g.netrw_altv = 1 -- Open file to the right
 g.netrw_banner = 0 -- Hide banner
 
+--
 -- Formatting
+--
 
 opt.autoindent = true
 opt.expandtab = true
 opt.shiftwidth = 2
 opt.softtabstop = 2
 opt.tabstop = 2
-
--- Wrapping
-
 opt.wrap = true -- Soft wrap
 opt.wrapmargin = 100 -- Soft wrap column
 opt.textwidth = 100 -- Hard wrap column when `formatoptions~=t` or `gq` is used
@@ -60,7 +69,9 @@ opt.formatoptions = "cjroql"
 -- For hard wrap: tcjroql
 -- For hard wrap comments only: cjroql
 
+--
 -- Theme
+--
 
 g.nord_contrast = true
 g.nord_borders = false

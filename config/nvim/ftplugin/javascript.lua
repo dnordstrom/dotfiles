@@ -1,8 +1,10 @@
---
--- JavaScript
---
+----
+-- JAVASCRIPT
+----
 
--- Maps
+--
+-- Key maps
+--
 
 local opts = {
   nore = {noremap = true}
@@ -11,3 +13,4 @@ local opts = {
 vim.api.nvim_set_keymap("i", ",clg", "console.log()<Left>", opts.nore)
 vim.api.nvim_set_keymap("i", ",cld", "console.dir()<Left>", opts.nore)
 vim.api.nvim_set_keymap("i", ",clo", "console.log('Object:', )<Left>", opts.nore)
+

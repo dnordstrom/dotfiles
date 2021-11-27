@@ -323,7 +323,7 @@ key_bindings:
   - { key: Return, mods: Control|Shift, chars: "\x1b[13;6u" }
 
   # Starts new instance in same directory instead of home
-  - { key: Return, mods: Control|Shift, action: SpawnNewInstance }
+  - { key: Return, mods: Control|Shift|Alt, action: SpawnNewInstance }
 
   # Simplifies scrolling on 60% keyboards without entering Vim mode
   - { key: J, mods: Alt, action: ScrollPageDown }

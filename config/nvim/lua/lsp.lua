@@ -1,6 +1,9 @@
---
--- Language Servers
---
+----
+-- LANGUAGE SERVERS AND TOOLS
+----
+
+local lspconfig = require("lspconfig")
+local null_ls = require("null-ls")
 
 -- Shortcuts
 
@@ -14,13 +17,7 @@ local nvim_exec = vim.api.nvim_exec
 local nvim_set_keymap = vim.api.nvim_set_keymap
 local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
 
--- Helper
-
-local lspconfig = require("lspconfig")
-
 -- null-ls
-
-local null_ls = require("null-ls")
 
 null_ls.config({
   sources = {
@@ -68,15 +65,11 @@ lspconfig.tsserver.setup({
   end,
 })
 
--- Others
+-- Autoloaded
 
+local on_attach = function(client, bufid) end
 local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
-
 capabilities.textDocument.completion.completionItem.snippetSupport = true
-
-local on_attach = function(client, bufid)
-end
-
 local servers = {"html", "cssls", "jsonls", "bashls", "gopls", "yamlls", "vimls"}
 
 for _, lsp in ipairs(servers) do
@@ -87,19 +80,18 @@ for _, lsp in ipairs(servers) do
 end
 
 -- Diagnostics settings
-
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
   vim.lsp.diagnostic.on_publish_diagnostics, {
-    virtual_text = false,
+    virtual_text = true,
     signs = true,
     underline = true,
-    update_in_insert = false,
+    update_in_insert = true,
   }
 )
 
 -- Diagnostics signs
 --
--- Quick NerdFonts reference:
+-- NerdFonts reference:
 --    na-fa-angle_left
 --    na-fa-angle_double_left
 --    nf-fa-arrow_circle_right
@@ -172,7 +164,6 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 --    nf-oct-bell
 --   
 --   For remixicon etc, use https://mathew-kurian.github.io/CharacterMap
-
 local signs = {
   Error = " ",
   Warning = " ",

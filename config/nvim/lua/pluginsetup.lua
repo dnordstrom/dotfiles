@@ -1,10 +1,93 @@
---
--- Plugins
---
+----
+-- PLUGIN SETTINGS
+----
 
--- Commenting
+-- LuaSnip
 
-require("kommentary.config").use_extended_mappings()
+require("luasnip.loaders.from_vscode").lazy_load()
+
+-- Comment.nvim
+
+require('Comment').setup({
+  pre_hook = function(ctx)
+    -- Use nvim-ts-context-commentstring for commenting TSX/JSX markup
+    if vim.bo.filetype == "typescriptreact" or vim.bo.filetype == "javascriptreact" then
+      local U = require("Comment.utils")
+      local type = ctx.ctype == U.ctype.line and "__default" or "__multiline"
+      local location = nil
+
+      if ctx.ctype == U.ctype.block then
+        location = require("ts_context_commentstring.utils").get_cursor_location()
+      elseif ctx.cmotion == U.cmotion.v or ctx.cmotion == U.cmotion.V then
+        location = require("ts_context_commentstring.utils").get_visual_start_location()
+      end
+
+      return require("ts_context_commentstring.internal").calculate_commentstring({
+        key = type,
+        location = location
+      })
+    end
+  end
+})
+
+-- nvim-treesitter
+
+require("nvim-treesitter.configs").setup({
+  ensure_installed = "all",
+  context_commentstring = {
+    enable = true
+  },
+  textobjects = {
+    select = {
+      enable = true,
+      lookahead = true,
+      keymaps = {
+        ["al"] = "@loop.outer",
+        ["il"] = "@loop.inner",
+        ["ab"] = "@block.outer",
+        ["ib"] = "@block.inner",
+        ["ac"] = "@class.outer",
+        ["ic"] = "@class.inner",
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        ["ap"] = "@parameter.outer",
+        ["ip"] = "@parameter.inner",
+        ["ak"] = "@comment.outer",
+        ["ac"] = "@class.outer",
+        ["ic"] = "@class.inner"
+      },
+    },
+    swap = {
+      enable = true,
+      swap_next = {
+        ["<leader>a"] = "@parameter.inner",
+      },
+      swap_previous = {
+        ["<leader>A"] = "@parameter.inner",
+      },
+    },
+    move = {
+      enable = true,
+      set_jumps = true,
+      goto_next_start = {
+        ["]m"] = "@function.outer",
+        ["]]"] = "@class.outer",
+      },
+      goto_next_end = {
+        ["]M"] = "@function.outer",
+        ["]["] = "@class.outer",
+      },
+      goto_previous_start = {
+        ["[m"] = "@function.outer",
+        ["[["] = "@class.outer",
+      },
+      goto_previous_end = {
+        ["[M"] = "@function.outer",
+        ["[]"] = "@class.outer",
+      }
+    }
+  }
+})
 
 -- Show maps when typing
 
@@ -27,36 +110,40 @@ require("trouble").setup({
   use_lsp_diagnostic_signs = true,
 })
 
--- Status line
+-- feline
 
 require("feline").setup()
 
--- Snippets
+-- nvim-cmp, lspkind-nvim, luasnip, nvim-autopairs
 
-local has_words_before = function()
+-- Checks if cursor directly follows text
+local has_word_before = function()
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
   return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 end
 
+local cmp_autopairs = require("nvim-autopairs.completion.cmp")
 local luasnip = require("luasnip")
-
--- Completion
-
+local lspkind = require("lspkind")
 local cmp = require("cmp")
+local mapping = cmp.mapping
 
-local function tab(fallback)
+-- Smart Tab navigates completion menu if visible, toggles completion if cursor follows text, and
+-- otherwise falls back to normal tab insertion behavior
+local function smart_tab(fallback)
   if cmp.visible() then
     cmp.select_next_item()
   elseif luasnip.expand_or_jumpable() then
     luasnip.expand_or_jump()
-  elseif has_words_before() then
+  elseif has_word_before() then
     cmp.complete()
   else
     fallback()
   end
 end
 
-local function shift_tab(fallback)
+-- Smart Shift-Tab navigates completion menu if visible, otherwise falls back to normal behavior
+local function smart_shift_tab(fallback)
   if cmp.visible() then
     cmp.select_prev_item()
   elseif luasnip.jumpable(-1) then
@@ -66,39 +153,76 @@ local function shift_tab(fallback)
   end
 end
 
+-- Defaults at https://github.com/hrsh7th/nvim-cmp/blob/main/lua/cmp/config/default.lua
 cmp.setup({
   snippet = {
+    -- Use luasnip for snippets
     expand = function(args)
       luasnip.lsp_expand(args.body)
     end
   },
   mapping = {
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<Tab>'] = cmp.mapping(tab, {'i', 's', 'c'}),
-    ['<S-Tab>'] = cmp.mapping(shift_tab, { 'i', 's', 'c'}),
-    ['<CR>'] = cmp.mapping(enterit, {"i", "s"}),
-  },
-  sources = cmp.config.sources({
-    { name = "nvim_lsp" },
-    { name = "luasnip" },
-    { name = "buffer" },
-    { name = "path" },
-  })
-})
+    -- Completion close behavior depending on mode
+    ["<C-e>"] = mapping({
+      i = mapping.abort(), -- Close and restore line in insert mode
+      c = mapping.close(), -- Close and discard line in command mode
+    }),
 
-cmp.setup.cmdline("/", {
+    -- Only input mode is mapped unless otherwise specified, so these do not conflict with default
+    -- command mode mappings
+    ["<C-u>"] = mapping.scroll_docs(-4),
+    ["<C-d>"] = mapping.scroll_docs(4),
+    ["<C-n>"] = mapping.select_next_item(),
+    ["<C-p>"] = mapping.select_prev_item(),
+
+    -- Pressing enter without selection automatically inserts the top item in insert mode
+    ["<CR>"] = mapping.confirm({select = true}),
+
+    -- Use Tab for selection and Ctrl-Space for completion toggle in all modes
+    ["<Tab>"] = mapping(smart_tab, {"i", "s"}),
+    ["<S-Tab>"] = mapping(smart_shift_tab, {"i", "s"}),
+    ["<C-Space>"] = mapping(mapping.complete(), {"i", "s"})
+  },
   sources = {
-    { name = "buffer" },
+    -- Input mode sources
+    {name = "nvim_lsp"},
+    {name = "buffer"},
+    {name = "luasnip"},
+    {name = "path"},
+    {name = "rg"},
+    {name = "calc"},
+    {name = "spell"},
+    {name = "look"},
+    {name = "emoji"}
+  },
+  formatting = {
+    -- Use lspkind-nvim to display source as icon instead of text
+    format = lspkind.cmp_format({with_text = false, maxwidth = 50})
+  },
+
+  -- Experimental features default to false
+  experimental = {
+    ghost_text = true
   }
 })
 
-cmp.setup.cmdline(":", {
-  sources = cmp.config.sources({
-    { name = "path" },
-    { name = "cmdline" }
-  })
+-- Search completion
+cmp.setup.cmdline("/", {
+  sources = {
+    {name = "buffer"}
+  }
 })
+
+-- Command completion
+cmp.setup.cmdline(":", {
+  sources = {
+    {name = "path"},
+    {name = "cmdline"}
+  }
+})
+
+-- Insert ( on function completion
+cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done({ map_char = { tex = '' } }))
 
 -- Renamer
 
