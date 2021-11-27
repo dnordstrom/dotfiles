@@ -70,13 +70,32 @@ opt.formatoptions = "cjroql"
 -- For hard wrap comments only: cjroql
 
 --
--- Theme
+-- Color scheme
 --
 
-g.nord_contrast = true
-g.nord_borders = false
-g.nord_disable_background = true
-g.nord_italic = true
+-- For nord.nvim:
+--
+-- g.nord_contrast = true
+-- g.nord_borders = false
+-- g.nord_disable_background = true
+-- g.nord_italic = true
+--
+-- require("onenord").setup()
 
-require("nord").set()
+require("onenord").setup({
+  borders = true,
+  italics = {
+    comments = true,
+    strings = false,
+    keywords = true,
+    functions = false,
+    variables = false,
+  },
+  disable = {
+    background = false,
+    cursorline = false,
+    eob_lines = true,
+  },
+  custom_highlights = {}
+})
 
