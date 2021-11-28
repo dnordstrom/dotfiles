@@ -172,12 +172,12 @@ local signs = {
 }
 
 for type, icon in pairs(signs) do
-  local hl = "LspDiagnosticsSign" .. type
+  local hl = "DiagnosticsSign" .. type
 
   vim.fn.sign_define(hl, {
     text = icon,
     texthl = hl,
-    numhl = "",
+    numhl = hl,
   })
 end
 

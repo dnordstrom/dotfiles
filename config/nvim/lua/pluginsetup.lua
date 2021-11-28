@@ -2,6 +2,33 @@
 -- PLUGIN SETTINGS
 ----
 
+-- nvim-tree
+
+require'nvim-tree'.setup({})
+
+-- surround.nvim
+
+require("surround").setup({
+  mappings_style = "sandwich",
+  map_insert_mode = false, -- pears.nvim handles this
+  quotes = {"'", '"', "`"},
+  brackets = {"(", "{", "[", "<"},
+  pairs = {
+    nestable = {
+      {"(", ")"},
+      {"[", "]"},
+      {"{", "}"},
+      {"<", ">"}
+    },
+    linear = {
+      {"'", "'"},
+      {'"', '"'},
+      {"`", "`"}
+    }
+  },
+  prefix = "<C-s>"
+})
+
 -- LuaSnip
 
 require("luasnip.loaders.from_vscode").lazy_load()
@@ -91,17 +118,80 @@ require("nvim-treesitter.configs").setup({
 
 -- Show maps when typing
 
-require("which-key").setup({})
+require("which-key").setup({
+  plugins = {
+    marks = true, -- shows a list of your marks on ' and `
+    registers = true, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
+    spelling = {
+      enabled = false, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
+      suggestions = 20, -- how many suggestions should be shown in the list?
+    },
+    -- The presets plugin, adds help for a bunch of default keybindings in Neovim
+    -- No actual key bindings are created
+    presets = {
+      operators = true, -- adds help for operators like d, y, ... and registers them for motion / text object completion
+      motions = true, -- adds help for motions
+      text_objects = true, -- help for text objects triggered after entering an operator
+      windows = true, -- default bindings on <c-w>
+      nav = true, -- misc bindings to work with windows
+      z = true, -- bindings for folds, spelling and others prefixed with z
+      g = true, -- bindings for prefixed with g
+    },
+  },
+  -- Add operators that will trigger motion and text object completion
+  -- to enable all native operators, set the preset/operators plugin above
+  operators = {
+    gc = "Comments",
+    gs = "Web search"
+  },
+  key_labels = {
+    -- Override the label used to display some keys. It doesn't effect WK in any other way.
+    -- For example:
+    ["<space>"] = "Space",
+    ["<cr>"] = "Enter",
+    ["<tab>"] = "Tab",
+    ["<esc>"] = "Escape",
+    ["<bs>"] = "Backspace",
+  },
+  icons = {
+    breadcrumb = "»", -- Symbol used in the command line area that shows your active key combo
+    separator = "➜", -- Symbol used between a key and it's label
+    group = "+", -- Symbol prepended to a group
+  },
+  popup_mappings = {
+    scroll_down = '<C-d>', -- Binding to scroll down inside the popup
+    scroll_up = '<C-u>', -- Binding to scroll up inside the popup
+  },
+  window = {
+    border = "double", -- None, single, double, shadow
+    position = "bottom", -- Bottom, top
+    margin = { 4, 4, 2, 4 }, -- Extra window margin [top, right, bottom, left]
+    padding = { 1, 1, 1, 1 }, -- Extra window padding [top, right, bottom, left]
+    winblend = 10 -- Value between 1 and 100
+  },
+  layout = {
+    height = { min = 4, max = 25 }, -- Min and max height of the columns
+    width = { min = 20, max = 50 }, -- Min and max width of the columns
+    spacing = 3, -- Spacing between columns
+    align = "left", -- Align columns left, center or right
+  },
+  ignore_missing = false, -- Enable this to hide mappings for which you didn't specify a label
+  hidden = { "<Silent>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "}, -- Hide mapping boilerplate
+  show_help = true, -- show help message on the command line when the popup is visible
+  triggers = "auto", -- automatically setup triggers
+  -- triggers = {"<leader>"} -- or specify a list manually
+  triggers_blacklist = {
+    -- list of mode / prefixes that should never be hooked by WhichKey
+    -- this is mostly relevant for key maps that start with a native binding
+    -- most people should not need to change this
+    i = { "j", "k" },
+    v = { "j", "k" },
+  },
+})
 
 -- Comment labels
 
 require("todo-comments").setup({})
-
--- Autopairs
-
-require("nvim-autopairs").setup({
-  check_ts = true,
-})
 
 -- Trouble
 
@@ -112,7 +202,7 @@ require("trouble").setup({
 
 -- feline
 
-require("feline").setup()
+require("feline").setup({preset = "noicon"})
 
 -- nvim-cmp, lspkind-nvim, luasnip, nvim-autopairs
 
@@ -221,8 +311,20 @@ cmp.setup.cmdline(":", {
   }
 })
 
--- Insert ( on function completion
-cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done({ map_char = { tex = '' } }))
+-- nvim-autopairs
+
+local npairs = require("nvim-autopairs")
+
+npairs.setup({
+  check_ts = true,
+  ts_config = {
+    lua = {'string'},-- it will not add a pair on that treesitter node
+    javascript = {'template_string'},
+    java = false,-- don't check treesitter on java
+  }
+})
+
+cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done({map_char = { tex = ""}}))
 
 -- Renamer
 
@@ -231,10 +333,10 @@ local mappings_utils = require('renamer.mappings.utils')
 require('renamer').setup {
   title = 'Rename',
   padding = {
-      top = 0,
-      left = 0,
-      bottom = 0,
-      right = 0,
+    top = 0,
+    left = 0,
+    bottom = 0,
+    right = 0,
   },
   border = true,
   border_chars = { '─', '│', '─', '│', '╭', '╮', '╯', '╰' },

@@ -30,8 +30,11 @@ return require('packer').startup(function(use)
 
   use "famiu/feline.nvim"
   use "shaunsingh/nord.nvim"
-  use "rmehri01/onenord.nvim"
+  use {"rmehri01/onenord.nvim", branch = "main"}
   use "kyazdani42/nvim-web-devicons"
+  use {"akinsho/bufferline.nvim", requires = "kyazdani42/nvim-web-devicons"}
+  use {"kyazdani42/nvim-tree.lua", requires = "kyazdani42/nvim-web-devicons"}
+
 
   --
   -- Instance and session tools
@@ -83,8 +86,9 @@ return require('packer').startup(function(use)
   -- Tools and utilities
   --
 
+  use "blackCauldron7/surround.nvim"
+  use "tpope/vim-repeat"
   use "tpope/vim-fugitive"
-  use "tpope/vim-surround"
   use "tpope/vim-markdown"
   use "windwp/nvim-autopairs"
   use "norcalli/nvim-colorizer.lua"

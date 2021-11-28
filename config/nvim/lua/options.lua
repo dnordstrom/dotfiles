@@ -17,7 +17,7 @@ local nvim_set_keymap = vim.api.nvim_set_keymap
 local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
 
 -- Space key as leader
-vim.g.mapleader = " "
+g.mapleader = " "
 
 --
 -- General
@@ -28,9 +28,11 @@ opt.number = true
 opt.relativenumber = true
 opt.completeopt = "noinsert,menuone,noselect"
 opt.mouse = "a"
-opt.clipboard = "unnamed" -- Uses selection clipboard
+opt.clipboard = "unnamedplus" -- Use system clipboard since we only use it for yanks (see key maps)
 opt.spell = false -- Enabled for specific file types
 opt.spelllang = {"en_us"}
+opt.ttimeoutlen = 50
+opt.timeoutlen = 500 -- As recommended by which-key.nvim
 
 --
 -- Explorer
@@ -92,8 +94,8 @@ require("onenord").setup({
     variables = false,
   },
   disable = {
-    background = false,
-    cursorline = false,
+    background = true,
+    cursorline = true,
     eob_lines = true,
   },
   custom_highlights = {}

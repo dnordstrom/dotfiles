@@ -243,9 +243,11 @@ bindsym {
   $mod+x focus mode_toggle
   $mod+u focus parent
 
-  # Scratchpad
-  $mod+Shift+z move scratchpad
-  $mod+z scratchpad show
+  # Scratchpad (Mod+Ctrl+Shift+z/x toggles fullscreen scratchpad)
+  $mod+Shift+z mark --add __fs, move scratchpad, scratchpad show
+  $mod+z scratchpad show; [con_mark="^__fs$"] fullscreen enable
+  $mod+Shift+Ctrl+x fullscreen disable, unmark 
+  $mod+Shift+Ctrl+z fullscreen enable, mark --add __fs
 
   # Audio
   XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
