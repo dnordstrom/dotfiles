@@ -79,17 +79,7 @@ for _, lsp in ipairs(servers) do
   })
 end
 
--- Diagnostics settings
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-  vim.lsp.diagnostic.on_publish_diagnostics, {
-    virtual_text = true,
-    signs = true,
-    underline = true,
-    update_in_insert = true,
-  }
-)
-
--- Diagnostics signs
+-- Diagnostic settings
 --
 -- NerdFonts reference:
 --    na-fa-angle_left
@@ -172,7 +162,7 @@ local signs = {
 }
 
 for type, icon in pairs(signs) do
-  local hl = "DiagnosticsSign" .. type
+  local hl = "DiagnosticSign" .. type
 
   vim.fn.sign_define(hl, {
     text = icon,
@@ -180,4 +170,16 @@ for type, icon in pairs(signs) do
     numhl = hl,
   })
 end
+
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+  vim.lsp.diagnostic.on_publish_diagnostics, {
+    virtual_text = true,
+    signs = true,
+    underline = true,
+    update_in_insert = true,
+  }
+)
+
+vim.lsp.handlers['textDocument/hover'] = vim.lsp.handlers.hover
+vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.handlers.signature_help
 

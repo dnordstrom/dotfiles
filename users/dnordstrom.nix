@@ -47,6 +47,9 @@
     jira-cli = pkgs.callPackage ../packages/jira-cli.nix {};
   in
   with pkgs; [
+    # Nix
+    cachix
+
     # General
     appimage-run
     bitwarden
@@ -410,7 +413,7 @@
       pu = "push";
     };
   };
-
+   
   programs.chromium = {
     enable = true;
     extensions = [
@@ -426,6 +429,7 @@
   };
 
   programs.neovim = {
+    package = pkgs.neovim-nightly;
     enable = true;
     viAlias = true;
     vimAlias = true;

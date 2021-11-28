@@ -31,6 +31,7 @@ opt.mouse = "a"
 opt.clipboard = "unnamedplus" -- Use system clipboard since we only use it for yanks (see key maps)
 opt.spell = false -- Enabled for specific file types
 opt.spelllang = {"en_us"}
+opt.updatetime = 250
 opt.ttimeoutlen = 50
 opt.timeoutlen = 500 -- As recommended by which-key.nvim
 

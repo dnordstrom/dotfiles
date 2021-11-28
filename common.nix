@@ -5,6 +5,14 @@ let
 in
 {
   #
+  # Imports
+  #
+
+  imports = [
+    ./cachix.nix 
+  ];
+
+  #
   # General
   #
 
@@ -15,6 +23,7 @@ in
   #
 
   nix.package = pkgs.nixUnstable;
+  nix.trustedUsers = [ "root" "dnordstrom" ];
   nix.extraOptions =  ''
     keep-outputs = true
     keep-derivations = true

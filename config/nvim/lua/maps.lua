@@ -17,11 +17,12 @@ local nvim_set_keymap = vim.api.nvim_set_keymap
 local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
 local opts = {
   re = {},
+  expr = {expr = true},
+  silent = {silent = true},
   nore = {noremap = true},
   noreExpr = {noremap = true, expr = true},
   noreSilent = {noremap = true, silent = true},
   noreSilentExpr = {noremap = true, silent = true, expr = true},
-  silent = {silent = true}
 }
 
 --
@@ -30,6 +31,9 @@ local opts = {
 
 -- Skip shift
 nvim_set_keymap("n", ";", ":", opts.nore)
+
+-- Secondary leader
+nvim_set_keymap("n", ",", "<Leader>", opts.re)
 
 -- Quick swap
 nvim_set_keymap("n", "<Leader><Leader>", "<C-^>", opts.nore)
@@ -122,24 +126,30 @@ nvim_set_keymap("i", "<C-l>", "<Right>", opts.nore)
 -- Command mode
 --
 
--- Navigate text
-nvim_set_keymap("c", "<C-a>", "<Home>", opts.nore)
-nvim_set_keymap("c", "<C-e>", "<End>", opts.nore)
-nvim_set_keymap("c", "<C-f>", "<Right>", opts.nore)
-nvim_set_keymap("c", "<C-b>", "<Left>", opts.nore)
-nvim_set_keymap("c", "<C-u>", "<End><C-u>", opts.nore)
-nvim_set_keymap("c", "<C-k>", "repeat('<Del>', strchars(getcmdline()[getcmdpos() - 1:]))", opts.noreExpr)
+-- Navigate shell/Emacs like
+nvim_set_keymap("c", "<C-a>", "<Home>", opts.re)
+nvim_set_keymap("c", "<C-e>", "<End>", opts.re)
+nvim_set_keymap("c", "<C-f>", "<Right>", opts.re)
+nvim_set_keymap("c", "<C-b>", "<Left>", opts.re)
+nvim_set_keymap("c", "<C-u>", "<End><C-u>", opts.nore) -- Kill whole line
+nvim_set_keymap("c", "<C-k>", "repeat('<Del>', strchars(getcmdline()[getcmdpos() - 1:]))", opts.expr) -- Kill from cursor
 
--- Modify input
-nvim_set_keymap("c", "<M-i>", "<Home>lua print(vim.inspect(<End>))", opts.nore) -- Wrap with inspect
-nvim_set_keymap("c", "<M-l>", "<Home>lua <End>", opts.nore) -- Prepend lua
-nvim_set_keymap("c", "<M-f>", "expand('%')", opts.noreExpr) -- Insert current file path
+-- Modify
+nvim_set_keymap("c", "<M-i>", "<Home><Right><Right><Right><Right>NORDUtils.inspect(<End>)<Left>", opts.nore) -- Inspect
+nvim_set_keymap("c", "<M-l>", "<Home><Right><Right><Right><Right>NORDUtils.echo(<End>)<Left>", opts.nore) -- Echo
+nvim_set_keymap("c", "<M-f>", "expand('%')", opts.expr) -- Insert path to current file
+nvim_set_keymap("c", "<M-s>", "<C-u>w !sudo tee > /dev/null %", opts.re) -- Insert sudo write
+nvim_set_keymap("c", "<M-r>", "<C-u><C-r>:", opts.re) -- Insert last command
 
 -- Prefill
-nvim_set_keymap("n", "<Leader>;i", ":lua NORDUtils.inspect()<Left>", opts.nore) -- Inspect
-nvim_set_keymap("n", "<Leader>;u", ":lua NORDUtils.", opts.nore) -- Utilities
-nvim_set_keymap("n", "<Leader>;l", ":lua ", opts.nore) -- Lua
-nvim_set_keymap("n", "<Leader>;h", ":help ", opts.nore) -- Help
+nvim_set_keymap("n", "<Leader>;i", ":lua NORDUtils.inspect()<Left>", opts.re) -- Inspect
+nvim_set_keymap("n", "<Leader>;u", ":lua NORDUtils.", opts.re) -- Utilities
+nvim_set_keymap("n", "<Leader>;l", ":lua ", opts.re) -- Lua
+nvim_set_keymap("n", "<Leader>;h", ":help ", opts.re) -- Help
+nvim_set_keymap("n", "<Leader>;H", 'feedkeys(":help " . expand("<cword>"))', opts.expr) -- Help
+nvim_set_keymap("n", "<Leader>;s", ":w <M-f>", opts.re) -- Write with filepath
+nvim_set_keymap("n", "<Leader>;S", ":w !sudo tee > /dev/null %", opts.re) -- Sudo write
+nvim_set_keymap("n", "<Leader>;r", ":<C-r>:", opts.re) -- Last command
 
 --
 -- Toggle
@@ -147,6 +157,16 @@ nvim_set_keymap("n", "<Leader>;h", ":help ", opts.nore) -- Help
 
 -- Explorer
 nvim_set_keymap("n", "<Leader>te", "<Cmd>Lex<CR>", opts.nore)
+
+-- Git signs
+nvim_set_keymap("n", "<Leader>tgg", "<Space>tgs<Space>tgb<Space>tgn<Space>tgr", opts.re)
+nvim_set_keymap("n", "<Leader>tgs", "<Cmd>lua require('gitsigns.actions').toggle_signs()<CR>", opts.re)
+nvim_set_keymap("n", "<Leader>tgn", "<Cmd>lua require('gitsigns.actions').toggle_numhl()<CR>", opts.re)
+nvim_set_keymap("n", "<Leader>tgb", "<Cmd>lua require('gitsigns.actions').toggle_current_line_blame()<CR>", opts.re)
+nvim_set_keymap("n", "<Leader>tgp", "<Cmd>lua require('gitsigns').preview_hunk()<CR>", opts.re)
+nvim_set_keymap("n", "<Leader>tgB", "<Cmd>lua require('gitsigns').blame_line({full = true})<CR>", opts.re)
+nvim_set_keymap("n", "]c", "&diff ? ']c' : '<Cmd>lua require(\"gitsigns.actions\").next_hunk()<CR>'", opts.expr)
+nvim_set_keymap("n", "[c", "&diff ? ']c' : '<Cmd>lua require(\"gitsigns.actions\").prev_hunk()<CR>'", opts.expr)
 
 -- Highlights
 nvim_set_keymap("n", "<Leader>th", "<Cmd>set hlsearch!<CR>", opts.nore)
@@ -200,8 +220,11 @@ nvim_set_keymap("n", "<Leader>df", "<Cmd>lua vim.lsp.buf.formatting()<CR>", opts
 nvim_set_keymap("n", "<Leader>dF", "<Cmd>lua vim.lsp.buf.range_formatting()<CR>", opts.silent)
 
 --
--- Custom operators
+-- Go or do
 --
+
+-- Help for word under cursor
+nvim_set_keymap("n", "gh", '<Cmd>call execute("help " . expand("<cword>"))<CR>', opts.re) -- Help
 
 -- Web search word under cursor
 nvim_set_keymap("n", "gS", "<Cmd>NBrowserSearch<CR>", opts.re)
