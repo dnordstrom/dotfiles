@@ -50,6 +50,29 @@
     # Nix
     cachix
 
+    # Connections
+    # nm-cli is part of the services.networkmanager NixOS option
+    networkmanager_dmenu
+
+    # Tools from Plasma
+    libsForQt5.networkmanager-qt 
+    libsForQt5.qt5.qtwayland
+    libsForQt5.akonadi-contacts
+    libsForQt5.breeze-gtk
+    libsForQt5.breeze-qt5
+    libsForQt5.kaccounts-integration
+    libsForQt5.kcontacts
+    libsForQt5.kaccounts-providers
+    libsForQt5.kdeconnect-kde
+    libsForQt5.kio-gdrive
+    libsForQt5.parachute
+    libsForQt5.qtstyleplugin-kvantum
+
+    # Neovim front-ends
+    neovide
+    neovim-qt
+    gnvim
+
     # General
     appimage-run
     bitwarden
@@ -112,13 +135,11 @@
     fnott
     grim
     imagemagick
-    libsForQt5.qt5.qtwayland
     nwg-drawer
     nwg-launchers
     nwg-menu
     nwg-panel
     nwg-panel
-    qt5ct
     slurp
     swayidle
     swaylock-effects
@@ -133,18 +154,6 @@
     workstyle
     wtype
     ydotool
-
-    # Plasma
-    libsForQt5.akonadi-contacts
-    libsForQt5.breeze-gtk
-    libsForQt5.breeze-qt5
-    libsForQt5.kaccounts-integration
-    libsForQt5.kcontacts
-    libsForQt5.kaccounts-providers
-    libsForQt5.kdeconnect-kde
-    libsForQt5.kio-gdrive
-    libsForQt5.parachute
-    libsForQt5.plasma-applet-virtual-desktop-bar
 
     # Gnome
     gnome-breeze
@@ -162,11 +171,6 @@
     haruna
     smplayer
     sayonara
-
-    # Tryouts
-    quaternion
-    nheko
-    neochat
 
     # LSP and language tools
     gopls
@@ -207,6 +211,14 @@
 
     # Remember to try out
     swayr
+    quaternion
+    nheko
+    neochat
+    mkchromecast
+    gnomecast
+    castnow
+    go-chromecast
+    fx_cast_bridge
   ];
 
   #
@@ -229,6 +241,18 @@
       export XDG_SESSION_DESKTOP=sway
       export XDG_SESSION_TYPE=wayland
     '';
+  };
+
+  #
+  # Qt
+  #
+  qt = {
+    enable = true;
+    platformTheme = "gtk";
+    style = {
+      name = "breeze";
+      package = pkgs.libsForQt5.breeze-qt;
+    };
   };
 
   #
@@ -272,9 +296,13 @@
   xdg.configFile."sway/colors.ayu-dark".source = ../config/sway/colors.ayu-dark;
   xdg.configFile."sway/colors.nord".source = ../config/sway/colors.nord;
 
+  # Kitty
+
+  xdg.configFile."kitty".source = ../config/kitty;
+
   # tmux
 
-  home.file.".tmux.conf".source = ../config/tmux/tmux.conf;
+  xdg.configFile."tmux".source = ../config/tmux;
 
   # Firefox
 
@@ -399,6 +427,10 @@
     enable = true;
   };
 
+  programs.kitty = {
+    enable = true;
+  };
+
   programs.git = {
     userName  = "dnordstrom";
     userEmail = "d@mrnordstrom.com";
@@ -433,6 +465,7 @@
     enable = true;
     viAlias = true;
     vimAlias = true;
+    vimdiffAlias = true;
     extraConfig = builtins.readFile ../config/nvim/init.vim;
   };
 
@@ -459,11 +492,6 @@
 
   programs.tmux = {
     enable = true;
-    keyMode = "vi";
-    sensibleOnTop = true;
-    shortcut = "a";
-    terminal = "screen-256color";
-    secureSocket = false;
   };
 
   programs.bat = {
@@ -551,9 +579,6 @@
   services.gpg-agent = {
     enable = true;
     pinentryFlavor = "curses";
-    # extraConfig = ''
-    #   pinentry-program ${pkgs.pinentry-curses}/bin/pinentry-curses
-    # '';
   };
 
   #

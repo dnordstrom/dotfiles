@@ -359,6 +359,7 @@ bindkey "^[nv" view-notes
 # Path
 #
 
+# Add all custom scripts to PATH
 for directory in ~/.scripts/*; export PATH="$PATH:$directory"
 
 #

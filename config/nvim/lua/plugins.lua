@@ -29,8 +29,11 @@ return require('packer').startup(function(use)
   --
 
   use "famiu/feline.nvim"
+  use {"noib3/cokeline.nvim", requires = "kyazdani42/nvim-web-devicons"}
+
   use "shaunsingh/nord.nvim"
   use {"rmehri01/onenord.nvim", branch = "main"}
+
   use "kyazdani42/nvim-web-devicons"
   use {"akinsho/bufferline.nvim", requires = "kyazdani42/nvim-web-devicons"}
   use {"kyazdani42/nvim-tree.lua", requires = "kyazdani42/nvim-web-devicons"}
@@ -52,7 +55,7 @@ return require('packer').startup(function(use)
   use "ggandor/lightspeed.nvim"
   use "folke/which-key.nvim"
   use "vifm/vifm.vim"
-  use "christoomey/vim-tmux-navigator"
+  use "numToStr/Navigator.nvim"
 
   --
   -- LSP, completion, snippets, and language

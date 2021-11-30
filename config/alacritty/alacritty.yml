@@ -1450,18 +1450,22 @@ background_opacity: 0.98
 # Maps
 
 key_bindings:
-  # Allows mapping enter key with modifiers in Vim/Neovim
+  # Allows better mapping with modifiers in Vim/Neovim
   - { key: Return, mods: Shift, chars: "\x1b[13;2u" }
   - { key: Return, mods: Control, chars: "\x1b[13;5u" }
   - { key: Return, mods: Control|Shift, chars: "\x1b[13;6u" }
 
-  # Starts new instance in same directory instead of home
-  - { key: Return, mods: Control|Shift|Alt, action: SpawnNewInstance }
+  - { key: H, mods: Shift|Control, chars: "\x1b[72;6u" }
+  - { key: H, mods: Shift|Alt, chars: "\x1bH" }
 
-  # Simplifies scrolling on 60% keyboards without entering Vim mode
-  - { key: J, mods: Alt, action: ScrollPageDown }
-  - { key: K, mods: Alt, action: ScrollPageUp }
+  - { key: J, mods: Shift|Control, chars: "\x1b[74;6u" }
+  - { key: J, mods: Shift|Alt, chars: "\x1bJ" }
 
+  - { key: K, mods: Shift|Control, chars: "\x1b[75;6u" }
+  - { key: K, mods: Shift|Alt, chars: "\x1bK" }
+
+  - { key: L, mods: Shift|Control, chars: "\x1b[76;6u" }
+  - { key: L, mods: Shift|Alt, chars: "\x1bL" }
 # Mouse
 
 mouse:

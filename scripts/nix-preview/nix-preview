@@ -187,6 +187,16 @@ fi
 
 printf "\n"
 
+# Ask about Kitty
+if confirm --strict "Enable for Kitty (rm -rf ~/.config/kitty/kitty.conf)?"; then
+  printf "\n"
+  loudly "rm -rf ~/.config/kitty/kitty.conf"
+  loudly "ln -s /etc/nixos/config/kitty/kitty.conf ~/.config/kitty/kitty.conf"
+  cleanup="$cleanup\nrm ~/.config/kitty/kitty.conf"
+fi
+
+printf "\n"
+
 # Ask about Tridactyl
 if confirm --strict "Enable for Tridactyl (rm -rf ~/.config/tridactyl)?"; then
   printf "\n"

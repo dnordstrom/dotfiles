@@ -161,6 +161,7 @@ local signs = {
   Information = " ",
 }
 
+-- The highlight groups were changed in 0.6.0 from LspDiagnosticSign to DiagnosticSign
 for type, icon in pairs(signs) do
   local hl = "DiagnosticSign" .. type
 
@@ -173,6 +174,7 @@ end
 
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
   vim.lsp.diagnostic.on_publish_diagnostics, {
+    -- This will soon support float = {} for displaying diagnostics in floating window instead
     virtual_text = true,
     signs = true,
     underline = true,

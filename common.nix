@@ -126,8 +126,8 @@ in
     xkbVariant = ",us";
   };
 
-  services.gnome.chrome-gnome-shell.enable = true;
   services.blueman.enable = true;
+
   services.udev.packages = [ udev-rules ];
 
   services.pipewire = {
@@ -213,7 +213,7 @@ in
     wget
     nodejs
     yarn
-    steam-run
+    steam-run # Runs binaries compiled for normal distributions
   ];
 }
 

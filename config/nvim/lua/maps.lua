@@ -1,7 +1,11 @@
 --
 -- KEY MAPS
 --
-
+-- Notes:
+--  * nvim_set_keymap("", ...) maps normal, visual/select, and operator pending modes
+--  * nvim_set_keymap("!", ...) maps command and insert modes
+--
+        
 --
 -- Shortcuts
 -- 
@@ -16,13 +20,14 @@ local nvim_exec = vim.api.nvim_exec
 local nvim_set_keymap = vim.api.nvim_set_keymap
 local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
 local opts = {
-  re = {},
+  re = {noremap = false},
   expr = {expr = true},
   silent = {silent = true},
   nore = {noremap = true},
   noreExpr = {noremap = true, expr = true},
   noreSilent = {noremap = true, silent = true},
   noreSilentExpr = {noremap = true, silent = true, expr = true},
+  nowait = {nowait = true},
 }
 
 --
@@ -41,6 +46,10 @@ nvim_set_keymap("n", "<Leader><Leader>", "<C-^>", opts.nore)
 -- Save and keep (ZZ to save and quit, ZQ to quit without save)
 nvim_set_keymap("n", "ZA", "<Cmd>w<CR>", opts.nore)
 
+-- Always use n for forward and N for backwards, regardless of if / or ? is used
+nvim_set_keymap("", "n", "v:searchforward ? 'n' : 'N'", opts.noreExpr)
+nvim_set_keymap("", "N", "v:searchforward ? 'N' : 'n'", opts.noreExpr)
+
 -- Reload config or source files
 nvim_set_keymap("n", "<Leader>rr", "<Cmd>Reload<CR>", opts.nore) -- Reload configuration
 nvim_set_keymap("n", "<Leader>rR", "<Cmd>Restart<CR>", opts.nore) -- Reload and trigger VimEnter
@@ -57,11 +66,17 @@ nvim_set_keymap("n", "k", "v:count == 0 ? 'gk' : 'k'", opts.noreExpr)
 --
 
 -- Window navigation disabled here since it's mapped by vim-tmux-navigator
--- nvim_set_keymap("n", "<C-k>", "<Cmd>m-2<CR>==", opts.nore)
--- nvim_set_keymap("n", "<C-j>", "<Cmd>m+<CR>==", opts.nore)
--- nvim_set_keymap("v", "<C-k>", ":m'<-2<CR>gv=gv", opts.nore)
--- nvim_set_keymap("v", "<C-j>", ":m'>+<CR>gv=gv", opts.nore)
-nvim_set_keymap("n", "<C-w>w", "<Cmd>TmuxNavigatePrevious<CR>", opts.nore)
+nvim_set_keymap('n', "<C-h>", "<Cmd>lua require('Navigator').left()<CR>", opts.nore)
+nvim_set_keymap('n', "<C-k>", "<Cmd>lua require('Navigator').up()<CR>", opts.nore)
+nvim_set_keymap('n', "<C-l>", "<Cmd>lua require('Navigator').right()<CR>", opts.nore)
+nvim_set_keymap('n', "<C-j>", "<Cmd>lua require('Navigator').down()<CR>", opts.nore)
+nvim_set_keymap('n', "<C-p>", "<Cmd>lua require('Navigator').previous()<CR>", opts.nore)
+
+-- Bufferline navigation
+nvim_set_keymap("n", "<S-C-h>", "<Plug>(cokeline-switch-prev)", opts.re)
+nvim_set_keymap("n", "<S-C-l>", "<Plug>(cokeline-switch-next)", opts.re)
+nvim_set_keymap("n", "<M-h>", "<Cmd>lua require('cokeline/buffers').focus_by_step(-1)<CR>", opts.re)
+nvim_set_keymap("n", "<M-l>", "<Cmd>lua require('cokeline/buffers').focus_by_step(1)<CR>", opts.re)
 
 --
 -- Change
@@ -107,10 +122,10 @@ nvim_set_keymap("n", "<Leader>ld", 'yyp$', opts.nore) -- Leader-l-d => Line -> D
 nvim_set_keymap("n", "<Leader>lD", 'yyP$', opts.nore) -- Leader-l-D => Line -> Duplicate backwards
 
 -- Move lines and reindent
-nvim_set_keymap("n", "<C-S-k>", "<Cmd>m-2<CR>==", opts.nore)
-nvim_set_keymap("n", "<C-S-j>", "<Cmd>m+<CR>==", opts.nore)
-nvim_set_keymap("v", "<C-S-k>", ":m'<-2<CR>gv=gv", opts.nore)
-nvim_set_keymap("v", "<C-S-j>", ":m'>+<CR>gv=gv", opts.nore)
+nvim_set_keymap("n", "<S-C-k>", "<Cmd>m-2<CR>==", opts.nore)
+nvim_set_keymap("n", "<S-C-j>", "<Cmd>m+<CR>==", opts.nore)
+nvim_set_keymap("v", "<S-C-k>", ":m'<-2<CR>gv=gv", opts.nore)
+nvim_set_keymap("v", "<S-C-j>", ":m'>+<CR>gv=gv", opts.nore)
 
 --
 -- Insert mode
@@ -131,7 +146,7 @@ nvim_set_keymap("c", "<C-a>", "<Home>", opts.re)
 nvim_set_keymap("c", "<C-e>", "<End>", opts.re)
 nvim_set_keymap("c", "<C-f>", "<Right>", opts.re)
 nvim_set_keymap("c", "<C-b>", "<Left>", opts.re)
-nvim_set_keymap("c", "<C-u>", "<End><C-u>", opts.nore) -- Kill whole line
+nvim_set_keymap("c", "<C-u>", "<End><C-u>", opts.nore) -- Kill whole line instead of left hand side
 nvim_set_keymap("c", "<C-k>", "repeat('<Del>', strchars(getcmdline()[getcmdpos() - 1:]))", opts.expr) -- Kill from cursor
 
 -- Modify
@@ -154,6 +169,11 @@ nvim_set_keymap("n", "<Leader>;r", ":<C-r>:", opts.re) -- Last command
 --
 -- Toggle
 --
+
+-- Toggle word under cursor on Enter in normal mode and Ctrl-T in any mode
+nvim_set_keymap("", "<CR>", "<Cmd>lua NORDUtils.toggle_word()<CR>", opts.nore)
+nvim_set_keymap("", "<C-t>", "<Cmd>lua NORDUtils.toggle_word()<CR>", opts.nore)
+nvim_set_keymap("!", "<C-t>", "<Cmd>lua NORDUtils.toggle_word()<CR>", opts.nore)
 
 -- Explorer
 nvim_set_keymap("n", "<Leader>te", "<Cmd>Lex<CR>", opts.nore)
@@ -195,6 +215,15 @@ nvim_set_keymap("n", "<Leader>fz", "<Cmd>FzfLua<CR>", opts.nore)
 nvim_set_keymap("n", "<Space>gb", "<Cmd>ls<CR>:b<Space>", opts.nore)
 
 --
+-- Editor
+--
+
+-- Search and replace
+nvim_set_keymap("i", "<C-f>", "<Esc>:%s/<C-r><C-w>//g<Left><Left>", opts.nore)
+nvim_set_keymap("n", "<C-f>", ":%s/<C-r><C-w>//g<Left><Left>", opts.nore)
+nvim_set_keymap("v", "<C-f>", '"ay:%s/<C-r>a//g<Left><Left>', opts.nore)
+
+--
 -- Language and project
 --
 
@@ -205,6 +234,7 @@ nvim_set_keymap('n', '<Leader>rn', '<Cmd>lua require("renamer").rename({empty = 
 nvim_set_keymap('v', '<Leader>rn', '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.noreSilent)
 
 -- LSP and diagnostics
+-- Will change to vim.diagnostic soon in 0.6.0.
 nvim_set_keymap("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", opts.nore)
 nvim_set_keymap("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts.nore)
 nvim_set_keymap("n", "F12", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts.nore)

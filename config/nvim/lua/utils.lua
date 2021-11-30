@@ -218,6 +218,33 @@ local load_session = function(name, opts)
   echo("Loaded session from " .. path)
 end
 
+-- Toggle boolean or other types of values under cursor
+local toggle_word = function()
+  local window = vim.api.nvim_get_current_win()
+  local cursor = vim.api.nvim_win_get_cursor(window)
+  local word = cword()
+  local substitutions = {
+    ["true"] = "false",
+    ["True"] = "False",
+    ["TRUE"] = "FALSE",
+    ["YES"] = "NO",
+    ["Yes"] = "No",
+    ["on"] = "off",
+    ["On"] = "Off",
+    ["ON"] = "OFF",
+    ["0"] = "1",
+    ["<"] = ">",
+    ["+"] = "-"
+  }
+
+  vim.tbl_add_reverse_lookup(substitutions)
+
+  if substitutions[word] ~= nil then
+    nvim_exec("normal ciw" .. substitutions[word], true)
+    vim.api.nvim_win_set_cursor(window, cursor)
+  end
+end
+
 return {
   t = t,
   feedkeys = feedkeys,
@@ -231,5 +258,6 @@ return {
   update_utils_return = update_utils_return,
   create_scratch_window = create_scratch_window,
   save_session = save_session,
-  load_session = load_session
+  load_session = load_session,
+  toggle_word = toggle_word
 }
