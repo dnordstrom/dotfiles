@@ -1,3 +1,6 @@
+#
+# Adds custom packages
+#
 final: prev: {
   convox = prev.callPackage ../packages/convox.nix {};
   hydroxide = prev.callPackage ../packages/hydroxide.nix {};
