@@ -1,38 +1,127 @@
 { pkgs, nixpkgs, lib, ... }:
 
+let
+  editor = "nvim";
+  browser = "firefox";
+  terminal = "kitty";
+  xdgEditor = [ "neovim-kitty.desktop" ];
+  xdgBrowser = [ "firefox.desktop" ];
+  xdgPdfViewer = [ "zathura.desktop" ];
+  xdgFileBrowser = [ "dolphine.desktop" ];
+  xdgImageViewer = [ "imv-qt.desktop" ];
+  xdgMediaPlayer = [ "haruna.desktop" ];
+  mimeAassociations = {
+    "audio/*" = xdgMediaPlayer;
+    "video/*" = xdgMediaPlayer;
+    "image/*" = xdgImageViewer;
+    "text/html" = xdgBrowser;
+    "text/calendar" = xdgBrowser;
+    "x-scheme-handler/http" = xdgBrowser;
+    "x-scheme-handler/https" = xdgBrowser;
+    "x-scheme-handler/ftp" = xdgBrowser;
+    "x-scheme-handler/chrome" = xdgBrowser;
+    "x-scheme-handler/about" = xdgBrowser;
+    "x-scheme-handler/unknown" = xdgBrowser;
+    "application/pdf" = xdgPdfViewer;
+    "application/json" = xdgEditor;
+    "application/xhtml+xml" = xdgBrowser;
+    "application/x-extension-htm" = xdgBrowser;
+    "application/x-extension-html" = xdgBrowser;
+    "application/x-extension-shtml" = xdgBrowser;
+    "application/x-extension-xhtml" = xdgBrowser;
+    "application/x-extension-xht" = xdgBrowser;
+  };
+in
 {
   #
   # Modules
   #
 
-  imports = [
-    ../modules/vscode.nix
-  ];
+  imports = [ ../modules/vscode.nix ];
 
   #
-  # General
+  # Environment
   #
+
+  home.sessionVariables = {
+    EDITOR = editor;
+    BROWSER = browser;
+    TERMINAL = terminal;
+  };
 
   xdg = {
     enable = true;
+    mimeApps = {
+      enable = true;
+      associations.added = mimeAassociations;
+      defaultApplications = mimeAassociations;
+    };
     desktopEntries = {
       neovim-alacritty = {
-        name = "Neovim";
+        name = "Neovim (Alacritty)";
+        type = "Application";
         genericName = "Text Editor";
-        exec = "alacritty --class terminal --title terminal -e nvim %U";
+        exec = "alacritty --class popupterm --title popupterm -e nvim %F";
         terminal = false;
-        icon = "neovim";
-        categories = [ "Development" "TextEditor" ];
-        mimeType = [ "text/plain" ];
+        icon = "nvim";
+        categories = [ "Utility" "TextEditor" "Development" "IDE" ];
+        mimeType = [ "text/plain" "inode/directory" ];
+        startupNotify = false;
       };
       vifm-alacritty = {
         name = "Vifm (Alacritty)";
+        type = "Application";
         genericName = "File Manager";
-        exec = "alacritty --class terminal --title terminal -e vifm %U";
+        exec = "alacritty --class popupterm --title popupterm -e vifm %F";
+        terminal = false;
+        icon = "vifm";
+        categories = [ "Utility" "TextEditor" "Development" "IDE" ];
+        mimeType = [ "text/plain" "inode/directory" ];
+        startupNotify = false;
+      };
+      neovim-kitty = {
+        name = "Neovim (kitty)";
+        type = "Application";
+        genericName = "Text Editor";
+        exec = "kitty --class popupterm --title popupterm -e nvim %F";
+        terminal = false;
+        icon = "nvim";
+        categories = [ "Utility" "TextEditor" "Development" "IDE" ];
+        mimeType = [ "text/plain" "inode/directory" ];
+        startupNotify = false;
+      };
+      vifm-kitty = {
+        name = "Vifm (kitty)";
+        type = "Application";
+        genericName = "File Manager";
+        exec = "kitty --class popupterm --title popupterm -e vifm %F";
         terminal = false;
         icon = "vifm";
         categories = [ "System" "FileManager" ];
-        mimeType = [ "text/plain" ];
+        mimeType = [ "text/plain" "inode/directory" ];
+        startupNotify = false;
+      };
+      codium-wayland = {
+        name = "VSCodium (Wayland)";
+        type = "Application";
+        genericName = "Text Editor";
+        comment = "Code Editing. Redefined.";
+        exec = "codium --enable-features=UseOzonePlatform --ozone-platform=wayland %F";
+        terminal = false;
+        icon = "code";
+        categories = [ "Utility" "TextEditor" "Development" "IDE" ];
+        mimeType = [ "text/plain" "inode/directory" ];
+        startupNotify = false;
+        settings = {
+          Actions = "new-empty-window";
+          StartupWMClass = "vscodium";
+        };
+        extraConfig = ''
+          [Desktop Action new-empty-window]
+          Name=New Empty Window
+          Exec=codium --enable-features=UseOzonePlatform --ozone-platform=wayland --new-window %F
+          Icon=code
+        '';
       };
     };
   };
@@ -41,42 +130,15 @@
   # Packages
   #
 
-  home.packages =
-  let
-    convox = pkgs.callPackage ../packages/convox.nix {};
-    jira-cli = pkgs.callPackage ../packages/jira-cli.nix {};
-  in
-  with pkgs; [
+  home.packages = with pkgs; [
     # Nix
     cachix
 
     # Connections
-    # nm-cli is part of the services.networkmanager NixOS option
     networkmanager_dmenu
-
-    # Tools from Plasma
-    libsForQt5.networkmanager-qt 
-    libsForQt5.qt5.qtwayland
-    libsForQt5.akonadi-contacts
-    libsForQt5.breeze-gtk
-    libsForQt5.breeze-qt5
-    libsForQt5.kaccounts-integration
-    libsForQt5.kcontacts
-    libsForQt5.kaccounts-providers
-    libsForQt5.kdeconnect-kde
-    libsForQt5.kio-gdrive
-    libsForQt5.parachute
-    libsForQt5.qtstyleplugin-kvantum
-
-    # Neovim front-ends
-    neovide
-    neovim-qt
-    gnvim
 
     # General
     appimage-run
-    bitwarden
-    electron-mail
     element-desktop
     fractal
     gcc
@@ -86,7 +148,6 @@
     pavucontrol
     pinentry
     pinentry-curses
-    protonmail-bridge
     pulseaudio # For pactl since pw-cli makes me cry
     qbittorrent
     signal-desktop
@@ -110,10 +171,10 @@
     libnotify
     lolcat
     neo-cowsay
-    nixpkgs-fmt
+    onefetch # Git summary
+    neofetch # System summary
     parallel
     ripgrep
-    shfmt
     t-rec
     toilet
     tree
@@ -125,16 +186,16 @@
     xorg.xev
     xsel
 
-    # Desktop integration portals
-    xdg-desktop-portal
-    xdg-desktop-portal-wlr
-    xdg-desktop-portal-kde
-    xdg-desktop-portal-gtk
+    # Zsh (sourced in program.zsh.interactiveShellInit)
+    zsh-fzf-tab
+    zsh-nix-shell
 
     # Sway and Wayland specific
     fnott
     grim
     imagemagick
+    imv # Command line image viewer
+    libinput # For trackpad gestures
     nwg-drawer
     nwg-launchers
     nwg-menu
@@ -144,6 +205,7 @@
     swayidle
     swaylock-effects
     swaywsr
+    vimiv-qt # QT image viewer
     wdisplays
     wev
     wf-recorder
@@ -161,41 +223,109 @@
     peek
 
     # Web browsing
-    tridactyl-native
-    luakit
-    vieb
-    vimb
+    tridactyl-native # Firefox native messaging host
+    luakit # GTK, WebKit, Lua
+
+    # Email
+    bitwarden # Password manager
+    electron-mail # ProtonMail client
+    hydroxide # ProtonMail bridge
+    protonmail-bridge # ProtonMail bridge
+
+    # Security
+    yubikey-manager-qt
 
     # Multimedia
     celluloid
+    handbrake
     haruna
     smplayer
     sayonara
 
-    # LSP and language tools
-    gopls
-    luajit
-    nodePackages.bash-language-server
-    nodePackages.diagnostic-languageserver
-    nodePackages.eslint
-    nodePackages.eslint_d
-    nodePackages.typescript
-    nodePackages.typescript-language-server
-    nodePackages.vim-language-server
+    #
+    # Development
+    #
+
+    # LSP and syntax
     nodePackages.vscode-langservers-extracted # HTML, CSS, and JSON
+    nodePackages.typescript-language-server
+    nodePackages.diagnostic-languageserver
     nodePackages.yaml-language-server
+    nodePackages.bash-language-server
+    rnix-lsp # Uses nixpkgs-fmt
     tree-sitter
-    vgo2nix
 
+    # Writing
+    proselint
 
-    # Font related
+    # Nix
+    nixfmt # Opinionated formatter, used by null-ls
+    nixpkgs-fmt # Another formatter
+    nixpkgs-lint
+    vgo2nix # Go modules to packages
+    statix # Static analysis
+
+    # Go
+    gofumpt
+    gopls
+
+    # Lua
+    luajit
+    stylua
+
+    # Shell
+    shfmt
+    shellharden
+
+    # JS/TS/JSON
+    nodePackages.eslint_d
+    nodePackages.fixjson
+    nodePackages.typescript
+
+    # CSS
+    nodePackages.stylelint
+
+    # Vim
+    nodePackages.vim-language-server
+
+    # Yaml
+
+    #
+    # Appearance
+    #
+
+    # Fonts
     corefonts
     fontforge
     line-awesome
     powerline-fonts
 
+    # Qt libs
+    libsForQt5.qqc2-breeze-style
+    libsForQt5.breeze-gtk
+    libsForQt5.breeze-qt5
+    libsForQt5.qtstyleplugin-kvantum
+    libsForQt5.networkmanager-qt
+    libsForQt5.akonadi-contacts
+    libsForQt5.kaccounts-integration
+    libsForQt5.kcontacts
+    libsForQt5.kaccounts-providers
+    libsForQt5.kdeconnect-kde
+    libsForQt5.kio-gdrive
+    libsForQt5.parachute
+    libsForQt5.qt5.qtwayland
+    libsForQt5.qtcurve
+    qgnomeplatform
+
+    # Theming tools
+    masterPackages.themechanger
+    qt5ct
+
     # Themes
-    nordic
+    nordic # GTK, QT, and Kvantum
+    masterPackages.ayu-theme-gtk
+    qogir-theme
+    adwaita-qt
 
     # Icons
     arc-icon-theme
@@ -203,22 +333,39 @@
     paper-icon-theme
     papirus-icon-theme
     pop-icon-theme
+    flat-remix-icon-theme
     tela-icon-theme
+    qogir-icon-theme
+    moka-icon-theme # Fallback for Arc icon theme
 
-    # Custom
+    # Cursors
+    numix-cursor-theme
+    quintom-cursor-theme
+    bibata-cursors
+    bibata-cursors-translucent
+
+    #
+    # Custom from ./packages
+    #
+
     convox
     jira-cli
 
+    #
     # Remember to try out
+    #
+
     swayr
     quaternion
     nheko
     neochat
+    mdcat
     mkchromecast
     gnomecast
     castnow
     go-chromecast
     fx_cast_bridge
+    interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
   ];
 
   #
@@ -230,16 +377,15 @@
     config = null; # Remove default config since we provide our own
     extraConfig = builtins.readFile ../config/sway/config;
     extraSessionCommands = ''
-      export _JAVA_AWT_WM_NONREPARENTING=1
       export GDK_BACKEND=wayland
       export MOZ_ENABLE_WAYLAND=1
       export QT_QPA_PLATFORM=wayland
-      export QT_QPA_PLATFORMTHEME=qt5ct
       export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
       export SDL_VIDEODRIVER=wayland
       export XDG_CURRENT_DESKTOP=sway
       export XDG_SESSION_DESKTOP=sway
       export XDG_SESSION_TYPE=wayland
+      export _JAVA_AWT_WM_NONREPARENTING=1
     '';
   };
 
@@ -249,10 +395,7 @@
   qt = {
     enable = true;
     platformTheme = "gtk";
-    style = {
-      name = "breeze";
-      package = pkgs.libsForQt5.breeze-qt;
-    };
+    style = { name = "NordicDarker"; };
   };
 
   #
@@ -265,23 +408,19 @@
       name = "Input Sans Condensed";
       size = 8;
     };
-    iconTheme = {
-      package = pkgs.numix-icon-theme-circle;
-      name = "Numix Circle";
+    theme.name = "Nordic";
+    iconTheme.name = "Papirus-Dark";
+    gtk3 = {
+      extraConfig.gtk-application-prefer-dark-theme = "true";
+      extraCss = "";
     };
-    theme = {
-      package = pkgs.nordic;
-      name = "Nordic-v40";
-    };
-    gtk3.extraConfig = {
-      gtk-application-prefer-dark-theme = "true";
-    };
+    gtk2.extraConfig = ''gtk-application-prefer-dark-theme = "true";'';
   };
 
   #
   # Configuration files
   #
- 
+
   # Scripts
 
   home.file.".scripts".source = ../scripts;
@@ -292,7 +431,8 @@
   xdg.configFile."swaynag/config".source = ../config/swaynag/config;
 
   xdg.configFile."sway/colors.ayu".source = ../config/sway/colors.ayu;
-  xdg.configFile."sway/colors.ayu-mirage".source = ../config/sway/colors.ayu-mirage;
+  xdg.configFile."sway/colors.ayu-mirage".source =
+    ../config/sway/colors.ayu-mirage;
   xdg.configFile."sway/colors.ayu-dark".source = ../config/sway/colors.ayu-dark;
   xdg.configFile."sway/colors.nord".source = ../config/sway/colors.nord;
 
@@ -308,7 +448,8 @@
 
   xdg.configFile."tridactyl".source = ../config/firefox/tridactyl;
 
-  home.file.".mozilla/native-messaging-hosts/tridactyl.json".source = "${pkgs.tridactyl-native}/lib/mozilla/native-messaging-hosts/tridactyl.json";
+  home.file.".mozilla/native-messaging-hosts/tridactyl.json".source =
+    "${pkgs.tridactyl-native}/lib/mozilla/native-messaging-hosts/tridactyl.json";
 
   # Neovim
 
@@ -345,13 +486,15 @@
   # dircolors
 
   home.file.".dir_colors".source = builtins.fetchurl {
-    url = "https://github.com/arcticicestudio/nord-dircolors/releases/download/v0.2.0/dir_colors";
+    url =
+      "https://github.com/arcticicestudio/nord-dircolors/releases/download/v0.2.0/dir_colors";
     sha256 = "0a6i9pvl4lj2k1snmc5ckip86akl6c0svzmc5x0vnpl4id0f3raw";
   };
 
   # Alacritty
 
-  xdg.configFile."alacritty/alacritty.yml".source = ../config/alacritty/alacritty.yml;
+  xdg.configFile."alacritty/alacritty.yml".source =
+    ../config/alacritty/alacritty.yml;
 
   #
   # Programs
@@ -423,16 +566,12 @@
     };
   };
 
-  programs.alacritty = {
-    enable = true;
-  };
+  programs.alacritty = { enable = true; };
 
-  programs.kitty = {
-    enable = true;
-  };
+  programs.kitty = { enable = true; };
 
   programs.git = {
-    userName  = "dnordstrom";
+    userName = "dnordstrom";
     userEmail = "d@mrnordstrom.com";
     aliases = {
       co = "checkout";
@@ -445,7 +584,7 @@
       pu = "push";
     };
   };
-   
+
   programs.chromium = {
     enable = true;
     extensions = [
@@ -476,23 +615,29 @@
     enableSyntaxHighlighting = true;
     enableVteIntegration = true;
 
-    cdpath = [
-      "/home/dnordstrom"
-      "/home/dnordstrom/Code"
-    ];
+    cdpath = [ "/home/dnordstrom" "/home/dnordstrom/Code" ];
 
     oh-my-zsh = {
       enable = true;
       theme = "agnoster";
-      plugins =  [ "sudo" ];
+      plugins = [ "sudo" ];
     };
+
+    plugins = [
+      {
+        name = "fzf-tab";
+        src = "${pkgs.zsh-fzf-tab}/share/fzf-tab";
+      }
+      {
+        name = "nix-shell";
+        src = "${pkgs.zsh-nix-shell}/share/zsh-nix-shell";
+      }
+    ];
 
     initExtra = builtins.readFile ../config/zsh/zshrc;
   };
 
-  programs.tmux = {
-    enable = true;
-  };
+  programs.tmux = { enable = true; };
 
   programs.bat = {
     enable = true;
@@ -502,9 +647,22 @@
     };
   };
 
+  # Fuzzy finder written in Go
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
+  };
+
+  # Fuzzy finder written in Rust (both sk and fzf works with fzf-lua for nvim)
+  programs.skim = {
+    enable = true;
+  };
+
+  # Lua alternative to z.sh for (even) faster navigation
+  programs.z-lua = {
+    enable = true;
+    enableZshIntegration = true;
+    enableAliases = true;
   };
 
   programs.go = {
@@ -515,7 +673,6 @@
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
-    nix-direnv.enableFlakes = true;
   };
 
   programs.mako = {
@@ -551,9 +708,7 @@
 
   programs.notmuch = {
     enable = true;
-    hooks = {
-      preNew = "mbsync --all";
-    };
+    hooks = { preNew = "mbsync --all"; };
   };
 
   programs.newsboat = {
@@ -568,9 +723,7 @@
     # ];
   };
 
-  programs.gpg = {
-    enable = true;
-  };
+  programs.gpg = { enable = true; };
 
   #
   # Services
@@ -593,8 +746,8 @@
     mbsync.enable = true;
     mbsync.create = "both";
 
-    realName= "Daniel Nordstrom";
-    userName= "d@mrnordstrom.com";
+    realName = "Daniel Nordstrom";
+    userName = "d@mrnordstrom.com";
     address = "d@mrnordstrom.com";
 
     imap.host = "mail.mrnordstrom.com";
@@ -618,8 +771,8 @@
     mbsync.enable = true;
     mbsync.create = "both";
 
-    realName= "Daniel Nordstrom";
-    userName= "daniel.nordstrom@leeroy.se";
+    realName = "Daniel Nordstrom";
+    userName = "daniel.nordstrom@leeroy.se";
     address = "daniel.nordstrom@leeroy.se";
 
     imap.host = "mail.leeroy.se";
@@ -634,14 +787,7 @@
       showSignature = "append";
     };
 
-    passwordCommand = "${pkgs.pass}/bin/pass work/email/daniel.nordstrom@leeroy.se";
-  };
-
-  #
-  # Environment
-  #
-
-  home.sessionVariables = {
-    EDITOR = "nvim";
+    passwordCommand =
+      "${pkgs.pass}/bin/pass work/email/daniel.nordstrom@leeroy.se";
   };
 }

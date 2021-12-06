@@ -73,7 +73,7 @@
     "format": "<span rise=\"-1550\"></span>",
     "tooltip": false,
     "on-click": "swaymsg scratchpad show",
-    "on-click-right": "alacritty --title transparent_term --class transparent_term"
+    "on-click-right": "kitty --title transterm --class transterm"
   },
   "custom/keyboard": {
     "exec": "/etc/nixos/scripts/keyboard-layout/keyboard-layout",
@@ -85,7 +85,7 @@
     "exec": "/etc/nixos/scripts/disk-info/disk-info",
     "return-type": "json",
     "format": "<span rise=\"-1550\"></span> {}",
-    "on-click": "alacritty --title popup_term --class popup_term -e gotop",
+    "on-click": "kitty --title popupterm --class popupterm gotop",
     "interval": 30,
     "tooltip": true
   },
@@ -93,20 +93,20 @@
     "interval": 30,
     "format": "<span rise=\"-1550\"></span> {percentage_used}%",
     "path": "/",
-    "on-click": "alacritty --title popup_term --class popup_term -e gotop",
+    "on-click": "kitty --title popupterm --class popupterm gotop",
     "tooltip": true,
     "tooltip-format": "{used} / {total}"
   },
   "custom/wttr": {
     "format": "{}",
     "exec": "curl https://wttr.in/Sundsvall,Sweden?format=%c%3Cspan%20rise=%22-1750%22%3E%t%3C/span%3E",
-    "on-click": "alacritty --title popup_term --class popup_term -e curl wttr.in/Sundsvall,Sweden",
+    "on-click": "kitty --title popupterm --class popupterm curl wttr.in/Sundsvall,Sweden",
     "interval": 1800,
     "tooltip": false
   },
   "custom/darksky": {
     "exec": "/etc/nixos/scripts/weather-darksky",
-    "on-click": "alacritty --title popup_term --class popup_term -e curl wttr.in/Sundsvall",
+    "on-click": "kitty --title popupterm --class popupterm curl wttr.in/Sundsvall",
     "interval": 1800,
     "tooltip": false
   },
@@ -140,12 +140,12 @@
     "thermal-zone": 2,
     "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
     "critical-threshold": 80,
-    "on-click": "alacritty --title popup_term --class popup_term -e gotop",
+    "on-click": "kitty --title popupterm --class popupterm gotop",
     "format-critical": "{temperatureC}°C <span rise=\"-1550\"></span>",
     "format": " {temperatureC}°C"
   },
   "cpu": {
-    "on-click": "alacritty --title popup_term --class popup_term -e gotop",
+    "on-click": "kitty --title popupterm --class popupterm gotop",
     "tooltip": false,
     "format": "<span rise=\"-1550\"></span> {usage}%",
     "interval": 10

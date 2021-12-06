@@ -75,16 +75,23 @@ return require('packer').startup(function(use)
   use "hrsh7th/cmp-calc"
   use "hrsh7th/cmp-emoji"
   use "hrsh7th/nvim-cmp"
+  use "ray-x/cmp-treesitter"
   use "ujihisa/neco-look"
   use "f3fora/cmp-spell"
 
   use "LnL7/vim-nix"
 
+  use {"JoosepAlviste/nvim-ts-context-commentstring"}
   use {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"}
   use {"nvim-treesitter/nvim-treesitter-textobjects"}
   use {"numToStr/Comment.nvim"}
-  use "JoosepAlviste/nvim-ts-context-commentstring"
-
+  use {
+   "ThePrimeagen/refactoring.nvim",
+    requires = {
+      {"nvim-lua/plenary.nvim"},
+      {"nvim-treesitter/nvim-treesitter"}
+    }
+  }
   --
   -- Tools and utilities
   --

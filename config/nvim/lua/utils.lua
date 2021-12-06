@@ -227,14 +227,15 @@ local toggle_word = function()
     ["true"] = "false",
     ["True"] = "False",
     ["TRUE"] = "FALSE",
-    ["YES"] = "NO",
+    ["yes"] = "no",
     ["Yes"] = "No",
+    ["YES"] = "NO",
     ["on"] = "off",
     ["On"] = "Off",
     ["ON"] = "OFF",
     ["0"] = "1",
     ["<"] = ">",
-    ["+"] = "-"
+    ["+"] = "-",
   }
 
   vim.tbl_add_reverse_lookup(substitutions)

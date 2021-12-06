@@ -26,8 +26,8 @@ set $workspace5 5
 set $workspace6 6
 
 # Commands
-set $term alacritty --class "terminal"
-set $scratchpad_term alacritty --class "scratchpad_term" --title "scratchpad_term"
+set $term kitty --class "term"
+set $scratchterm alacritty --class "scratchterm" --title "scratchterm"
 set $menu wofi
 set $menuargs --show=drun,run
 set $files nautilus
@@ -261,6 +261,28 @@ bindsym {
 }
 
 #
+# Navigation mode
+#
+
+set $mode_navigation Navigation
+
+mode "$mode_navigation" {
+  # Arrow keys on hjkl
+  bindsym {
+    h exec wtype -k left
+    j exec wtype -k down
+    k exec wtype -k up
+    l exec wtype -k right
+  }
+
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+  bindsym Space mode "default"
+}
+
+bindsym $mod+n mode "$mode_navigation"
+
+#
 # Resize Mode
 #
 
@@ -316,7 +338,7 @@ exec systemctl --user start sway-session.target
 exec systemctl --user start graphical-session.target
 
 # Open a terminal on scratchpad
-exec $scratchpad_term
+exec $scratchterm
 
 # Turn off monitor after 10 minutes, and lock screen after 30 minutes and before
 # going into sleep mode
@@ -350,10 +372,10 @@ for_window [class="qimgv"] floating enable
 for_window [class="qview"] floating enable
 
 # Terminals
-for_window [app_id="transparent_term"] border none
-for_window [app_id="scratchpad_term"] move scratchpad
-for_window [app_id="scratchpad_term"] floating enable, resize set 1280 720
-for_window [app_id="popup_term"] floating enable, resize set 920 720
+for_window [app_id="transterm"] border none
+for_window [app_id="scratchterm"] move scratchpad, floating enable, resize set 1280 720
+for_window [app_id="popupterm"] floating enable, resize set 920 720
+for_window [app_id="fuzzyterm"] floating enable, resize set 500 700
 
 #
 # GTK

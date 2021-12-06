@@ -1,46 +1,98 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-  inputs.nur.url = "github:nix-community/NUR";
-  inputs.home-manager.url = "github:nix-community/home-manager";
-  inputs.neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+  description = "nordix system configuration";
 
-  outputs = inputs@{ self, nixpkgs, nur, home-manager, neovim-nightly-overlay }: rec {
-    nixosConfigurations.nordix = nixpkgs.lib.nixosSystem {
+  inputs = {
+    nixpkgs = {
+      url = "github:NixOS/nixpkgs/nixos-unstable";
+    };
+    nixpkgs-master = {
+      url = "github:NixOS/nixpkgs/master";
+    };
+    nixpkgs-wayland = {
+      url = "github:nix-community/nixpkgs-wayland";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    neovim-contrib = {
+      url = github:neovim/neovim?dir=contrib;
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    neovim-nightly-overlay = {
+      url = "github:nix-community/neovim-nightly-overlay";
+    };
+    utils = {
+      url = "github:gytis-ivaskevicius/flake-utils-plus";
+    };
+  };
+
+  outputs =
+    inputs@{ self
+    , nixpkgs
+    , nixpkgs-master
+    , nixpkgs-wayland
+    , home-manager
+    , nur
+    , neovim-contrib
+    , neovim-nightly-overlay
+    , utils
+    , ...
+    }:
+    let
+      inherit (utils.lib) mkFlake;
       system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
-      modules = [
+      nixpkgs-master-overlay = final: prev: {
+        masterPackages = nixpkgs-master.legacyPackages.${prev.system};
+      };
+      nixpkgs-wayland-overlay = final: prev: {
+        waylandPackages = nixpkgs-wayland.legacyPackages.${prev.system};
+      };
+    in
+    mkFlake {
+      inherit self inputs;
+
+      supportedSystems = [ system ];
+
+      channelsConfig = {
+        allowBroken = true;
+        allowUnfree = true;
+        allowUnsupportedSystem = true;
+      };
+
+      sharedOverlays = [
+        nur.overlay
+        nixpkgs-master-overlay
+        nixpkgs-wayland-overlay
+        neovim-nightly-overlay.overlay
+
+        (import ./overlays/vscodium.nix)
+        (import ./overlays/packages.nix)
+      ];
+
+      hostDefaults.modules = [
+        ./modules/common.nix
+
+        home-manager.nixosModules.home-manager
         {
-          nixpkgs.overlays = [
-            neovim-nightly-overlay.overlay
-            nur.overlay
-          ];
-        }
-        ({ pkgs, ... }:
-          let
-            nur-no-pkgs = import nur {
-              nurpkgs = import nixpkgs { system = "x86_64-linux"; };
-            };
-          in {
-            imports = [ ];
-          })
-
-
-        ./hosts/ryzen.nix
-        ./common.nix
-
-        home-manager.nixosModules.home-manager {
+          home-manager.backupFileExtension = "bak";
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.users.dnordstrom = import ./users/dnordstrom.nix;
         }
+      ];
 
-        ({ pkgs, ... }: {
-          programs.ssh.askPassword = pkgs.lib.mkForce "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
+      hosts.nordix.modules = [
+        ./hosts/ryzen.nix
+      ];
 
-          system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
-        })
+      hosts.nordixlap.modules = [
+        ./hosts/xps.nix
       ];
     };
-    defaultPackage.x86_64-linux = nixosConfigurations.nordix.config.system.build.vm;
-  };
 }

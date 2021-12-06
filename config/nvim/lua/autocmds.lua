@@ -25,10 +25,7 @@ vim.api.nvim_exec([[
   "
   augroup line_diagnostics
     autocmd!
-    autocmd CursorHold,CursorHoldI * silent! lua vim.lsp.diagnostic.show_line_diagnostics()
-
-    " This above will soon change to vim.diagnostic in 0.6.0:
-    " autocmd CursorHold,CursorHoldI * silent! lua vim.diagnostic.open_float(nil, {focusable = false, scope = "cursor"})
+    autocmd CursorHold * silent! lua vim.diagnostic.open_float()
   augroup end
 
   "

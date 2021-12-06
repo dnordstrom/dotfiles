@@ -45,7 +45,7 @@ do
 done
 
 # Print title
-printf "\n%s\n" $titlestart" Configuration preview mode "$titleend
+printf "\n%s\n" "$titlestart Configuration preview mode ""$titleend"
 
 # Get full cleanup file path and make sure it's valid
 if ! realpath "$cleanupfile" > /dev/null 2>&1; then
@@ -108,7 +108,7 @@ confirm() {
   done
 
   # Strict mode always requires uppercase yes
-  if [ $strict -gt 0 ]; then
+  if [ "$strict" -gt 0 ]; then
     yes=$(echo "$yes" | tr "[:lower:]" "[:upper:]")
     grep="--quiet"
   fi
@@ -121,12 +121,12 @@ confirm() {
   sttystate=$(stty -g)
   stty raw -echo
   input=$(head -c 1)
-  stty $sttystate
+  stty "$sttystate"
 
   printf "%s" "$input"
 
   # Grep input using flags determined by strict mode
-  if echo "$input" | grep $grep "^$yes"; then
+  if echo "$input" | grep "$grep" "^$yes"; then
     return 0 # Yes
   else
     return 1 # No
@@ -144,10 +144,53 @@ loudly() {
   fi
 }
 
+# Check if string contains another string
+stringcontains() {
+  string="$1"
+  substring="$2"
+
+  if [ "${string#*$substring}" != "$string" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Check if string starts with another string
+stringstartswith() {
+  string="$1"
+  substring="$2"
+
+  if [ "${string#$substring}" != "$string" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 # Print cleanup
 printf "\n%s\n\n" "Any symlinks created need to be removed before a nixos-rebuild. A cleanup script for this will be generated at $cleanupfile. For convenience, create a prebuild script or alias, e.g. aliasing \"nb\" to \"$cleanupfile; nixos-rebuild switch --upgrade;\"."
 
 # Ask about Sway
+if [ -L "$HOME/.config/sway" ]; then
+  currenttarget="$(readlink --canonicalize ~/.config/sway)"
+
+  if stringstartswith "$currenttarget" "/etc/nixos/config/"; then
+    printf "$notestart SKIPPED $noteend %s\n" "Sway already in preview mode."
+  else
+    printf "%s\n" "Sway not in preview mode but linked to $currenttarget."
+  fi
+else
+  if confirm --strict "Enable for Sway (rm -rf ~/.config/sway)?"; then
+    printf "\n"
+    loudly "rm -rf ~/.config/sway"
+    loudly "ln -s /etc/nixos/config/sway ~/.config/sway"
+    cleanup="$cleanup\nrm ~/.config/sway"
+  fi
+fi
+
+exit
+
 if confirm --strict "Enable for Sway (rm -rf ~/.config/sway)?"; then
   printf "\n"
   loudly "rm -rf ~/.config/sway"
@@ -168,11 +211,11 @@ fi
 printf "\n"
 
 # Ask about tmux
-if confirm --strict "Enable for tmux (rm -rf ~/.tmux.conf)?"; then
+if confirm --strict "Enable for tmux (rm -rf ~/.config/tmux)?"; then
   printf "\n"
-  loudly "rm -rf ~/.tmux.conf"
-  loudly "ln -s /etc/nixos/config/tmux/tmux.conf ~/.tmux.conf"
-  cleanup="$cleanup\nrm ~/.tmux.conf"
+  loudly "rm -rf ~/.config/tmux"
+  loudly "ln -s /etc/nixos/config/tmux ~/.config/tmux"
+  cleanup="$cleanup\nrm ~/.config/tmux"
 fi
 
 printf "\n"
@@ -188,11 +231,11 @@ fi
 printf "\n"
 
 # Ask about Kitty
-if confirm --strict "Enable for Kitty (rm -rf ~/.config/kitty/kitty.conf)?"; then
+if confirm --strict "Enable for Kitty (rm -rf ~/.config/kitty)?"; then
   printf "\n"
-  loudly "rm -rf ~/.config/kitty/kitty.conf"
-  loudly "ln -s /etc/nixos/config/kitty/kitty.conf ~/.config/kitty/kitty.conf"
-  cleanup="$cleanup\nrm ~/.config/kitty/kitty.conf"
+  loudly "rm -rf ~/.config/kitty"
+  loudly "ln -s /etc/nixos/config/kitty ~/.config/kitty"
+  cleanup="$cleanup\nrm ~/.config/kitty"
 fi
 
 printf "\n"
@@ -230,15 +273,16 @@ fi
 printf "\n"
 
 # Write cleanup script to disk and show message if preview was enabled for at
-# least one configuration
+# least one configuration.
 if [ -n "$cleanup" ]; then
+  if [ -f "$cleanupfile" ]; then
   # Write script
-  printf "$cleanupbang\n$cleanup" > $cleanupfile
-  chmod u+x $cleanupfile
+  printf "$cleanupbang\n$cleanup\nrm $cleanupfile" > "$cleanupfile"
+  chmod u+x "$cleanupfile"
 
   # Show result message
   printf "%s\n\n" "Preview mode enabled!"
-  printf "%s\n\n" $notestart" NOTE: "$noteend" Modifying these local files will now change the /etc/nixos sources. Rebuilding NixOS returns life back to normal."
+  printf "%s\n\n" "$notestart NOTE: ""$noteend Modifying these local files will now change the /etc/nixos sources. Rebuilding NixOS returns life back to normal."
 else
   printf "%s\n\n" "No configurations selected!"
 fi

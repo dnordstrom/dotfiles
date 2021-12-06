@@ -1,15 +1,12 @@
 { config, pkgs, stdenv, lib, nodePackages, ... }:
 
-let
-  udev-rules = pkgs.callPackage ./packages/udev-rules.nix {};
-in
 {
   #
   # Imports
   #
 
   imports = [
-    ./cachix.nix 
+    ../cachix.nix 
   ];
 
   #
@@ -128,7 +125,7 @@ in
 
   services.blueman.enable = true;
 
-  services.udev.packages = [ udev-rules ];
+  services.udev.packages = [ pkgs.udev-rules ];
 
   services.pipewire = {
     enable = true;
@@ -182,7 +179,6 @@ in
       enable = true;
       extraPortals = with pkgs; [
         xdg-desktop-portal-wlr
-        xdg-desktop-portal-gtk
       ];
       gtkUsePortal = true;
       wlr = {
@@ -190,6 +186,12 @@ in
       };
     };
   };
+
+  #
+  # Programs
+  #
+
+  programs.ssh.askPassword = pkgs.lib.mkForce "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
 
   #
   # Users
