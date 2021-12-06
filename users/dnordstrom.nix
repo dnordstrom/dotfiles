@@ -101,27 +101,17 @@ in
         mimeType = [ "text/plain" "inode/directory" ];
         startupNotify = false;
       };
-      codium-wayland = {
-        name = "VSCodium (Wayland)";
+      slack-wayland = {
+        name = "Slack (Wayland)";
+        comment = "Slack Desktop";
         type = "Application";
-        genericName = "Text Editor";
-        comment = "Code Editing. Redefined.";
-        exec = "codium --enable-features=UseOzonePlatform --ozone-platform=wayland %F";
+        genericName = "Slack Client for Linux";
+        exec = "slack --enable-features=UseOzonePlatform --ozone-platform=wayland -s %U";
         terminal = false;
-        icon = "code";
-        categories = [ "Utility" "TextEditor" "Development" "IDE" ];
-        mimeType = [ "text/plain" "inode/directory" ];
-        startupNotify = false;
-        settings = {
-          Actions = "new-empty-window";
-          StartupWMClass = "vscodium";
-        };
-        extraConfig = ''
-          [Desktop Action new-empty-window]
-          Name=New Empty Window
-          Exec=codium --enable-features=UseOzonePlatform --ozone-platform=wayland --new-window %F
-          Icon=code
-        '';
+        icon = "slack";
+        categories = [ "GNOME" "GTK" "Network" "InstantMessaging" ];
+        mimeType = [ "x-scheme-handler/slack" ];
+        startupNotify = true;
       };
     };
   };
