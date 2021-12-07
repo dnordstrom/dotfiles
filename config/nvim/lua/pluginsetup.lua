@@ -100,7 +100,7 @@ require("cokeline").setup({
 		},
 		{
 			text = function(buffer) --  ﰉ
-				return buffer.is_modified and " ⊛ "
+				return buffer.is_modified and "  "
 			end,
 				fg = tab_post,
         bg = tab_bg,
