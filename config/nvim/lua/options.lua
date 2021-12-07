@@ -152,3 +152,5 @@ require("catppuccin").setup({
     hop = false,
   },
 })
+
+vim.cmd("colorscheme catppuccin")
