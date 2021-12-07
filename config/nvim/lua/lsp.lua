@@ -19,10 +19,10 @@ local servers = {
 	"yamlls",
 }
 local signs = {
-	DiagnosticSignError = "栗 ",
+	DiagnosticSignError = " ",
 	DiagnosticSignWarn = "卑 ",
 	DiagnosticSignHint = " ",
-	DiagnosticSignInfo = "ﱣ ",
+	DiagnosticSignInfo = " ",
 }
 
 --

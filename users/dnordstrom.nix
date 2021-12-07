@@ -370,6 +370,9 @@ in
     go-chromecast
     fx_cast_bridge
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
+    natls
+    exa
+    lsd
   ];
 
   #

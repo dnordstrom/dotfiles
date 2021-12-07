@@ -24,7 +24,7 @@
   nix.extraOptions =  ''
     keep-outputs = true
     keep-derivations = true
-    experimental-features = nix-command flakes ca-derivations ca-references
+    experimental-features = nix-command flakes ca-derivations;
   '';
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [

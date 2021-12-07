@@ -30,7 +30,7 @@ set $term kitty --class "term"
 set $scratchterm alacritty --class "scratchterm" --title "scratchterm"
 set $menu wofi
 set $menuargs --show=drun,run
-set $files nautilus
+set $files dolphin
 
 set $screenshot_area sleep 3 && grim -g "$(slurp)" - \
   | wl-copy && wl-paste -t image/png > \
