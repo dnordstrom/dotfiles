@@ -13,6 +13,7 @@ require("indent_blankline").setup({
 
 -- cokeline.nvim
 --   - Separators: https://github.com/famiu/feline.nvim/blob/master/USAGE.md#default-separators
+--   - Icons: https://github.com/just3ws/nerd-font-cheatsheets
 
 local get_hex = require("cokeline.utils").get_hex
 
@@ -62,7 +63,7 @@ require("cokeline").setup({
 	components = {
     {
       text = function(buffer)
-        return ""
+        return "" --      
       end,
       hl = {
         fg = corner_fg,
@@ -107,7 +108,7 @@ require("cokeline").setup({
 		},
     {
       text = function(buffer)
-        return ""
+        return "" --      
       end,
       hl = {
         fg = corner_fg,
@@ -124,8 +125,7 @@ require("cokeline").setup({
         if buffer.number == lastbufnr then
           return ""
         else
-          return "  " -- "  "
-          -- return " · "
+          return "  " --  ·    
         end
       end,
       hl = {
