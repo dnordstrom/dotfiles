@@ -37,6 +37,9 @@ opt.spelllang = {"en_us"}
 opt.updatetime = 250
 opt.ttimeoutlen = 50
 opt.timeoutlen = 500 -- Recommended by which-key.nvim
+opt.list = true
+opt.listchars:append("space:⋅")
+opt.listchars:append("eol:↴")
 
 --
 -- Explorer

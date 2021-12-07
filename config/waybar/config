@@ -61,13 +61,14 @@
   "custom/files": {
     "format": "<span rise=\"-1550\"></span>",
     "tooltip": false,
-    "on-click": "nautilus",
-    "on-click-right": "dolphin"
+    "on-click": "dolphin",
+    "on-click-right": "nautilus"
   },
   "custom/editor": {
     "format": "<span rise=\"-1550\"></span>",
     "tooltip": false,
-    "on-click": "if pgrep codium; then swaymsg [instance=\"vscodium\"] focus; else codium; fi"
+    "on-click": "sh -c \"if swaymsg -t get_tree | grep vimterm; then swaymsg [app_id=\"vimterm\"] focus; else kitty --class=vimterm; fi\"",
+    "on-right-click": "if pgrep codium; then swaymsg [instance=\"vscodium\"] focus; else codium; fi"
   },
   "custom/terminal": {
     "format": "<span rise=\"-1550\"></span>",

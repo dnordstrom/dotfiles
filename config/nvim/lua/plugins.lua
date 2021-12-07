@@ -126,6 +126,7 @@ return require("packer").startup(function(use)
   use {"norcalli/nvim-colorizer.lua"}
   use {"folke/todo-comments.nvim", requires = plenary}
   use {"lewis6991/gitsigns.nvim", requires = plenary, tag = "release"}
+  use {"lukas-reineke/indent-blankline.nvim"}
 
   -- VCS
 

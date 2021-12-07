@@ -17,7 +17,7 @@ let
     "image/*" = xdgImageViewer;
     "text/html" = xdgBrowser;
     "text/plain" = xdgEditor;
-    "text/plain" = xdgEditor;
+    "text/markdown" = xdgEditor;
     "text/calendar" = xdgBrowser;
     "x-scheme-handler/http" = xdgBrowser;
     "x-scheme-handler/https" = xdgBrowser;
@@ -86,7 +86,7 @@ in
         name = "Neovim (kitty)";
         type = "Application";
         genericName = "Text Editor";
-        exec = "kitty --class popupterm --title popupterm -e nvim %F";
+        exec = "kitty --class vimterm -e nvim %F";
         terminal = false;
         icon = "nvim";
         categories = [ "Utility" "TextEditor" "Development" "IDE" ];
@@ -378,12 +378,14 @@ in
 
   wayland.windowManager.sway = {
     enable = true;
-    config = null; # Remove default config since we provide our own
+    config = null;
     extraConfig = builtins.readFile ../config/sway/config;
     extraSessionCommands = ''
       export GDK_BACKEND=wayland
       export MOZ_ENABLE_WAYLAND=1
       export QT_QPA_PLATFORM=wayland
+      export QT_QPA_PLATFORMTHEME=gtk2
+      export QT_STYLE_OVERRIDE=kvantum-dark
       export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
       export SDL_VIDEODRIVER=wayland
       export XDG_CURRENT_DESKTOP=sway
@@ -396,10 +398,11 @@ in
   #
   # Qt
   #
+
   qt = {
     enable = true;
     platformTheme = "gtk";
-    style = { name = "Nordic"; };
+    style = { name = "kvantum-dark"; };
   };
 
   #

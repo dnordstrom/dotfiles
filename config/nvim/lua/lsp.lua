@@ -95,6 +95,6 @@ end
 for _, lsp in ipairs(servers) do
 	lspconfig[lsp].setup({
 		capabilities = capabilities,
-		on_attach = lsp == "null-ls" and disable_formatting or disable_formatting,
+		on_attach = lsp == "null-ls" and enable_formatting or disable_formatting,
 	})
 end
