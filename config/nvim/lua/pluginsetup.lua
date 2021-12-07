@@ -1,10 +1,39 @@
 ----
--- PLUGIN SETTINGS
+-- PLUGIN CONFIGURATION
 ----
 
 -- cokeline.nvim
+--   - Separators: https://github.com/famiu/feline.nvim/blob/master/USAGE.md#default-separators
 
 local get_hex = require("cokeline.utils").get_hex
+
+vim.cmd("hi TabLineFill guibg=none gui=none")
+
+local focused_tab_fg = "#222222" -- get_hex("Comment", "fg")
+local focused_tab_bg = get_hex("LineNr", "fg")
+local focused_tab_icon = "#333333" -- File icon
+local focused_tab_pre = "#333333" -- Unique prefix
+local focused_tab_post = "#333333" -- Modified icon
+local focused_tab_style = "bold,italic" -- Text style
+local focused_tab_pre_style = "none" -- Prefix text style
+local unfocused_tab_fg = "#333333" -- get_hex("Search", "fg")
+local unfocused_tab_bg = get_hex("Visual", "bg")
+local unfocused_tab_icon = "#444444" -- File icon
+local unfocused_tab_pre = "#444444" -- Unique prefix
+local unfocused_tab_post = "#333333" -- Modified icon
+local unfocused_tab_style = "none" -- Text style
+local unfocused_tab_pre_style = "italic" -- Prefix text style
+
+local separator = "#696969"
+local corner_fg = function(buffer) return buffer.is_focused and focused_tab_bg or unfocused_tab_bg end
+local corner_bg = function(buffer) return "none" end
+local tab_fg = function(buffer) return buffer.is_focused and focused_tab_fg or unfocused_tab_fg end
+local tab_bg = function(buffer) return buffer.is_focused and focused_tab_bg or unfocused_tab_bg end
+local tab_pre = function(buffer) return buffer.is_focused and focused_tab_pre or unfocused_tab_pre end
+local tab_post = function(buffer) return buffer.is_focused and focused_tab_post or unfocused_tab_post end
+local tab_icon = function(buffer) return buffer.is_focused and focused_tab_icon or unfocused_tab_icon end -- Or buffer.devicon.color
+local tab_style = function(buffer) return buffer.is_focused and focused_tab_style or unfocused_tab_style end
+local tab_pre_style = function(buffer) return buffer.is_focused and focused_tab_pre_style or unfocused_tab_pre_style end
 
 require("cokeline").setup({
 	cycle_prev_next_mappings = true,
@@ -12,24 +41,32 @@ require("cokeline").setup({
 		new_buffers_position = "last",
 	},
 	default_hl = {
-		focused = {
-			fg = get_hex("ColorColumn", "bg"),
-			bg = get_hex("Normal", "fg"),
-		},
-		unfocused = {
-			fg = get_hex("Normal", "fg"),
-			bg = get_hex("Normal", "bg"),
-		},
-	},
+    focused = {
+      fg = focused_tab_fg,
+      bg = focused_tab_bg,
+    },
+    unfocused = {
+      fg = unfocused_tab_fg,
+      bg = unfocused_tab_bg,
+    },
+  },
 	components = {
+    {
+      text = function(buffer)
+        return ""
+      end,
+      hl = {
+        fg = corner_fg,
+        bg = corner_bg,
+      },
+    },
 		{
 			text = function(buffer)
 				return " " .. buffer.devicon.icon
 			end,
 			hl = {
-				fg = function(buffer)
-					return buffer.devicon.color
-				end,
+        fg = tab_icon,
+        bg = tab_bg,
 			},
 		},
 		{
@@ -37,22 +74,56 @@ require("cokeline").setup({
 				return buffer.unique_prefix
 			end,
 			hl = {
-				fg = get_hex("Comment", "fg"),
-				style = "italic",
+				style = tab_pre_style,
+				fg = tab_pre,
+        bg = tab_bg,
 			},
 		},
 		{
 			text = function(buffer)
 				return buffer.filename .. " "
 			end,
+      hl = {
+        style = tab_style,
+        fg = tab_fg,
+        bg = tab_bg,
+      },
 		},
 		{
-			text = "",
-			delete_buffer_on_left_click = true,
+			text = function(buffer) --  ﰉ
+				return buffer.is_modified and " ⊛ "
+			end,
+				fg = tab_post,
+        bg = tab_bg,
 		},
-		{
-			text = " ",
-		},
+    {
+      text = function(buffer)
+        return ""
+      end,
+      hl = {
+        fg = corner_fg,
+        bg = corner_bg,
+      },
+    },
+    {
+      text = function(buffer)
+        local listedbufs = vim.tbl_filter(function(buf)
+          return vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_option(buf, 'buflisted')
+        end, vim.api.nvim_list_bufs())
+        local lastbufnr = listedbufs[#listedbufs]
+
+        if buffer.number == lastbufnr then
+          return ""
+        else
+          return "  " -- "  "
+          -- return " · "
+        end
+      end,
+      hl = {
+        fg = separator,
+        bg = "none",
+      },
+    },
 	},
 })
 

@@ -23,6 +23,7 @@ g.mapleader = " "
 -- General
 --
 
+opt.termguicolors = true
 opt.ignorecase = true
 opt.smartcase = true
 opt.number = true
@@ -78,29 +79,73 @@ opt.formatoptions = "cjroql"
 -- Color scheme
 --
 
--- For nord.nvim:
---
--- g.nord_contrast = true
--- g.nord_borders = false
--- g.nord_disable_background = true
--- g.nord_italic = true
---
--- require("onenord").setup()
+-- require("onenord").setup({
+--   borders = true,
+--   italics = {
+--     comments = true,
+--     strings = false,
+--     keywords = true,
+--     functions = false,
+--     variables = false,
+--   },
+--   disable = {
+--     background = true,
+--     cursorline = true,
+--     eob_lines = true,
+--   },
+--   custom_highlights = {}
+-- })
 
-require("onenord").setup({
-  borders = true,
-  italics = {
-    comments = true,
-    strings = false,
-    keywords = true,
-    functions = false,
-    variables = false,
+require("catppuccin").setup({
+  transparent_background = true,
+  term_colors = true,
+  styles = {
+    comments = "italic",
+    functions = "italic",
+    keywords = "italic",
+    strings = "NONE",
+    variables = "NONE",
   },
-  disable = {
-    background = true,
-    cursorline = true,
-    eob_lines = true,
+  integrations = {
+    treesitter = true,
+    native_lsp = {
+      enabled = true,
+      virtual_text = {
+        errors = "italic",
+        hints = "italic",
+        warnings = "italic",
+        information = "italic",
+      },
+      underlines = {
+        errors = "underline",
+        hints = "underline",
+        warnings = "underline",
+        information = "underline",
+      },
+    },
+    lsp_trouble = true,
+    lsp_saga = false,
+    gitgutter = false,
+    gitsigns = true,
+    telescope = false,
+    nvimtree = {
+      enabled = true,
+      show_root = false,
+    },
+    which_key = true,
+    indent_blankline = {
+      enabled = false,
+      colored_indent_levels = false,
+    },
+    dashboard = false,
+    neogit = false,
+    vim_sneak = false,
+    fern = false,
+    barbar = false,
+    bufferline = false,
+    markdown = true,
+    lightspeed = true,
+    ts_rainbow = false,
+    hop = false,
   },
-  custom_highlights = {}
 })
-

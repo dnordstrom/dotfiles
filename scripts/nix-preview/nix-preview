@@ -172,25 +172,6 @@ stringstartswith() {
 printf "\n%s\n\n" "Any symlinks created need to be removed before a nixos-rebuild. A cleanup script for this will be generated at $cleanupfile. For convenience, create a prebuild script or alias, e.g. aliasing \"nb\" to \"$cleanupfile; nixos-rebuild switch --upgrade;\"."
 
 # Ask about Sway
-if [ -L "$HOME/.config/sway" ]; then
-  currenttarget="$(readlink --canonicalize ~/.config/sway)"
-
-  if stringstartswith "$currenttarget" "/etc/nixos/config/"; then
-    printf "$notestart SKIPPED $noteend %s\n" "Sway already in preview mode."
-  else
-    printf "%s\n" "Sway not in preview mode but linked to $currenttarget."
-  fi
-else
-  if confirm --strict "Enable for Sway (rm -rf ~/.config/sway)?"; then
-    printf "\n"
-    loudly "rm -rf ~/.config/sway"
-    loudly "ln -s /etc/nixos/config/sway ~/.config/sway"
-    cleanup="$cleanup\nrm ~/.config/sway"
-  fi
-fi
-
-exit
-
 if confirm --strict "Enable for Sway (rm -rf ~/.config/sway)?"; then
   printf "\n"
   loudly "rm -rf ~/.config/sway"
@@ -216,6 +197,16 @@ if confirm --strict "Enable for tmux (rm -rf ~/.config/tmux)?"; then
   loudly "rm -rf ~/.config/tmux"
   loudly "ln -s /etc/nixos/config/tmux ~/.config/tmux"
   cleanup="$cleanup\nrm ~/.config/tmux"
+fi
+
+printf "\n"
+
+# Ask about Glow
+if confirm --strict "Enable for Glow (rm -rf ~/.config/glow)?"; then
+  printf "\n"
+  loudly "rm -rf ~/.config/glow"
+  loudly "ln -s /etc/nixos/config/glow ~/.config/glow"
+  cleanup="$cleanup\nrm ~/.config/glow"
 fi
 
 printf "\n"
@@ -275,7 +266,6 @@ printf "\n"
 # Write cleanup script to disk and show message if preview was enabled for at
 # least one configuration.
 if [ -n "$cleanup" ]; then
-  if [ -f "$cleanupfile" ]; then
   # Write script
   printf "$cleanupbang\n$cleanup\nrm $cleanupfile" > "$cleanupfile"
   chmod u+x "$cleanupfile"
@@ -286,4 +276,6 @@ if [ -n "$cleanup" ]; then
 else
   printf "%s\n\n" "No configurations selected!"
 fi
+
+exit 0
 

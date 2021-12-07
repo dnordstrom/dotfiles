@@ -1,0 +1,5 @@
+style: "$HOME/.config/glow/nord.json"
+local: false
+mouse: true
+pager: true
+width: 80

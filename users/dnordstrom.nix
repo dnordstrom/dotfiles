@@ -5,6 +5,7 @@ let
   browser = "firefox";
   terminal = "kitty";
   xdgEditor = [ "neovim-kitty.desktop" ];
+  xdgMarkdown = [ "neovim-kitty.desktop" ];
   xdgBrowser = [ "firefox.desktop" ];
   xdgPdfViewer = [ "zathura.desktop" ];
   xdgFileBrowser = [ "dolphine.desktop" ];
@@ -15,6 +16,8 @@ let
     "video/*" = xdgMediaPlayer;
     "image/*" = xdgImageViewer;
     "text/html" = xdgBrowser;
+    "text/plain" = xdgEditor;
+    "text/plain" = xdgEditor;
     "text/calendar" = xdgBrowser;
     "x-scheme-handler/http" = xdgBrowser;
     "x-scheme-handler/https" = xdgBrowser;
@@ -99,6 +102,17 @@ in
         icon = "vifm";
         categories = [ "System" "FileManager" ];
         mimeType = [ "text/plain" "inode/directory" ];
+        startupNotify = false;
+      };
+      glow-kitty = {
+        name = "Glow (kitty)";
+        type = "Application";
+        genericName = "Markdown Viewer";
+        exec = "kitty --class popupterm --title popupterm -e glow %F";
+        terminal = false;
+        icon = "kitty";
+        categories = [ "Utility" "TextEditor" ];
+        mimeType = [ "text/markdown" ];
         startupNotify = false;
       };
       slack-wayland = {
@@ -385,7 +399,7 @@ in
   qt = {
     enable = true;
     platformTheme = "gtk";
-    style = { name = "NordicDarker"; };
+    style = { name = "Nordic"; };
   };
 
   #
@@ -404,7 +418,9 @@ in
       extraConfig.gtk-application-prefer-dark-theme = "true";
       extraCss = "";
     };
-    gtk2.extraConfig = ''gtk-application-prefer-dark-theme = "true";'';
+    gtk2.extraConfig = ''
+      gtk-application-prefer-dark-theme = "true"
+    '';
   };
 
   #
@@ -449,6 +465,10 @@ in
   # Vifm
 
   xdg.configFile."vifm".source = ../config/vifm;
+
+  # Glow
+
+  xdg.configFile."glow".source = ../config/glow;
 
   # Xorg
 

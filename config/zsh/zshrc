@@ -57,6 +57,7 @@ export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS"
 # Aliases
 #
 
+alias l="ls -lAh --hyperlink=auto"
 alias cat="bat"
 alias cdn="cd /etc/nixos"
 alias nb="$HOME/.nix-prebuild; sudo nixos-rebuild switch --flake /etc/nixos --upgrade-all"

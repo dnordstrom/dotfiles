@@ -145,7 +145,7 @@ end
 local create_scratch_buffer = function()
   return api.nvim_create_buf(false, true) -- Unlisted, scratch
 end
-
+ 
 local create_floating_window = function(opts)
   local opts = opts or {text = "", padding = 6}
   local ui = vim.api.nvim_list_uis()[1]
