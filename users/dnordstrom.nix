@@ -34,8 +34,7 @@ let
     "application/x-extension-xhtml" = xdgBrowser;
     "application/x-extension-xht" = xdgBrowser;
   };
-in
-{
+in {
   #
   # Modules
   #
@@ -120,7 +119,8 @@ in
         comment = "Slack Desktop";
         type = "Application";
         genericName = "Slack Client for Linux";
-        exec = "slack --enable-features=UseOzonePlatform --ozone-platform=wayland -s %U";
+        exec =
+          "slack --enable-features=UseOzonePlatform --ozone-platform=wayland -s %U";
         terminal = false;
         icon = "slack";
         categories = [ "GNOME" "GTK" "Network" "InstantMessaging" ];
@@ -372,7 +372,9 @@ in
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
     natls
     exa
-    lsd
+    lsd # ls with icons
+    pet # CLI snippet manager
+    corgi # CLI workflow manager
   ];
 
   #
@@ -670,9 +672,7 @@ in
   };
 
   # Fuzzy finder written in Rust (both sk and fzf works with fzf-lua for nvim)
-  programs.skim = {
-    enable = true;
-  };
+  programs.skim = { enable = true; };
 
   # Lua alternative to z.sh for (even) faster navigation
   programs.z-lua = {

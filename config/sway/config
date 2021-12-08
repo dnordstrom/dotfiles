@@ -27,7 +27,7 @@ set $workspace6 6
 
 # Commands
 set $term kitty --class "term"
-set $scratchterm alacritty --class "scratchterm" --title "scratchterm"
+set $scratchterm kitty --class "scratchterm"
 set $menu wofi
 set $menuargs --show=drun,run
 set $files dolphin
@@ -267,7 +267,6 @@ bindsym {
 set $mode_navigation Navigation
 
 mode "$mode_navigation" {
-  # Arrow keys on hjkl
   bindsym {
     h exec wtype -k left
     j exec wtype -k down

@@ -5,10 +5,12 @@
 -- indent-blankline.nvim
 
 require("indent_blankline").setup({
-  space_char_blankline = " ",
-  show_end_of_line = false,
-  show_current_context = true,
-  show_current_context_start = false,
+	char = " ", -- Empty space overrides listchar if both are enabled
+	context_char = "▕",
+	space_char_blankline = " ",
+	show_end_of_line = false,
+	show_current_context = true,
+	show_current_context_start = false,
 })
 
 -- cokeline.nvim
@@ -35,15 +37,33 @@ local unfocused_tab_style = "none" -- Text style
 local unfocused_tab_pre_style = "italic" -- Prefix text style
 
 local separator = "#696969"
-local corner_fg = function(buffer) return buffer.is_focused and focused_tab_bg or unfocused_tab_bg end
-local corner_bg = function(buffer) return "none" end
-local tab_fg = function(buffer) return buffer.is_focused and focused_tab_fg or unfocused_tab_fg end
-local tab_bg = function(buffer) return buffer.is_focused and focused_tab_bg or unfocused_tab_bg end
-local tab_pre = function(buffer) return buffer.is_focused and focused_tab_pre or unfocused_tab_pre end
-local tab_post = function(buffer) return buffer.is_focused and focused_tab_post or unfocused_tab_post end
-local tab_icon = function(buffer) return buffer.is_focused and focused_tab_icon or unfocused_tab_icon end -- Or buffer.devicon.color
-local tab_style = function(buffer) return buffer.is_focused and focused_tab_style or unfocused_tab_style end
-local tab_pre_style = function(buffer) return buffer.is_focused and focused_tab_pre_style or unfocused_tab_pre_style end
+local corner_fg = function(buffer)
+	return buffer.is_focused and focused_tab_bg or unfocused_tab_bg
+end
+local corner_bg = function(buffer)
+	return "none"
+end
+local tab_fg = function(buffer)
+	return buffer.is_focused and focused_tab_fg or unfocused_tab_fg
+end
+local tab_bg = function(buffer)
+	return buffer.is_focused and focused_tab_bg or unfocused_tab_bg
+end
+local tab_pre = function(buffer)
+	return buffer.is_focused and focused_tab_pre or unfocused_tab_pre
+end
+local tab_post = function(buffer)
+	return buffer.is_focused and focused_tab_post or unfocused_tab_post
+end
+local tab_icon = function(buffer)
+	return buffer.is_focused and focused_tab_icon or unfocused_tab_icon
+end -- Or buffer.devicon.color
+local tab_style = function(buffer)
+	return buffer.is_focused and focused_tab_style or unfocused_tab_style
+end
+local tab_pre_style = function(buffer)
+	return buffer.is_focused and focused_tab_pre_style or unfocused_tab_pre_style
+end
 
 require("cokeline").setup({
 	cycle_prev_next_mappings = true,
@@ -51,32 +71,32 @@ require("cokeline").setup({
 		new_buffers_position = "last",
 	},
 	default_hl = {
-    focused = {
-      fg = focused_tab_fg,
-      bg = focused_tab_bg,
-    },
-    unfocused = {
-      fg = unfocused_tab_fg,
-      bg = unfocused_tab_bg,
-    },
-  },
+		focused = {
+			fg = focused_tab_fg,
+			bg = focused_tab_bg,
+		},
+		unfocused = {
+			fg = unfocused_tab_fg,
+			bg = unfocused_tab_bg,
+		},
+	},
 	components = {
-    {
-      text = function(buffer)
-        return "" --      
-      end,
-      hl = {
-        fg = corner_fg,
-        bg = corner_bg,
-      },
-    },
+		{
+			text = function(buffer)
+				return "" --      
+			end,
+			hl = {
+				fg = corner_fg,
+				bg = corner_bg,
+			},
+		},
 		{
 			text = function(buffer)
 				return " " .. buffer.devicon.icon
 			end,
 			hl = {
-        fg = tab_icon,
-        bg = tab_bg,
+				fg = tab_icon,
+				bg = tab_bg,
 			},
 		},
 		{
@@ -86,53 +106,53 @@ require("cokeline").setup({
 			hl = {
 				style = tab_pre_style,
 				fg = tab_pre,
-        bg = tab_bg,
+				bg = tab_bg,
 			},
 		},
 		{
 			text = function(buffer)
 				return buffer.filename .. " "
 			end,
-      hl = {
-        style = tab_style,
-        fg = tab_fg,
-        bg = tab_bg,
-      },
+			hl = {
+				style = tab_style,
+				fg = tab_fg,
+				bg = tab_bg,
+			},
 		},
 		{
 			text = function(buffer) --  ﰉ
 				return buffer.is_modified and "  "
 			end,
-				fg = tab_post,
-        bg = tab_bg,
+			fg = tab_post,
+			bg = tab_bg,
 		},
-    {
-      text = function(buffer)
-        return "" --      
-      end,
-      hl = {
-        fg = corner_fg,
-        bg = corner_bg,
-      },
-    },
-    {
-      text = function(buffer)
-        local listedbufs = vim.tbl_filter(function(buf)
-          return vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_option(buf, 'buflisted')
-        end, vim.api.nvim_list_bufs())
-        local lastbufnr = listedbufs[#listedbufs]
+		{
+			text = function(buffer)
+				return "" --      
+			end,
+			hl = {
+				fg = corner_fg,
+				bg = corner_bg,
+			},
+		},
+		{
+			text = function(buffer)
+				local listedbufs = vim.tbl_filter(function(buf)
+					return vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_option(buf, "buflisted")
+				end, vim.api.nvim_list_bufs())
+				local lastbufnr = listedbufs[#listedbufs]
 
-        if buffer.number == lastbufnr then
-          return ""
-        else
-          return "  " --  ·    
-        end
-      end,
-      hl = {
-        fg = separator,
-        bg = "none",
-      },
-    },
+				if buffer.number == lastbufnr then
+					return ""
+				else
+					return "  " --  ·   
+				end
+			end,
+			hl = {
+				fg = separator,
+				bg = "none",
+			},
+		},
 	},
 })
 
@@ -165,19 +185,19 @@ require("fzf-lua").setup({
 			layout = "flex",
 			flip_columns = 120, -- Column to flip layout to horizontal at
 			scrollbar = false,
-  
-      -- Builtin previewer window
-      winopts = {
-        number = true,
-        relativenumber = false,
-        cursorline = true,
-        cursorlineopt = "both",
-        cursorcolumn = false,
-        signcolumn = "no",
-        list = false,
-        foldenable = false,
-        foldmethod = "manual",
-      },
+
+			-- Builtin previewer window
+			winopts = {
+				number = true,
+				relativenumber = false,
+				cursorline = true,
+				cursorlineopt = "both",
+				cursorcolumn = false,
+				signcolumn = "no",
+				list = false,
+				foldenable = false,
+				foldmethod = "manual",
+			},
 		},
 		on_create = function()
 			vim.api.nvim_buf_set_keymap(0, "t", "<C-h>", "<Left>", { silent = true, noremap = true })
@@ -189,10 +209,10 @@ require("fzf-lua").setup({
 	keymap = {
 		builtin = {
 			["<M-f>"] = "toggle-fullscreen",
-      ["<M-w>"] = "toggle-preview-wrap",
-      ["<M-p>"] = "toggle-preview",
-      ["<M-j>"] = "preview-page-down",
-      ["<M-k>"] = "preview-page-up",
+			["<M-w>"] = "toggle-preview-wrap",
+			["<M-p>"] = "toggle-preview",
+			["<M-j>"] = "preview-page-down",
+			["<M-k>"] = "preview-page-up",
 		},
 		fzf = {
 			["ctrl-space"] = "toggle",
@@ -205,7 +225,7 @@ require("fzf-lua").setup({
 			["ctrl-p"] = "up",
 			["ctrl-n"] = "down",
 
-      -- If using native previewers
+			-- If using native previewers
 			["alt-p"] = "toggle-preview",
 			["alt-j"] = "preview-page-down",
 			["alt-k"] = "preview-page-up",
@@ -270,7 +290,7 @@ require("fzf-lua").setup({
 	},
 	builtin = {
 		prompt = "Builtin ❯ ",
-  },
+	},
 	args = {
 		prompt = "Args ❯ ",
 	},
@@ -298,15 +318,15 @@ require("fzf-lua").setup({
 	colorschemes = {
 		prompt = "Colorschemes ❯ ",
 		winopts = {
-      fullscreen = false,
-      border = "single",
-      col = 0.5,
-      row = 0.2,
+			fullscreen = false,
+			border = "single",
+			col = 0.5,
+			row = 0.2,
 			height = 0.6,
 			width = 0.3,
 		},
 		post_reset_cb = function()
-			require('feline').reset_highlights()
+			require("feline").reset_highlights()
 		end,
 	},
 	quickfix = {
@@ -693,12 +713,12 @@ cmp.setup({
 	},
 	formatting = {
 		-- Use lspkind-nvim to display source as icon instead of text
-		format = lspkind.cmp_format({with_text = false, maxwidth = 50}),
+		format = lspkind.cmp_format({ with_text = false, maxwidth = 50 }),
 	},
 
 	-- Experimental features default to false
 	experimental = {
-    native_menu = true,
+		native_menu = true,
 		ghost_text = true,
 	},
 })
@@ -736,7 +756,7 @@ npairs.setup({
 	},
 })
 
-cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done({map_char = { tex = "" }}))
+cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done({ map_char = { tex = "" } }))
 
 -- Renamer
 

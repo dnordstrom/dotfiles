@@ -5,9 +5,7 @@
   # Imports
   #
 
-  imports = [
-    ../cachix.nix 
-  ];
+  imports = [ ../cachix.nix ];
 
   #
   # General
@@ -21,21 +19,21 @@
 
   nix.package = pkgs.nixUnstable;
   nix.trustedUsers = [ "root" "dnordstrom" ];
-  nix.extraOptions =  ''
+  nix.extraOptions = ''
     keep-outputs = true
     keep-derivations = true
-    experimental-features = nix-command flakes ca-derivations;
   '';
 
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-    "broadcom-sta"
-    "corefonts"
-    "input-fonts"
-    "slack"
-    "steam-runtime"
-    "spotify"
-    "spotify-unwrapped"
-  ];
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (lib.getName pkg) [
+      "broadcom-sta"
+      "corefonts"
+      "input-fonts"
+      "slack"
+      "steam-runtime"
+      "spotify"
+      "spotify-unwrapped"
+    ];
 
   nixpkgs.config.input-fonts.acceptLicense = true;
   nixpkgs.config.firefox.enableTridactylNative = true;
@@ -81,12 +79,7 @@
     fira-code-symbols
 
     (nerdfonts.override {
-      fonts = [
-        "Iosevka"
-        "FiraCode"
-        "CascadiaCode"
-        "Hack"
-      ];
+      fonts = [ "Iosevka" "FiraCode" "CascadiaCode" "Hack" ];
     })
   ];
 
@@ -100,7 +93,8 @@
     displayManager = {
       sddm = {
         enable = true;
-        settings.Wayland.SessionDir = "${pkgs.sway}/share/wayland-sessions"; # Enable Sway
+        settings.Wayland.SessionDir =
+          "${pkgs.sway}/share/wayland-sessions"; # Enable Sway
       };
     };
 
@@ -114,12 +108,13 @@
       enable = true;
       touchpad = {
         tapping = true;
-      	clickMethod = "clickfinger";
+        clickMethod = "clickfinger";
       };
     };
 
     layout = "us,se";
-    xkbOptions = "caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey";
+    xkbOptions =
+      "caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey";
     xkbVariant = ",us";
   };
 
@@ -162,11 +157,7 @@
 
     bluetooth = {
       enable = true;
-      settings = {
-        General = {
-          Enable = "Source,Sink,Media,Socket";
-        };
-      };
+      settings = { General = { Enable = "Source,Sink,Media,Socket"; }; };
     };
   };
 
@@ -177,13 +168,9 @@
   xdg = {
     portal = {
       enable = true;
-      extraPortals = with pkgs; [
-        xdg-desktop-portal-wlr
-      ];
+      extraPortals = with pkgs; [ xdg-desktop-portal-wlr ];
       gtkUsePortal = true;
-      wlr = {
-        enable = true;
-      };
+      wlr = { enable = true; };
     };
   };
 
@@ -191,7 +178,8 @@
   # Programs
   #
 
-  programs.ssh.askPassword = pkgs.lib.mkForce "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
+  programs.ssh.askPassword =
+    pkgs.lib.mkForce "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
 
   #
   # Users

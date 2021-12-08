@@ -5,10 +5,10 @@
 --  * nvim_set_keymap("", ...) maps normal, visual/select, and operator pending modes
 --  * nvim_set_keymap("!", ...) maps command and insert modes
 --
-        
+
 --
 -- Shortcuts
--- 
+--
 
 local g = vim.g
 local fn = vim.fn
@@ -20,20 +20,20 @@ local nvim_exec = vim.api.nvim_exec
 local nvim_set_keymap = vim.api.nvim_set_keymap
 local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
 local opts = {
-  -- Regular
-  re = {},
-  expr = {expr = true},
-  silent = {silent = true},
-  silentExpr = {silent = true, expr = true},
+	-- Regular
+	re = {},
+	expr = { expr = true },
+	silent = { silent = true },
+	silentExpr = { silent = true, expr = true },
 
-  -- Non-recursive
-  nore = {noremap = true},
-  noreExpr = {noremap = true, expr = true},
-  noreSilent = {noremap = true, silent = true},
-  noreSilentExpr = {noremap = true, silent = true, expr = true},
+	-- Non-recursive
+	nore = { noremap = true },
+	noreExpr = { noremap = true, expr = true },
+	noreSilent = { noremap = true, silent = true },
+	noreSilentExpr = { noremap = true, silent = true, expr = true },
 
-  -- No wait
-  nowait = {nowait = true},
+	-- No wait
+	nowait = { nowait = true },
 }
 
 --
@@ -61,7 +61,7 @@ nvim_set_keymap("n", '"S', '"*', opts.nore) -- Selection
 nvim_set_keymap("n", '"c', '"+', opts.nore) -- Clipboard
 nvim_set_keymap("n", '"C', '"+', opts.nore) -- Clipboard
 nvim_set_keymap("n", '"d', '""', opts.nore) -- Delete
-nvim_set_keymap("n", '"D', '""', opts.nore) -- Delete 
+nvim_set_keymap("n", '"D', '""', opts.nore) -- Delete
 nvim_set_keymap("n", '"t', '"t', opts.nore) -- Throw-away
 nvim_set_keymap("n", '"T', '"t', opts.nore) -- Throw-away
 
@@ -150,10 +150,10 @@ nvim_set_keymap("n", "<C-CR>", "<Cmd>lua NORDUtils.insert_line_and_toggle_commen
 nvim_set_keymap("n", "<S-C-CR>", "<Cmd>lua NORDUtils.insert_line_and_toggle_comment({above=true})<CR>", opts.re)
 
 -- Duplicate
-nvim_set_keymap("i", "<S-CR>", '<Esc>yypA', opts.nore) -- Shift-Enter to duplicate in insert mode
-nvim_set_keymap("n", "<S-CR>", 'yyp$', opts.nore) -- Shift-Enter to duplicate in insert mode
-nvim_set_keymap("n", "<Leader>ld", 'yyp$', opts.nore) -- Leader-l-d => Line -> Duplicate
-nvim_set_keymap("n", "<Leader>lD", 'yyP$', opts.nore) -- Leader-l-D => Line -> Duplicate backwards
+nvim_set_keymap("i", "<S-CR>", "<Esc>yypA", opts.nore) -- Shift-Enter to duplicate in insert mode
+nvim_set_keymap("n", "<S-CR>", "yyp$", opts.nore) -- Shift-Enter to duplicate in insert mode
+nvim_set_keymap("n", "<Leader>ld", "yyp$", opts.nore) -- Leader-l-d => Line -> Duplicate
+nvim_set_keymap("n", "<Leader>lD", "yyP$", opts.nore) -- Leader-l-D => Line -> Duplicate backwards
 
 -- Move and reindent
 nvim_set_keymap("n", "<S-C-k>", "<Cmd>m-2<CR>==", opts.nore)
@@ -171,8 +171,8 @@ nvim_set_keymap("i", "<C-j>", "<Down>", opts.nore)
 nvim_set_keymap("i", "<C-k>", "<Up>", opts.nore)
 nvim_set_keymap("i", "<C-l>", "<Right>", opts.nore)
 
--- Delete text
-nvim_set_keymap("i", "", "<C-w>", opts.nore) -- <C-H> is <C-BS> since it gives ^H escape sequence
+-- Delete word backwards
+nvim_set_keymap("i", "<C-BS>", "<C-o>db", opts.nore) -- <C-H> is <C-BS> since it gives ^H escape sequence
 
 --
 -- Command mode
@@ -218,6 +218,12 @@ nvim_set_keymap("n", "<Leader>tb", "<Cmd>NvimTreeToggle<CR>", opts.nore)
 nvim_set_keymap("n", "<C-b>", "<Cmd>lua require('nvim-tree').toggle()<CR>", opts.nore) -- (B)ar
 nvim_set_keymap("n", "<C-b>b", "<Cmd>lua require('nvim-tree').toggle()<CR>", opts.nore) -- (B)ar
 nvim_set_keymap("n", "<C-b><C-b>", "<Cmd>lua require('nvim-tree').toggle()<CR>", opts.nore) -- (B)ar
+
+-- ...list characters
+nvim_set_keymap("", "<Leader>tl", "<Cmd>set list!<CR>", opts.nore)
+
+-- ...indent guides
+nvim_set_keymap("", "<Leader>ti", "<Cmd>IndentBlanklineToggle<CR>", opts.nore)
 
 -- ...file manager
 nvim_set_keymap("n", "<Leader>tf", "<Cmd>Vifm<CR>", opts.nore)
@@ -312,9 +318,9 @@ nvim_set_keymap("n", "<Leader>df", "<Cmd>lua vim.lsp.buf.formatting()<CR>", opts
 nvim_set_keymap("n", "<Leader>dF", "<Cmd>lua vim.lsp.buf.range_formatting()<CR>", opts.silent)
 
 -- ...refactoring
-nvim_set_keymap('n', '<F2>', '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.nore)
-nvim_set_keymap('i', '<F2>', '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.nore)
-nvim_set_keymap('n', '<Leader>dr', '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.nore)
+nvim_set_keymap("n", "<F2>", '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.nore)
+nvim_set_keymap("i", "<F2>", '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.nore)
+nvim_set_keymap("n", "<Leader>dr", '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.nore)
 nvim_set_keymap("n", "<Leader>dR", ":TSLspRenameFile<CR>", opts.nore)
 nvim_set_keymap("n", "<Leader>do", ":TSLspOrganize<CR>", opts.nore)
 nvim_set_keymap("n", "<Leader>di", ":TSLspImportAll<CR>", opts.nore)
@@ -346,5 +352,3 @@ nvim_set_keymap("n", "gs", "<Cmd>NBrowserSearch<CR>", opts.re)
 
 -- ...search web
 nvim_set_keymap("n", "<Leader>gs", "<Cmd>lua NORDUtils.browsersearch()<CR>", opts.re)
-
-
