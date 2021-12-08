@@ -57,7 +57,8 @@ return require("packer").startup(function(use)
 
   use {"folke/which-key.nvim"}
   use {"ggandor/lightspeed.nvim"}
-  use {"numToStr/Navigator.nvim"}
+  use {"numToStr/Navigator.nvim"} -- tmux
+  use {"knubie/vim-kitty-navigator"} -- kitty
 
   --
   -- Language and syntax

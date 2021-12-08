@@ -97,6 +97,10 @@ nvim_set_keymap("n", "k", "v:count == 0 ? 'gk' : 'k'", opts.noreExpr)
 nvim_set_keymap("n", "<C-w>s", ":split | wincmd j<CR>", opts.noreSilent)
 nvim_set_keymap("n", "<C-w>v", ":vsplit | wincmd l<CR>", opts.noreSilent)
 
+-- ...resize in larger steps
+nvim_set_keymap("n", "<C-w><", ":vertical resize -20<CR>", opts.noreSilent)
+nvim_set_keymap("n", "<C-w>>", ":vertical resize +20<CR>", opts.noreSilent)
+
 -- ...use the same next/previous direction for / and ?
 -- nvim_set_keymap("", "n", "v:searchforward ? 'n' : 'N'", opts.noreExpr)
 -- nvim_set_keymap("", "N", "v:searchforward ? 'N' : 'n'", opts.noreExpr)
@@ -120,14 +124,6 @@ nvim_set_keymap("n", "<Leader>rp", "<Cmd>PackerSync<CR>", opts.nore)
 --
 -- Navigate or move...
 --
-
--- ...windows and panes
-nvim_set_keymap('n', "<C-h>", "<Cmd>lua require('Navigator').left()<CR>", opts.nore)
-nvim_set_keymap('n', "<C-k>", "<Cmd>lua require('Navigator').up()<CR>", opts.nore)
-nvim_set_keymap('n', "<C-l>", "<Cmd>lua require('Navigator').right()<CR>", opts.nore)
-nvim_set_keymap('n', "<C-j>", "<Cmd>lua require('Navigator').down()<CR>", opts.nore)
-nvim_set_keymap('n', "<C-p>", "<Cmd>lua require('Navigator').previous()<CR>", opts.nore)
-nvim_set_keymap('n', "<C-\\>", "<Cmd>lua require('Navigator').previous()<CR>", opts.nore) -- vim-tmux-navigator default
 
 -- ...bufferline
 nvim_set_keymap("n", "<M-h>", "<Cmd>lua require('cokeline/buffers').focus_by_step(-1)<CR>", opts.nore)
@@ -174,6 +170,9 @@ nvim_set_keymap("i", "<C-h>", "<Left>", opts.nore)
 nvim_set_keymap("i", "<C-j>", "<Down>", opts.nore)
 nvim_set_keymap("i", "<C-k>", "<Up>", opts.nore)
 nvim_set_keymap("i", "<C-l>", "<Right>", opts.nore)
+
+-- Delete text
+nvim_set_keymap("i", "", "<C-w>", opts.nore) -- <C-H> is <C-BS> since it gives ^H escape sequence
 
 --
 -- Command mode

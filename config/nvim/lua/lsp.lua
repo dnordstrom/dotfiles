@@ -20,7 +20,7 @@ local servers = {
 }
 local signs = {
 	DiagnosticSignError = " ",
-	DiagnosticSignWarn = "卑 ",
+	DiagnosticSignWarn = " ",
 	DiagnosticSignHint = " ",
 	DiagnosticSignInfo = " ",
 }

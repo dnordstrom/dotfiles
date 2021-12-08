@@ -6,9 +6,9 @@
 
 require("indent_blankline").setup({
   space_char_blankline = " ",
-  show_end_of_line = true,
+  show_end_of_line = false,
   show_current_context = true,
-  show_current_context_start = true,
+  show_current_context_start = false,
 })
 
 -- cokeline.nvim
@@ -693,11 +693,12 @@ cmp.setup({
 	},
 	formatting = {
 		-- Use lspkind-nvim to display source as icon instead of text
-		format = lspkind.cmp_format({ with_text = false, maxwidth = 50 }),
+		format = lspkind.cmp_format({with_text = false, maxwidth = 50}),
 	},
 
 	-- Experimental features default to false
 	experimental = {
+    native_menu = true,
 		ghost_text = true,
 	},
 })
@@ -735,7 +736,7 @@ npairs.setup({
 	},
 })
 
-cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done({ map_char = { tex = "" } }))
+cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done({map_char = { tex = "" }}))
 
 -- Renamer
 
