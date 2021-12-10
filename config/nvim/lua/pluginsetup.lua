@@ -21,46 +21,54 @@ local get_hex = require("cokeline.utils").get_hex
 
 vim.cmd("hi TabLineFill guibg=none gui=none")
 
-local focused_tab_fg = "#222222" -- get_hex("Comment", "fg")
-local focused_tab_bg = get_hex("LineNr", "fg")
-local focused_tab_icon = "#333333" -- File icon
-local focused_tab_pre = "#333333" -- Unique prefix
-local focused_tab_post = "#333333" -- Modified icon
-local focused_tab_style = "bold,italic" -- Text style
-local focused_tab_pre_style = "none" -- Prefix text style
-local unfocused_tab_fg = "#333333" -- get_hex("Search", "fg")
-local unfocused_tab_bg = get_hex("Visual", "bg")
-local unfocused_tab_icon = "#444444" -- File icon
-local unfocused_tab_pre = "#444444" -- Unique prefix
-local unfocused_tab_post = "#333333" -- Modified icon
-local unfocused_tab_style = "none" -- Text style
-local unfocused_tab_pre_style = "italic" -- Prefix text style
+local focused_tab_fg = get_hex("Todo", "fg")
+local focused_tab_bg = get_hex("Todo", "bg")
+local focused_tab_icon = focused_tab_fg
+local focused_tab_pre = focused_tab_fg
+local focused_tab_post = focused_tab_fg
+local focused_tab_style = "bold,italic"
+local focused_tab_pre_style = "none"
+local unfocused_tab_fg = get_hex("TabLineSel", "fg")
+local unfocused_tab_bg = get_hex("TabLineSel", "bg")
+local unfocused_tab_icon = unfocused_tab_fg
+local unfocused_tab_pre = unfocused_tab_fg
+local unfocused_tab_post = unfocused_tab_fg
+local unfocused_tab_style = "none"
+local unfocused_tab_pre_style = "italic"
+local separator = get_hex("LineNr", "fg")
 
-local separator = "#696969"
 local corner_fg = function(buffer)
 	return buffer.is_focused and focused_tab_bg or unfocused_tab_bg
 end
+
 local corner_bg = function(buffer)
 	return "none"
 end
+
 local tab_fg = function(buffer)
 	return buffer.is_focused and focused_tab_fg or unfocused_tab_fg
 end
+
 local tab_bg = function(buffer)
 	return buffer.is_focused and focused_tab_bg or unfocused_tab_bg
 end
+
 local tab_pre = function(buffer)
 	return buffer.is_focused and focused_tab_pre or unfocused_tab_pre
 end
+
 local tab_post = function(buffer)
 	return buffer.is_focused and focused_tab_post or unfocused_tab_post
 end
+
 local tab_icon = function(buffer)
 	return buffer.is_focused and focused_tab_icon or unfocused_tab_icon
-end -- Or buffer.devicon.color
+end
+
 local tab_style = function(buffer)
 	return buffer.is_focused and focused_tab_style or unfocused_tab_style
 end
+
 local tab_pre_style = function(buffer)
 	return buffer.is_focused and focused_tab_pre_style or unfocused_tab_pre_style
 end
@@ -121,7 +129,7 @@ require("cokeline").setup({
 		},
 		{
 			text = function(buffer) --  ﰉ
-				return buffer.is_modified and "  "
+				return buffer.is_modified and "ﰉ "
 			end,
 			fg = tab_post,
 			bg = tab_bg,
@@ -145,7 +153,7 @@ require("cokeline").setup({
 				if buffer.number == lastbufnr then
 					return ""
 				else
-					return "  " --  ·   
+					return "  " --  ·   
 				end
 			end,
 			hl = {
@@ -217,13 +225,14 @@ require("fzf-lua").setup({
 		fzf = {
 			["ctrl-space"] = "toggle",
 			["ctrl-z"] = "abort",
-			["ctrl-u"] = "unix-line-discard",
 			["ctrl-f"] = "half-page-down",
 			["ctrl-b"] = "half-page-up",
 			["ctrl-a"] = "beginning-of-line",
 			["ctrl-e"] = "end-of-line",
 			["ctrl-p"] = "up",
 			["ctrl-n"] = "down",
+			["ctrl-u"] = "half-page-up",
+			["ctrl-d"] = "half-page-down",
 
 			-- If using native previewers
 			["alt-p"] = "toggle-preview",
@@ -549,33 +558,23 @@ require("nvim-treesitter.configs").setup({
 
 require("which-key").setup({
 	plugins = {
-		marks = true, -- shows a list of your marks on ' and `
-		registers = true, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
+		marks = true,
+		registers = true,
 		spelling = {
-			enabled = false, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
-			suggestions = 20, -- how many suggestions should be shown in the list?
+			enabled = false,
+			suggestions = 20,
 		},
-		-- The presets plugin, adds help for a bunch of default keybindings in Neovim
-		-- No actual key bindings are created
 		presets = {
-			operators = true, -- adds help for operators like d, y, ... and registers them for motion / text object completion
-			motions = true, -- adds help for motions
-			text_objects = true, -- help for text objects triggered after entering an operator
-			windows = true, -- default bindings on <c-w>
-			nav = true, -- misc bindings to work with windows
-			z = true, -- bindings for folds, spelling and others prefixed with z
-			g = true, -- bindings for prefixed with g
+			operators = true,
+			motions = true,
+			text_objects = true,
+			windows = true,
+			nav = true,
+			z = true,
+			g = true,
 		},
-	},
-	-- Add operators that will trigger motion and text object completion
-	-- to enable all native operators, set the preset/operators plugin above
-	operators = {
-		gc = "Comments",
-		gs = "Web search",
 	},
 	key_labels = {
-		-- Override the label used to display some keys. It doesn't effect WK in any other way.
-		-- For example:
 		["<space>"] = "Space",
 		["<cr>"] = "Enter",
 		["<tab>"] = "Tab",
@@ -583,31 +582,30 @@ require("which-key").setup({
 		["<bs>"] = "Backspace",
 	},
 	icons = {
-		breadcrumb = "»", -- Symbol used in the command line area that shows your active key combo
-		separator = "➜", -- Symbol used between a key and it's label
-		group = "+", -- Symbol prepended to a group
+		breadcrumb = "+",
+		separator = "  ",
+		group = " ",
 	},
 	popup_mappings = {
-		scroll_down = "<C-d>", -- Binding to scroll down inside the popup
-		scroll_up = "<C-u>", -- Binding to scroll up inside the popup
+		scroll_down = "<c-d>",
+		scroll_up = "<c-u>",
 	},
 	window = {
-		border = "double", -- None, single, double, shadow
-		position = "bottom", -- Bottom, top
-		margin = { 4, 4, 2, 4 }, -- Extra window margin [top, right, bottom, left]
-		padding = { 1, 1, 1, 1 }, -- Extra window padding [top, right, bottom, left]
-		winblend = 10, -- Value between 1 and 100
+		border = "single",
+		position = "bottom",
+		margin = { 4, 4, 2, 4 },
+		padding = { 1, 1, 1, 1 },
 	},
 	layout = {
-		height = { min = 4, max = 25 }, -- Min and max height of the columns
-		width = { min = 20, max = 50 }, -- Min and max width of the columns
-		spacing = 3, -- Spacing between columns
-		align = "left", -- Align columns left, center or right
+		height = { min = 4, max = 25 },
+		width = { min = 20, max = 50 },
+		spacing = 5,
+		align = "left",
 	},
-	ignore_missing = false, -- Enable this to hide mappings for which you didn't specify a label
-	hidden = { "<Silent>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ " }, -- Hide mapping boilerplate
-	show_help = true, -- show help message on the command line when the popup is visible
-	triggers = "auto", -- automatically setup triggers
+	ignore_missing = false,
+	hidden = { "<Silent>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ " },
+	show_help = false, -- Disabled since it outputs lowercase text
+	triggers = "auto",
 	triggers_blacklist = {
 		i = { "j", "k" },
 		v = { "j", "k" },

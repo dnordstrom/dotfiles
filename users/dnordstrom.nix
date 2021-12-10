@@ -278,6 +278,7 @@ in {
     stylua
 
     # Shell
+    shellcheck
     shfmt
     shellharden
 
@@ -331,7 +332,7 @@ in {
     qogir-theme
     adwaita-qt
 
-    # Icons
+    # Icons and cursors
     arc-icon-theme
     numix-icon-theme-circle
     paper-icon-theme
@@ -341,8 +342,8 @@ in {
     tela-icon-theme
     qogir-icon-theme
     moka-icon-theme # Fallback for Arc icon theme
-
-    # Cursors
+    vimix-icon-theme
+    capitaine-cursors
     numix-cursor-theme
     quintom-cursor-theme
     bibata-cursors
@@ -370,10 +371,6 @@ in {
     go-chromecast
     fx_cast_bridge
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
-    natls
-    exa
-    lsd # ls with icons
-    pet # CLI snippet manager
     corgi # CLI workflow manager
   ];
 
@@ -458,6 +455,10 @@ in {
 
   xdg.configFile."tmux".source = ../config/tmux;
 
+  # Starship
+
+  xdg.configFile."starship.toml".source = ../config/starship/starship.toml;
+
   # Firefox
 
   xdg.configFile."tridactyl".source = ../config/firefox/tridactyl;
@@ -526,6 +527,43 @@ in {
   programs.password-store.enable = true;
   programs.afew.enable = true;
   programs.mbsync.enable = true;
+
+  programs.starship = { enableZshIntegration = true; };
+
+  programs.nushell = {
+    enable = true;
+    settings = {
+      startup = [ "alias l [] { ls -Al }" "alias e [msg] { echo $msg }" ];
+    };
+  };
+
+  programs.exa = {
+    enable = true;
+    enableAliases = false; # Adds ls, ll, la, lt, and lla
+  };
+
+  programs.lsd = {
+    enable = true;
+    enableAliases = false; # Adds ls, ll, la, lt, and lla
+    settings = {
+      date = "relative";
+      display = "almost-all";
+      layout = "tree";
+      sorting = {
+        column = "name";
+        dir-grouping = "first";
+      };
+    };
+  };
+
+  programs.pet = {
+    enable = true;
+    snippets = [{
+      description = "Set GTK theme";
+      command = "gsettings set org.gnome.desktop.interface gtk-theme";
+      tag = [ "gtk" "gnome" "theme" "configuration" ];
+    }];
+  };
 
   programs.firefox = {
     enable = true;

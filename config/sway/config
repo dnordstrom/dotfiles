@@ -1,23 +1,33 @@
+##
+# SWAY WINDOW MANAGER
+##
+
 #
-# Variables
+# VARIABLES
 #
 
-# Font
+#
+# Appearance
+#
+
 set $font Input Sans Condensed 9
-
-# Color scheme
 set $colors nord
 
-# Super as modifier (Mod1 for Alt)
+#
+# Keys
+#
+
 set $mod Mod4
 
-# Vim navigation keys
 set $left h
 set $down j
 set $up k
 set $right l
 
-# Workspace names
+#
+# Workspaces
+#
+
 set $workspace1 1
 set $workspace2 2
 set $workspace3 3
@@ -25,25 +35,35 @@ set $workspace4 4
 set $workspace5 5
 set $workspace6 6
 
+#
 # Commands
-set $term kitty --class "term"
-set $scratchterm kitty --class "scratchterm"
+#
+
+set $term kitty
+set $scratchterm $term --class=scratchterm
 set $menu wofi
 set $menuargs --show=drun,run
 set $files dolphin
 
-set $screenshot_area sleep 3 && grim -g "$(slurp)" - \
-  | wl-copy && wl-paste -t image/png > \
+set $snapdelay 3
+set $snapregion sleep $snapdelay && \
+  grim -g "$(slurp)" - | \
+  wl-copy && \
+  wl-paste -t image/png > \
   "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png"
 
-set $screenshot_window sleep 3 && grim -g \
-  "$(swaymsg -t get_tree | jq -j '.. | select(.type?) | select(.focused).rect | "\(.x),\(.y) \(.width)x\(.height)"')" - \
-  | wl-copy && wl-paste -t image/png > \
+set $snapwindow sleep $snapdelay && \
+  grim -g | \
+  "$(swaymsg -t get_tree | jq -j '.. | select(.type?) | select(.focused).rect | "\(.x),\(.y) \(.width)x\(.height)"')" - | \
+  wl-copy && \
+  wl-paste -t image/png > \
   "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_window.png"
 
-set $screenshot_screen sleep 3 && grim -o \
-  "$(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name')" - \
-  | wl-copy && wl-paste -t image/png > \
+set $snapscreen sleep $snapdelay && \
+  grim -o | \
+  "$(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name')" - | \
+  wl-copy && \
+  wl-paste -t image/png > \
   "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png"
 
 set $lock swaylock \
@@ -82,26 +102,40 @@ set $powermenu wlogout \
   --protocol layer-shell
 
 #
+# SETTINGS
+#
+
+#
 # Appearance
 #
 
 font pango:$font
 
+# Gaps
+
 gaps inner 14
 gaps outer 12
+
+smart_gaps off
+
+# Borders (pixel disables title bar)
 
 default_border pixel 2
 default_floating_border pixel 2
 
-hide_edge_borders smart
-smart_borders on
+hide_edge_borders smart_no_gaps
 
 #
 # Workspaces
 #
 
+# Show next if attempting to focus outside current
+focus_wrapping workspace
+
+# Show previous if repeating Mod+Number
 workspace_auto_back_and_forth yes
 
+# Assign to outputs
 workspace $workspace1 output DP-1
 workspace $workspace2 output DP-1
 workspace $workspace3 output DP-1
@@ -110,53 +144,55 @@ workspace $workspace5 output DVI-D-1
 workspace $workspace6 output DVI-D-1
 
 #
-# Outputs
+# OUTPUTS
 #
 
 # All monitors
 output "*" bg ~/Pictures/Wallpapers/active.jpg fill
 
 # Primary monitor
-output DP-1 {
+output "DP-1" {
   mode 1920x1080@144.001007Hz
   position 1920,0
 }
 
 # Secondary monitor
-output DVI-D-1 {
+output "DVI-D-1" {
   mode 1920x1080@60Hz
   position 0,0
 }
 
 #
-# Inputs
+# INPUTS
+# 
+# Notes:
+#   - Using ID instead of "*" can prevent Firefox from crashing on configuration reload
 #
 
-seat * hide_cursor when-typing enable
-seat * idle_wake keyboard pointer
+seat seat0 hide_cursor when-typing enable
+seat seat0 xcursor_theme "Quintom_Snow" 24
 
-input type:keyboard {
+input "12851:25345:Ducky_Ducky_One2_Mini_RGB" {
   repeat_delay 250
   repeat_rate 35
 
-  # `setxkbmap -print -verbose 10` to show current settings for migrating current settings or after using Plasma or Gnome settings apps settings for a more explanatory setup.
-  xkb_numlock enable
   xkb_layout us,se
 
-  # CapsLock to Escape (and use Shift-CapsLock for CapsLock)
-  # Both Shift keys to change keyboard layout
-  # Terminate X server on Ctrl-Alt-Del
-  # Right Alt to AltGr
-  xkb_options caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey
+  # CapsLock -> Escape
+  # LShift+RShift -> CapsLock
+  # LCtrl+RCtrl -> Switch layout
+  # RAlt -> AltGr
+  # Shift+RAlt -> Compose
+  xkb_options caps:escape,shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey
 }
 
-input type:touchpad {
+input "1452:613:Apple_Inc._Magic_Trackpad_2" {
   tap enable
   click_method clickfinger
 }
 
 #
-# Key Binds
+# KEY MAPS
 #
 
 # Drag windows by holding down $mod and left mouse button.
@@ -164,14 +200,16 @@ input type:touchpad {
 # Change normal to inverse to use left button for resizing.
 floating_modifier $mod normal
 
-set $modrelease (pgrep $menu 1>/dev/null 2>&1 && pkill $menu) || $menu $menuargs | xargs swaymsg exec
+# To map single press on mod key to launch menu:
+# set $modrelease (pgrep $menu 1>/dev/null 2>&1 && pkill $menu) || $menu $menuargs | xargs swaymsg exec
 
 bindsym {
+  #
   # Launch
+  #
 
-  $mod+Return exec '$term'
-  $mod+d exec $menu
-  $mod+Space exec $menu
+  $mod+Return exec $term
+  $mod+d exec $menu | xargs swaymsg exec --
   $mod+g exec $files
   $mod+Backspace exec $powermenu
 
@@ -179,17 +217,16 @@ bindsym {
   $mod+Shift+q kill
   $mod+Shift+c reload
 
-  # Move focus
+  #
+  # Movement
+  #
+
+  # Focus windows
 
   $mod+$left focus left
   $mod+$down focus down
   $mod+$up focus up
   $mod+$right focus right
-
-  $mod+Left focus left
-  $mod+Down focus down
-  $mod+Up focus up
-  $mod+Right focus right
 
   # Move windows
 
@@ -198,12 +235,8 @@ bindsym {
   $mod+Shift+$up move up
   $mod+Shift+$right move right
 
-  $mod+Shift+Left move left
-  $mod+Shift+Down move down
-  $mod+Shift+Up move up
-  $mod+Shift+Right move right
+  # Focus workspace: Number keys
 
-  # Focus workspace
   $mod+1 workspace $workspace1
   $mod+2 workspace $workspace2
   $mod+3 workspace $workspace3
@@ -211,60 +244,82 @@ bindsym {
   $mod+5 workspace $workspace5
   $mod+6 workspace $workspace6
 
-  $mod+Alt+Left workspace prev_on_output
-  $mod+Alt+Right workspace next_on_output
-  $mod+Alt+$left workspace prev_on_output
-  $mod+Alt+$right workspace next_on_output
+  # Focus workspace: Mod+Tab switches, Alt+Tab cycles
 
-  $mod+Tab workspace next_on_output
-  $mod+Shift+Tab workspace prev_on_output
+  $mod+Tab workspace back_and_forth
+
   Alt+Tab workspace next_on_output
   Alt+Shift+Tab workspace prev_on_output
 
-  # Move window to workspace and focus
-  $mod+Shift+1 move container to workspace $workspace1, workspace $workspace1
-  $mod+Shift+2 move container to workspace $workspace2, workspace $workspace2
-  $mod+Shift+3 move container to workspace $workspace3, workspace $workspace3
-  $mod+Shift+4 move container to workspace $workspace4, workspace $workspace4
-  $mod+Shift+5 move container to workspace $workspace5, workspace $workspace5
-  $mod+Shift+6 move container to workspace $workspace6, workspace $workspace6
+  # Focus workspace: HJKL
+  
+  $mod+Alt+$left workspace prev_on_output
+  $mod+Alt+$down workspace next_on_output
+  $mod+Alt+$up workspace prev_on_output
+  $mod+Alt+$right workspace next_on_output
 
-  # Split horizontal or vertical
+  # Move window to workspace and focus
+
+  $mod+Shift+1 move container to workspace $workspace1
+  $mod+Shift+2 move container to workspace $workspace2
+  $mod+Shift+3 move container to workspace $workspace3
+  $mod+Shift+4 move container to workspace $workspace4
+  $mod+Shift+5 move container to workspace $workspace5
+  $mod+Shift+6 move container to workspace $workspace6
+
+  #
+  # Layout 
+  #
+  
+  # Split direction
+
   $mod+b splith
   $mod+v splitv
 
-  # Layout
-  $mod+e layout toggle split
-  $mod+w layout tabbed
+  # Modes
+  
   $mod+s layout stacking
-  $mod+Shift+f floating toggle
-  $mod+Shift+Space floating toggle
-  $mod+f fullscreen
-  $mod+x focus mode_toggle
-  $mod+u focus parent
+  $mod+w layout tabbed
+  $mod+e layout toggle split
 
-  # Scratchpad (Mod+Ctrl+Shift+z/x toggles fullscreen scratchpad)
+  # Fullscreen
+  
+  $mod+f fullscreen
+  $mod+Shift+Space floating toggle
+  $mod+Space focus mode_toggle
+  $mod+a focus parent
+
+  #
+  # Scratchpad
+  #
+  
   $mod+Shift+z mark --add __fs, move scratchpad, scratchpad show
   $mod+z scratchpad show; [con_mark="^__fs$"] fullscreen enable
   $mod+Shift+Ctrl+x fullscreen disable, unmark 
   $mod+Shift+Ctrl+z fullscreen enable, mark --add __fs
 
+  #
+  # Functional
+  #
+
   # Audio
+  
   XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
   XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
   XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 
   # Screenshot
+  
   Print exec $screenshot_area
   Shift+Print exec $screenshot_window
   Ctrl+Print exec $screenshot_screen
 }
 
 #
-# Navigation mode
+# NAVIGATION MODE
 #
 
-set $mode_navigation Navigation
+set $mode_navigation Navigate
 
 mode "$mode_navigation" {
   bindsym {
@@ -282,7 +337,7 @@ mode "$mode_navigation" {
 bindsym $mod+n mode "$mode_navigation"
 
 #
-# Resize Mode
+# RESIZE MODE
 #
 
 set $mode_resize Resize
@@ -322,36 +377,39 @@ mode "$mode_system" {
 }
 
 bindsym $mod+Shift+e mode "$mode_system"
-bindsym $mod+Shift+Backspace mode "$mode_system"
 
 #
-# Autostart
+# STARTUP
 #
 
 # Import environment
+
 exec systemctl --user import-environment XDG_SESSION_TYPE XDG_CURRENT_DESKTOP
 exec dbus-update-activation-environment WAYLAND_DISPLAY
 
 # Start systemd targets
+
 exec systemctl --user start sway-session.target
 exec systemctl --user start graphical-session.target
 
-# Open a terminal on scratchpad
+# Start scratchpad terminal
+
 exec $scratchterm
 
-# Turn off monitor after 10 minutes, and lock screen after 30 minutes and before
-# going into sleep mode
+# Turn off monitor after 10 minutes and lock screen after 30 minutes
+
 exec swayidle -w \
   timeout 900 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
   timeout 1800 '$lock' \
   before-sleep '$lock'
 
-# Fullscreen windows inhibits idle
+# Don't turn off monitor if fullscreen
+
 for_window [class="^.*"] inhibit_idle fullscreen
 for_window [app_id="^.*"] inhibit_idle fullscreen
 
 #
-# Status Bar
+# STATUS BAR
 #
 
 bar {
@@ -359,7 +417,7 @@ bar {
 }
 
 #
-# Window Specific
+# WINDOW SPECIFIC
 #
 
 assign [class="^Steam$"] $workspace5
@@ -377,7 +435,7 @@ for_window [app_id="popupterm"] floating enable, resize set 920 720
 for_window [app_id="fuzzyterm"] floating enable, resize set 500 700
 
 #
-# GTK
+# GTK SETTINGS
 #
 
 set $gnome-schema org.gnome.desktop.interface
@@ -385,12 +443,12 @@ set $gnome-schema org.gnome.desktop.interface
 exec_always {
   gsettings set $gnome-schema gtk-theme "Nordic-v40"
   gsettings set $gnome-schema icon-theme "Papirus-Dark"
-  gsettings set $gnome-schema cursor-theme "breeze_cursors"
+  gsettings set $gnome-schema cursor-theme "Quintom_Snow"
   gsettings set $gnome-schema font-name "Input Sans Condensed 9"
 }
 
 #
-# Load other configuration files
+# INCLUDES
 #
 
 include colors.$colors
