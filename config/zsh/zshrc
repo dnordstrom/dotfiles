@@ -58,6 +58,11 @@ export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS"
 #
 
 alias l="ls -lAh --hyperlink=auto"
+alias lx="exa --icons --all --group-directories-first --git --long"
+alias lxg="exa --long --git --sort=modified --all --icons"
+alias lxt="exa --icons --all --group-directories-first --tree --level 2"
+alias ld="lsd --long --group-dirs first --almost-all"
+alias ldt="lsd --tree --depth 2 --group-dirs first"
 alias cat="bat"
 alias cdn="cd /etc/nixos"
 alias nb="$HOME/.nix-prebuild; sudo nixos-rebuild switch --flake /etc/nixos --upgrade-all"

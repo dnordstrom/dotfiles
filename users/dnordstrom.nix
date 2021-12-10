@@ -372,6 +372,8 @@ in {
     fx_cast_bridge
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
     corgi # CLI workflow manager
+    navi # CLI cheatsheet tool
+    tealdeer # TLDR in Rust
   ];
 
   #
@@ -675,7 +677,6 @@ in {
 
     oh-my-zsh = {
       enable = true;
-      theme = "agnoster";
       plugins = [ "sudo" ];
     };
 
@@ -691,6 +692,12 @@ in {
     ];
 
     initExtra = builtins.readFile ../config/zsh/zshrc;
+  };
+
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true; # Adds eval "$(zoxide init zsh)" to .zshrc
+    # To disable alias creation on init: options = [ "--no-aliases" ];
   };
 
   programs.tmux = { enable = true; };
@@ -716,7 +723,7 @@ in {
   programs.z-lua = {
     enable = true;
     enableZshIntegration = true;
-    enableAliases = true;
+    enableAliases = false; # Disabling to try zoxide
   };
 
   programs.go = {
@@ -778,6 +785,16 @@ in {
   };
 
   programs.gpg = { enable = true; };
+
+  #
+  # Manual
+  #
+
+  manual = {
+    html.enable = true;
+    json.enable = true;
+    manpages.enable = true; # Also enabled by default
+  };
 
   #
   # Services
