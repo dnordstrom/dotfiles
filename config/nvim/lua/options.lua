@@ -3,7 +3,7 @@
 ----
 
 --
--- Shortcuts
+-- SHORTCUTS
 --
 
 local g = vim.g
@@ -20,7 +20,7 @@ local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
 g.mapleader = " "
 
 --
--- General
+-- GENERAL
 --
 
 opt.termguicolors = true
@@ -33,7 +33,7 @@ opt.mouse = "a"
 opt.clipboard = "unnamedplus" -- Use system clipboard since we only use it for yanks (see key maps)
 opt.scrolloff = 6
 opt.spell = false -- Enabled for specific file types
-opt.spelllang = {"en_us"}
+opt.spelllang = { "en_us" }
 opt.updatetime = 250
 opt.ttimeoutlen = 50
 opt.timeoutlen = 500 -- Recommended by which-key.nvim
@@ -42,7 +42,7 @@ opt.listchars:append("space:⋅")
 opt.listchars:append("eol:↴")
 
 --
--- Explorer
+-- EXPLORER
 --
 
 g.netrw_liststyle = 4 -- Open in previous window
@@ -52,7 +52,7 @@ g.netrw_altv = 1 -- Open file to the right
 g.netrw_banner = 0 -- Hide banner
 
 --
--- Formatting
+-- FORMATTING
 --
 
 opt.autoindent = true
@@ -79,7 +79,7 @@ opt.formatoptions = "cjroql"
 -- For hard wrap comments only: cjroql
 
 --
--- Color scheme
+-- COLOR SCHEME
 --
 
 -- require("onenord").setup({
@@ -100,57 +100,58 @@ opt.formatoptions = "cjroql"
 -- })
 
 require("catppuccin").setup({
-  transparent_background = true,
-  term_colors = true,
-  styles = {
-    comments = "italic",
-    functions = "italic",
-    keywords = "italic",
-    strings = "NONE",
-    variables = "NONE",
-  },
-  integrations = {
-    treesitter = true,
-    native_lsp = {
-      enabled = true,
-      virtual_text = {
-        errors = "italic",
-        hints = "italic",
-        warnings = "italic",
-        information = "italic",
-      },
-      underlines = {
-        errors = "underline",
-        hints = "underline",
-        warnings = "underline",
-        information = "underline",
-      },
-    },
-    lsp_trouble = true,
-    lsp_saga = false,
-    gitgutter = false,
-    gitsigns = true,
-    telescope = false,
-    nvimtree = {
-      enabled = true,
-      show_root = false,
-    },
-    which_key = true,
-    indent_blankline = {
-      enabled = false,
-      colored_indent_levels = false,
-    },
-    dashboard = false,
-    neogit = false,
-    vim_sneak = false,
-    fern = false,
-    barbar = false,
-    bufferline = false,
-    markdown = true,
-    lightspeed = true,
-    ts_rainbow = false,
-    hop = false,
-  },
+	transparent_background = false,
+	term_colors = false,
+	styles = {
+		comments = "italic",
+		functions = "italic",
+		keywords = "italic",
+		strings = "NONE",
+		variables = "NONE",
+	},
+	integrations = {
+		treesitter = true,
+		native_lsp = {
+			enabled = true,
+			virtual_text = {
+				errors = "italic",
+				hints = "italic",
+				warnings = "italic",
+				information = "italic",
+			},
+			underlines = {
+				errors = "underline",
+				hints = "underline",
+				warnings = "underline",
+				information = "underline",
+			},
+		},
+		lsp_trouble = true,
+		lsp_saga = false,
+		gitgutter = false,
+		gitsigns = true,
+		telescope = false,
+		nvimtree = {
+			enabled = true,
+			show_root = false,
+		},
+		which_key = true,
+		indent_blankline = {
+			enabled = true,
+			colored_indent_levels = true,
+		},
+		dashboard = false,
+		neogit = false,
+		vim_sneak = false,
+		fern = false,
+		barbar = true,
+		bufferline = true,
+		markdown = true,
+		lightspeed = true,
+		ts_rainbow = false,
+		hop = false,
+	},
 })
 
 vim.cmd("colorscheme catppuccin")
+

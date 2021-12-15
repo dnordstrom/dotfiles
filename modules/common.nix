@@ -1,28 +1,38 @@
-{ config, pkgs, stdenv, lib, nodePackages, ... }:
+{ config, pkgs, stdenv, lib, ... }:
 
 {
   #
-  # Imports
+  # IMPORTS
   #
 
   imports = [ ../cachix.nix ];
 
   #
-  # General
+  # GENERAL
   #
 
   time.timeZone = "Europe/Amsterdam";
 
-  #
-  # Nixpkgs
-  #
-
   nix.package = pkgs.nixUnstable;
   nix.trustedUsers = [ "root" "dnordstrom" ];
-  nix.extraOptions = ''
-    keep-outputs = true
-    keep-derivations = true
-  '';
+
+  #
+  # Optimization
+  #
+
+  # Automatically symlink files with identical contents
+  nix.autoOptimiseStore = true;
+
+  # Automatically remove unused packages
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
+
+  #
+  # Unfree packages
+  #
 
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [
@@ -39,14 +49,14 @@
   nixpkgs.config.firefox.enableTridactylNative = true;
 
   #
-  # Booting
+  # BOOTING
   #
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   #
-  # Networking
+  # NETWORKING
   #
 
   networking.hostName = "nordix";
@@ -68,7 +78,7 @@
   '';
 
   #
-  # Fonts
+  # FONTS
   #
 
   fonts.fonts = with pkgs; [
@@ -84,26 +94,27 @@
   ];
 
   #
-  # Services
+  # SERVICES
   #
 
   services.xserver = {
     enable = true;
 
+    # SDDM with Sway sessions
     displayManager = {
       sddm = {
         enable = true;
-        settings.Wayland.SessionDir =
-          "${pkgs.sway}/share/wayland-sessions"; # Enable Sway
+        settings.Wayland.SessionDir = "${pkgs.sway}/share/wayland-sessions";
       };
     };
 
-    # For their utilities
+    # Gnome and Plasma for their utilities
     desktopManager = {
       gnome.enable = true;
       plasma5.enable = true;
     };
 
+    # Trackpad settings
     libinput = {
       enable = true;
       touchpad = {
@@ -119,9 +130,7 @@
   };
 
   services.blueman.enable = true;
-
   services.udev.packages = [ pkgs.udev-rules ];
-
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -130,11 +139,13 @@
   };
 
   #
-  # Security
+  # SECURITY
   #
 
   security.sudo.wheelNeedsPassword = false;
-  security.rtkit.enable = true; # For Pipewire (recommended in Nix wiki)
+
+  # For Pipewire (recommended in Nix wiki)
+  security.rtkit.enable = true;
 
   # Make swaylock accept correct password
   security.pam.services.swaylock = {
@@ -144,7 +155,7 @@
   };
 
   #
-  # Hardware
+  # HARDWARE
   #
 
   hardware = {
@@ -175,14 +186,14 @@
   };
 
   #
-  # Programs
+  # PROGRAMS
   #
 
   programs.ssh.askPassword =
     pkgs.lib.mkForce "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
 
   #
-  # Users
+  # USERS
   #
 
   users.users.dnordstrom = {
@@ -195,7 +206,7 @@
   };
 
   #
-  # System-wide packages
+  # SYSTEM-WIDE PACKAGES
   #
 
   environment.systemPackages = with pkgs; [
@@ -203,7 +214,7 @@
     wget
     nodejs
     yarn
-    steam-run # Runs binaries compiled for normal distributions
+    steam-run # Runs binaries compiled for other distributions
   ];
 }
 

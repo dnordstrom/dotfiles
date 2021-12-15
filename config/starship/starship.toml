@@ -15,9 +15,9 @@ $character"""
 symbol = "  "
 
 [character]
-success_symbol = "[❯](purple)"
-error_symbol = "[❯](red)"
-vicmd_symbol = "[❮](green)"
+success_symbol = "[](bold purple)"
+error_symbol = "[](bold red)"
+vicmd_symbol = "[](bold green)"
 
 [cmd_duration]
 format = "[$duration]($style) "
@@ -30,7 +30,7 @@ symbol = " "
 symbol = " "
 
 [directory]
-style = "blue"
+style = "bold blue"
 read_only = " "
 
 [docker_context]

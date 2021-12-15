@@ -238,6 +238,7 @@ in {
 
     # Security
     yubikey-manager-qt
+    qtpass
 
     # Multimedia
     celluloid
@@ -524,18 +525,38 @@ in {
   programs.waybar.enable = true;
   programs.qutebrowser.enable = true;
   programs.feh.enable = true;
+  programs.java.enable = true;
   programs.jq.enable = true;
   programs.mpv.enable = true;
-  programs.password-store.enable = true;
   programs.afew.enable = true;
   programs.mbsync.enable = true;
 
-  programs.starship = { enableZshIntegration = true; };
+  programs.password-store = {
+    enable = true;
+    package = pkgs.pass.withExtensions (exts: [ exts.pass-otp ]);
+  };
+
+  programs.starship = {
+    enable = true;
+    enableZshIntegration = true;
+  };
 
   programs.nushell = {
     enable = true;
     settings = {
-      startup = [ "alias l [] { ls -Al }" "alias e [msg] { echo $msg }" ];
+      startup = [
+        # Shortcuts
+        "alias l = ls -a"
+        "alias e = echo"
+
+        # Initialize Starship prompt
+        "mkdir ~/.cache/starship"
+        "starship init nu | save ~/.cache/starship/init.nu"
+        "source ~/.cache/starship/init.nu"
+      ];
+
+      # Use Starship prompt
+      prompt = "starship_prompt";
     };
   };
 

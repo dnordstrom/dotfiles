@@ -47,7 +47,7 @@ export BAT_THEME="Nord"
 # fzf
 
 export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*" --glob "!node_modules/*"'
-export FZF_DEFAULT_OPTS="--ansi --color='bg+:-1' --no-info --prompt '› ' --pointer '» ' --marker '✓ ' --bind 'ctrl-b:toggle-preview,tab:down,btab:up,ctrl-y:execute-silent(echo {} | wl-copy),ctrl-o:execute-silent(xdg-open {})' --preview-window ':hidden' --preview '([[ -f {} ]] && (bat --style=changes --color=always {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'"
+export FZF_DEFAULT_OPTS="--ansi --color='bg+:-1' --no-info --prompt '› ' --pointer '➔ ' --marker '» ' --bind 'alt-p:toggle-preview,tab:down,btab:up,ctrl-y:execute-silent(echo {} | wl-copy),ctrl-o:execute-silent(xdg-open {}),ctrl-u:half-page-up,ctrl-d:half-page-down' --preview-window ':hidden' --preview '([[ -f {} ]] && (bat --style=changes --color=always {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_CTRL_T_OPTS="$FZF_DEFAULT_OPTS"
 export FZF_ALT_C_OPTS="$FZF_DEFAULT_OPTS"

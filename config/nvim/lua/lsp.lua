@@ -19,14 +19,14 @@ local servers = {
 	"yamlls",
 }
 local signs = {
-	DiagnosticSignError = " ",
-	DiagnosticSignWarn = " ",
-	DiagnosticSignHint = " ",
-	DiagnosticSignInfo = " ",
+	DiagnosticSignError = " ",
+	DiagnosticSignWarn = " ",
+	DiagnosticSignHint = " ",
+	DiagnosticSignInfo = " ",
 }
 
 --
--- Configuration
+-- CONFIGURATION
 --
 
 -- Use floating window, icons, and underline
@@ -73,7 +73,7 @@ null_ls.config({
 })
 
 --
--- Servers
+-- SERVERS
 --
 
 local disable_formatting = function(client)

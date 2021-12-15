@@ -2,7 +2,13 @@
 -- PLUGIN CONFIGURATION
 ----
 
--- indent-blankline.nvim
+local utils = require("utils")
+local get_hex = utils.get_hex
+local lighten = utils.color.lighten
+local darken = utils.color.darken
+local blend = utils.color.blend
+
+-- INDENT-BLANKLINE.NVIM
 
 require("indent_blankline").setup({
 	char = " ", -- Empty space overrides listchar if both are enabled
@@ -13,66 +19,139 @@ require("indent_blankline").setup({
 	show_current_context_start = false,
 })
 
--- cokeline.nvim
+--
+-- COKELINE.NVIM
+--
 --   - Separators: https://github.com/famiu/feline.nvim/blob/master/USAGE.md#default-separators
 --   - Icons: https://github.com/just3ws/nerd-font-cheatsheets
+--
 
-local get_hex = require("cokeline.utils").get_hex
+--
+-- Variables
+--
 
-vim.cmd("hi TabLineFill guibg=none gui=none")
+-- Colors
 
-local focused_tab_fg = get_hex("Todo", "fg")
-local focused_tab_bg = get_hex("Todo", "bg")
-local focused_tab_icon = focused_tab_fg
-local focused_tab_pre = focused_tab_fg
-local focused_tab_post = focused_tab_fg
-local focused_tab_style = "bold,italic"
-local focused_tab_pre_style = "none"
-local unfocused_tab_fg = get_hex("TabLineSel", "fg")
-local unfocused_tab_bg = get_hex("TabLineSel", "bg")
-local unfocused_tab_icon = unfocused_tab_fg
-local unfocused_tab_pre = unfocused_tab_fg
-local unfocused_tab_post = unfocused_tab_fg
-local unfocused_tab_style = "none"
-local unfocused_tab_pre_style = "italic"
-local separator = get_hex("LineNr", "fg")
+local modified_blend = "#BF616A"
 
-local corner_fg = function(buffer)
-	return buffer.is_focused and focused_tab_bg or unfocused_tab_bg
+local focused_fg = "#1E1E28"
+local focused_bg = "#EBCB8B"
+
+local unfocused_fg = get_hex("TabLineSel", "fg")
+local unfocused_bg = get_hex("TabLineSel", "bg")
+
+local separator_fg = get_hex("LineNr", "fg")
+
+-- Styles
+
+local focused_style = "bold"
+local focused_pre_style = "italic"
+local focused_post_style = "bold"
+
+local unfocused_style = "none"
+local unfocused_pre_style = "italic"
+local unfocused_post_style = "none"
+
+-- Symbols
+
+local separator = " " --  ·   
+local modified = "" --     ﰉ 
+local corner_left = "" --       
+local corner_right = "" --        
+
+--
+-- Getters
+--
+
+-- Text color for tab
+local tab_fg = function(buffer)
+	local fg
+
+	if buffer.is_focused then
+		if buffer.is_modified then
+			fg = darken(focused_fg, 0.5)
+		else
+			fg = focused_fg
+		end
+	else
+		if buffer.is_modified then
+			fg = lighten(unfocused_fg, 0.5)
+		else
+			fg = unfocused_fg
+		end
+	end
+
+	return fg
 end
 
+-- Background color for tab
+local tab_bg = function(buffer)
+	local bg
+
+	if buffer.is_focused then
+		if buffer.is_modified then
+			bg = blend(focused_bg, modified_blend, 0.2)
+		else
+			bg = focused_bg
+		end
+	else
+		if buffer.is_modified then
+			bg = blend(unfocused_bg, modified_blend, 0.2)
+		else
+			bg = unfocused_bg
+		end
+	end
+
+	return bg
+end
+
+-- Directory name color
+local tab_pre = function(buffer)
+	if buffer.is_focused then
+		return lighten(tab_fg(buffer), 0.9)
+	else
+		return darken(tab_fg(buffer), 0.9)
+	end
+end
+
+-- Modified indicator color
+local tab_post = function(buffer)
+	return tab_fg(buffer)
+end
+
+-- Filename text style
+local tab_style = function(buffer)
+	return buffer.is_focused and focused_style or unfocused_style
+end
+
+-- Directory text style
+local tab_pre_style = function(buffer)
+	return buffer.is_focused and focused_pre_style or unfocused_pre_style
+end
+
+-- Modified indicator text style
+local tab_post_style = function(buffer)
+	return buffer.is_focused and focused_post_style or unfocused_post_style
+end
+
+-- Color for corner characters
+local corner_fg = function(buffer)
+	return tab_bg(buffer)
+end
+
+-- Background color for corners
 local corner_bg = function(buffer)
 	return "none"
 end
 
-local tab_fg = function(buffer)
-	return buffer.is_focused and focused_tab_fg or unfocused_tab_fg
-end
+--
+-- Setup
+--
 
-local tab_bg = function(buffer)
-	return buffer.is_focused and focused_tab_bg or unfocused_tab_bg
-end
+-- Tabline background
+vim.cmd("hi TabLineFill guibg=none gui=none")
 
-local tab_pre = function(buffer)
-	return buffer.is_focused and focused_tab_pre or unfocused_tab_pre
-end
-
-local tab_post = function(buffer)
-	return buffer.is_focused and focused_tab_post or unfocused_tab_post
-end
-
-local tab_icon = function(buffer)
-	return buffer.is_focused and focused_tab_icon or unfocused_tab_icon
-end
-
-local tab_style = function(buffer)
-	return buffer.is_focused and focused_tab_style or unfocused_tab_style
-end
-
-local tab_pre_style = function(buffer)
-	return buffer.is_focused and focused_tab_pre_style or unfocused_tab_pre_style
-end
-
+-- Tabline settings
 require("cokeline").setup({
 	cycle_prev_next_mappings = true,
 	buffers = {
@@ -80,89 +159,66 @@ require("cokeline").setup({
 	},
 	default_hl = {
 		focused = {
-			fg = focused_tab_fg,
-			bg = focused_tab_bg,
+			fg = focused_fg,
+			bg = focused_bg,
 		},
 		unfocused = {
-			fg = unfocused_tab_fg,
-			bg = unfocused_tab_bg,
+			fg = unfocused_fg,
+			bg = unfocused_bg,
 		},
 	},
 	components = {
+		-- Separator
 		{
 			text = function(buffer)
-				return "" --      
+				return buffer.index ~= 1 and separator
 			end,
-			hl = {
-				fg = corner_fg,
-				bg = corner_bg,
-			},
+			hl = { fg = separator_fg, bg = "none" },
 		},
+		-- Corner
+		{
+			text = corner_left,
+			hl = { fg = corner_fg, bg = corner_bg },
+		},
+		-- Icon
 		{
 			text = function(buffer)
 				return " " .. buffer.devicon.icon
 			end,
-			hl = {
-				fg = tab_icon,
-				bg = tab_bg,
-			},
+			hl = { fg = tab_fg, bg = tab_bg },
 		},
+		-- Directory
 		{
 			text = function(buffer)
 				return buffer.unique_prefix
 			end,
-			hl = {
-				style = tab_pre_style,
-				fg = tab_pre,
-				bg = tab_bg,
-			},
+			hl = { style = tab_pre_style, fg = tab_pre, bg = tab_bg },
 		},
+		-- Filename
 		{
 			text = function(buffer)
 				return buffer.filename .. " "
 			end,
-			hl = {
-				style = tab_style,
-				fg = tab_fg,
-				bg = tab_bg,
-			},
+			hl = { style = tab_style, fg = tab_fg, bg = tab_bg },
 		},
-		{
-			text = function(buffer) --  ﰉ
-				return buffer.is_modified and "ﰉ "
-			end,
-			fg = tab_post,
-			bg = tab_bg,
-		},
+		-- Modified indicator
 		{
 			text = function(buffer)
-				return "" --      
+				return buffer.is_modified and modified ~= "" and modified .. " " or ""
 			end,
-			hl = {
-				fg = corner_fg,
-				bg = corner_bg,
-			},
+			hl = { style = tab_post_style, fg = tab_post, bg = tab_bg },
 		},
+		-- Corner
 		{
-			text = function(buffer)
-				local listedbufs = vim.tbl_filter(function(buf)
-					return vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_option(buf, "buflisted")
-				end, vim.api.nvim_list_bufs())
-				local lastbufnr = listedbufs[#listedbufs]
-
-				if buffer.number == lastbufnr then
-					return ""
-				else
-					return "  " --  ·   
-				end
-			end,
-			hl = {
-				fg = separator,
-				bg = "none",
-			},
+			text = corner_right,
+			hl = { fg = corner_fg, bg = corner_bg },
 		},
 	},
 })
+
+--
+-- FZF-LUA
+--
 
 local actions = require("fzf-lua.actions")
 
@@ -181,24 +237,24 @@ require("fzf-lua").setup({
 		hl = {
 			normal = "Normal",
 			border = "FloatBorder",
-			title = "FloatBorder",
+			title = "Normal",
 		},
+
+		-- Preview pane
 		preview = {
 			default = "builtin",
 			border = "noborder",
 			wrap = "nowrap",
 			hidden = "nohidden",
 			vertical = "down:45%",
-			horizontal = "right:60%",
+			horizontal = "right:50%",
 			layout = "flex",
 			flip_columns = 120, -- Column to flip layout to horizontal at
 			scrollbar = false,
-
-			-- Builtin previewer window
 			winopts = {
 				number = true,
 				relativenumber = false,
-				cursorline = true,
+				cursorline = false,
 				cursorlineopt = "both",
 				cursorcolumn = false,
 				signcolumn = "no",
@@ -207,126 +263,113 @@ require("fzf-lua").setup({
 				foldmethod = "manual",
 			},
 		},
-		on_create = function()
-			vim.api.nvim_buf_set_keymap(0, "t", "<C-h>", "<Left>", { silent = true, noremap = true })
-			vim.api.nvim_buf_set_keymap(0, "t", "<C-j>", "<Down>", { silent = true, noremap = true })
-			vim.api.nvim_buf_set_keymap(0, "t", "<C-k>", "<Up>", { silent = true, noremap = true })
-			vim.api.nvim_buf_set_keymap(0, "t", "<C-l>", "<Right>", { silent = true, noremap = true })
-		end,
 	},
+
+	-- Key maps
 	keymap = {
 		builtin = {
+			-- Preview navigation on Alt
 			["<M-f>"] = "toggle-fullscreen",
 			["<M-w>"] = "toggle-preview-wrap",
 			["<M-p>"] = "toggle-preview",
+			["<M-h>"] = "preview-page-up",
 			["<M-j>"] = "preview-page-down",
 			["<M-k>"] = "preview-page-up",
+			["<M-l>"] = "preview-page-down",
+			["<M-u>"] = "preview-page-up",
+			["<M-d>"] = "preview-page-down",
 		},
 		fzf = {
+			-- Fzf navigation on Ctrl
 			["ctrl-space"] = "toggle",
 			["ctrl-z"] = "abort",
-			["ctrl-f"] = "half-page-down",
-			["ctrl-b"] = "half-page-up",
 			["ctrl-a"] = "beginning-of-line",
 			["ctrl-e"] = "end-of-line",
-			["ctrl-p"] = "up",
-			["ctrl-n"] = "down",
 			["ctrl-u"] = "half-page-up",
 			["ctrl-d"] = "half-page-down",
 
-			-- If using native previewers
+			-- Native preview navigation on Alt
 			["alt-p"] = "toggle-preview",
+			["alt-h"] = "preview-page-up",
 			["alt-j"] = "preview-page-down",
 			["alt-k"] = "preview-page-up",
+			["alt-l"] = "preview-page-down",
 		},
 	},
+	file_icon_padding = "",
+	-- Command arguments
 	fzf_bin = "fzf",
 	fzf_opts = {
 		["--ansi"] = "",
-		["--prompt"] = "❯ ",
-		["--info"] = "inline",
-		["--height"] = "100%",
-		["--layout"] = "reverse",
-	},
-	-- fzf --color options
-	fzf_colors = {
-		["fg"] = { "fg", "CursorLine" },
-		["bg"] = { "bg", "Normal" },
-		["hl"] = { "fg", "Comment" },
-		["fg+"] = { "fg", "Normal" },
-		["bg+"] = { "bg", "CursorLine" },
-		["hl+"] = { "fg", "Statement" },
-		["info"] = { "fg", "PreProc" },
-		["prompt"] = { "fg", "Conditional" },
-		["pointer"] = { "fg", "Exception" },
-		["marker"] = { "fg", "Keyword" },
-		["spinner"] = { "fg", "Label" },
-		["header"] = { "fg", "Comment" },
-		["gutter"] = { "bg", "Normal" },
+		["--no-info"] = "",
+		["--prompt"] = "' Find › '",
+		["--marker"] = "' »'",
+		["--pointer"] = "' ➔'",
 	},
 	files = {
-		prompt = "Files ❯ ",
+		prompt = " Files › ",
 		fd_opts = "--color never --type f --hidden --exclude .git --exclude node_modules",
 	},
 	git = {
 		files = {
-			prompt = "Git files ❯ ",
+			prompt = " Git › ",
 			cmd = "git ls-files --exclude-standard",
 		},
 		status = {
-			prompt = "Git status ❯ ",
+			prompt = " Diff › ",
 		},
 		commits = {
-			prompt = "Commits ❯ ",
+			prompt = " Commits › ",
 		},
 		bcommits = {
-			prompt = "Buffer commits ❯ ",
+			prompt = " Commits › ",
 		},
 		branches = {
-			prompt = "Branches ❯ ",
+			prompt = " Branches › ",
 		},
 	},
 	grep = {
-		prompt = "Grep ❯ ",
-		input_prompt = "Grep for ❯ ",
+		prompt = " Grep › ",
+		input_prompt = "Grep › ",
 		rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512",
 		grep_opts = "--binary-files=without-match --line-number --recursive --color=auto --perl-regexp",
 		experimental = true, -- Enable icons for files and Git (decreases performance)
 
-		-- live_grep_glob options
+		-- live_grep glob options
 		glob_flag = "--iglob", -- Use --glob for case sensitive
 		glob_separator = "%s%-%-", -- Query separator pattern (lua): ' --'
 	},
 	builtin = {
-		prompt = "Builtin ❯ ",
+		prompt = " Find › ",
 	},
 	args = {
-		prompt = "Args ❯ ",
+		prompt = " Args › ",
 	},
 	oldfiles = {
-		prompt = "History ❯ ",
+		prompt = " Recent › ",
 	},
 	buffers = {
-		prompt = "Buffers ❯ ",
+		prompt = " Buffers › ",
 	},
 	lines = {
-		prompt = "Lines ❯ ",
+		prompt = " Lines › ",
 	},
 	blines = {
-		prompt = "Buffer lines ❯ ",
+		prompt = " Buffer lines › ",
 	},
 	keymaps = {
-		prompt = "Key maps ❯ ",
+		prompt = " Key maps › ",
 	},
 	marks = {
-		prompt = "Marks ❯ ",
+		prompt = " Marks › ",
 	},
 	registers = {
-		prompt = "Registers ❯ ",
+		prompt = " Registers › ",
 	},
 	colorschemes = {
-		prompt = "Colorschemes ❯ ",
+		prompt = " Colorschemes › ",
 		winopts = {
+			-- Use smaller window for colorscheme preview
 			fullscreen = false,
 			border = "single",
 			col = 0.5,
@@ -339,11 +382,12 @@ require("fzf-lua").setup({
 		end,
 	},
 	quickfix = {
+		prompt = " Quick fix › ",
 		file_icons = true,
 		git_icons = true,
 	},
 	lsp = {
-		prompt = "LSP ❯ ",
+		prompt = " › ",
 		async_or_timeout = true,
 		file_icons = true,
 		git_icons = false,
@@ -351,14 +395,236 @@ require("fzf-lua").setup({
 		severity = "hint",
 		icons = {
 			["Error"] = { icon = "", color = "red" },
-			["Warning"] = { icon = "", color = "yellow" },
-			["Information"] = { icon = "", color = "blue" },
-			["Hint"] = { icon = "", color = "magenta" },
+			["Warning"] = { icon = "", color = "yellow" },
+			["Information"] = { icon = "", color = "blue" },
+			["Hint"] = { icon = "", color = "magenta" },
 		},
 	},
 })
 
--- nvim-tree
+--
+-- FELINE.NVIM
+--
+
+local vi_mode_utils = require("feline.providers.vi_mode")
+local components = { active = {}, inactive = {} }
+local status_fg = get_hex("Normal", "fg")
+local status_bg = get_hex("CokeUnfocused", "bg")
+local fill_separator = {
+	str = " ",
+	hl = {
+		bg = status_bg,
+	},
+}
+
+components.active[1] = {
+	{
+		provider = "file_type",
+		hl = {
+			style = "bold",
+			bg = get_hex("CokeUnfocused", "bg"),
+		},
+		left_sep = fill_separator,
+		right_sep = fill_separator,
+	},
+	{
+		provider = "",
+		hl = function()
+			return {
+				name = vi_mode_utils.get_mode_highlight_name(),
+				bg = status_bg,
+				fg = vi_mode_utils.get_mode_color(),
+				style = "bold",
+			}
+		end,
+	},
+	{
+		provider = "vi_mode",
+		hl = function()
+			return {
+				name = vi_mode_utils.get_mode_highlight_name(),
+				fg = "black",
+				bg = vi_mode_utils.get_mode_color(),
+				style = "bold",
+			}
+		end,
+		left_sep = {
+			str = " ",
+			hl = function()
+				return {
+					name = vi_mode_utils.get_mode_highlight_name(),
+					bg = vi_mode_utils.get_mode_color(),
+				}
+			end,
+		},
+		right_sep = {
+			str = " ",
+			hl = function()
+				return {
+					name = vi_mode_utils.get_mode_highlight_name(),
+					bg = vi_mode_utils.get_mode_color(),
+				}
+			end,
+		},
+		icon = "",
+	},
+	{
+		provider = "",
+		hl = function()
+			return {
+				name = vi_mode_utils.get_mode_highlight_name(),
+				bg = status_bg,
+				fg = vi_mode_utils.get_mode_color(),
+				style = "bold",
+			}
+		end,
+		right_sep = fill_separator,
+	},
+	{
+		provider = "file_info",
+		hl = {
+			style = "bold",
+			bg = status_bg,
+		},
+		left_sep = fill_separator,
+		right_sep = fill_separator,
+	},
+}
+
+components.active[2] = {
+	{
+		provider = "diagnostic_errors",
+		icon = "  ",
+		hl = {
+			bg = status_bg,
+		},
+		right_sep = fill_separator,
+	},
+	{
+		provider = "diagnostic_warnings",
+		icon = "  ",
+		hl = {
+			bg = status_bg,
+		},
+		right_sep = fill_separator,
+	},
+	{
+		provider = "diagnostic_info",
+		icon = "  ",
+		hl = {
+			bg = status_bg,
+		},
+		right_sep = fill_separator,
+	},
+	{
+		provider = "diagnostic_hints",
+		icon = "  ",
+		hl = {
+			bg = status_bg,
+		},
+		right_sep = fill_separator,
+	},
+	{
+		provider = "git_diff_added",
+		icon = "烙",
+		hl = {
+			bg = status_bg,
+		},
+		right_sep = fill_separator,
+	},
+	{
+		provider = "git_diff_changed",
+		icon = " ",
+		hl = {
+			bg = status_bg,
+		},
+		right_sep = fill_separator,
+	},
+	{
+		provider = "git_diff_removed",
+		icon = " ",
+		hl = {
+			bg = status_bg,
+		},
+		right_sep = fill_separator,
+	},
+	{
+		provider = " ",
+		hl = {
+			fg = get_hex("CokeFocused", "bg"),
+			bg = status_bg,
+		},
+	},
+	{
+		provider = "git_branch",
+		hl = {
+			fg = get_hex("CokeFocused", "fg"),
+			bg = get_hex("CokeFocused", "bg"),
+			style = "bold",
+		},
+		left_sep = {
+			str = " ",
+			hl = {
+				bg = get_hex("CokeFocused", "bg"),
+			},
+		},
+		right_sep = {
+			str = " ",
+			hl = {
+				bg = get_hex("CokeFocused", "bg"),
+			},
+		},
+	},
+	{
+		provider = " ",
+		hl = {
+			fg = get_hex("CokeFocused", "bg"),
+			bg = status_bg,
+		},
+	},
+	{
+		provider = "line_percentage",
+		hl = {
+			bg = status_bg,
+		},
+		left_sep = fill_separator,
+		right_sep = {
+			str = " ",
+			hl = {
+				bg = status_bg,
+			},
+		},
+	},
+}
+
+components.inactive[1] = {
+	{
+		provider = "  ",
+	},
+	{
+		provider = "file_type",
+		hl = {
+			style = "bold",
+		},
+		right_sep = "  ",
+	},
+	{
+		provider = "file_info",
+		hl = {
+			style = "bold",
+		},
+	},
+}
+
+require("feline").setup({
+	default_bg = "#cccccc",
+	default_fg = get_hex("Normal", "fg"),
+	components = components,
+})
+
+--
+-- NVIM-TREE
+--
 
 local tree = require("nvim-tree")
 
@@ -444,7 +710,9 @@ tree.setup({
 	},
 })
 
--- surround.nvim
+--
+-- SURROUND.NVIM
+--
 
 require("surround").setup({
 	mappings_style = "sandwich",
@@ -467,11 +735,15 @@ require("surround").setup({
 	prefix = "<C-s>",
 })
 
--- LuaSnip
+--
+-- LUASNIP
+--
 
 require("luasnip.loaders.from_vscode").lazy_load()
 
--- Comment.nvim
+--
+-- COMMENT.NVIM
+--
 
 require("Comment").setup({
 	pre_hook = function(ctx)
@@ -495,7 +767,9 @@ require("Comment").setup({
 	end,
 })
 
--- nvim-treesitter
+--
+-- NVIM-TREESITTER
+--
 
 require("nvim-treesitter.configs").setup({
 	ensure_installed = "all",
@@ -554,7 +828,9 @@ require("nvim-treesitter.configs").setup({
 	},
 })
 
--- Show maps when typing
+--
+-- WHICH-KEY
+--
 
 require("which-key").setup({
 	plugins = {
@@ -612,22 +888,24 @@ require("which-key").setup({
 	},
 })
 
--- Comment labels
+--
+-- TODO-COMMENTS
+--
 
 require("todo-comments").setup({})
 
--- Trouble
+--
+-- TROUBLE
+--
 
 require("trouble").setup({
-	mode = "lsp_document_diagnostics",
-	use_lsp_diagnostic_signs = true,
+	mode = "document_diagnostics",
+	use_diagnostic_signs = true,
 })
 
--- feline
-
-require("feline").setup({ preset = "noicon" })
-
--- nvim-cmp, lspkind-nvim, luasnip, nvim-autopairs
+--
+-- NVIM-CMP, LSPKIND-NVIM, LUASNIP, NVIM-AUTOPAIRS
+--
 
 -- Checks if cursor directly follows text
 local has_word_before = function()
@@ -741,7 +1019,7 @@ cmp.setup.cmdline(":", {
 	},
 })
 
--- nvim-autopairs
+-- NVIM-AUTOPAIRS
 
 local npairs = require("nvim-autopairs")
 
@@ -756,7 +1034,7 @@ npairs.setup({
 
 cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done({ map_char = { tex = "" } }))
 
--- Renamer
+-- RENAMER
 
 local mappings_utils = require("renamer.mappings.utils")
 
@@ -785,11 +1063,11 @@ require("renamer").setup({
 	handler = nil,
 })
 
--- Colorizer
+-- COLORIZER
 
 require("colorizer").setup()
 
--- Gitsigns
+-- GITSIGNS
 
 require("gitsigns").setup({
 	signs = {
