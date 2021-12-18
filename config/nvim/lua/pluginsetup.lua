@@ -54,16 +54,27 @@ local unfocused_post_style = "none"
 
 -- Symbols
 
-local separator = " " --  ·   
-local modified = "" --     ﰉ 
-local corner_left = "" --       
-local corner_right = "" --        
+--[[
+- Nerd Fonts:    https://www.nerdfonts.com/cheat-sheet
+- Powerline:     https://github.com/ryanoasis/powerline-extra-symbols
+- Separator:      ·  
+- Modified:       
+- Unmodified:    
+- Left corner:       
+- Right corner:       
+--]]
+
+local separator = " "
+local modified = ""
+local unmodified = ""
+local corner_left = ""
+local corner_right = ""
 
 --
--- Getters
+-- Colors
 --
 
--- Text color for tab
+-- Tab text
 local tab_fg = function(buffer)
 	local fg
 
@@ -84,7 +95,7 @@ local tab_fg = function(buffer)
 	return fg
 end
 
--- Background color for tab
+-- Tab background
 local tab_bg = function(buffer)
 	local bg
 
@@ -105,8 +116,20 @@ local tab_bg = function(buffer)
 	return bg
 end
 
--- Directory name color
-local tab_pre = function(buffer)
+-- Icon
+local tab_icon = function(buffer)
+	-- Slightly blend with tab background
+	if buffer.is_focused then
+		-- Lighten on focused
+		return lighten(buffer.devicon.color, 0.8)
+	else
+		-- Darken on unfocused
+		return darken(buffer.devicon.color, 0.8)
+	end
+end
+
+-- Unique prefix
+local tab_prefix = function(buffer)
 	if buffer.is_focused then
 		return lighten(tab_fg(buffer), 0.9)
 	else
@@ -114,34 +137,41 @@ local tab_pre = function(buffer)
 	end
 end
 
--- Modified indicator color
-local tab_post = function(buffer)
-	return tab_fg(buffer)
-end
-
--- Filename text style
-local tab_style = function(buffer)
-	return buffer.is_focused and focused_style or unfocused_style
-end
-
--- Directory text style
-local tab_pre_style = function(buffer)
-	return buffer.is_focused and focused_pre_style or unfocused_pre_style
-end
-
--- Modified indicator text style
-local tab_post_style = function(buffer)
-	return buffer.is_focused and focused_post_style or unfocused_post_style
-end
-
--- Color for corner characters
+-- Corner symbols
 local corner_fg = function(buffer)
 	return tab_bg(buffer)
 end
 
--- Background color for corners
+-- Corner background
 local corner_bg = function(buffer)
 	return "none"
+end
+
+-- Modification icon
+local tab_suffix = function(buffer)
+	if buffer.is_modified then
+		return blend(tab_fg(buffer), modified_blend, 0.2)
+	else
+		if buffer.is_focused then
+			return darken(buffer.devicon.color, 0.8)
+		else
+			return lighten(buffer.devicon.color, 0.8)
+		end
+	end
+end
+
+--
+-- Styles
+--
+
+-- Filename
+local tab_style = function(buffer)
+	return buffer.is_focused and focused_style or unfocused_style
+end
+
+-- Unique prefix
+local tab_prefix_style = function(buffer)
+	return buffer.is_focused and focused_pre_style or unfocused_pre_style
 end
 
 --
@@ -185,14 +215,18 @@ require("cokeline").setup({
 			text = function(buffer)
 				return " " .. buffer.devicon.icon
 			end,
-			hl = { fg = tab_fg, bg = tab_bg },
+			hl = { fg = tab_icon, bg = tab_bg },
 		},
 		-- Directory
 		{
 			text = function(buffer)
 				return buffer.unique_prefix
 			end,
-			hl = { style = tab_pre_style, fg = tab_pre, bg = tab_bg },
+			hl = {
+				bg = tab_bg,
+				fg = tab_prefix,
+				style = tab_prefix_style,
+			},
 		},
 		-- Filename
 		{
@@ -204,9 +238,13 @@ require("cokeline").setup({
 		-- Modified indicator
 		{
 			text = function(buffer)
-				return buffer.is_modified and modified ~= "" and modified .. " " or ""
+				if buffer.is_modified then
+					return modified ~= "" and modified .. " "
+				else
+					return unmodified ~= "" and unmodified .. " "
+				end
 			end,
-			hl = { style = tab_post_style, fg = tab_post, bg = tab_bg },
+			hl = { fg = tab_suffix, bg = tab_bg },
 		},
 		-- Corner
 		{
@@ -410,6 +448,7 @@ local vi_mode_utils = require("feline.providers.vi_mode")
 local components = { active = {}, inactive = {} }
 local status_fg = get_hex("Normal", "fg")
 local status_bg = get_hex("CokeUnfocused", "bg")
+local status_style = "bold"
 local fill_separator = {
 	str = " ",
 	hl = {
@@ -428,13 +467,13 @@ components.active[1] = {
 		right_sep = fill_separator,
 	},
 	{
-		provider = "",
+		provider = "",
 		hl = function()
 			return {
 				name = vi_mode_utils.get_mode_highlight_name(),
 				bg = status_bg,
 				fg = vi_mode_utils.get_mode_color(),
-				style = "bold",
+				style = status_style,
 			}
 		end,
 	},
@@ -445,7 +484,7 @@ components.active[1] = {
 				name = vi_mode_utils.get_mode_highlight_name(),
 				fg = "black",
 				bg = vi_mode_utils.get_mode_color(),
-				style = "bold",
+				style = status_style,
 			}
 		end,
 		left_sep = {
@@ -469,13 +508,13 @@ components.active[1] = {
 		icon = "",
 	},
 	{
-		provider = "",
+		provider = "", -- "",
 		hl = function()
 			return {
 				name = vi_mode_utils.get_mode_highlight_name(),
 				bg = status_bg,
 				fg = vi_mode_utils.get_mode_color(),
-				style = "bold",
+				style = status_style,
 			}
 		end,
 		right_sep = fill_separator,
@@ -483,8 +522,8 @@ components.active[1] = {
 	{
 		provider = "file_info",
 		hl = {
-			style = "bold",
 			bg = status_bg,
+			style = status_style,
 		},
 		left_sep = fill_separator,
 		right_sep = fill_separator,
@@ -497,6 +536,7 @@ components.active[2] = {
 		icon = "  ",
 		hl = {
 			bg = status_bg,
+			style = status_style,
 		},
 		right_sep = fill_separator,
 	},
@@ -505,6 +545,7 @@ components.active[2] = {
 		icon = "  ",
 		hl = {
 			bg = status_bg,
+			style = status_style,
 		},
 		right_sep = fill_separator,
 	},
@@ -513,6 +554,7 @@ components.active[2] = {
 		icon = "  ",
 		hl = {
 			bg = status_bg,
+			style = status_style,
 		},
 		right_sep = fill_separator,
 	},
@@ -521,6 +563,7 @@ components.active[2] = {
 		icon = "  ",
 		hl = {
 			bg = status_bg,
+			style = status_style,
 		},
 		right_sep = fill_separator,
 	},
@@ -529,6 +572,7 @@ components.active[2] = {
 		icon = "烙",
 		hl = {
 			bg = status_bg,
+			style = status_style,
 		},
 		right_sep = fill_separator,
 	},
@@ -537,6 +581,7 @@ components.active[2] = {
 		icon = " ",
 		hl = {
 			bg = status_bg,
+			style = status_style,
 		},
 		right_sep = fill_separator,
 	},
@@ -545,22 +590,16 @@ components.active[2] = {
 		icon = " ",
 		hl = {
 			bg = status_bg,
+			style = status_style,
 		},
 		right_sep = fill_separator,
-	},
-	{
-		provider = " ",
-		hl = {
-			fg = get_hex("CokeFocused", "bg"),
-			bg = status_bg,
-		},
 	},
 	{
 		provider = "git_branch",
 		hl = {
 			fg = get_hex("CokeFocused", "fg"),
 			bg = get_hex("CokeFocused", "bg"),
-			style = "bold",
+			style = status_style,
 		},
 		left_sep = {
 			str = " ",
@@ -576,42 +615,49 @@ components.active[2] = {
 		},
 	},
 	{
-		provider = " ",
-		hl = {
-			fg = get_hex("CokeFocused", "bg"),
-			bg = status_bg,
-		},
-	},
-	{
 		provider = "line_percentage",
 		hl = {
 			bg = status_bg,
+			style = status_style,
 		},
 		left_sep = fill_separator,
+		right_sep = fill_separator,
+	},
+}
+
+local status_inactive_bg = darken(status_bg, 0.65)
+local status_inactive_fg = darken(status_fg, 0.65)
+
+components.inactive[1] = {
+	{
+		provider = "file_type",
+		hl = {
+			bg = status_inactive_bg,
+			fg = status_inactive_fg,
+			style = status_style,
+		},
+		left_sep = {
+			str = " ",
+			hl = {
+				bg = status_inactive_bg,
+			},
+		},
 		right_sep = {
 			str = " ",
 			hl = {
-				bg = status_bg,
+				bg = status_inactive_bg,
 			},
 		},
 	},
 }
 
-components.inactive[1] = {
-	{
-		provider = "  ",
-	},
-	{
-		provider = "file_type",
-		hl = {
-			style = "bold",
-		},
-		right_sep = "  ",
-	},
+components.inactive[2] = {
 	{
 		provider = "file_info",
 		hl = {
-			style = "bold",
+			fg = status_inactive_fg,
+			bg = status_inactive_bg,
+			style = status_style,
 		},
 	},
 }

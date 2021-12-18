@@ -1,17 +1,16 @@
 { stdenv, pkgs }:
 
 let
- name = "convox";
- version = "3.0.0";
-in
-stdenv.mkDerivation {
+  name = "convox";
+  version = "3.0.0";
+in stdenv.mkDerivation {
   name = "${name}";
   pname = "${name}-${version}";
   system = "x86_64-linux";
 
   src = pkgs.fetchurl {
     url = "https://convox.com/cli/linux/convox";
-    sha256 = "sha256-aBSV2Au1W8WLkJdatM4CNwRFEBNShqOX1Dl1k2Wf/BU=";
+    sha256 = "sha256-hkwCnylHgC+RFylbf5Cq0kzuN78+eYlC6j1W+raL76U=";
   };
 
   phases = [ "installPhase" ];

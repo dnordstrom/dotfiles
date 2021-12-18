@@ -375,6 +375,7 @@ in {
     corgi # CLI workflow manager
     navi # CLI cheatsheet tool
     tealdeer # TLDR in Rust
+    tmpmail # CLI temporary email generator
   ];
 
   #
@@ -825,6 +826,10 @@ in {
     enable = true;
     pinentryFlavor = "curses";
   };
+
+  # Gnome Keyring required for ProtonMail Bridge according to package source
+
+  services.gnome-keyring.enable = true;
 
   #
   # Email accounts

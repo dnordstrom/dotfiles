@@ -183,8 +183,9 @@ quickmark y https://youtube.com
 quickmark r https://www.reddit.com
 quickmark g https://www.github.com/
 quickmark n https://search.nixos.org
-quickmark m https://mail.protonmail.com/u/0/inbox
-quickmark c https://calendar.protonmail.com/u/0/
+quickmark m https://mail.protonmail.com/u/1/
+quickmark c https://calendar.protonmail.com/u/1/
+quickmark c https://drive.protonmail.com/u/1/
 
 " Work
 quickmark J https://leeroy-group.atlassian.net/jira/software/c/projects/OF/boards/69
@@ -203,8 +204,8 @@ bindreplaceprefix go `
 "
 
 blacklistadd localhost
-blacklistadd mail.protonmail.com mode ignore
-blacklistadd mail.google.com mode ignore
+blacklistadd protonmail.com
+blacklistadd mail.google.com
 
 "
 " Auto Commands
