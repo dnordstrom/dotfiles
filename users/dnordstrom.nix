@@ -233,8 +233,9 @@ in {
     # Email
     bitwarden # Password manager
     electron-mail # ProtonMail client
-    hydroxide # ProtonMail bridge
-    protonmail-bridge # ProtonMail bridge
+    hydroxide # Unofficial ProtonMail bridge
+    protonmail-bridge # Official ProtonMail bridge
+    thunderbird
 
     # Security
     yubikey-manager-qt
@@ -282,6 +283,7 @@ in {
     shellcheck
     shfmt
     shellharden
+    binutils
 
     # JS/TS/JSON
     nodePackages.eslint_d
@@ -830,6 +832,26 @@ in {
   # Gnome Keyring required for ProtonMail Bridge according to package source
 
   services.gnome-keyring.enable = true;
+
+  #
+  # Systemd
+  #
+
+  # ProtonMail Bridge user service allowing email clients to send and receive email
+
+  systemd.user.services.protonmail-bridge = {
+    Unit = {
+      Description = "ProtonMail Bridge";
+      After = [ "network.target" ];
+    };
+    Service = {
+      Restart = "always";
+      ExecStart = "${pkgs.protonmail-bridge}/bin/protonmail-bridge --cli --noninteractive";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
 
   #
   # Email accounts

@@ -63,19 +63,7 @@
   networking.wireless.enable = false;
   networking.networkmanager.enable = true;
   networking.useDHCP = false;
-  networking.extraHosts = ''
-    ***REMOVED***
-    ***REMOVED***
-    ***REMOVED***
-    ***REMOVED***
-    ***REMOVED***
-
-    ***REMOVED***
-    ***REMOVED***
-    ***REMOVED***
-    ***REMOVED***
-    ***REMOVED***
-  '';
+  networking.extraHosts = builtins.readFile ../hosts;
 
   #
   # FONTS
