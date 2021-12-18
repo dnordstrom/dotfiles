@@ -264,6 +264,9 @@ in {
     # Writing
     proselint
 
+    # Git
+    bfg-repo-cleaner
+
     # Nix
     nixfmt # Opinionated formatter, used by null-ls
     nixpkgs-fmt # Another formatter
