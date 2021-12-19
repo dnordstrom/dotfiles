@@ -11,7 +11,7 @@
   # GENERAL
   #
 
-  time.timeZone = "Europe/Amsterdam";
+  time.timeZone = "Europe/Stockholm";
 
   nix.package = pkgs.nixUnstable;
   nix.trustedUsers = [ "root" "dnordstrom" ];
@@ -97,10 +97,10 @@
     };
 
     # Gnome and Plasma for their utilities
-    desktopManager = {
-      gnome.enable = true;
-      plasma5.enable = true;
-    };
+    # desktopManager = {
+    #   gnome.enable = true;
+    #   plasma5.enable = true;
+    # };
 
     # Trackpad settings
     libinput = {
@@ -167,9 +167,9 @@
   xdg = {
     portal = {
       enable = true;
-      extraPortals = with pkgs; [ xdg-desktop-portal-wlr ];
+      extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
       gtkUsePortal = true;
-      wlr = { enable = true; };
+      wlr.enable = true;
     };
   };
 

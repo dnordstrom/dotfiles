@@ -45,6 +45,7 @@ in {
   # Environment
   #
 
+  home.stateVersion = "22.05";
   home.sessionVariables = {
     EDITOR = editor;
     BROWSER = browser;
@@ -143,11 +144,11 @@ in {
 
     # General
     appimage-run
+    dolphin
     element-desktop
     fractal
     gcc
     guvcview
-    kate
     nextcloud-client
     pavucontrol
     pinentry
@@ -224,7 +225,6 @@ in {
     # Gnome
     gnome-breeze
     gnomeExtensions.gsconnect
-    peek
 
     # Web browsing
     tridactyl-native # Firefox native messaging host
@@ -316,14 +316,6 @@ in {
     libsForQt5.breeze-gtk
     libsForQt5.breeze-qt5
     libsForQt5.qtstyleplugin-kvantum
-    libsForQt5.networkmanager-qt
-    libsForQt5.akonadi-contacts
-    libsForQt5.kaccounts-integration
-    libsForQt5.kcontacts
-    libsForQt5.kaccounts-providers
-    libsForQt5.kdeconnect-kde
-    libsForQt5.kio-gdrive
-    libsForQt5.parachute
     libsForQt5.qt5.qtwayland
     libsForQt5.qtcurve
     qgnomeplatform
@@ -352,8 +344,6 @@ in {
     capitaine-cursors
     numix-cursor-theme
     quintom-cursor-theme
-    bibata-cursors
-    bibata-cursors-translucent
 
     #
     # Custom from ./packages
@@ -394,6 +384,7 @@ in {
     extraSessionCommands = ''
       export GDK_BACKEND=wayland
       export MOZ_ENABLE_WAYLAND=1
+      export MOZ_USE_XINPUT2=1
       export QT_QPA_PLATFORM=wayland
       export QT_QPA_PLATFORMTHEME=gtk2
       export QT_STYLE_OVERRIDE=kvantum-dark
@@ -596,6 +587,7 @@ in {
 
   programs.firefox = {
     enable = true;
+    package = pkgs.firefox-nightly-bin;
     profiles = {
       default = {
         id = 0;
@@ -849,11 +841,10 @@ in {
     };
     Service = {
       Restart = "always";
-      ExecStart = "${pkgs.protonmail-bridge}/bin/protonmail-bridge --cli --noninteractive";
+      ExecStart =
+        "${pkgs.protonmail-bridge}/bin/protonmail-bridge --cli --noninteractive";
     };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
+    Install = { WantedBy = [ "default.target" ]; };
   };
 
   #

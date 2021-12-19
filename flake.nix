@@ -2,12 +2,8 @@
   description = "nordix system configuration";
 
   inputs = {
-    nixpkgs = {
-      url = "github:NixOS/nixpkgs/nixos-unstable";
-    };
-    nixpkgs-master = {
-      url = "github:NixOS/nixpkgs/master";
-    };
+    nixpkgs = { url = "github:NixOS/nixpkgs/nixos-unstable"; };
+    nixpkgs-master = { url = "github:NixOS/nixpkgs/master"; };
     nixpkgs-wayland = {
       url = "github:nix-community/nixpkgs-wayland";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -21,29 +17,22 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     neovim-contrib = {
-      url = github:neovim/neovim?dir=contrib;
+      url = "github:neovim/neovim?dir=contrib";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
     };
-    utils = {
-      url = "github:gytis-ivaskevicius/flake-utils-plus";
+    firefox-nightly = {
+      url = "github:colemickens/flake-firefox-nightly";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
+    utils = { url = "github:gytis-ivaskevicius/flake-utils-plus"; };
   };
 
-  outputs =
-    inputs@{ self
-    , nixpkgs
-    , nixpkgs-master
-    , nixpkgs-wayland
-    , home-manager
-    , nur
-    , neovim-contrib
-    , neovim-nightly-overlay
-    , utils
-    , ...
-    }:
+  outputs = inputs@{ self, nixpkgs, nixpkgs-master, nixpkgs-wayland
+    , home-manager, nur, neovim-contrib, neovim-nightly-overlay, firefox-nightly
+    , utils, ... }:
     let
       inherit (utils.lib) mkFlake;
       system = "x86_64-linux";
@@ -53,8 +42,10 @@
       nixpkgs-wayland-overlay = final: prev: {
         waylandPackages = nixpkgs-wayland.legacyPackages.${prev.system};
       };
-    in
-    mkFlake {
+      firefox-nightly-overlay = final: prev: {
+        firefox-nightly-bin = firefox-nightly.packages.${prev.system}.firefox-nightly-bin;
+      };
+    in mkFlake {
       inherit self inputs;
 
       supportedSystems = [ system ];
@@ -69,6 +60,7 @@
         nur.overlay
         nixpkgs-master-overlay
         nixpkgs-wayland-overlay
+        firefox-nightly-overlay
         neovim-nightly-overlay.overlay
 
         (import ./overlays/vscodium.nix)
@@ -87,12 +79,8 @@
         }
       ];
 
-      hosts.nordix.modules = [
-        ./hosts/ryzen.nix
-      ];
+      hosts.nordix.modules = [ ./hosts/ryzen.nix ];
 
-      hosts.nordixlap.modules = [
-        ./hosts/xps.nix
-      ];
+      hosts.nordixlap.modules = [ ./hosts/xps.nix ];
     };
 }

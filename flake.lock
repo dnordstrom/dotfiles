@@ -2,6 +2,22 @@
   "nodes": {
     "cachix": {
       "locked": {
+        "lastModified": 1635350005,
+        "narHash": "sha256-tAMJnUwfaDEB2aa31jGcu7R7bzGELM9noc91L2PbVjg=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "1c1f5649bb9c1b0d98637c8c365228f57126f361",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-20.09",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "cachix_2": {
+      "locked": {
         "lastModified": 1639430792,
         "narHash": "sha256-a2KnsqjkygIiqDWYuQOMq4ujxgsAzHU/Lt14+WBg63M=",
         "owner": "nixos",
@@ -13,6 +29,28 @@
         "owner": "nixos",
         "ref": "nixos-21.05",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "firefox-nightly": {
+      "inputs": {
+        "cachix": "cachix",
+        "mozilla": "mozilla",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1639880204,
+        "narHash": "sha256-ML73edoXVZ+Yac740ij6NDovpGsvRh+mwWDkMNCD3fQ=",
+        "owner": "colemickens",
+        "repo": "flake-firefox-nightly",
+        "rev": "b4caff047732359011cdec032f874218d6e328fd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colemickens",
+        "repo": "flake-firefox-nightly",
         "type": "github"
       }
     },
@@ -94,6 +132,22 @@
       "original": {
         "owner": "nix-community",
         "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "mozilla": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1638887313,
+        "narHash": "sha256-FMYV6rVtvSIfthgC1sK1xugh3y7muoQcvduMdriz4ag=",
+        "owner": "mozilla",
+        "repo": "nixpkgs-mozilla",
+        "rev": "7c1e8b1dd6ed0043fb4ee0b12b815256b0b9de6f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mozilla",
+        "repo": "nixpkgs-mozilla",
         "type": "github"
       }
     },
@@ -195,7 +249,7 @@
     },
     "nixpkgs-wayland": {
       "inputs": {
-        "cachix": "cachix",
+        "cachix": "cachix_2",
         "nixpkgs": [
           "nixpkgs"
         ]
@@ -263,6 +317,7 @@
     },
     "root": {
       "inputs": {
+        "firefox-nightly": "firefox-nightly",
         "home-manager": "home-manager",
         "neovim-contrib": "neovim-contrib",
         "neovim-nightly-overlay": "neovim-nightly-overlay",
