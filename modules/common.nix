@@ -31,7 +31,7 @@
   };
 
   #
-  # Unfree packages
+  # Package configuration
   #
 
   nixpkgs.config.allowUnfreePredicate = pkg:
@@ -45,6 +45,8 @@
       "spotify-unwrapped"
     ];
 
+  # TODO: Keep an eye on this outdated crap
+  nixpkgs.config.permittedInsecurePackages = [ "electron-9.4.4" ];
   nixpkgs.config.input-fonts.acceptLicense = true;
   nixpkgs.config.firefox.enableTridactylNative = true;
 
@@ -63,6 +65,7 @@
   networking.wireless.enable = false;
   networking.networkmanager.enable = true;
   networking.useDHCP = false;
+  networking.nameservers = [ "1.1.1.1" ];
   networking.extraHosts = builtins.readFile ../.hosts;
 
   #
@@ -96,13 +99,6 @@
       };
     };
 
-    # Gnome and Plasma for their utilities
-    # desktopManager = {
-    #   gnome.enable = true;
-    #   plasma5.enable = true;
-    # };
-
-    # Trackpad settings
     libinput = {
       enable = true;
       touchpad = {
@@ -125,6 +121,7 @@
     alsa.support32Bit = true;
     pulse.enable = true;
   };
+  services.flatpak.enable = true;
 
   #
   # SECURITY
@@ -165,11 +162,27 @@
   #
 
   xdg = {
+    menus.enable = true;
+    icons.enable = true;
     portal = {
       enable = true;
-      extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-gtk
+        xdg-desktop-portal-wlr
+        xdg-desktop-portal-kde
+      ];
       gtkUsePortal = true;
-      wlr.enable = true;
+      wlr = {
+        enable = true;
+        settings = {
+          screencast = {
+            max_fps = 30;
+            output_name = "DP-1";
+            chooser_type = "simple";
+            chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
+          };
+        };
+      };
     };
   };
 
@@ -203,6 +216,7 @@
     nodejs
     yarn
     steam-run # Runs binaries compiled for other distributions
+    xdg-desktop-portal
   ];
 }
 

@@ -232,14 +232,18 @@ in {
 
     # Email
     bitwarden # Password manager
-    electron-mail # ProtonMail client
+    electron-mail # Unofficial ProtonMail client
     hydroxide # Unofficial ProtonMail bridge
-    protonmail-bridge # Official ProtonMail bridge
+    protonmail-bridge # Official
+    protonvpn-gui # Official
+    protonvpn-cli # Official
     thunderbird
 
     # Security
-    yubikey-manager-qt
+    authy
+    go-2fa
     qtpass
+    yubikey-manager-qt
 
     # Multimedia
     celluloid
