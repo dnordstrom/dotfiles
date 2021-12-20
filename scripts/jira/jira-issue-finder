@@ -1,0 +1,33 @@
+#!/usr/bin/env sh
+#
+# Use unofficial jira-cli Go program and fzf to find a Jira issue number.
+#
+
+# ANSI color sequences
+titlestart=$(tput bold; tput setaf 0; tput setab 6)
+titleend=$(tput sgr0)
+notestart=$(tput bold; tput setaf 0; tput setab 3)
+noteend=$(tput sgr0)
+
+# Print title
+printf "\n$titlestart %s $titleend\n\n" "Jira issue fetcher"
+
+# Get plain text list of issue keys and titles
+issues="$(jira issue list --plain --columns key,summary)"
+
+# Select issue using fuzzy search
+issue="$(printf "$issues" | fzf)"
+
+# Get issue key
+issuekey="$(printf "%s" "$issue" | sed "s/^\([A-Z]\+-[0-9]\+\).*/\1/")"
+
+# Split into project key and issue number (POSIX compliant) for future reference
+IFS="-" read -r key number <<-_EOF_
+$issuekey
+_EOF_
+
+# Show issue
+jira issue view "$key-$number"
+
+# Add newlines for aesthetic purposes
+printf "\n\n"

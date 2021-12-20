@@ -1,0 +1,175 @@
+#!/usr/bin/env sh
+
+set -eu
+
+project="WBS"
+directory="$HOME/Code/Leeroy-wordpress"
+issue=""
+
+option_help=false
+option_paste=false
+
+usage="USAGE:
+    $(basename "$0") [options] <issue number>
+
+DESCRIPTION:
+    Creates new branch from latest master named after Jira issue number and open editor. Issue number must be an integer and may be provided as standard input, argument, clipboard, or via prompt.
+
+OPTIONS:
+    --help, -h        Show this help text
+    --paste, -p       Paste issue number from clipboard"
+
+# ANSI color codes
+titlestart=$(tput bold; tput setaf 0; tput setab 6)
+titleend=$(tput sgr0)
+notestart=$(tput bold; tput setaf 0; tput setab 3)
+noteend=$(tput sgr0)
+
+# Print script title
+printf "\n%s\n\n" $titlestart" Jira issue branch creator "$titleend
+
+# Get options
+for arg in "$@"; do
+  case $arg in
+    -h|--help)
+    option_help=true
+    shift
+    ;;
+    -p|--paste)
+    option_paste=true
+    shift
+    ;;
+    *)
+    issue="$1"
+    shift
+    ;;
+  esac
+done
+
+# Shows a confirmation prompt that waits for one character input
+confirm() {
+  local OPTIND
+  local strict=0
+  local yes="y" 
+  local no="n"
+  local left="["
+  local right="]"
+  local grep="--ignore-case --quiet" # Default grep flags
+  local prompt="Continue?" # Default message
+
+  for arg in "$@"
+  do
+    case $arg in
+      # Right side of prompt
+      -r|--right)
+      shift
+      right="$1"
+      ;;
+      # Left side of prompt
+      -l|--left)
+      shift
+      left="$1"
+      ;;
+      # Strict mode requires uppercase for yes
+      -s|--strict)
+      strict=1
+      shift
+      ;;
+      # Option to display for yes
+      -y|--yes)
+      shift
+      yes="$1"
+      ;;
+       # Option to display for no
+      -n|--no)
+      shift
+      no="$1"
+      ;;
+      # Show usage information
+      -h|--help)
+      help="$1"
+      shift
+      ;;
+      # The remaining is used as prompt
+      *)
+      prompt="$@"
+      shift
+      ;;
+    esac
+  done
+
+  # Strict mode always requires uppercase yes
+  if [ $strict -gt 0 ]; then
+    yes=$(echo "$yes" | tr "[:lower:]" "[:upper:]")
+    grep="--quiet"
+  fi
+
+  # Print message and prompt
+  printf "\n%s " $notestart" $prompt $left$yes/$no$right "$noteend
+
+  # Set stty options to get one letter input without waiting for enter key and
+  # then reset to previous options
+  sttystate=$(stty -g)
+  stty raw -echo
+
+  input=$(head -c 1)
+  stty $sttystate
+
+  # Show the response
+  printf "%s\n\n" "$input"
+
+  # Grep input using flags determined by strict mode
+  if echo "$input" | grep $grep "^$yes"; then
+    return 0 # Yes
+  else
+    return 1 # No
+  fi
+}
+
+# Prints a colored title
+title() {
+  if [ $# -gt 0 ]; then
+    printf "\n$notestart \$ %s $noteend\n\n" "$@"
+  fi
+}
+
+# Check if issue should be fetched from clipboard
+if [ "$option_paste" = "true" ]; then
+  issue="$(wl-paste)"
+fi
+
+# Check that issue is a number
+if ! [ "$issue" -eq "$issue" ] 2> /dev/null
+then
+  option_help=true
+fi
+
+# Check if help flag is set (by user or due to error)
+if [ "$option_help" = "true" ]; then
+  printf "\n%s\n\n" "$usage"
+  exit 0
+fi
+
+# Print commands as they run
+set -x
+
+# Change to project directory
+cd "$directory"
+
+# Print git status
+git status
+
+# Prompt for confirmation after showing git status
+if ! confirm "Continue creating branch named \"$project-$issue\"?" < /dev/tty 2> /dev/null; then
+  exit 0
+fi
+
+# Get latest master and create branch
+git fetch
+git pull
+git checkout master
+git branch $project-$issue
+git checkout $project-$issue
+
+$EDITOR .
+
