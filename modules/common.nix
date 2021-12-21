@@ -207,8 +207,10 @@
   };
 
   #
-  # SYSTEM-WIDE PACKAGES
+  # SYSTEM ENVIRONMENT
   #
+
+  environment.etc.hosts.mode = "0644";
 
   environment.systemPackages = with pkgs; [
     git

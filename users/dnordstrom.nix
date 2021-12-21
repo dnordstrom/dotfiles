@@ -392,6 +392,7 @@ in {
     xfce.thunar
     CuboCore.corefm
     krusader
+    git-crypt
   ];
 
   #
