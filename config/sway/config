@@ -39,7 +39,7 @@ set $workspace6 6
 # Commands
 #
 
-set $term kitty
+set $term kitty --single-instance
 set $scratchterm $term --class=scratchterm
 set $menu wofi
 set $menuargs --show=drun,run

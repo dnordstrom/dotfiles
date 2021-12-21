@@ -1,0 +1,40 @@
+#
+# START DEVELOPMENT SERVERS AND PROXIES
+#
+
+#
+# SERVERS
+#
+
+new_tab Servers
+
+enabled_layouts horizontal
+
+# Start servers
+
+cd ~/Code/ticker
+launch --title ticker --copy-env
+
+cd ~/Code/ticker-backend
+launch --title ticker-backend -- nix-shell /etc/nixos/shell/node12.nix --command zsh
+
+# Prefill command lines (delay for zsh launch)
+
+launch sh -c "sleep 1 && kitty @ send-text --match title:^ticker$ 'yarn && yarn dev'"
+launch sh -c "sleep 1 && kitty @ send-text --match title:^ticker-backend$ 'yarn && yarn dev'"
+
+#
+# PROXIES
+#
+
+new_tab Proxies
+
+enabled_layouts vertical
+
+launch --title Proxy /etc/nixos/secrets/convox-proxy-engine-test.sh
+launch --title Proxy /etc/nixos/secrets/convox-proxy-engine-analytics-test.sh
+launch --title Proxy /etc/nixos/secrets/convox-proxy-icc-test.sh
+launch --title Proxy /etc/nixos/secrets/convox-proxy-estimates-test.sh
+launch --title Proxy /etc/nixos/secrets/convox-proxy-chronos-test.sh
+
+# vim:ft=kitty

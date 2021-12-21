@@ -69,6 +69,12 @@ nvim_set_keymap("n", '"T', '"t', opts.nore) -- Throw-away
 nvim_set_keymap("n", "<Leader>-", ":split | wincmd j<CR>", opts.nore)
 nvim_set_keymap("n", "<Leader>|", ":vsplit | wincmd l<CR>", opts.nore)
 
+-- ...window navigation (uses Kitty binds for seamless navigation)
+-- nvim_set_keymap("n", "<C-h>", "<C-w>h", opts.nore)
+-- nvim_set_keymap("n", "<C-j>", "<C-w>j", opts.nore)
+-- nvim_set_keymap("n", "<C-k>", "<C-w>k", opts.nore)
+-- nvim_set_keymap("n", "<C-l>", "<C-w>l", opts.nore)
+
 --
 -- Compliment defaults with...
 --
