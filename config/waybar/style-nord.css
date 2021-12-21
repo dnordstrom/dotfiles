@@ -6,15 +6,15 @@
 
 #waybar {
   background: transparent;
-  color: #F2CECF;
+  color: #d8dee9;
   transition: background-color 0.2s;
 }
 
 #waybar:first-child > box {
   margin: 10px 10px 0;
   padding: 0;
-  border-radius: 0;
-  background: #1E1E28;
+  border-radius: 6px;
+  background: #3b4252;
   box-shadow: 0px 0px 3px rgba(46, 52, 64, 0.6);
 }
 
@@ -23,7 +23,6 @@
 }
 
 #workspaces button {
-  color: #DADAE8;
   background: transparent;
   border: none;
   border-radius: 0;
@@ -31,22 +30,22 @@
 }
 
 #workspaces button:first-child {
-  border-radius: 0;
+  border-radius: 6px 0 0 6px;
 }
 
 #workspaces button:hover {
   box-shadow: inherit;
   text-shadow: inherit;
-  color: #E5B4E2;
+  color: #eceff4;
 }
 
 #workspaces button.focused {
-  background: #2D293B;
-  color: #F9C096;
+  background: #4c566a;
+  color: #8fbcbb;
 }
 
 #workspaces button.urgent {
-  color: #E38C8F;
+  color: #f51818;
 }
 
 #battery,
@@ -74,32 +73,12 @@
   font-family: 'remixicon', 'Input Sans Compressed', sans-serif;
 }
 
-#custom-files,
-#custom-browser,
-#custom-editor,
-#custom-terminal {
-  color: #F9C096;
-}
-
-#tray,
-#custom-wttr,
-#cpu,
-#pulseaudio,
-#custom-system,
-#idle_inhibitor {
-  color: #F9C096;
-}
-
-#custom-system {
-  color: #DADAE8;
-}
-
 #pulseaudio span {
-  padding: 0;
+  padding: 0 30px;
 }
 
 #mode {
-  color: #B1E3AD;
+  color: #ebcb8b;
   padding: 0 12px;
 }
 
@@ -119,6 +98,5 @@
 
 /* This sets vertical padding of the bar */
 #clock {
-  color: #BEE4ED;
-  padding: 6px 10px 6px;
+  padding: 8px 12px 7px;
 }

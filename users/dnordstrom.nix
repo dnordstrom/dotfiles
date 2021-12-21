@@ -256,6 +256,11 @@ in {
     # Development
     #
 
+    # Editors
+    jetbrains.goland
+    jetbrains.idea-ultimate
+    jetbrains.webstorm
+
     # LSP and syntax
     nodePackages.vscode-langservers-extracted # HTML, CSS, and JSON
     nodePackages.typescript-language-server
@@ -312,6 +317,7 @@ in {
     # Fonts
     corefonts
     fontforge
+    jetbrains-mono
     line-awesome
     powerline-fonts
 
@@ -375,6 +381,17 @@ in {
     navi # CLI cheatsheet tool
     tealdeer # TLDR in Rust
     tmpmail # CLI temporary email generator
+    httpie # HTTP client, simpler alternative to cURL
+    brave
+    pcmanfm
+    pcmanfm-qt
+    nautilus
+    index-fm
+    yubikey-personalization-gui
+    dfilemanager
+    thunar
+    corefm
+    krusader
   ];
 
   #

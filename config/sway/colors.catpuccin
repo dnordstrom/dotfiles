@@ -1,0 +1,37 @@
+#
+# Nord
+#
+
+set $border #F9C096
+set $border_inactive #1E1E28
+set $foreground #DADAE8
+set $foreground_inactive #C3BAC6
+set $transparent #00000000
+
+# class
+#   border
+#   background
+#   text
+#   indicator
+#   child_border
+
+client.focused \
+  $border \
+  $border \
+  $foreground \
+  $border \
+  $border
+
+client.unfocused \
+  $transparent \
+  $border_inactive \
+  $foreground_inactive \
+  $border_inactive \
+  $transparent
+
+client.focused_inactive \
+  $transparent \
+  $border_inactive \
+  $foreground_inactive \
+  $border_inactive \
+  $transparent

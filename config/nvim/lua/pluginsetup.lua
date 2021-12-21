@@ -32,10 +32,10 @@ require("indent_blankline").setup({
 
 -- Colors
 
-local modified_blend = "#BF616A"
+local modified_blend = "#E38C8F"
 
 local focused_fg = "#1E1E28"
-local focused_bg = "#EBCB8B"
+local focused_bg = "#EBDDAA"
 
 local unfocused_fg = get_hex("TabLineSel", "fg")
 local unfocused_bg = get_hex("TabLineSel", "bg")
@@ -80,13 +80,13 @@ local tab_fg = function(buffer)
 
 	if buffer.is_focused then
 		if buffer.is_modified then
-			fg = darken(focused_fg, 0.5)
+			fg = darken(focused_fg, 0.8)
 		else
 			fg = focused_fg
 		end
 	else
 		if buffer.is_modified then
-			fg = lighten(unfocused_fg, 0.5)
+			fg = lighten(focused_fg, 0.8)
 		else
 			fg = unfocused_fg
 		end
@@ -101,13 +101,13 @@ local tab_bg = function(buffer)
 
 	if buffer.is_focused then
 		if buffer.is_modified then
-			bg = blend(focused_bg, modified_blend, 0.2)
+			bg = blend(focused_bg, modified_blend, 0)
 		else
 			bg = focused_bg
 		end
 	else
 		if buffer.is_modified then
-			bg = blend(unfocused_bg, modified_blend, 0.2)
+			bg = blend(unfocused_bg, modified_blend, 0)
 		else
 			bg = unfocused_bg
 		end
@@ -118,13 +118,18 @@ end
 
 -- Icon
 local tab_icon = function(buffer)
-	-- Slightly blend with tab background
 	if buffer.is_focused then
-		-- Lighten on focused
-		return lighten(buffer.devicon.color, 0.8)
+		if buffer.is_modified then
+			return lighten(tab_fg(buffer), 0.7)
+		else
+			return lighten(tab_fg(buffer), 0.9)
+		end
 	else
-		-- Darken on unfocused
-		return darken(buffer.devicon.color, 0.8)
+		if buffer.is_modified then
+			return darken(tab_fg(buffer), 0.9)
+		else
+			return darken(tab_fg(buffer), 0.7)
+		end
 	end
 end
 
@@ -149,13 +154,17 @@ end
 
 -- Modification icon
 local tab_suffix = function(buffer)
-	if buffer.is_modified then
-		return blend(tab_fg(buffer), modified_blend, 0.2)
-	else
-		if buffer.is_focused then
-			return darken(buffer.devicon.color, 0.8)
+	if buffer.is_focused then
+		if buffer.is_modified then
+			return lighten(tab_fg(buffer), 0.7)
 		else
-			return lighten(buffer.devicon.color, 0.8)
+			return lighten(tab_fg(buffer), 0.9)
+		end
+	else
+		if buffer.is_modified then
+			return darken(tab_fg(buffer), 0.9)
+		else
+			return darken(tab_fg(buffer), 0.7)
 		end
 	end
 end
@@ -483,7 +492,8 @@ components.active[1] = {
 			return {
 				name = vi_mode_utils.get_mode_highlight_name(),
 				fg = "black",
-				bg = vi_mode_utils.get_mode_color(),
+				bg = get_hex("CokeFocused", "bg"),
+				-- bg = vi_mode_utils.get_mode_color(),
 				style = status_style,
 			}
 		end,
@@ -492,7 +502,8 @@ components.active[1] = {
 			hl = function()
 				return {
 					name = vi_mode_utils.get_mode_highlight_name(),
-					bg = vi_mode_utils.get_mode_color(),
+					-- bg = vi_mode_utils.get_mode_color(),
+					bg = get_hex("CokeFocused", "bg"),
 				}
 			end,
 		},
@@ -501,7 +512,8 @@ components.active[1] = {
 			hl = function()
 				return {
 					name = vi_mode_utils.get_mode_highlight_name(),
-					bg = vi_mode_utils.get_mode_color(),
+					-- bg = vi_mode_utils.get_mode_color(),
+					bg = get_hex("CokeFocused", "bg"),
 				}
 			end,
 		},
