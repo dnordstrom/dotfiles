@@ -389,7 +389,7 @@ in {
     index-fm
     yubikey-personalization-gui
     dfilemanager
-    thunar
+    xfce.thunar
     corefm
     krusader
   ];
