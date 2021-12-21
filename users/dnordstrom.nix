@@ -385,7 +385,7 @@ in {
     brave
     pcmanfm
     pcmanfm-qt
-    nautilus
+    gnome.nautilus
     index-fm
     yubikey-personalization-gui
     dfilemanager
