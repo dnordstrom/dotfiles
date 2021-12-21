@@ -390,7 +390,7 @@ in {
     yubikey-personalization-gui
     dfilemanager
     xfce.thunar
-    corefm
+    CuboCore.corefm
     krusader
   ];
 
