@@ -189,6 +189,8 @@
   # PROGRAMS
   #
 
+  programs.dconf.enable = true;
+
   programs.ssh.askPassword =
     pkgs.lib.mkForce "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
 

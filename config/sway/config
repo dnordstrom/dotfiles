@@ -423,10 +423,8 @@ bar {
 assign [class="^Steam$"] $workspace5
 
 for_window [app_id="org.gnome.Nautilus"] floating enable
-for_window [app_id="org.kde.dolphin"] floating enable
+# for_window [app_id="org.kde.dolphin"] floating enable
 for_window [app_id="pavucontrol"] floating enable
-for_window [class="qimgv"] floating enable
-for_window [class="qview"] floating enable
 
 # Terminals
 for_window [app_id="transterm"] border none
@@ -444,7 +442,7 @@ exec_always {
   gsettings set $gnome-schema gtk-theme "Nordic-v40"
   gsettings set $gnome-schema icon-theme "Papirus-Dark"
   gsettings set $gnome-schema cursor-theme "Quintom_Snow"
-  gsettings set $gnome-schema font-name "Input Sans Condensed 9"
+  gsettings set $gnome-schema font-name "Input Sans Condensed 8"
 }
 
 #

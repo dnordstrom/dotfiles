@@ -1,54 +1,72 @@
+/**
+ * Catpuccin theme ported to Waybar.
+ *
+ * Author:      Daniel Nordstrom
+ * Repository:  https://github.com/dnordstrom/dotfiles
+ * Website:     https://mrnordstrom.com
+ * Palette:     https://github.com/catppuccin
+ *
+ * Widget tree documentation:
+ * https://github.com/Alexays/Waybar/wiki/Styling#viewing-the-widget-tree
+ *
+ * CSS subset documentation:
+ * https://docs.gtk.org/gtk3/css-overview.html
+ */
+
+/**
+ * COLOR PALETTE
+ */
+
+@define-color flamingo  #F2CECF;
+@define-color magenta   #C6AAE8;
+@define-color pink      #E5B4E2;
+@define-color red       #E38C8F;
+@define-color peach     #F9C096;
+@define-color yellow    #EBDDAA;
+@define-color green     #B1E3AD;
+@define-color blue      #A4B9EF;
+@define-color teal      #BEE4ED;
+
+@define-color black0    #15121C;
+@define-color black1    #1B1923;
+@define-color black2    #1E1E28;
+@define-color black3    #332E41;
+@define-color black4    #575268;
+
+@define-color gray0     #6E6C7E;
+@define-color gray1     #988BA2;
+@define-color gray2     #C3BAC6;
+
+@define-color white     #DADAE8;
+
+/**
+ * CONTAINER
+ */
+
 * {
-  font-weight: 500;
-  font-family: 'Input Sans Compressed', sans-serif;
-  font-size: 13px;
+  font-weight: bold;
+  font-family: "InputMonoCompressed Nerd Font", monospace;
+  font-size: 12px;
 }
 
+/* Outer container */
 #waybar {
   background: transparent;
-  color: #F2CECF;
-  transition: background-color 0.2s;
+  color: @black2;
 }
 
+/* Inner container */
 #waybar:first-child > box {
-  margin: 10px 10px 0;
-  padding: 0;
-  border-radius: 0;
-  background: #1E1E28;
-  box-shadow: 0px 0px 3px rgba(46, 52, 64, 0.6);
-}
-
-#workspaces {
-  margin: 0 3px 0 0;
-}
-
-#workspaces button {
-  color: #DADAE8;
   background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 0 8px;
+  margin: 10px 10px 0 10px;
 }
 
-#workspaces button:first-child {
-  border-radius: 0;
-}
+/**
+ * DEFAULT MODULE STYLES
+ */
 
-#workspaces button:hover {
-  box-shadow: inherit;
-  text-shadow: inherit;
-  color: #E5B4E2;
-}
-
-#workspaces button.focused {
-  background: #2D293B;
-  color: #F9C096;
-}
-
-#workspaces button.urgent {
-  color: #E38C8F;
-}
-
+#mode,
+#clock,
 #battery,
 #cpu,
 #memory,
@@ -60,65 +78,119 @@
 #tray,
 #idle_inhibitor,
 #custom-media,
-#custom-browser,
-#custom-terminal,
-#custom-files,
-#custom-editor,
 #custom-keyboard,
 #custom-disks,
 #custom-wttr,
 #custom-darksky,
 #custom-system,
-#custom-separator {
-  padding: 0 12px 0 12px;
-  font-family: 'remixicon', 'Input Sans Compressed', sans-serif;
+#custom-separator,
+#custom-files,
+#custom-browser,
+#custom-mail,
+#custom-tmpmail,
+#custom-editor,
+#custom-terminal {
+  background: @black2;
+  color: @white;
+  padding: 0px 14px 1px;
+}
+
+/**
+ * LEFT
+ */
+
+#workspaces {
+  background: @black2;
+  margin: 0;
+  padding: 0;
+}
+
+#workspaces button {
+  padding: 0 10px;
+  color: @gray2;
+}
+
+#workspaces button:hover,
+#workspaces button.urgent:hover {
+  background: @black3;
+  color: @peach;
+  transition: none;
+}
+
+#workspaces button:first-child {
+  border-radius: 0;
+}
+
+#workspaces button.focused {
+  background: @black3;
+  color: @blue;
+}
+
+#workspaces button.urgent {
+  background: @red;
+  color: @black2;
 }
 
 #custom-files,
 #custom-browser,
+#custom-mail,
 #custom-editor,
 #custom-terminal {
-  color: #F9C096;
+  background: @peach;
+  color: @black2;
 }
 
-#tray,
-#custom-wttr,
-#cpu,
-#pulseaudio,
-#custom-system,
-#idle_inhibitor {
-  color: #F9C096;
-}
-
-#custom-system {
-  color: #DADAE8;
-}
-
-#pulseaudio span {
-  padding: 0;
+#custom-files:hover,
+#custom-browser:hover,
+#custom-mail:hover,
+#custom-editor:hover,
+#custom-terminal:hover {
+  color: @blue;
 }
 
 #mode {
-  color: #B1E3AD;
-  padding: 0 12px;
+  color: @black2;
+  background: transparent;
+  font-style: italic;
+}
+
+/**
+ * CENTER
+ */
+
+#clock {
+  background: @magenta;
+  color: @black2;
+  padding: 0 16px;
+}
+
+/**
+ * RIGHT
+ */
+
+#tray {
+  padding: 0 6px 0 16px;
+}
+
+#custom-tmpmail {
+  padding-left: 4px;
+  padding-right: 16px;
+}
+
+#custom-wttr {
+  background: @magenta;
+  color: @black2;
+  padding: 0 16px;
 }
 
 #idle_inhibitor {
-  padding: 0 8px 0 16px;
-  font-size: 16px;
+  padding-right: 16px;
+  margin-right: 0;
+  font-size: 15px;
 }
 
-#tray {
-  opacity: 0.8;
-  padding: 9px;
+#pulseaudio {
+  background: @peach;
+  color: @black2;
 }
 
-#custom-system {
-  margin-right: 6px;
-}
-
-/* This sets vertical padding of the bar */
-#clock {
-  color: #BEE4ED;
-  padding: 6px 10px 6px;
-}

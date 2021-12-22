@@ -1,5 +1,5 @@
 {
-  "name": "nord", /* Options: nord, ayu, ayu-mirage, ayu-dark */
+  "name": "catpuccin",
   "layer": "top",
   "position": "top",
   "height": 30,
@@ -8,6 +8,7 @@
     "sway/workspaces",
     "custom/files",
     "custom/browser",
+    "custom/mail",
     "custom/editor",
     "custom/terminal",
     "sway/mode"
@@ -16,10 +17,9 @@
   "modules-right": [
     "tray",
     "idle_inhibitor",
+    "custom/tmpmail",
     "custom/wttr",
-    "cpu",
-    "pulseaudio",
-    "custom/system"
+    "pulseaudio"
   ],
   "custom/separator": {
     "format": "·",
@@ -43,71 +43,83 @@
     "spacing": 22
   },
   "clock": {
-    "format": "{:%H:%M}",
-    "format-alt": "{:%A, %B %d}",
-    "tooltip": false
-  },
-  "custom/system": {
-    "format": "<span rise=\"-1550\"></span>",
-    "on-click": "swaynag -t nord -s '' -m 'System' -b 'Log out ' 'swaymsg exit' -b 'Reload ' 'swaymsg reload' -b 'Reboot ' 'swaymsg exec systemctl reboot' -b 'Shut down ' 'systemctl poweroff'",
-    "on-click-right": "swaymsg mode System"
+    "format": "<span font='12' rise='-1500'></span> {:%R}",
+    "format-alt": "<span font='12' rise='-1500'></span> {:%A, %B %d}",
+    "tooltip": false,
+    "on-click-middle": "xdg-open https://calendar.protonmail.com",
+    "on-click-right": "xdg-open https://calendar.google.com"
   },
   "custom/browser": {
-    "format": "<span rise=\"-1550\"></span>",
+    "format": "<span font='12' rise='-1500'></span>",
     "tooltip": false,
     "on-click": "if pgrep firefox; then swaymsg [app_id=\"firefox\"] focus; else firefox; fi",
     "on-click-right": "firefox --new-window"
   },
+  "custom/mail": {
+    "format": "<span font='12' rise='-1500'></span>",
+    "tooltip": false,
+    "on-click": "xdg-open https://mail.protonmail.com",
+  },
   "custom/files": {
-    "format": "<span rise=\"-1550\"></span>",
+    "format": "<span font='12' rise='-1500'></span>",
     "tooltip": false,
     "on-click": "dolphin",
     "on-click-right": "nautilus"
   },
   "custom/editor": {
-    "format": "<span rise=\"-1550\"></span>",
+    "format": "<span font='14' rise='-1500'></span>",
     "tooltip": false,
     "on-click": "sh -c \"if swaymsg -t get_tree | grep vimterm; then swaymsg [app_id=\"vimterm\"] focus; else kitty --class=vimterm; fi\"",
     "on-right-click": "if pgrep codium; then swaymsg [instance=\"vscodium\"] focus; else codium; fi"
   },
   "custom/terminal": {
-    "format": "<span rise=\"-1550\"></span>",
+    "format": "<span font='14' rise='-1500'>ﲵ</span>",
     "tooltip": false,
     "on-click": "swaymsg scratchpad show",
-    "on-click-right": "kitty --title transterm --class transterm"
+    "on-click-right": "kitty --class transterm --override background_opacity=0"
   },
   "custom/keyboard": {
     "exec": "/etc/nixos/scripts/keyboard-layout/keyboard-layout",
-    "format": "<span rise=\"-1550\"></span> {}",
+    "format": " {}",
     "interval": 30,
     "tooltip": false
   },
   "custom/disks": {
     "exec": "/etc/nixos/scripts/disk-info/disk-info",
     "return-type": "json",
-    "format": "<span rise=\"-1550\"></span> {}",
-    "on-click": "kitty --title popupterm --class popupterm gotop",
+    "format": " {}",
+    "on-click": "kitty --class popupterm gotop",
     "interval": 30,
     "tooltip": true
   },
   "disk": {
     "interval": 30,
-    "format": "<span rise=\"-1550\"></span> {percentage_used}%",
+    "format": " {percentage_used}%",
     "path": "/",
-    "on-click": "kitty --title popupterm --class popupterm gotop",
+    "on-click": "kitty --class popupterm gotop",
     "tooltip": true,
     "tooltip-format": "{used} / {total}"
+  },
+   "custom/tmpmail": {
+    "interval": 30,
+    "format": "<span font='11' rise='-1500'>ﯬ</span>",
+    "exec": "echo \"\"; echo \"$(cat /tmp/tmpmailgen 2>/dev/null || echo -n 'No address available')\"; echo \"tmpmail\"
+",
+    "on-click": "generated=$(cat /tmp/tmpmailgen) && swaymsg exec wl-copy $generated",
+    "on-click-middle": "rm -f /tmp/tmpmailgen; generated=$(tmpmail -g) && echo -n $generated > /tmp/tmpmailgen && swaymsg exec wl-copy $generated",
+    "on-click-right": "kitty --hold --class popupterm tmpmail -r $(cat /tmp/tmpmailgen)",
+    "tooltip": true
   },
   "custom/wttr": {
     "format": "{}",
     "exec": "curl https://wttr.in/Sundsvall,Sweden?format=%c%3Cspan%20rise=%22-1750%22%3E%t%3C/span%3E",
-    "on-click": "kitty --title popupterm --class popupterm curl wttr.in/Sundsvall,Sweden",
+    "on-click": "kitty --hold --class popupterm curl wttr.in/Sundsvall,Sweden",
     "interval": 1800,
     "tooltip": false
   },
   "custom/darksky": {
     "exec": "/etc/nixos/scripts/weather-darksky",
-    "on-click": "kitty --title popupterm --class popupterm curl wttr.in/Sundsvall",
+    "on-click": "kitty --hold --class popupterm curl wttr.in/Sundsvall",
     "interval": 1800,
     "tooltip": false
   },
@@ -120,9 +132,9 @@
     }
   },
   "pulseaudio": {
-    "format": "<span rise=\"-1550\">{icon}</span> {volume}%",
-    "format-bluetooth": "<span rise=\"-1550\">{icon}</span> ",
-    "format-muted": "<span rise=\"-1550\"></span>",
+    "format": "<span font='11' rise='-1500'>{icon}</span> {volume}%",
+    "format-bluetooth": "<span font='11' rise='-1500'>{icon}</span> ",
+    "format-muted": "<span font='11' rise='-1500'>婢</span>",
     "format-icons": {
       "headphones": "",
       "handsfree": "",
@@ -130,7 +142,7 @@
       "phone": "",
       "portable": "",
       "car": "",
-      "default": ["", ""]
+      "default": ["奔", "墳"]
     },
     "scroll-step": 5,
     "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
@@ -141,21 +153,21 @@
     "thermal-zone": 2,
     "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
     "critical-threshold": 80,
-    "on-click": "kitty --title popupterm --class popupterm gotop",
-    "format-critical": "{temperatureC}°C <span rise=\"-1550\"></span>",
+    "on-click": "kitty --class popupterm gotop",
+    "format-critical": "{temperatureC}°C ",
     "format": " {temperatureC}°C"
   },
   "cpu": {
-    "on-click": "kitty --title popupterm --class popupterm gotop",
+    "on-click": "kitty --class popupterm gotop",
     "tooltip": false,
-    "format": "<span rise=\"-1550\"></span> {usage}%",
+    "format": " {usage}%",
     "interval": 10
   },
   "network": {
-    "format": "<span rise=\"-1550\">{icon}</span> {ifname}",
-    "format-wifi": "<span rise=\"-1550\">{icon}</span> {essid}",
-    "format-ethernet": "<span rise=\"-1550\">{icon}</span> {ifname}",
-    "format-disconnected": "<span rise=\"-1550\">{icon}</span> Offline",
+    "format": "{icon} {ifname}",
+    "format-wifi": "{icon} {essid}",
+    "format-ethernet": "{icon} {ifname}",
+    "format-disconnected": "{icon} Offline",
     "format-icons": {
       "wifi": [""],
       "ethernet": [""],
@@ -166,7 +178,7 @@
   },
   "memory": {
     "interval": 30,
-    "format": "<span rise=\"-1550\"></span> {avail:0.1f}GB",
+    "format": " {avail:0.1f}GB",
     "tooltip": true,
     "tooltip-format": "{used:0.1f}GB / {total:0.1f}GB"
   },
@@ -176,12 +188,12 @@
       "warning": 30,
       "critical": 15
     },
-    "format": "<span rise=\"-1550\">{icon}</span> {capacity}%",
-    "format-charging": "<span rise=\"-1550\"></span> {capacity}%",
-    "format-plugged": "<span rise=\"-1550\"></span> {capacity}%", /*  */
-    "format-alt": "<span rise=\"-1550\">{icon}</span> {time}",
-    "format-good": "<span rise=\"-1550\">{icon}</span> {capacity}%",
-    "format-full": "<span rise=\"-1550\">{icon}</span> {capacity}%",
+    "format": "{icon} {capacity}%",
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%",
+    "format-alt": "{icon} {time}",
+    "format-good": "{icon} {capacity}%",
+    "format-full": "{icon} {capacity}%",
     "format-icons": ["", "", "", "", ""]
   }
 }
