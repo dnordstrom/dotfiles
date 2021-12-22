@@ -235,8 +235,8 @@ in {
     electron-mail # Unofficial ProtonMail client
     hydroxide # Unofficial ProtonMail bridge
     protonmail-bridge # Official
-    protonvpn-gui # Official
-    # protonvpn-cli # Official
+    # protonvpn-gui # Official
+    protonvpn-cli # Official
     thunderbird
 
     # Security
