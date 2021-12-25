@@ -257,7 +257,7 @@ in {
     wf-recorder
     wl-clipboard
     wlogout
-    wofi
+    masterPackages.wofi
     wofi-emoji
     workstyle
     wtype
@@ -517,14 +517,9 @@ in {
 
   # Sway
 
+  xdg.configFile."sway".source = ../config/sway;
   xdg.configFile."swaylock/config".source = ../config/swaylock/config;
   xdg.configFile."swaynag/config".source = ../config/swaynag/config;
-
-  xdg.configFile."sway/colors.ayu".source = ../config/sway/colors.ayu;
-  xdg.configFile."sway/colors.ayu-mirage".source =
-    ../config/sway/colors.ayu-mirage;
-  xdg.configFile."sway/colors.ayu-dark".source = ../config/sway/colors.ayu-dark;
-  xdg.configFile."sway/colors.nord".source = ../config/sway/colors.nord;
 
   # Kitty
 
@@ -569,8 +564,7 @@ in {
 
   # Waybar
 
-  xdg.configFile."waybar/config".source = ../config/waybar/config;
-  xdg.configFile."waybar/style.css".source = ../config/waybar/style.css;
+  xdg.configFile."waybar".source = ../config/waybar;
 
   # wlogout
 

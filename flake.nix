@@ -6,19 +6,11 @@
     nixpkgs-master = { url = "github:NixOS/nixpkgs/master"; };
     nixpkgs-wayland = {
       url = "github:nix-community/nixpkgs-wayland";
-      inputs.nixpkgs.follows = "nixpkgs-master";
+      inputs.nixpkgs.follows = "nixpkgs";
       inputs.master.follows = "master";
     };
     home-manager = {
       url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nur = {
-      url = "github:nix-community/NUR";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    neovim-contrib = {
-      url = "github:neovim/neovim?dir=contrib";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     neovim-nightly-overlay = {
@@ -29,11 +21,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     utils = { url = "github:gytis-ivaskevicius/flake-utils-plus"; };
+    # nur = {
+    #   url = "github:nix-community/NUR";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
+    # neovim-contrib = {
+    #   url = "github:neovim/neovim?dir=contrib";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
   };
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-master, nixpkgs-wayland
-    , home-manager, nur, neovim-contrib, neovim-nightly-overlay, firefox-nightly
-    , utils, ... }:
+    , home-manager, neovim-nightly-overlay, firefox-nightly, utils, ... }:
     let
       inherit (utils.lib) mkFlake;
       system = "x86_64-linux";
@@ -45,7 +44,6 @@
           firefox-nightly.packages.${prev.system}.firefox-nightly-bin;
       };
       input-overlays = [
-        nur.overlay
         nixpkgs-master-overlay
         nixpkgs-wayland.overlay
         firefox-nightly-overlay
