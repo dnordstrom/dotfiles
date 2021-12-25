@@ -6,7 +6,8 @@
     nixpkgs-master = { url = "github:NixOS/nixpkgs/master"; };
     nixpkgs-wayland = {
       url = "github:nix-community/nixpkgs-wayland";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-master";
+      inputs.master.follows = "master";
     };
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -39,9 +40,6 @@
       nixpkgs-master-overlay = final: prev: {
         masterPackages = nixpkgs-master.legacyPackages.${prev.system};
       };
-      nixpkgs-wayland-overlay = final: prev: {
-        waylandPackages = nixpkgs-wayland.legacyPackages.${prev.system};
-      };
       firefox-nightly-overlay = final: prev: {
         firefox-nightly-bin =
           firefox-nightly.packages.${prev.system}.firefox-nightly-bin;
@@ -49,7 +47,7 @@
       input-overlays = [
         nur.overlay
         nixpkgs-master-overlay
-        nixpkgs-wayland-overlay
+        nixpkgs-wayland.overlay
         firefox-nightly-overlay
         neovim-nightly-overlay.overlay
       ];
@@ -64,6 +62,9 @@
         allowUnfree = true;
         allowUnsupportedSystem = true;
       };
+
+      # Top-level arguments (e.g. `{ pkgs, lib, inputs, ... }:`)
+      specialArgs = { inherit inputs; };
 
       sharedOverlays = input-overlays ++ import-overlays;
 

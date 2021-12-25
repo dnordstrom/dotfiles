@@ -251,7 +251,7 @@
       "inputs": {
         "cachix": "cachix_2",
         "nixpkgs": [
-          "nixpkgs"
+          "nixpkgs-master"
         ]
       },
       "locked": {

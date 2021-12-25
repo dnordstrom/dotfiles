@@ -34,6 +34,8 @@ let
     "application/x-extension-xhtml" = xdgBrowser;
     "application/x-extension-xht" = xdgBrowser;
   };
+  python-packages = ps: with ps; [ i3ipc requests ];
+  python-with-packages = pkgs.python3.withPackages python-packages;
 in {
   #
   # MODULES
@@ -265,6 +267,7 @@ in {
     # Gnome utilities
     #
 
+    glib
     gnome-breeze
     gnomeExtensions.gsconnect
 
@@ -344,9 +347,7 @@ in {
     stylua
 
     # Python
-    python3
-    python39Packages.i3ipc
-    i3ipc-glib
+    python-with-packages
 
     # Shell
     shellcheck
@@ -459,7 +460,6 @@ in {
   wayland.windowManager.sway = {
     enable = true;
     config = null;
-    extraConfig = builtins.readFile ../config/sway/config;
     extraSessionCommands = ''
       export GDK_BACKEND=wayland
       export MOZ_ENABLE_WAYLAND=1
@@ -598,7 +598,6 @@ in {
   # PROGRAMS
   #
 
-  programs.waybar.enable = true;
   programs.qutebrowser.enable = true;
   programs.nnn.enable = true;
   programs.feh.enable = true;
@@ -607,6 +606,8 @@ in {
   programs.mpv.enable = true;
   programs.afew.enable = true;
   programs.mbsync.enable = true;
+
+  programs.waybar = { enable = true; };
 
   programs.nix-index = {
     enable = true;
