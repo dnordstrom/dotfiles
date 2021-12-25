@@ -416,10 +416,12 @@ exec swayidle -w \
   timeout 1800 '$lock' \
   before-sleep '$lock'
 
-# Don't turn off monitor if fullscreen
+# Don't turn off monitor if any app is fullscreen
 
-for_window [class="^.*"] inhibit_idle fullscreen
-for_window [app_id="^.*"] inhibit_idle fullscreen
+for_window {
+  [class="^.*"] inhibit_idle fullscreen
+  [app_id="^.*"] inhibit_idle fullscreen
+}
 
 # Start swayr daemon
 
@@ -442,19 +444,25 @@ bar {
 #
 
 # File managers
-for_window [app_id="org.gnome.Nautilus"] floating enable
-for_window [app_id="org.kde.dolphin"] floating enable
+for_window {
+  [app_id="org.gnome.Nautilus"] floating enable
+  [app_id="org.kde.dolphin"] floating enable
 
-# Dialog windows
-for_window [app_id="pavucontrol"] floating enable
-for_window [app_id="pinentry-qt"] floating enable
-for_window [app_id="pinentry-gtk2"] floating enable
+  # Dialog windows
+  [app_id="pavucontrol"] floating enable
+  [app_id="pinentry-qt"] floating enable
+  [app_id="pinentry-gtk2"] floating enable
+  [window_role="pop-up"] floating enable
+  [window_role="bubble"] floating enable
+  [window_role="dialog"] floating enable
+  [window_type="dialog"] floating enable
 
-# Terminals
-for_window [app_id="transterm"] border none
-for_window [app_id="scratchterm"] move scratchpad, floating enable, resize set 1280 720
-for_window [app_id="popupterm"] floating enable, resize set 920 720
-for_window [app_id="fuzzyterm"] floating enable, resize set 500 700
+  # Terminals
+  [app_id="transterm"] border none
+  [app_id="scratchterm"] move scratchpad, floating enable, resize set 1280 720
+  [app_id="popupterm"] floating enable, resize set 920 720
+  [app_id="fuzzyterm"] floating enable, resize set 500 700
+}
 
 #
 # GTK SETTINGS
