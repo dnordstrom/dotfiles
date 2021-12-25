@@ -37,7 +37,7 @@ local modified_blend = "#E38C8F"
 local focused_fg = "#1E1E28"
 local focused_bg = "#EBDDAA"
 
-local unfocused_fg = get_hex("TabLineSel", "fg")
+local unfocused_fg = darken(get_hex("TabLineSel", "fg"), 0.9)
 local unfocused_bg = get_hex("TabLineSel", "bg")
 
 local separator_fg = get_hex("LineNr", "fg")
@@ -65,8 +65,9 @@ local unfocused_post_style = "none"
 --]]
 
 local separator = " "
-local modified = ""
-local unmodified = ""
+local icon_modified = ""
+local modified = ""
+local unmodified = ""
 local corner_left = ""
 local corner_right = ""
 
@@ -86,7 +87,7 @@ local tab_fg = function(buffer)
 		end
 	else
 		if buffer.is_modified then
-			fg = lighten(focused_fg, 0.8)
+			fg = lighten(focused_fg, 0.95)
 		else
 			fg = unfocused_fg
 		end
@@ -107,7 +108,7 @@ local tab_bg = function(buffer)
 		end
 	else
 		if buffer.is_modified then
-			bg = blend(unfocused_bg, modified_blend, 0)
+			bg = blend(unfocused_bg, modified_blend, 0.4)
 		else
 			bg = unfocused_bg
 		end
@@ -120,7 +121,7 @@ end
 local tab_icon = function(buffer)
 	if buffer.is_focused then
 		if buffer.is_modified then
-			return lighten(tab_fg(buffer), 0.7)
+			return lighten(tab_fg(buffer), 1)
 		else
 			return lighten(tab_fg(buffer), 0.9)
 		end
@@ -222,7 +223,11 @@ require("cokeline").setup({
 		-- Icon
 		{
 			text = function(buffer)
-				return " " .. buffer.devicon.icon
+				if buffer.is_modified then
+					return " " .. icon_modified .. " "
+				else
+					return " " .. buffer.devicon.icon
+				end
 			end,
 			hl = { fg = tab_icon, bg = tab_bg },
 		},

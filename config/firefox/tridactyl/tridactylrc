@@ -16,7 +16,7 @@ colorscheme nord
 
 " General
 
-set newtab https://mrnordstrom.com/nordtab#photo
+set newtab https://nordix.blue#photo
 set allowautofocus false
 set editorcmd alacritty --class 'terminal' --title 'terminal' -e nvim %f '+normal!%lGzv%c|'
 set hintchars fdsqjklmrezauiopwxcvghtybn

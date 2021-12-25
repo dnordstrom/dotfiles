@@ -106,13 +106,20 @@
 }
 
 #workspaces button {
+  margin: 0;
   padding: 0 10px;
   color: @gray2;
+  border-top: 4px solid transparent;
+  border-bottom: 3px solid @black2;
+  border-right: none;
+  border-left: none;
+  border-radius: 0;
 }
 
 #workspaces button:hover,
 #workspaces button.urgent:hover {
   background: @black3;
+  border-bottom: 3px solid @peach;
   color: @peach;
   transition: none;
 }
@@ -123,12 +130,29 @@
 
 #workspaces button.focused {
   background: @black3;
+  border-bottom: 3px solid @blue;
   color: @blue;
 }
 
 #workspaces button.urgent {
   background: @red;
+  border-bottom: 3px solid @red;
   color: @black2;
+}
+
+#window {
+  background: @black3;
+  color: @gray2;
+}
+
+window#waybar:not(.empty) #window {
+  padding: 0 10px;
+}
+
+window#waybar.solo #window {
+}
+
+window#waybar.firefox-nightly #window {
 }
 
 #custom-files,

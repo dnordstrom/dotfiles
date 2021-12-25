@@ -11,7 +11,7 @@
 #
 
 set $font Input Sans Condensed 9
-set $colors nord
+set $colors catpuccin
 
 #
 # Keys
@@ -34,6 +34,10 @@ set $workspace3 3
 set $workspace4 4
 set $workspace5 5
 set $workspace6 6
+set $workspace7 7
+set $workspace8 8
+set $workspace9 9
+set $workspace10 10
 
 #
 # Commands
@@ -44,27 +48,8 @@ set $scratchterm $term --class=scratchterm
 set $menu wofi
 set $menuargs --show=drun,run
 set $files dolphin
-
-set $snapdelay 3
-set $snapregion sleep $snapdelay && \
-  grim -g "$(slurp)" - | \
-  wl-copy && \
-  wl-paste -t image/png > \
-  "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png"
-
-set $snapwindow sleep $snapdelay && \
-  grim -g | \
-  "$(swaymsg -t get_tree | jq -j '.. | select(.type?) | select(.focused).rect | "\(.x),\(.y) \(.width)x\(.height)"')" - | \
-  wl-copy && \
-  wl-paste -t image/png > \
-  "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_window.png"
-
-set $snapscreen sleep $snapdelay && \
-  grim -o | \
-  "$(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name')" - | \
-  wl-copy && \
-  wl-paste -t image/png > \
-  "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png"
+set $snaparea grim -g "$(slurp)" "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png"
+set $snapfull grim -o "$(slurp -o -f '%o')" "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png"
 
 set $lock swaylock \
   --font "Input Sans Compressed" \
@@ -139,9 +124,13 @@ workspace_auto_back_and_forth yes
 workspace $workspace1 output DP-1
 workspace $workspace2 output DP-1
 workspace $workspace3 output DP-1
-workspace $workspace4 output DVI-D-1
-workspace $workspace5 output DVI-D-1
+workspace $workspace4 output DP-1
+workspace $workspace5 output DP-1
 workspace $workspace6 output DVI-D-1
+workspace $workspace7 output DVI-D-1
+workspace $workspace8 output DVI-D-1
+workspace $workspace9 output DVI-D-1
+workspace $workspace10 output DVI-D-1
 
 #
 # OUTPUTS
@@ -243,6 +232,10 @@ bindsym {
   $mod+4 workspace $workspace4
   $mod+5 workspace $workspace5
   $mod+6 workspace $workspace6
+  $mod+7 workspace $workspace7
+  $mod+8 workspace $workspace8
+  $mod+9 workspace $workspace9
+  $mod+0 workspace $workspace10
 
   # Focus workspace: Mod+Tab switches, Alt+Tab cycles
 
@@ -260,12 +253,16 @@ bindsym {
 
   # Move window to workspace and focus
 
-  $mod+Shift+1 move container to workspace $workspace1
-  $mod+Shift+2 move container to workspace $workspace2
-  $mod+Shift+3 move container to workspace $workspace3
-  $mod+Shift+4 move container to workspace $workspace4
-  $mod+Shift+5 move container to workspace $workspace5
-  $mod+Shift+6 move container to workspace $workspace6
+  $mod+Shift+1 move container to workspace number 1
+  $mod+Shift+2 move container to workspace number 2
+  $mod+Shift+3 move container to workspace number 3
+  $mod+Shift+4 move container to workspace number 4
+  $mod+Shift+5 move container to workspace number 5
+  $mod+Shift+6 move container to workspace number 6
+  $mod+Shift+7 move container to workspace number 7
+  $mod+Shift+8 move container to workspace number 8
+  $mod+Shift+9 move container to workspace number 9
+  $mod+Shift+0 move container to workspace number 10
 
   #
   # Layout 
@@ -307,12 +304,6 @@ bindsym {
   XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
   XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
   XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
-
-  # Screenshot
-  
-  Print exec $screenshot_area
-  Shift+Print exec $screenshot_window
-  Ctrl+Print exec $screenshot_screen
 }
 
 #
@@ -335,6 +326,27 @@ mode "$mode_navigation" {
 }
 
 bindsym $mod+n mode "$mode_navigation"
+
+#
+# SCREENSHOT MODE
+#   a -> select area
+#   s -> select screen
+#   PrintSc -> select area (PrintSc > PrintSc)
+#
+
+set $mode_screenshot Screenshot
+
+mode "$mode_screenshot" {
+  bindsym Print exec swaymsg mode "default" && $snaparea
+  bindsym a exec swaymsg mode "default" && $snaparea
+  bindsym s exec swaymsg mode "default" && $snapfull
+
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+  bindsym Space mode "default"
+}
+
+bindsym Print mode "$mode_screenshot"
 
 #
 # RESIZE MODE
@@ -408,6 +420,14 @@ exec swayidle -w \
 for_window [class="^.*"] inhibit_idle fullscreen
 for_window [app_id="^.*"] inhibit_idle fullscreen
 
+# Start swayr daemon
+
+exec env RUST_BACKTRACE=1 swayrd > /tmp/swayrd.log 2>&1
+
+# Start workspace rename script
+
+exec sway-dynamic-workspace-names > /tmp/sway-dynamic-workspace-names.log 2>&1
+
 #
 # STATUS BAR
 #
@@ -420,11 +440,14 @@ bar {
 # WINDOW SPECIFIC
 #
 
-assign [class="^Steam$"] $workspace5
-
+# File managers
 for_window [app_id="org.gnome.Nautilus"] floating enable
-# for_window [app_id="org.kde.dolphin"] floating enable
+for_window [app_id="org.kde.dolphin"] floating enable
+
+# Dialog windows
 for_window [app_id="pavucontrol"] floating enable
+for_window [app_id="pinentry-qt"] floating enable
+for_window [app_id="pinentry-gtk2"] floating enable
 
 # Terminals
 for_window [app_id="transterm"] border none
@@ -442,7 +465,7 @@ exec_always {
   gsettings set $gnome-schema gtk-theme "Nordic-v40"
   gsettings set $gnome-schema icon-theme "Papirus-Dark"
   gsettings set $gnome-schema cursor-theme "Quintom_Snow"
-  gsettings set $gnome-schema font-name "Input Sans Condensed 8"
+  gsettings set $gnome-schema font-name "Input Sans Compressed 8"
 }
 
 #

@@ -43,8 +43,17 @@
         waylandPackages = nixpkgs-wayland.legacyPackages.${prev.system};
       };
       firefox-nightly-overlay = final: prev: {
-        firefox-nightly-bin = firefox-nightly.packages.${prev.system}.firefox-nightly-bin;
+        firefox-nightly-bin =
+          firefox-nightly.packages.${prev.system}.firefox-nightly-bin;
       };
+      input-overlays = [
+        nur.overlay
+        nixpkgs-master-overlay
+        nixpkgs-wayland-overlay
+        firefox-nightly-overlay
+        neovim-nightly-overlay.overlay
+      ];
+      import-overlays = import ./overlays;
     in mkFlake {
       inherit self inputs;
 
@@ -56,16 +65,7 @@
         allowUnsupportedSystem = true;
       };
 
-      sharedOverlays = [
-        nur.overlay
-        nixpkgs-master-overlay
-        nixpkgs-wayland-overlay
-        firefox-nightly-overlay
-        neovim-nightly-overlay.overlay
-
-        (import ./overlays/vscodium.nix)
-        (import ./overlays/packages.nix)
-      ];
+      sharedOverlays = input-overlays ++ import-overlays;
 
       hostDefaults.modules = [
         ./modules/common.nix

@@ -36,13 +36,13 @@ let
   };
 in {
   #
-  # Modules
+  # MODULES
   #
 
   imports = [ ../modules/vscode.nix ];
 
   #
-  # Environment
+  # ENVIRONMENT
   #
 
   home.stateVersion = "22.05";
@@ -128,18 +128,53 @@ in {
         mimeType = [ "x-scheme-handler/slack" ];
         startupNotify = true;
       };
+      kitty-session-cloud = {
+        name = "Cloud development (kitty)";
+        comment = "Cloud development (kitty)";
+        type = "Application";
+        genericName = "Text Editor";
+        exec =
+          "kitty --session /etc/nixos/config/kitty/dev-cloud.session --single-instance --instance-group dev";
+        terminal = false;
+        icon = "kitty";
+        categories = [ "Utility" "TextEditor" "Development" "IDE" ];
+        mimeType = [ "text/plain" "inode/directory" ];
+        startupNotify = true;
+      };
     };
   };
 
   #
-  # Packages
+  # PACKAGES
   #
 
   home.packages = with pkgs; [
-    # Nix
-    cachix
+    #
+    # Local
+    #
 
-    # Connections
+    nordpkgs.hydroxide
+    nordpkgs.convox
+    nordpkgs.jira-cli
+    nordpkgs.protonvpn-gui
+    nordpkgs.protonvpn-cli
+
+    networkmanager-openvpn
+    openvpn
+    gnome.gnome-keyring
+    libgnome-keyring
+
+    #
+    # Nix
+    #
+
+    cachix
+    nix-prefetch
+
+    #
+    # Networking
+    #
+
     networkmanager_dmenu
 
     # General
@@ -149,10 +184,9 @@ in {
     fractal
     gcc
     guvcview
+    lynx
     nextcloud-client
     pavucontrol
-    pinentry
-    pinentry-curses
     pulseaudio # For pactl since pw-cli makes me cry
     qbittorrent
     signal-desktop
@@ -163,8 +197,6 @@ in {
     zathura
 
     # Command line
-    arcan.espeak
-    asciinema # For asciinema.org
     awscli2
     bitwarden-cli
     fd
@@ -179,6 +211,7 @@ in {
     onefetch # Git summary
     neofetch # System summary
     parallel
+    rdrview # URL article viewer based on Firefox's Readability
     ripgrep
     t-rec
     toilet
@@ -191,11 +224,17 @@ in {
     xorg.xev
     xsel
 
-    # Zsh (sourced in program.zsh.interactiveShellInit)
+    #
+    # Zsh plugins, sourced in `program.zsh.interactiveShellInit`
+    #
+
     zsh-fzf-tab
     zsh-nix-shell
 
-    # Sway and Wayland specific
+    #
+    # Sway and Wayland
+    #
+
     fnott
     grim
     imagemagick
@@ -222,30 +261,43 @@ in {
     wtype
     ydotool
 
-    # Gnome
+    #
+    # Gnome utilities
+    #
+
     gnome-breeze
     gnomeExtensions.gsconnect
 
+    #
     # Web browsing
+    #
+
     tridactyl-native # Firefox native messaging host
     luakit # GTK, WebKit, Lua
 
+    #
     # Email
+    #
+
     bitwarden # Password manager
+
     electron-mail # Unofficial ProtonMail client
-    hydroxide # Unofficial ProtonMail bridge
     protonmail-bridge # Official
-    # protonvpn-gui # Official
-    protonvpn-cli # Official
     thunderbird
 
+    #
     # Security
+    #
+
     authy
     go-2fa
     qtpass
-    yubikey-manager-qt
+    pinentry-gtk2
 
+    #
     # Multimedia
+    #
+
     celluloid
     handbrake
     haruna
@@ -291,6 +343,10 @@ in {
     luajit
     stylua
 
+    # Python
+    python3
+    python39Packages.i3ipc
+
     # Shell
     shellcheck
     shfmt
@@ -330,7 +386,7 @@ in {
     libsForQt5.qtcurve
     qgnomeplatform
 
-    # Theming tools
+    # Theming
     masterPackages.themechanger
     qt5ct
 
@@ -339,8 +395,6 @@ in {
     masterPackages.ayu-theme-gtk
     qogir-theme
     adwaita-qt
-
-    # Icons and cursors
     arc-icon-theme
     numix-icon-theme-circle
     paper-icon-theme
@@ -356,14 +410,7 @@ in {
     quintom-cursor-theme
 
     #
-    # Custom from ./packages
-    #
-
-    convox
-    jira-cli
-
-    #
-    # Remember to try out
+    # Interesting prospects
     #
 
     swayr
@@ -388,6 +435,15 @@ in {
     gnome.nautilus
     index-fm
     yubikey-personalization-gui
+    yubikey-personalization
+    yubico-pam
+    yubikey-agent
+    yubikey-manager
+    yubico-piv-tool
+    yubioath-desktop
+    yubikey-manager-qt
+    yubikey-touch-detector
+    otpclient
     dfilemanager
     xfce.thunar
     CuboCore.corefm
@@ -396,7 +452,7 @@ in {
   ];
 
   #
-  # Sway
+  # SWAY
   #
 
   wayland.windowManager.sway = {
@@ -420,7 +476,7 @@ in {
   };
 
   #
-  # Qt
+  # QT
   #
 
   qt = {
@@ -451,7 +507,7 @@ in {
   };
 
   #
-  # Configuration files
+  # CONFIGURATION FILES
   #
 
   # Scripts
@@ -538,17 +594,23 @@ in {
     ../config/alacritty/alacritty.yml;
 
   #
-  # Programs
+  # PROGRAMS
   #
 
   programs.waybar.enable = true;
   programs.qutebrowser.enable = true;
+  programs.nnn.enable = true;
   programs.feh.enable = true;
   programs.java.enable = true;
   programs.jq.enable = true;
   programs.mpv.enable = true;
   programs.afew.enable = true;
   programs.mbsync.enable = true;
+
+  programs.nix-index = {
+    enable = true;
+    enableZshIntegration = true;
+  };
 
   programs.password-store = {
     enable = true;
@@ -752,15 +814,18 @@ in {
   };
 
   # Fuzzy finder written in Go
+
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
   };
 
   # Fuzzy finder written in Rust (both sk and fzf works with fzf-lua for nvim)
+
   programs.skim = { enable = true; };
 
   # Lua alternative to z.sh for (even) faster navigation
+
   programs.z-lua = {
     enable = true;
     enableZshIntegration = true;
@@ -778,24 +843,18 @@ in {
   };
 
   programs.mako = {
-    backgroundColor = "#434C5E";
-    borderColor = "#E5E9F0BB";
-    borderRadius = 0;
-    borderSize = 2;
+    actions = true;
+    backgroundColor = "#DADAE8";
+    borderColor = "#575268";
+    borderRadius = 3;
     defaultTimeout = 5000;
     enable = true;
-    font = "sans 9";
-    height = 110;
-    icons = true;
-    ignoreTimeout = false;
-    layer = "overlay";
+    font = "Input Sans Compressed 8";
     margin = "20";
     markup = true;
-    maxIconSize = 24;
-    padding = "12";
-    sort = "-time";
-    textColor = "#E5E9F0";
-    width = 300;
+    padding = "7,12,10";
+    textColor = "#1E1E28";
+    width = 275;
   };
 
   programs.dircolors = {
@@ -816,34 +875,140 @@ in {
   programs.newsboat = {
     enable = true;
     autoReload = true;
-    # To add feeds:
-    # urls = [
-    #   {
-    #     tags = [ "foo" "bar" ];
-    #     url = "http://example.com";
-    #   }
-    # ];
+    extraConfig = ''
+      #
+      # Newsboat configuration
+      #
+      # Based on:
+      #   - https://github.com/meribold/dotfiles
+      #   - https://github.com/rememberYou/dotfiles
+      #
+
+      #
+      # GENERAL
+      #
+
+      auto-reload yes
+      refresh-on-startup yes
+      reload-threads 16
+      reload-time 15
+      show-read-feeds yes
+      notify-program "notify-send"
+      notify-format "Feeds refreshed (%d new)"
+      text-width 72
+      download-full-page yes
+      browser "rdrview -B 'lynx -display-charset=utf8 -dump' '%u' | less"
+
+      #
+      # MACROS
+      #
+
+      # ,m -> Open with mpv
+      macro m set browser "mpv %u" ; open-in-browser ; set browser "rdrview -B 'lynx -display-charset=utf8 -dump' '%u' | less"
+
+      # ,o -> Open with default
+      macro o set browser "xdg-open '%u'" ; open-in-browser ; set browser "rdrview -B 'lynx -display-charset=utf8 -dump' '%u' | less"
+
+      #
+      # UNMAP DANGEROUS DEFAULTS
+      #
+
+      # mark-all-feeds-read
+      unbind-key C
+
+      # delete-all-articles
+      unbind-key ^D
+
+      # delete-article
+      unbind-key D
+
+      #
+      # KEY BINDS
+      #
+
+      bind-key @ macro-prefix
+      bind-key ^X delete-article
+      bind-key ; cmdline
+      bind-key SPACE next-unread
+      bind-key j down
+      bind-key k up
+      bind-key J next-feed articlelist
+      bind-key K prev-feed articlelist
+      bind-key ^N next-unread
+      bind-key ^P prev-unread
+      bind-key ^N next-unread-feed articlelist
+      bind-key ^P prev-unread-feed articlelist
+      bind-key ] next feedlist
+      bind-key [ prev feedlist
+      bind-key ] next-feed articlelist
+      bind-key [ prev-feed articlelist
+      bind-key g home
+      bind-key G end
+      bind-key ^U pageup
+      bind-key ^D pagedown
+      bind-key u pageup
+      bind-key d pagedown
+
+      #
+      # COLORS
+      #
+
+      color background        default  default
+      color info              color232 color3   bold
+      color listnormal        default  default
+      color listnormal_unread default  default  bold
+      color listfocus         color232 blue
+      color listfocus_unread  color232 blue     bold
+      color article           default  default
+    '';
+    urls = [
+      {
+        title = "Updates";
+        tags = [ "newsboat" ];
+        url = "https://newsboat.org/news.atom";
+      }
+      {
+        title = "Pocket";
+        tags = [ "pocket" ];
+        url = "https://getpocket.com/users/dnordstrom/feed/all";
+      }
+      {
+        title = "Pocket Unread";
+        tags = [ "pocket" ];
+        url = "https://getpocket.com/users/dnordstrom/feed/unread";
+      }
+    ];
   };
 
   programs.gpg = { enable = true; };
 
+  programs.rbw = {
+    enable = true;
+    # Settings are currently not working so we manage the config manually, see GH issue
+    #
+    # settings = {
+    #   email = "d@mrnordstrom.com";
+    #   pinentry = "curses";
+    # };
+  };
+
   #
-  # Manual
+  # MANUAL
   #
 
   manual = {
     html.enable = true;
     json.enable = true;
-    manpages.enable = true; # Also enabled by default
+    # Man pages are installed by default
   };
 
   #
-  # Services
+  # SERVICES
   #
 
   services.gpg-agent = {
     enable = true;
-    pinentryFlavor = "curses";
+    pinentryFlavor = "qt";
   };
 
   # Gnome Keyring required for ProtonMail Bridge according to package source
@@ -870,7 +1035,7 @@ in {
   };
 
   #
-  # Email accounts
+  # ACCOUNTS
   #
 
   accounts.email.accounts.mrnordstrom = {
@@ -925,4 +1090,10 @@ in {
     passwordCommand =
       "${pkgs.pass}/bin/pass work/email/daniel.nordstrom@leeroy.se";
   };
+
+  #
+  # SECURITY
+  #
+
+  pam.yubico.authorizedYubiKeys.ids = [ "ccccccurnfle" ];
 }

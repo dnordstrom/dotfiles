@@ -1,4 +1,4 @@
-{ config, pkgs, stdenv, lib, ... }:
+{ config, pkgs, nordpkgs, stdenv, lib, ... }:
 
 {
   #
@@ -113,7 +113,7 @@
   };
 
   services.blueman.enable = true;
-  services.udev.packages = [ pkgs.udev-rules ];
+  services.udev.packages = [ pkgs.nordpkgs.udev-rules ];
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -122,14 +122,30 @@
   };
   services.flatpak.enable = true;
 
+  services.yubikey-agent.enable = true;
+
+  services.gnome.gnome-keyring.enable = true;
+
   #
   # SECURITY
   #
 
+  # Yubikey authentication, reads tokens from `~/.yubico/authorized_yubikeys`
+  security.pam.yubico = {
+    mode = "client";
+    id = "70449";
+    enable = true;
+    control = "sufficient";
+  };
+
+  # Don't require `sudo` password for admin group users
   security.sudo.wheelNeedsPassword = false;
 
   # For Pipewire (recommended in Nix wiki)
   security.rtkit.enable = true;
+
+  # Privilege escalation
+  security.polkit.enable = true;
 
   # Make swaylock accept correct password
   security.pam.services.swaylock = {
@@ -210,6 +226,10 @@
   #
   # SYSTEM ENVIRONMENT
   #
+
+  qt5.platformTheme = "gtk2";
+  qt5.enable = true;
+  qt5.style = "gtk2";
 
   environment.etc.hosts.mode = "0644";
 
