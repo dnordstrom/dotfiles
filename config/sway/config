@@ -422,11 +422,11 @@ for_window [app_id="^.*"] inhibit_idle fullscreen
 
 # Start swayr daemon
 
-exec env RUST_BACKTRACE=1 swayrd > /tmp/swayrd.log 2>&1
+exec_always pkill swayrd ; env RUST_BACKTRACE=1 swayrd > /tmp/swayrd.log 2>&1
 
 # Start workspace rename script
 
-exec sway-dynamic-workspace-names > /tmp/sway-dynamic-workspace-names.log 2>&1
+exec_always pkill sway-dynamic-workspace-names ; sway-dynamic-workspace-names > /tmp/sway-dynamic-workspace-names.log 2>&1
 
 #
 # STATUS BAR

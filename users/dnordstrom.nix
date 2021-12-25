@@ -346,6 +346,7 @@ in {
     # Python
     python3
     python39Packages.i3ipc
+    i3ipc-glib
 
     # Shell
     shellcheck
