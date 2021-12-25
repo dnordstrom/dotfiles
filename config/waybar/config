@@ -1,1 +1,228 @@
-/nix/store/3rszgvvx6y1scvidnkam2f0hwgsf6mij-home-manager-files/.config/waybar/config
+{
+  "name": "catpuccin",
+  "layer": "top",
+  "position": "top",
+  "height": 30,
+  "width": 1920,
+  "modules-left": [
+    "sway/workspaces",
+    "sway/window",
+    "custom/files",
+    "custom/browser",
+    "custom/mail",
+    "custom/editor",
+    "custom/terminal",
+    "sway/mode"
+  ],
+  "modules-center": ["clock"],
+  "modules-right": [
+    "tray",
+    "idle_inhibitor",
+    "custom/tmpmail",
+    "custom/wttr",
+    "pulseaudio"
+  ],
+  "sway/window": {
+    "format": "<span>{}</span>",
+    "max-length": 50,
+    "rewrite": {
+      "(.*)Firefox Nightly": " $1",
+      "(.*) - vim": " $1",
+      "(.*) - zsh": " [$1]"
+    }
+  },
+  "custom/separator": {
+    "format": "·",
+    "tooltip": false
+  },
+  "sway/mode": {
+    "format": "{}"
+  },
+  "sway/workspaces": {
+    "format": "{name}",
+    "format-icons": {
+      /* "1": "", */
+      "focused": "",
+      "default": "﬿",
+      "urgent": "",
+    },
+    "strip_workspace_numbers": true,
+    "enable-bar-scroll": true,
+    "current-only": false,
+    "persistent_workspaces": {
+      /* "1": ["DP-1"], */
+      /* "2": ["DP-1"], */
+      /* "3": ["DP-1"], */
+      /* "4": ["DP-1"], */
+      /* "5": ["DP-1"], */
+      /* "6": ["DVI-D-1"], */
+      /* "7": ["DVI-D-1"], */
+      /* "8": ["DVI-D-1"], */
+      /* "9": ["DVI-D-1"], */
+      /* "10": ["DVI-D-1"] */
+    }
+  },
+  "tray": {
+    "icon-size": 14,
+    "spacing": 22
+  },
+  "clock": {
+    "format": "<span font='12' rise='-1500'></span> {:%R}",
+    "format-alt": "<span font='12' rise='-1500'></span> {:%A, %B %d}",
+    "tooltip": false,
+    "on-click-middle": "xdg-open https://calendar.protonmail.com",
+    "on-click-right": "xdg-open https://calendar.google.com"
+  },
+  "custom/browser": {
+    "format": "<span font='12' rise='-1500'></span>",
+    "tooltip": false,
+    "on-click": "if pgrep firefox; then swaymsg [app_id=\"firefox\"] focus; else firefox; fi",
+    "on-click-right": "firefox --new-window"
+  },
+  "custom/mail": {
+    "format": "<span font='12' rise='-1500'></span>",
+    "tooltip": false,
+    "on-click": "xdg-open https://mail.protonmail.com",
+  },
+  "custom/files": {
+    "format": "<span font='12' rise='-1500'></span>",
+    "tooltip": false,
+    "on-click": "dolphin",
+    "on-click-right": "nautilus"
+  },
+  "custom/editor": {
+    "format": "<span font='14' rise='-1500'></span>",
+    "tooltip": false,
+    "on-click": "sh -c \"if swaymsg -t get_tree | grep vimterm; then swaymsg [app_id=\"vimterm\"] focus; else kitty --class=vimterm; fi\"",
+    "on-right-click": "if pgrep codium; then swaymsg [instance=\"vscodium\"] focus; else codium; fi"
+  },
+  "custom/terminal": {
+    "format": "<span font='14' rise='-1500'>ﲵ</span>",
+    "tooltip": false,
+    "on-click": "swaymsg scratchpad show",
+    "on-click-right": "kitty --class transterm --override background_opacity=0"
+  },
+  "custom/keyboard": {
+    "exec": "/etc/nixos/scripts/keyboard-layout/keyboard-layout",
+    "format": " {}",
+    "interval": 30,
+    "tooltip": false
+  },
+  "custom/disks": {
+    "exec": "/etc/nixos/scripts/disk-info/disk-info",
+    "return-type": "json",
+    "format": " {}",
+    "on-click": "kitty --class popupterm gotop",
+    "interval": 30,
+    "tooltip": true
+  },
+  "disk": {
+    "interval": 30,
+    "format": " {percentage_used}%",
+    "path": "/",
+    "on-click": "kitty --class popupterm gotop",
+    "tooltip": true,
+    "tooltip-format": "{used} / {total}"
+  },
+   "custom/snap": {
+    "format": "<span font='11' rise='-1500'></span>",
+    "on-click": "grim -g \"$(slurp)\" \"$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png\"",
+    "tooltip": false
+  },
+   "custom/tmpmail": {
+    "interval": 30,
+    "format": "<span font='11' rise='-1500'>ﯬ</span>",
+    "exec": "echo \"\"; echo \"$(cat /tmp/tmpmailgen 2>/dev/null || echo -n 'No address available')\"; echo \"tmpmail\"
+",
+    "on-click": "generated=$(cat /tmp/tmpmailgen) && swaymsg exec wl-copy $generated",
+    "on-click-middle": "rm -f /tmp/tmpmailgen; generated=$(tmpmail -g) && echo -n $generated > /tmp/tmpmailgen && swaymsg exec wl-copy $generated",
+    "on-click-right": "kitty --hold --class popupterm tmpmail -r $(cat /tmp/tmpmailgen)",
+    "tooltip": true
+  },
+  "custom/wttr": {
+    "format": "{}",
+    "exec": "curl https://wttr.in/Sundsvall,Sweden?format=%c%3Cspan%20rise=%22-1750%22%3E%t%3C/span%3E",
+    "on-click": "kitty --hold --class popupterm curl wttr.in/Sundsvall,Sweden",
+    "interval": 1800,
+    "tooltip": false
+  },
+  "custom/darksky": {
+    "exec": "/etc/nixos/scripts/weather-darksky",
+    "on-click": "kitty --hold --class popupterm curl wttr.in/Sundsvall",
+    "interval": 1800,
+    "tooltip": false
+  },
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "tooltip": false,
+    "format-icons": {
+      "activated": "",
+      "deactivated": ""
+    }
+  },
+  "pulseaudio": {
+    "format": "<span font='11' rise='-1500'>{icon}</span> {volume}%",
+    "format-bluetooth": "<span font='11' rise='-1500'>{icon}</span> ",
+    "format-muted": "<span font='11' rise='-1500'>婢</span>",
+    "format-icons": {
+      "headphones": "",
+      "handsfree": "",
+      "headset": "",
+      "phone": "",
+      "portable": "",
+      "car": "",
+      "default": ["奔", "墳"]
+    },
+    "scroll-step": 5,
+    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "on-click-middle": "pavucontrol",
+    "tooltip": false
+  },
+  "temperature": {
+    "thermal-zone": 2,
+    "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+    "critical-threshold": 80,
+    "on-click": "kitty --class popupterm gotop",
+    "format-critical": "{temperatureC}°C ",
+    "format": " {temperatureC}°C"
+  },
+  "cpu": {
+    "on-click": "kitty --class popupterm gotop",
+    "tooltip": false,
+    "format": " {usage}%",
+    "interval": 10
+  },
+  "network": {
+    "format": "{icon} {ifname}",
+    "format-wifi": "{icon} {essid}",
+    "format-ethernet": "{icon} {ifname}",
+    "format-disconnected": "{icon} Offline",
+    "format-icons": {
+      "wifi": [""],
+      "ethernet": [""],
+      "disconnected": [""]
+    },
+    "tooltip": true,
+    "tooltip-format": "IP: {ipaddr}\nRate: {bandwidthUpBits} / {bandwidthDownBits}"
+  },
+  "memory": {
+    "interval": 30,
+    "format": " {avail:0.1f}GB",
+    "tooltip": true,
+    "tooltip-format": "{used:0.1f}GB / {total:0.1f}GB"
+  },
+  "battery": {
+    "states": {
+      "good": 90,
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{icon} {capacity}%",
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%",
+    "format-alt": "{icon} {time}",
+    "format-good": "{icon} {capacity}%",
+    "format-full": "{icon} {capacity}%",
+    "format-icons": ["", "", "", "", ""]
+  }
+}

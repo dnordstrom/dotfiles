@@ -1,1 +1,37 @@
-/nix/store/3rszgvvx6y1scvidnkam2f0hwgsf6mij-home-manager-files/.config/sway/colors.nord
+#
+# Nord
+#
+
+set $border #88c0d0
+set $border_inactive #3b4252
+set $foreground #eceff4
+set $foreground_inactive #e5e9f0
+set $transparent #00000000
+
+# class
+#   border
+#   background
+#   text
+#   indicator
+#   child_border
+
+client.focused \
+  $border \
+  $border \
+  $foreground \
+  $border \
+  $border
+
+client.unfocused \
+  $transparent \
+  $border_inactive \
+  $foreground_inactive \
+  $border_inactive \
+  $transparent
+
+client.focused_inactive \
+  $transparent \
+  $border_inactive \
+  $foreground_inactive \
+  $border_inactive \
+  $transparent
