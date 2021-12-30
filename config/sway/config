@@ -437,7 +437,7 @@ exec_always pkill -f sway-dynamic-workspace-names ; sway-dynamic-workspace-names
 
 # Start inactive window dimmer
 
-exec_always pkill -f sway-dim-inactive-windows ; sway-dim-inactive-windows > /tmp/sway-dim-inactive-windows.log 2>&1
+exec_always pkill -f sway-dim-inactive-windows ; sway-dim-inactive-windows --opacity 0.9 > /tmp/sway-dim-inactive-windows.log 2>&1
 
 #
 # STATUS BAR
