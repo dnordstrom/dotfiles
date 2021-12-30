@@ -1,0 +1,9 @@
+#
+# Startup commands for the scratchpad terminal window
+#
+
+enabled_layouts tall,horizontal
+
+launch --cwd /etc/nixos
+launch --cwd /etc/nixos
+

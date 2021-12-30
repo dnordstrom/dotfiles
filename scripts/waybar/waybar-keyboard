@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+id="12851:25345:Ducky_Ducky_One2_Mini_RGB"
+input=$(swaymsg -t get_inputs | jq "first(.[] | select(.identifier==\"$id\"))")
+index=$(printf "%s" "$input" | jq ".xkb_active_layout_index")
+count=$(printf "%s" "$input" | jq ".xkb_layout_names | length")
+
+if [ "$1" = "switch" ]; then
+  swaymsg input "$id" xkb_switch_layout $(((index + 1) % count))
+fi
+
+active=$(swaymsg -t get_inputs | jq -r "first(.[] | select(.identifier==\"$id\").xkb_active_layout_name)")
+
+echo "$active"

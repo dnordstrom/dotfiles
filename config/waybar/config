@@ -19,6 +19,7 @@
     "tray",
     "idle_inhibitor",
     "custom/tmpmail",
+    "custom/keyboard",
     "custom/wttr",
     "pulseaudio"
   ],
@@ -103,18 +104,11 @@
     "on-click-right": "kitty --class transterm --override background_opacity=0"
   },
   "custom/keyboard": {
-    "exec": "/etc/nixos/scripts/keyboard-layout/keyboard-layout",
-    "format": " {}",
+    "exec": "/etc/nixos/scripts/waybar/waybar-keyboard",
+    "format": "<span font='12' rise='-1500'> </span><span rise='500'>{}</span>",
     "interval": 30,
-    "tooltip": false
-  },
-  "custom/disks": {
-    "exec": "/etc/nixos/scripts/disk-info/disk-info",
-    "return-type": "json",
-    "format": " {}",
-    "on-click": "kitty --class popupterm gotop",
-    "interval": 30,
-    "tooltip": true
+    "tooltip": false,
+    "on-click": "/etc/nixos/scripts/waybar/waybar-keyboard switch",
   },
   "disk": {
     "interval": 30,
@@ -146,14 +140,8 @@
     "interval": 1800,
     "tooltip": false
   },
-  "custom/darksky": {
-    "exec": "/etc/nixos/scripts/weather-darksky",
-    "on-click": "kitty --hold --class popupterm curl wttr.in/Sundsvall",
-    "interval": 1800,
-    "tooltip": false
-  },
   "idle_inhibitor": {
-    "format": "{icon}",
+    "format": "<span font='12' rise='-1500'>{icon}</span>",
     "tooltip": false,
     "format-icons": {
       "activated": "",

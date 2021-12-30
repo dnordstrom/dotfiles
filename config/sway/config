@@ -1,4 +1,3 @@
-exec "systemctl --user import-environment; systemctl --user start sway-session.target"
 ##
 # SWAY WINDOW MANAGER
 ##
@@ -45,12 +44,12 @@ set $workspace10 10
 #
 
 set $term kitty --single-instance
-set $scratchterm $term --class=scratchterm
+set $scratchterm $term --class scratchterm --session /etc/nixos/config/kitty/scratchpad.session
 set $menu wofi
-set $menuargs --show=drun,run
 set $files dolphin
 set $snaparea grim -g "$(slurp)" "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png"
 set $snapfull grim -o "$(slurp -o -f '%o')" "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png"
+set $sway-props "file=$(mktemp) ; swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true) | { name, type, title, app_id }' > $file ; kitty --class popupterm less $file"
 
 set $lock swaylock \
   --font "Input Sans Compressed" \
@@ -199,9 +198,10 @@ bindsym {
   #
 
   $mod+Return exec $term
-  $mod+d exec $menu | xargs swaymsg exec --
+  $mod+d exec $menu
   $mod+g exec $files
   $mod+Backspace exec $powermenu
+  $mod+Shift+p exec $sway-props
 
   $mod+q kill
   $mod+Shift+q kill
@@ -399,6 +399,7 @@ bindsym $mod+Shift+e mode "$mode_system"
 
 exec systemctl --user import-environment XDG_SESSION_TYPE XDG_CURRENT_DESKTOP
 exec dbus-update-activation-environment WAYLAND_DISPLAY
+exec ~/.nix-profile/libexec/polkit-gnome-authentication-agent-1
 
 # Start systemd targets
 
@@ -423,13 +424,16 @@ for_window {
   [app_id="^.*"] inhibit_idle fullscreen
 }
 
+# Start flashfocus for flashing window animation on focus change
+exec_always --no-startup-id flashfocus
+
 # Start swayr daemon
 
 exec_always pkill swayrd ; env RUST_BACKTRACE=1 swayrd > /tmp/swayrd.log 2>&1
 
 # Start workspace rename script
 
-exec_always pkill -f sway-dynamic-workspace-names ; /etc/nixos/scripts/sway/sway-dynamic-workspace-names > /tmp/sway-dynamic-workspace-names.log 2>&1
+exec_always pkill -f sway-dynamic-workspace-names ; sway-dynamic-workspace-names > /tmp/sway-dynamic-workspace-names.log 2>&1
 
 #
 # STATUS BAR
@@ -443,8 +447,8 @@ bar {
 # WINDOW SPECIFIC
 #
 
-# File managers
 for_window {
+  # File managers
   [app_id="org.gnome.Nautilus"] floating enable
   [app_id="org.kde.dolphin"] floating enable
 
@@ -457,11 +461,14 @@ for_window {
   [window_role="dialog"] floating enable
   [window_type="dialog"] floating enable
 
+  # Launchers
+  [app_id="wofi"] floating enable, border none
+
   # Terminals
   [app_id="transterm"] border none
   [app_id="scratchterm"] move scratchpad, floating enable, resize set 1280 720
   [app_id="popupterm"] floating enable, resize set 920 720
-  [app_id="fuzzyterm"] floating enable, resize set 500 700
+  [app_id="fuzzyterm"] floating enable, resize set 500 300
 }
 
 #

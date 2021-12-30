@@ -11,8 +11,8 @@ local blend = utils.color.blend
 -- INDENT-BLANKLINE.NVIM
 
 require("indent_blankline").setup({
-	char = " ", -- Empty space overrides listchar if both are enabled
-	context_char = "▕",
+	char = " ",
+	context_char = "·", -- Reference characters: ▕  
 	space_char_blankline = " ",
 	show_end_of_line = false,
 	show_current_context = true,
@@ -460,9 +460,13 @@ require("fzf-lua").setup({
 
 local vi_mode_utils = require("feline.providers.vi_mode")
 local components = { active = {}, inactive = {} }
-local status_fg = get_hex("Normal", "fg")
+local status_fg = darken(get_hex("Normal", "fg"), 0.8)
 local status_bg = get_hex("CokeUnfocused", "bg")
 local status_style = "bold"
+local status_em_fg = lighten(get_hex("CokeFocused", "fg"), 0.95)
+local status_em_bg = get_hex("CokeFocused", "bg")
+local status_inactive_bg = darken(status_bg, 0.65)
+local status_inactive_fg = darken(status_fg, 0.65)
 local fill_separator = {
 	str = " ",
 	hl = {
@@ -475,7 +479,8 @@ components.active[1] = {
 		provider = "file_type",
 		hl = {
 			style = "bold",
-			bg = get_hex("CokeUnfocused", "bg"),
+			fg = get_hex("Special", "fg"),
+			bg = status_bg,
 		},
 		left_sep = fill_separator,
 		right_sep = fill_separator,
@@ -496,53 +501,60 @@ components.active[1] = {
 		hl = function()
 			return {
 				name = vi_mode_utils.get_mode_highlight_name(),
-				fg = "black",
-				bg = get_hex("CokeFocused", "bg"),
-				-- bg = vi_mode_utils.get_mode_color(),
+				fg = status_em_fg,
+				bg = status_em_bg,
 				style = status_style,
 			}
 		end,
 		left_sep = {
-			str = " ",
+			str = "  ",
 			hl = function()
 				return {
 					name = vi_mode_utils.get_mode_highlight_name(),
-					-- bg = vi_mode_utils.get_mode_color(),
-					bg = get_hex("CokeFocused", "bg"),
+					fg = vi_mode_utils.get_mode_color(),
+					bg = status_em_bg,
 				}
 			end,
 		},
 		right_sep = {
 			str = " ",
-			hl = function()
-				return {
-					name = vi_mode_utils.get_mode_highlight_name(),
-					-- bg = vi_mode_utils.get_mode_color(),
-					bg = get_hex("CokeFocused", "bg"),
-				}
-			end,
+			hl = {
+				bg = status_em_bg,
+			},
 		},
 		icon = "",
 	},
 	{
-		provider = "", -- "",
-		hl = function()
-			return {
-				name = vi_mode_utils.get_mode_highlight_name(),
-				bg = status_bg,
-				fg = vi_mode_utils.get_mode_color(),
-				style = status_style,
-			}
-		end,
-		right_sep = fill_separator,
-	},
-	{
-		provider = "file_info",
+		provider = {
+			name = "file_info",
+			opts = {
+				type = "unique", -- Shows directory for buffers with identical filenames
+				file_modified_icon = "",
+				file_readonly_icon = "聯",
+			},
+		},
 		hl = {
 			bg = status_bg,
 			style = status_style,
 		},
 		left_sep = fill_separator,
+		right_sep = fill_separator,
+	},
+	{
+		provider = "position",
+		hl = {
+			fg = darken(status_fg, 0.75),
+			bg = status_bg,
+			style = status_style,
+		},
+		left_sep = {
+			str = " ",
+			hl = {
+				fg = get_hex("Special", "fg"),
+				bg = status_bg,
+				style = status_style,
+			},
+		},
 		right_sep = fill_separator,
 	},
 }
@@ -614,26 +626,27 @@ components.active[2] = {
 	{
 		provider = "git_branch",
 		hl = {
-			fg = get_hex("CokeFocused", "fg"),
-			bg = get_hex("CokeFocused", "bg"),
+			fg = status_em_fg,
+			bg = status_em_bg,
 			style = status_style,
 		},
 		left_sep = {
 			str = " ",
 			hl = {
-				bg = get_hex("CokeFocused", "bg"),
+				bg = status_em_bg,
 			},
 		},
 		right_sep = {
 			str = " ",
 			hl = {
-				bg = get_hex("CokeFocused", "bg"),
+				bg = status_em_bg,
 			},
 		},
 	},
 	{
 		provider = "line_percentage",
 		hl = {
+			fg = get_hex("Special", "fg"),
 			bg = status_bg,
 			style = status_style,
 		},
@@ -642,15 +655,18 @@ components.active[2] = {
 	},
 }
 
-local status_inactive_bg = darken(status_bg, 0.65)
-local status_inactive_fg = darken(status_fg, 0.65)
-
 components.inactive[1] = {
 	{
-		provider = "file_type",
+		provider = {
+			name = "file_info",
+			opts = {
+				file_modified_icon = "",
+				file_readonly_icon = "輦",
+			},
+		},
 		hl = {
-			bg = status_inactive_bg,
 			fg = status_inactive_fg,
+			bg = status_inactive_bg,
 			style = status_style,
 		},
 		left_sep = {
@@ -668,20 +684,7 @@ components.inactive[1] = {
 	},
 }
 
-components.inactive[2] = {
-	{
-		provider = "file_info",
-		hl = {
-			fg = status_inactive_fg,
-			bg = status_inactive_bg,
-			style = status_style,
-		},
-	},
-}
-
 require("feline").setup({
-	default_bg = "#cccccc",
-	default_fg = get_hex("Normal", "fg"),
 	components = components,
 })
 
@@ -801,8 +804,65 @@ require("surround").setup({
 --
 -- LUASNIP
 --
+-- Useful reference: https://github.com/L3MON4D3/LuaSnip/blob/master/Examples/snippets.lua
+--
 
-require("luasnip.loaders.from_vscode").lazy_load()
+local ls = require("luasnip")
+local fmt = require("luasnip.extras.fmt").fmt
+local filetype_functions = require("luasnip.extras.filetype_functions")
+local s = ls.snippet
+local sn = ls.snippet_node
+local t = ls.text_node
+local i = ls.insert_node
+local f = ls.function_node
+local c = ls.choice_node
+local d = ls.dynamic_node
+local r = ls.restore_node
+local l = require("luasnip.extras").lambda
+local rep = require("luasnip.extras").rep
+local p = require("luasnip.extras").partial
+local m = require("luasnip.extras").match
+local n = require("luasnip.extras").nonempty
+local dl = require("luasnip.extras").dynamic_lambda
+local fmt = require("luasnip.extras.fmt").fmt
+local fmta = require("luasnip.extras.fmt").fmta
+local types = require("luasnip.util.types")
+local conds = require("luasnip.extras.expand_conditions")
+local from_vscode = require("luasnip.loaders.from_vscode")
+
+ls.config.setup({
+	updateevents = "TextChanged,TextChangedI",
+	-- Use nvim-treesitter to determine filetype based on cursor position, to get the right snippets
+	-- in embedded contexts like CSS in JS.
+	ft_func = filetype_functions.from_pos_or_filetype,
+})
+
+-- Extend filetypes with snippets from other types
+ls.filetype_extend("javascriptreact", { "javascript" })
+ls.filetype_extend("typescript", { "javascript" })
+ls.filetype_extend("typescriptreact", { "typescript", "javascriptreact" })
+
+-- Custom snippets
+ls.snippets.all = {
+	s({
+		trig = "date",
+		name = "date",
+		dscr = "Current date",
+	}, p(os.date, "%Y-%m-%d")),
+	s({
+		trig = "datetime",
+		name = "datetime",
+		dscr = "Current date and time",
+	}, p(os.date, "%Y-%m-%d %H:%M")),
+	s({
+		trig = "time",
+		name = "time",
+		dscr = "Current time",
+	}, p(os.date, "%H:%M")),
+}
+
+-- VSCode snippets
+from_vscode.lazy_load()
 
 --
 -- COMMENT.NVIM
@@ -982,12 +1042,17 @@ local lspkind = require("lspkind")
 local cmp = require("cmp")
 local mapping = cmp.mapping
 
--- Smart Tab navigates completion menu if visible, toggles completion if cursor follows text, and
--- otherwise falls back to normal tab insertion behavior
+-- Tab function that...
+--
+--   - ...triggers completion if cursor directly follows text
+--   - ...navigates completion if menu is visible
+--   - ...navigates position if inserting snippet
+--   - ...falls back to provided function otherwise
+--
 local function smart_tab(fallback)
 	if cmp.visible() then
 		cmp.select_next_item()
-	elseif luasnip.expand_or_jumpable() then
+	elseif luasnip.expand_or_locally_jumpable() then -- "locally" to only jump if inside snippet
 		luasnip.expand_or_jump()
 	elseif has_word_before() then
 		cmp.complete()
@@ -996,11 +1061,16 @@ local function smart_tab(fallback)
 	end
 end
 
--- Smart Shift-Tab navigates completion menu if visible, otherwise falls back to normal behavior
+-- Shift-Tab function that...
+--
+--   - ...navigates completion if menu is visible
+--   - ...navigates position if inserting snippet
+--   - ...falls back to provided function otherwise
+--
 local function smart_shift_tab(fallback)
 	if cmp.visible() then
 		cmp.select_prev_item()
-	elseif luasnip.jumpable(-1) then
+	elseif luasnip.expand_or_locally_jumpable(-1) then
 		luasnip.jump(-1)
 	else
 		fallback()
@@ -1016,25 +1086,33 @@ cmp.setup({
 		end,
 	},
 	mapping = {
-		-- Completion close behavior depending on mode
+		--
+		-- Note: Insert mode is used if mode is omitted
+		--
+
+		-- Navigation
+		["<C-u>"] = function()
+			utils.feedkeys("<PageUp>")
+		end,
+		["<C-d>"] = function()
+			utils.feedkeys("<PageDown>")
+		end,
+
+		-- Close behavior depending on mode
 		["<C-e>"] = mapping({
 			i = mapping.abort(), -- Close and restore line in insert mode
 			c = mapping.close(), -- Close and discard line in command mode
 		}),
 
-		-- Only input mode is mapped unless otherwise specified, so these do not conflict with default
-		-- command mode mappings
-		["<C-u>"] = mapping.scroll_docs(-4),
-		["<C-d>"] = mapping.scroll_docs(4),
-		["<C-n>"] = mapping.select_next_item(),
-		["<C-p>"] = mapping.select_prev_item(),
+		-- Enter behavior (`select = true` will select first item automatically)
+		["<CR>"] = mapping.confirm({ select = false }),
 
-		-- Pressing enter without selection automatically inserts the top item in insert mode
-		["<CR>"] = mapping.confirm({ select = true }),
-
-		-- Use Tab for selection and Ctrl-Space for completion toggle in all modes
+		-- Tab behavior
 		["<Tab>"] = mapping(smart_tab, { "i", "s" }),
 		["<S-Tab>"] = mapping(smart_shift_tab, { "i", "s" }),
+
+		-- Completion triggers
+		["<C-Tab>"] = mapping(mapping.complete(), { "i", "s" }),
 		["<C-Space>"] = mapping(mapping.complete(), { "i", "s" }),
 	},
 	sources = {
@@ -1051,7 +1129,7 @@ cmp.setup({
 		{ name = "emoji" },
 	},
 	formatting = {
-		-- Use lspkind-nvim to display source as icon instead of text
+		-- Use lspkind-nvim to display icon instead of text
 		format = lspkind.cmp_format({ with_text = false, maxwidth = 50 }),
 	},
 

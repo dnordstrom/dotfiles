@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+#
+# For nix-shell with dependencies:
+#!/usr/bin/env nix-shell
+#! nix-shell -i bash -p curl jq unzip
+#
+# LAUNCHER TITLE
+#
+# Launcher description.
+#
+# Credit
+#
+#     - Link: https://example.com
+#
+
+# Quick reference:
+#
+#     - Select directory:
+#       selection=$(fd --type directory . ~/ -d 1 | fzf)
+
+options=$'Option 1\nOption 2\nOption 3'
+selection=$(printf "%s" "$options" | fzf)
+
+if [ -z "$selection" ]; then
+  exit 0
+fi
+
+printf "%s\n" "$selection"
+
+# vim:ft=sh

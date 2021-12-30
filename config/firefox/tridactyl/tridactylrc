@@ -12,13 +12,13 @@ sanitise tridactyllocal tridactylsync
 " Settings
 "
 
-colorscheme nord
+colorscheme catpuccin
 
 " General
 
 set newtab https://nordix.blue#photo
 set allowautofocus false
-set editorcmd alacritty --class 'terminal' --title 'terminal' -e nvim %f '+normal!%lGzv%c|'
+set editorcmd kitty --class popupterm -e nvim %f "+normal!%lGzv%c|"
 set hintchars fdsqjklmrezauiopwxcvghtybn
 set hintuppercase false
 set minincsearchlen 2
@@ -26,7 +26,7 @@ set searchengine google
 set smoothscroll true
 set tabopencontaineraware true
 set visualenterauto true
-set viewsource default
+set viewsource tridactyl
 
 " Search
 
@@ -100,6 +100,7 @@ command writeinstagram js (() => { const a = document.createElement('a'); const 
 
 bind <Space>rr composite reconfig ; notify Configuration reloaded.
 bind <Space>rR composite reconfiglive ; notify Live configuration reloaded.
+bind <C-,> viewconfig
 
 " Notes
 
@@ -171,9 +172,12 @@ bind --mode=ex <A-p> exclaim_quiet wtype -k up
 " Insert mode
 
 " Vim style
-bind --mode=insert <C-h> exclaim_quiet wtype -k left
-bind --mode=insert <C-j> exclaim_quiet wtype -k down
-bind --mode=insert <C-k> exclaim_quiet wtype -k up
+bind --mode=insert <C-a> exclaim_quiet wtype -k home
+bind --mode=insert <C-e> exclaim_quiet wtype -k end
+
+" Open in editor (<C-i> doesn't always work)
+bind --mode=insert <AC-i> editor
+bind --mode=insert <C-.> editor
 
 " Marks
 

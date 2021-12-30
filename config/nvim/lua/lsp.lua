@@ -6,13 +6,13 @@ local null_ls = require("null-ls")
 local lspconfig = require("lspconfig")
 local cmp_nvim_lsp = require("cmp_nvim_lsp")
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-local servers = {
+local nvim_buf_get_option = vim.api.nvim_buf_get_option
+local autoload = {
 	"bashls",
 	"cssls",
 	"gopls",
 	"html",
 	"jsonls",
-	"null-ls",
 	"rnix",
 	"tsserver",
 	"vimls",
@@ -24,6 +24,22 @@ local signs = {
 	DiagnosticSignHint = " ",
 	DiagnosticSignInfo = " ",
 }
+
+local disable_formatting = function(client)
+	client.resolved_capabilities.document_formatting = false
+	client.resolved_capabilities.document_range_formatting = false
+end
+
+local enable_formatting = function(client)
+	if client.resolved_capabilities.document_formatting then
+		vim.cmd([[
+      augroup autoformat
+      autocmd!
+      autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()
+      augroup end
+    ]])
+	end
+end
 
 --
 -- CONFIGURATION
@@ -51,14 +67,21 @@ capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 -- null-ls for formatting
 
-null_ls.config({
+null_ls.setup({
 	sources = {
 		null_ls.builtins.formatting.eslint_d,
 		null_ls.builtins.formatting.stylua,
 		null_ls.builtins.formatting.fixjson,
 		null_ls.builtins.formatting.gofumpt,
 		null_ls.builtins.formatting.nixfmt,
-		null_ls.builtins.formatting.shfmt,
+		null_ls.builtins.formatting.shfmt.with({
+			extra_args = function(params)
+				return {
+					"-i",
+          nvim_buf_get_option(params.bufnr, "shiftwidth"),
+				}
+			end,
+		}),
 		null_ls.builtins.formatting.shellharden,
 		null_ls.builtins.formatting.stylelint,
 		null_ls.builtins.diagnostics.eslint_d,
@@ -70,31 +93,20 @@ null_ls.config({
 		null_ls.builtins.code_actions.statix,
 		null_ls.builtins.hover.dictionary,
 	},
+	on_attach = function(client)
+		enable_formatting(client)
+	end,
 })
 
 --
 -- SERVERS
 --
 
-local disable_formatting = function(client)
-	client.resolved_capabilities.document_formatting = false
-	client.resolved_capabilities.document_range_formatting = false
-end
-
-local enable_formatting = function(client)
-	if client.resolved_capabilities.document_formatting then
-		vim.cmd([[
-      augroup autoformat
-      autocmd!
-      autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()
-      augroup end
-    ]])
-	end
-end
-
-for _, lsp in ipairs(servers) do
+for _, lsp in ipairs(autoload) do
 	lspconfig[lsp].setup({
 		capabilities = capabilities,
-		on_attach = lsp == "null-ls" and enable_formatting or disable_formatting,
+		on_attach = function(client)
+			disable_formatting(client)
+		end,
 	})
 end

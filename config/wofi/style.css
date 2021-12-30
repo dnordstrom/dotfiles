@@ -1,93 +1,186 @@
 /**
-Widget layout
+ * WOFI STYLES
+ *
+ * Launch with GtkInspector:
+ *   
+ *   `GTK_DEBUG=interactive wofi`
+ *
+ * Layout reference:
+ * 
+ *   window - #window
+ *     box - #outer-box
+ *       entry - #input
+ *       scrolledwindow - #scroll
+ *         viewport
+ *           box
+ *             flowbox - #inner-box
+ *               flowboxchild - #entry
+ *                 .entry - #unselected or #selected
+ *                    This only exists if there's ONLY 1 action. This is a WofiPropertyBox which has no CSS node and should probably not be used, the name is dependent on whether or not the entry is selected. See wofi(5) on #selected and #unselected for info.
+ *                     image
+ *                       This is only present if an image is present in the entry and might occur multiple times if multiple images are present.
+ *                     label
+ *                       This is only present if text is present in the entry and might occur multiple times if there are multiple text objects in a single entry.
+ *                   expander
+ *                     This and its children only exist if there are multiple actions on the entry
+ *                     .entry - #unselected or #selected
+ *                       The main action. This is a WofiPropertyBox which has no CSS node and should probably not be used, the name is dependent on whether or not the entry is selected. See wofi(5) on #selected and #unselected for info.
+ *                       image
+ *                         This is only present if an image is present in the entry and might occur multiple times if multiple images are present.
+ *                       label
+ *                         This is only present if text is present in the entry and might occur multiple times if there are multiple text objects in a single entry.
+ *                     list
+ *                       This contains all the secondary actions
+ *                       row - #entry
+ *
+ *                       .entry - #unselected or #selected
+ *                         This is a WofiPropertyBox which has no CSS node and should probably not be used, the name is dependent on whether or not the entry is selected. See wofi(5) on #selected and #unselected for info.
+ *                           image
+ *                             This is only present if an image is present in the entry and might occur multiple times if multiple images are present.
+ *
+ *                           label
+ *                             This is only present if text is present in the entry and might occur multiple times if there are multiple text objects in a single entry.
+ *
+ *         scrollbar
+ */
 
-window - #window
-  box - #outer-box
-    entry - #input
-    scrolledwindow - #scroll
-      viewport
-        box
-          flowbox - #inner-box
-            flowboxchild - #entry
-              .entry - #unselected or #selected
-                 This only exists if there's ONLY 1 action. This is a WofiPropertyBox which has no CSS node and should probably not be used, the name is dependent on whether or not the entry is selected. See wofi(5) on #selected and #unselected for info.
-                  image
-                    This is only present if an image is present in the entry and might occur multiple times if multiple images are present.
-                  label
-                    This is only present if text is present in the entry and might occur multiple times if there are multiple text objects in a single entry.
-                expander
-                  This and its children only exist if there are multiple actions on the entry
-                  .entry - #unselected or #selected
-                    The main action. This is a WofiPropertyBox which has no CSS node and should probably not be used, the name is dependent on whether or not the entry is selected. See wofi(5) on #selected and #unselected for info.
-                    image
-                      This is only present if an image is present in the entry and might occur multiple times if multiple images are present.
-                    label
-                      This is only present if text is present in the entry and might occur multiple times if there are multiple text objects in a single entry.
-                  list
-                    This contains all the secondary actions
-                    row - #entry
+/* Dashed lines around scroll container */
 
-                    .entry - #unselected or #selected
-                      This is a WofiPropertyBox which has no CSS node and should probably not be used, the name is dependent on whether or not the entry is selected. See wofi(5) on #selected and #unselected for info.
-                        image
-                          This is only present if an image is present in the entry and might occur multiple times if multiple images are present.
-
-                        label
-                          This is only present if text is present in the entry and might occur multiple times if there are multiple text objects in a single entry.
-
-      scrollbar
-*/
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 0.92; }
+undershoot,
+overshoot {
+  background-image: none;
 }
+
+/* Fade in on launch */
+
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Main window */
 
 window {
   margin: 0;
-  background: #1f2430;
-  border: none;
-  opacity: 0.92;
-  animation-name: fadeIn;
-  animation-duration: 0.25s;
+  padding: 0;
+  font-family: "InputSansCondensed Nerd Font";
+  font-size: 12px;
+  background: rgba(45, 41, 59, 0.95);
+  border: 2px solid #EADDA0;
+  opacity: 1;
+  animation-name: fade;
+  animation-duration: 0.5s;
 }
 
-#input {
-  margin: 5px;
-  border: none;
-  color: #bfbab0;
-}
-
-#inner-box {
-  margin: 5px;
-  border: none;
-}
+/* List and input container */
 
 #outer-box {
-  margin: 5px;
-  border: none;
+  margin: 12px;
 }
 
-#scroll {
-  margin: 0px;
-  border: none;
+/* List container */
+
+#inner-box {
+  margin: 0;
 }
 
-#text {
-  margin: 8px;
+/* Search field */
+
+#input {
   background: none;
   border: none;
-  color: #bfbab0;
-  font-weight: normal;
+  border-radius: 0;
+  font-size: 16px;
+  padding: 6px 16px;
+  margin: 10px 0;
 }
 
-#entry:selected {
-  background: #33415e;
-  border: none;
+#input image.left {
+  padding-right: 8px;
+  min-width: 100px;
+  margin-left: -100px;
+}
+
+#input image.right {
+  min-width: 100px;
+  margin-right: -100px;
+}
+
+/* List entries */
+
+#text,
+#text:selected,
+list {
+  color: #bfbab0;
   font-weight: normal;
-  outline: none;
+  padding: 0;
+  background: none;
+}
+
+#entry {
+  background: none;
+  padding: 0;
 }
 
 .entry {
-  margin: 5px;
+  padding: 22px 0;
 }
+
+#entry,
+#entry title {
+  outline: none;
+}
+
+arrow {
+  color: rgba(198, 170, 232, 0.15);
+  padding-left: 16px;
+  margin-right: -16px;
+  min-width: 22px;
+}
+
+#entry:selected expander arrow {
+  color: rgba(198, 170, 232, 0.3);
+}
+
+#entry:selected:focus expander arrow {
+  color: rgba(198, 170, 232, 1);
+}
+
+list .entry {
+  outline: none;
+  padding: 12px 22px;
+}
+
+#img {
+  background: none;
+  padding: 0 1em 0 22px;
+}
+
+#entry #entry #img {
+  -gtk-icon-transform: scale(0.75);
+}
+
+/* Items with no icon (such as run mode items) */
+
+#text:only-child {
+  padding: 0 22px;
+}
+
+/* Focused entry text */
+
+#entry:selected:focus > box > #text,
+#entry:selected:focus > expander > title #text,
+expander:focus title #text {
+  font-weight: bold;
+  color: #C6AAE8;
+}
+
+/* Focused entry container */
+
+#entry:selected:focus > box,
+#entry:selected:focus > expander,
+expander:focus {
+  /* background: rgba(30, 30, 41, 0.75); */
+}
+
+

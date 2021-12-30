@@ -21,14 +21,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     utils = { url = "github:gytis-ivaskevicius/flake-utils-plus"; };
-    # nur = {
-    #   url = "github:nix-community/NUR";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-    # neovim-contrib = {
-    #   url = "github:neovim/neovim?dir=contrib";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
   };
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-master, nixpkgs-wayland

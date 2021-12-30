@@ -61,35 +61,21 @@
   margin: 10px 10px 0 10px;
 }
 
+/* Section containers */ 
+.modules-left,
+.modules-center,
+.modules-right {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.25);
+  margin-bottom: 3px;
+}
+
 /**
  * DEFAULT MODULE STYLES
  */
 
-#mode,
-#clock,
-#battery,
-#cpu,
-#memory,
-#disk,
-#temperature,
-#backlight,
-#network,
-#pulseaudio,
-#tray,
-#idle_inhibitor,
-#custom-media,
-#custom-keyboard,
-#custom-disks,
-#custom-wttr,
-#custom-darksky,
-#custom-system,
-#custom-separator,
-#custom-files,
-#custom-browser,
-#custom-mail,
-#custom-tmpmail,
-#custom-editor,
-#custom-terminal {
+box > box > widget > box, 
+box > box > widget > label {
   background: @black2;
   color: @white;
   padding: 0px 14px 1px;
@@ -143,17 +129,10 @@
 #window {
   background: @black3;
   color: @gray2;
-  /* padding: 0 10px; */
 }
 
-#window * {
+#waybar:not(.empty) #window {
   padding: 0 10px;
-}
-
-window#waybar.solo #window {
-}
-
-window#waybar.firefox-nightly #window {
 }
 
 #custom-files,
@@ -193,25 +172,18 @@ window#waybar.firefox-nightly #window {
  * RIGHT
  */
 
-#tray {
+.modules-right widget:first-child > box {
   padding: 0 6px 0 16px;
-}
-
-#custom-tmpmail {
-  padding-left: 4px;
-  padding-right: 16px;
 }
 
 #custom-wttr {
   background: @magenta;
   color: @black2;
-  padding: 0 16px;
 }
 
-#idle_inhibitor {
-  padding-right: 16px;
-  margin-right: 0;
-  font-size: 15px;
+#custom-tmpmail,
+#custom-keyboard {
+  padding: 0 10px;
 }
 
 #pulseaudio {

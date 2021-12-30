@@ -10,4 +10,3 @@ require("pluginsetup")
 require("maps")
 require("lsp")
 require("autocmds")
-

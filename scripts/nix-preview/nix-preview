@@ -172,9 +172,9 @@ stringstartswith() {
 printf "\n%s\n\n" "Any symlinks created need to be removed before a nixos-rebuild. A cleanup script for this will be generated at $cleanupfile. For convenience, create a prebuild script or alias, e.g. aliasing \"nb\" to \"$cleanupfile; nixos-rebuild switch --upgrade;\"."
 
 # Ask about Sway
-if confirm --strict "Enable for Sway (rm -rf ~/.config/sway)?"; then
+if confirm --strict "Enable for Sway (rm -f ~/.config/sway)?"; then
   printf "\n"
-  loudly "rm -rf ~/.config/sway"
+  loudly "rm -f ~/.config/sway"
   loudly "ln -s /etc/nixos/config/sway ~/.config/sway"
   cleanup="$cleanup\nrm ~/.config/sway"
 fi
@@ -182,11 +182,21 @@ fi
 printf "\n"
 
 # Ask about Waybar
-if confirm --strict "Enable for Waybar (rm -rf ~/.config/waybar)?"; then
+if confirm --strict "Enable for Waybar (rm -f ~/.config/waybar)?"; then
   printf "\n"
-  loudly "rm -rf ~/.config/waybar"
+  loudly "rm -f ~/.config/waybar"
   loudly "ln -s /etc/nixos/config/waybar ~/.config/waybar"
   cleanup="$cleanup\nrm ~/.config/waybar"
+fi
+
+printf "\n"
+
+# Ask about wofi
+if confirm --strict "Enable for wofi (rm -f ~/.config/wofi)?"; then
+  printf "\n"
+  loudly "rm -f ~/.config/wofi"
+  loudly "ln -s /etc/nixos/config/wofi ~/.config/wofi"
+  cleanup="$cleanup\nrm ~/.config/wofi"
 fi
 
 printf "\n"

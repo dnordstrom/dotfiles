@@ -7,6 +7,7 @@
   convox = pkgs.callPackage ./convox { };
   hydroxide = pkgs.callPackage ./hydroxide { };
   jira-cli = pkgs.callPackage ./jira-cli { };
+  protoncheck = pkgs.callPackage ./protoncheck { };
   protonvpn-cli = pkgs.callPackage ./protonvpn-cli { };
   protonvpn-gui = pkgs.callPackage ./protonvpn-gui { };
   protonvpn-nm-lib = pkgs.callPackage ./protonvpn-nm-lib { };

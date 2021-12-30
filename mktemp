@@ -1,0 +1,6 @@
+{
+  "name": "dnordstrom@nordix:/etc/nixos",
+  "type": "floating_con",
+  "title": null,
+  "app_id": "kitty"
+}

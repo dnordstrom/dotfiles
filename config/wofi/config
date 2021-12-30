@@ -1,12 +1,16 @@
 mode=drun,run
+normal_window=true
 colors=colors
+gtk_dark=true
 filter_rate=100
 allow_images=true
+allow_markup=true
 image_size=32px
 drun-display_generic=true
 dynamic_lines=true
 term=kitty
 insensitive=true
 prompt=
-width=500
+width=550
 hide_scroll=true
+key_expand=Control_L-Return

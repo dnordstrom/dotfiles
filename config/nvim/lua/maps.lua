@@ -2,8 +2,9 @@
 -- KEY MAPS
 --
 -- Notes:
---  * nvim_set_keymap("", ...) maps normal, visual/select, and operator pending modes
---  * nvim_set_keymap("!", ...) maps command and insert modes
+--
+--   - `nvim_set_keymap("", ...)` maps normal, visual, and operator pending mode
+--   - `nvim_set_keymap("!", ...)` maps command and insert mode
 --
 
 --
@@ -20,7 +21,7 @@ local nvim_exec = vim.api.nvim_exec
 local nvim_set_keymap = vim.api.nvim_set_keymap
 local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
 local opts = {
-	-- Regular
+	-- "Regular"
 	re = {},
 	expr = { expr = true },
 	silent = { silent = true },
@@ -32,9 +33,21 @@ local opts = {
 	noreSilent = { noremap = true, silent = true },
 	noreSilentExpr = { noremap = true, silent = true, expr = true },
 
-	-- No wait
+	-- Other
 	nowait = { nowait = true },
 }
+
+-- Adds an abbreviation, by default prefixed with comma
+local abbreviate = function(lhs, rhs, options)
+	options = options or {}
+
+	expr = options.expr and " <expr> " or " "
+	prefix = options.prefix or ";"
+	suffix = options.suffix or ";"
+	command = "abbreviate" .. expr .. prefix .. lhs .. suffix .. " " .. rhs
+
+	nvim_exec(command, false)
+end
 
 --
 -- Convenient...
@@ -43,14 +56,18 @@ local opts = {
 -- ...command mode
 nvim_set_keymap("n", ";", ":", opts.nore)
 
+-- ...window switch
+nvim_set_keymap("n", "<Tab>", "<Cmd>wincmd w<CR>", opts.nore)
+
 -- ...buffer switch
 nvim_set_keymap("n", "<Leader><Leader>", "<C-^>", opts.nore)
 
--- ...highlight disabling
-nvim_set_keymap("n", "<Esc>", "<Cmd>set nohlsearch<CR>", opts.nore)
+-- ...indent
+nvim_set_keymap("v", "<Tab>", ">gv", opts.nore)
+nvim_set_keymap("v", "<S-Tab>", "<gv", opts.nore)
 
--- ...second leader
-nvim_set_keymap("n", ",", "<Leader>", opts.re)
+-- ...highlight toggle
+nvim_set_keymap("n", "<Esc>", "<Cmd>set hlsearch!<CR>", opts.nore)
 
 -- ...find
 nvim_set_keymap("n", "<C-Space>", "<Cmd>FzfLua<CR>", opts.nore)
@@ -69,18 +86,13 @@ nvim_set_keymap("n", '"T', '"t', opts.nore) -- Throw-away
 nvim_set_keymap("n", "<Leader>-", ":split | wincmd j<CR>", opts.nore)
 nvim_set_keymap("n", "<Leader>|", ":vsplit | wincmd l<CR>", opts.nore)
 
--- ...window navigation (uses Kitty binds for seamless navigation)
--- nvim_set_keymap("n", "<C-h>", "<C-w>h", opts.nore)
--- nvim_set_keymap("n", "<C-j>", "<C-w>j", opts.nore)
--- nvim_set_keymap("n", "<C-k>", "<C-w>k", opts.nore)
--- nvim_set_keymap("n", "<C-l>", "<C-w>l", opts.nore)
-
 --
 -- Compliment defaults with...
 --
 
 -- ...save and keep (ZZ, ZQ)
 nvim_set_keymap("n", "ZA", "<Cmd>w<CR>", opts.nore)
+nvim_set_keymap("i", "ZA", "<Cmd>w<CR>", opts.nore)
 
 --
 -- Modify defaults to...
@@ -171,14 +183,19 @@ nvim_set_keymap("v", "<S-C-j>", ":m'>+<CR>gv=gv", opts.nore)
 -- Insert mode
 --
 
--- Navigate text
+-- Navigate
 nvim_set_keymap("i", "<C-h>", "<Left>", opts.nore)
 nvim_set_keymap("i", "<C-j>", "<Down>", opts.nore)
 nvim_set_keymap("i", "<C-k>", "<Up>", opts.nore)
 nvim_set_keymap("i", "<C-l>", "<Right>", opts.nore)
 
--- Delete word backwards
-nvim_set_keymap("i", "<C-BS>", "<C-o>db", opts.nore) -- <C-H> is <C-BS> since it gives ^H escape sequence
+-- Delete
+--
+-- Note: Won't work in most terminal emulators since C-H usually emits ^H for historical reasons.
+-- Here it's configured to be more useful.
+nvim_set_keymap("i", "<S-BS>", "<Esc>dbxi", opts.nore) -- To beginning of word
+nvim_set_keymap("i", "<C-BS>", "<Esc>d^xi", opts.nore) -- To beginning of line
+nvim_set_keymap("i", "<S-C-BS>", "<Esc>ddkA", opts.nore) -- Whole line
 
 --
 -- Command mode
@@ -270,7 +287,7 @@ nvim_set_keymap("n", "<Leader>fb", "<Cmd>FzfLua buffers<CR>", opts.nore)
 nvim_set_keymap("n", "<Leader>fc", "<Cmd>FzfLua commands<CR>", opts.nore)
 
 -- ...files by (g)repping content
-nvim_set_keymap("n", "<Leader>fg", "<Cmd>FzfLua live_grep<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>fg", "<Cmd>FzfLua live_grep_native<CR>", opts.nore)
 
 -- ...help
 nvim_set_keymap("n", "<Leader>fh", "<Cmd>FzfLua help_tags<CR>", opts.nore)
@@ -302,6 +319,18 @@ nvim_set_keymap("n", "<Space>bL", "<Cmd>ls<CR>:b<Space>", opts.nore)
 
 -- ...delete (wipeout, not just hide)
 nvim_set_keymap("n", "<Space>bd", "<Cmd>bwipeout<CR>", opts.nore)
+
+--
+-- Put/paste...
+--
+
+-- ...time as YYYY-MM-DD HH:MM
+nvim_set_keymap("n", "<Leader>pt", '"=strftime("%Y-%m-%d %H:%M")<CR>p', opts.nore)
+abbreviate("time", "strftime('%Y-%m-%d %H:%M')", { expr = true })
+
+-- ...time as MMM DD, YYYY
+nvim_set_keymap("n", "<Leader>pT", '"=strftime("%b %d, %Y")<CR>p', opts.nore)
+abbreviate("date", "strftime('%b %d, %Y')", { expr = true })
 
 --
 -- Editor

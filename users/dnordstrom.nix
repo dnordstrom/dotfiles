@@ -158,6 +158,7 @@ in {
     nordpkgs.hydroxide
     nordpkgs.convox
     nordpkgs.jira-cli
+    nordpkgs.protoncheck
     nordpkgs.protonvpn-gui
     nordpkgs.protonvpn-cli
 
@@ -165,6 +166,16 @@ in {
     openvpn
     gnome.gnome-keyring
     libgnome-keyring
+    nm-tray
+    speedcrunch
+    libsForQt5.kcalc
+    pro-office-calculator
+    gnome.gnome-calculator
+    lumina.lumina-calculator
+    ytmdesktop
+    enlightenment.econnman
+    krita
+    qview
 
     #
     # Nix
@@ -240,7 +251,9 @@ in {
     fnott
     grim
     imagemagick
-    imv # Command line image viewer
+    imv
+    kanshi
+    swaykbdd
     libinput # For trackpad gestures
     nwg-drawer
     nwg-launchers
@@ -252,11 +265,12 @@ in {
     swaylock-effects
     swaywsr
     vimiv-qt # QT image viewer
-    wdisplays
+    wdisplays # Display manager
     wev
     wf-recorder
     wl-clipboard
     wlogout
+    wlsunset
     masterPackages.wofi
     wofi-emoji
     workstyle
@@ -269,7 +283,10 @@ in {
 
     glib
     gnome-breeze
+    gnome.dconf-editor
     gnomeExtensions.gsconnect
+    gsettings-desktop-schemas
+    gsettings-qt
 
     #
     # Web browsing
@@ -391,14 +408,19 @@ in {
     # Theming
     masterPackages.themechanger
     qt5ct
+    gtk-engine-murrine
+    gtk_engines
+    lxappearance
+    flashfocus
 
     # Themes
     nordic # GTK, QT, and Kvantum
     masterPackages.ayu-theme-gtk
     qogir-theme
     adwaita-qt
+    ant-theme
+    dracula-theme
     arc-icon-theme
-    numix-icon-theme-circle
     paper-icon-theme
     papirus-icon-theme
     pop-icon-theme
@@ -409,7 +431,13 @@ in {
     vimix-icon-theme
     capitaine-cursors
     numix-cursor-theme
+    numix-gtk-theme
+    numix-sx-gtk-theme
+    numix-icon-theme
+    numix-icon-theme-circle
+    numix-icon-theme-square
     quintom-cursor-theme
+    zafiro-icons
 
     #
     # Interesting prospects
@@ -449,8 +477,26 @@ in {
     dfilemanager
     xfce.thunar
     CuboCore.corefm
+    CuboCore.libcsys
+    CuboCore.corepdf
+    CuboCore.corepad
+    CuboCore.coretime
+    CuboCore.coreshot
+    CuboCore.corehunt
+    CuboCore.corestuff
+    CuboCore.coreimage
+    CuboCore.corestats
+    CuboCore.coregarage
+    CuboCore.corerenamer
+    CuboCore.coreterminal
+    CuboCore.corearchiver
+    CuboCore.coretoppings
     krusader
     git-crypt
+    cliphist
+
+    # For sway-fzfify
+    pv
   ];
 
   #
@@ -466,7 +512,7 @@ in {
       export MOZ_USE_XINPUT2=1
       export QT_QPA_PLATFORM=wayland
       export QT_QPA_PLATFORMTHEME=gtk2
-      export QT_STYLE_OVERRIDE=kvantum-dark
+      export QT_STYLE_OVERRIDE=qt5ct
       export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
       export SDL_VIDEODRIVER=wayland
       export XDG_CURRENT_DESKTOP=sway
@@ -483,7 +529,7 @@ in {
   qt = {
     enable = true;
     platformTheme = "gtk";
-    style = { name = "kvantum-dark"; };
+    style = { name = "qt5ct-style"; };
   };
 
   #
@@ -496,8 +542,8 @@ in {
       name = "Input Sans Condensed";
       size = 8;
     };
-    theme.name = "Nordic";
-    iconTheme.name = "Papirus-Dark";
+    theme.name = "Dracula";
+    iconTheme.name = "Zafiro-icons";
     gtk3 = {
       extraConfig.gtk-application-prefer-dark-theme = "true";
       extraCss = "";
@@ -559,8 +605,7 @@ in {
 
   # Wofi
 
-  xdg.configFile."wofi/config".source = ../config/wofi/config;
-  xdg.configFile."wofi/style.css".source = ../config/wofi/style.css;
+  xdg.configFile."wofi".source = ../config/wofi;
 
   # Waybar
 
