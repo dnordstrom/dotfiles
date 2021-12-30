@@ -369,10 +369,10 @@ bindkey "^[nv" view-notes
 for directory in ~/.scripts/*; export PATH="$PATH:$directory"
 
 #
-# Source other files
+# Source secrets, etc.
 #
 
-if [ -f "$HOME/.zsh-secrets" ]; then
-  source "$HOME/.zsh-secrets"
+if [ -f "$HOME/.env" ]; then
+  source "$HOME/.env"
 fi
 

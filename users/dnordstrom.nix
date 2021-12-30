@@ -561,6 +561,10 @@ in {
 
   home.file.".scripts".source = ../scripts;
 
+  # Secrets
+
+  home.file.".env".source = ../secrets/env;
+
   # Sway
 
   xdg.configFile."sway".source = ../config/sway;

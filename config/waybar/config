@@ -123,7 +123,13 @@
     "on-click": "grim -g \"$(slurp)\" \"$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png\"",
     "tooltip": false
   },
-   "custom/tmpmail": {
+  "custom/protoncheck": {
+		"exec": "source /etc/nixos/secrets/env ; protoncheck --username $PROTONMAIL_USERNAME --password $PROTONMAIL_PASSWORD",
+		"format": " {}",
+		"interval": 30,
+		"on-click": "xdg-open https://mail.protonmail.com/"
+  },
+  "custom/tmpmail": {
     "interval": 30,
     "format": "<span font='11' rise='-1500'>ﯬ</span>",
     "exec": "echo \"\"; echo \"$(cat /tmp/tmpmailgen 2>/dev/null || echo -n 'No address available')\"; echo \"tmpmail\"
