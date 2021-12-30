@@ -431,9 +431,13 @@ exec_always --no-startup-id flashfocus
 
 exec_always pkill swayrd ; env RUST_BACKTRACE=1 swayrd > /tmp/swayrd.log 2>&1
 
-# Start workspace rename script
+# Start workspace renamer
 
 exec_always pkill -f sway-dynamic-workspace-names ; sway-dynamic-workspace-names > /tmp/sway-dynamic-workspace-names.log 2>&1
+
+# Start inactive window dimmer
+
+exec_always pkill -f sway-dim-inactive-windows ; sway-dim-inactive-windows > /tmp/sway-dim-inactive-windows.log 2>&1
 
 #
 # STATUS BAR

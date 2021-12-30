@@ -19,6 +19,7 @@
     "tray",
     "idle_inhibitor",
     "custom/tmpmail",
+    "custom/protoncheck",
     "custom/keyboard",
     "custom/wttr",
     "pulseaudio"
@@ -125,9 +126,9 @@
   },
   "custom/protoncheck": {
 		"exec": "source /etc/nixos/secrets/env ; protoncheck --username $PROTONMAIL_USERNAME --password $PROTONMAIL_PASSWORD",
-		"format": " {}",
+		"format": "<span font='12' rise='-1500'> </span>{}",
 		"interval": 30,
-		"on-click": "xdg-open https://mail.protonmail.com/"
+		"on-click": "xdg-open https://mail.protonmail.com/inbox"
   },
   "custom/tmpmail": {
     "interval": 30,
