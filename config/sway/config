@@ -47,8 +47,8 @@ set $term kitty --single-instance
 set $scratchterm $term --class scratchterm --session /etc/nixos/config/kitty/scratchpad.session
 set $menu wofi
 set $files dolphin
-set $snaparea grim -g "$(slurp)" "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png"
-set $snapfull grim -o "$(slurp -o -f '%o')" "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png"
+set $snaparea file="$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png" ; grim -g "$(slurp)" "$file" && swappy -f "$file"
+set $snapfull file="$(slurp -o -f '%o')" "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png" ; grim -o "$file" && swappy -f "$file"
 set $sway-props "file=$(mktemp) ; swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true) | { name, type, title, app_id }' > $file ; kitty --class popupterm less $file"
 
 set $lock swaylock \
@@ -330,6 +330,7 @@ bindsym $mod+n mode "$mode_navigation"
 
 #
 # SCREENSHOT MODE
+#
 #   a -> select area
 #   s -> select screen
 #   PrintSc -> select area (PrintSc > PrintSc)
