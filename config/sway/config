@@ -425,7 +425,7 @@ for_window {
 }
 
 # Start flashfocus for flashing window animation on focus change
-exec_always --no-startup-id flashfocus
+exec_always pkill flashfocus ; flashfocus > /tmp/flashfocus.log 2>&1
 
 # Start swayr daemon
 

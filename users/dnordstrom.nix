@@ -261,6 +261,7 @@ in {
     nwg-panel
     nwg-panel
     slurp
+    swappy
     swayidle
     swaylock-effects
     swaywsr
@@ -570,6 +571,10 @@ in {
   xdg.configFile."sway".source = ../config/sway;
   xdg.configFile."swaylock/config".source = ../config/swaylock/config;
   xdg.configFile."swaynag/config".source = ../config/swaynag/config;
+
+  # Swappy 
+
+  xdg.configFile."swappy/config".source = ../config/swappy/config;
 
   # Kitty
 

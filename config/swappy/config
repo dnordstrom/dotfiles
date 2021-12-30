@@ -1,0 +1,7 @@
+[Default]
+save_dir=$HOME/Pictures/Screenshots
+save_filename_format=%Y%m%d-%Hh%Mm%Ss_swappy.png
+show_panel=true
+line_size=5
+text_size=16
+text_font="Input Sans Condensed"
