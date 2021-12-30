@@ -557,13 +557,13 @@ in {
   # CONFIGURATION FILES
   #
 
-  # Scripts
-
-  home.file.".scripts".source = ../scripts;
-
   # Secrets
 
   home.file.".env".source = ../secrets/env;
+
+  # Scripts
+
+  home.file.".scripts".source = ../scripts;
 
   # Sway
 
