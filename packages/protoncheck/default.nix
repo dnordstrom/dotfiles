@@ -9,10 +9,10 @@ buildGoModule rec {
     owner = "servusdei2018";
     repo = pname;
     rev = "refs/tags/${version}";
-    sha256 = "";
+    sha256 = "sha256-YPgvIHrWEkGzFnrzCL5pH7eeHUV+NT7KQcqDRA5v7Hg=";
   };
 
-  vendorSha256 = "";
+  vendorSha256 = "sha256-91yhIUSk04iA2ANYjwj5KnAfqPPbWXaxJ+dIcG7APbc=";
 
   doCheck = false;
 

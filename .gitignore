@@ -1,4 +1,2 @@
 config/vscode/defaults/node_modules
-secrets
 nixpkgs
-.hosts
