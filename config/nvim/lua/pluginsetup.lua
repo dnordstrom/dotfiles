@@ -838,6 +838,7 @@ ls.config.setup({
 })
 
 -- Extend filetypes with snippets from other types
+ls.filetype_extend("sh", { "shell" })
 ls.filetype_extend("javascriptreact", { "javascript" })
 ls.filetype_extend("typescript", { "javascript" })
 ls.filetype_extend("typescriptreact", { "typescript", "javascriptreact" })

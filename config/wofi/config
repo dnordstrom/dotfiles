@@ -1,7 +1,6 @@
 mode=drun,run
 normal_window=true
-colors=colors
-matching=fuzzy
+matching=contains
 gtk_dark=true
 filter_rate=100
 allow_images=true

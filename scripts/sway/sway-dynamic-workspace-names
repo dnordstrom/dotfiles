@@ -62,7 +62,7 @@ def assign_generic_name(i3, e):
                     w_name = con.name if con.name else ''
 
                     if w_name and ws_num:
-                        name = "%s: %s\u00a0%s" % (ws_num, glyph(ws_num), w_name)
+                        name = "%s: %s %s" % (ws_num, glyph(ws_num))
                         i3.command('rename workspace "%s" to %s' % (ws_num, name))
 
             else:

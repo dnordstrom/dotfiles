@@ -9,140 +9,139 @@ local installed = fn.empty(fn.glob(path)) == 0
 local bootstrapped = false
 
 if not installed then
-  bootstrapped = fn.system({string.split(command, " "), path})
+	bootstrapped = fn.system({ string.split(command, " "), path })
 end
 
 return require("packer").startup(function(use)
-  local plenary = "nvim-lua/plenary.nvim"
-  local devicons ="kyazdani42/nvim-web-devicons"
+	local plenary = "nvim-lua/plenary.nvim"
+	local devicons = "kyazdani42/nvim-web-devicons"
 
-  --
-  -- Neovim
-  --
+	--
+	-- Neovim
+	--
 
-  use {plenary}
-  use {"wbthomason/packer.nvim"}
-  use {"famiu/nvim-reload"}
+	use({ plenary })
+	use({ "wbthomason/packer.nvim" })
+	use({ "famiu/nvim-reload" })
 
-  --
-  -- UI
-  --
+	--
+	-- UI
+	--
 
-  -- Icons
+	-- Icons
 
-  use {devicons}
+	use({ devicons })
 
-  -- Lines
+	-- Lines
 
-  use {"famiu/feline.nvim", branch = "develop"}
-  use {"noib3/cokeline.nvim", requires = devicons}
+	use({ "famiu/feline.nvim", branch = "develop" })
+	use({ "noib3/cokeline.nvim", requires = devicons })
 
-  -- Colorschemes
+	-- Colorschemes
 
-  use {"shaunsingh/nord.nvim"}
-  use {"rmehri01/onenord.nvim", branch = "main"}
-  use {"catppuccin/nvim", as = "catppuccin"}
+	use({ "shaunsingh/nord.nvim" })
+	use({ "rmehri01/onenord.nvim", branch = "main" })
+	use({ "catppuccin/nvim", as = "catppuccin" })
 
-  -- Files and buffers
+	-- Files and buffers
 
-  use {"famiu/bufdelete.nvim"}
-  use {"kyazdani42/nvim-tree.lua", requires = devicons}
-  use {"vijaymarupudi/nvim-fzf"}
-  use {"ibhagwan/fzf-lua"}
-  use {"vifm/vifm.vim"}
+	use({ "famiu/bufdelete.nvim" })
+	use({ "kyazdani42/nvim-tree.lua", requires = devicons })
+	use({ "vijaymarupudi/nvim-fzf" })
+	use({ "ibhagwan/fzf-lua" })
+	use({ "vifm/vifm.vim" })
 
-  --
-  -- Movement
-  --
+	--
+	-- Movement
+	--
 
-  use {"folke/which-key.nvim"}
-  use {"ggandor/lightspeed.nvim"}
-  use {"numToStr/Navigator.nvim"} -- tmux
-  use {"knubie/vim-kitty-navigator"} -- kitty
+	use({ "folke/which-key.nvim" })
+	use({ "ggandor/lightspeed.nvim" })
+	use({ "numToStr/Navigator.nvim" }) -- tmux
+	use({ "knubie/vim-kitty-navigator" }) -- kitty
 
-  --
-  -- Language and syntax
-  --
+	--
+	-- Language and syntax
+	--
 
-  -- LSP
+	-- LSP
 
-  use {"neovim/nvim-lspconfig"}
-  use {"jose-elias-alvarez/null-ls.nvim"}
-  use {"jose-elias-alvarez/nvim-lsp-ts-utils"}
-  use {"folke/trouble.nvim", requires = devicons}
-  use {"onsails/lspkind-nvim"}
+	use({ "neovim/nvim-lspconfig" })
+	use({ "jose-elias-alvarez/null-ls.nvim" })
+	use({ "jose-elias-alvarez/nvim-lsp-ts-utils" })
+	use({ "folke/trouble.nvim", requires = devicons })
+	use({ "onsails/lspkind-nvim" })
 
-  -- Language
+	-- Language
 
-  use {"LnL7/vim-nix"}
-  use {"fladson/vim-kitty"}
-  use {"tpope/vim-markdown"}
-  use {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"}
-  use {"nvim-treesitter/nvim-treesitter-textobjects"}
+	use({ "LnL7/vim-nix" })
+	use({ "fladson/vim-kitty" })
+	use({ "tpope/vim-markdown" })
+	use({ "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" })
+	use({ "nvim-treesitter/nvim-treesitter-textobjects" })
 
-  -- Completion
+	-- Completion
 
-  use {"hrsh7th/cmp-nvim-lsp"}
-  use {"hrsh7th/cmp-cmdline"}
-  use {"hrsh7th/cmp-buffer"}
-  use {"hrsh7th/cmp-path"}
-  use {"hrsh7th/cmp-calc"}
-  use {"hrsh7th/cmp-emoji"}
-  use {"hrsh7th/nvim-cmp"}
-  use {"saadparwaiz1/cmp_luasnip"}
-  use {"ray-x/cmp-treesitter"}
-  use {"ujihisa/neco-look"}
-  use {"f3fora/cmp-spell"}
+	use({ "hrsh7th/cmp-nvim-lsp" })
+	use({ "hrsh7th/cmp-cmdline" })
+	use({ "hrsh7th/cmp-buffer" })
+	use({ "hrsh7th/cmp-path" })
+	use({ "hrsh7th/cmp-calc" })
+	use({ "hrsh7th/cmp-emoji" })
+	use({ "hrsh7th/nvim-cmp" })
+	use({ "saadparwaiz1/cmp_luasnip" })
+	use({ "ray-x/cmp-treesitter" })
+	use({ "ujihisa/neco-look" })
+	use({ "f3fora/cmp-spell" })
 
-  -- Snippets
+	-- Snippets
 
-  use {"L3MON4D3/LuaSnip"}
-  use {"rafamadriz/friendly-snippets"}
+	use({ "L3MON4D3/LuaSnip" })
+	use({ "rafamadriz/friendly-snippets" })
 
-  -- Refactoring
+	-- Refactoring
 
-  use {"filipdutescu/renamer.nvim", branch = "master", requires = plenary}
-  use {
-   "ThePrimeagen/refactoring.nvim",
-    requires = {{plenary}, {"nvim-treesitter/nvim-treesitter"}}
-  }
+	use({ "filipdutescu/renamer.nvim", branch = "master", requires = plenary })
+	use({
+		"ThePrimeagen/refactoring.nvim",
+		requires = { { plenary }, { "nvim-treesitter/nvim-treesitter" } },
+	})
 
-  -- Comments
+	-- Comments
 
-  use {"numToStr/Comment.nvim"}
-  use {"JoosepAlviste/nvim-ts-context-commentstring"}
+	use({ "numToStr/Comment.nvim" })
+	use({ "JoosepAlviste/nvim-ts-context-commentstring" })
 
-  --
-  -- Utilities
-  --
+	--
+	-- Utilities
+	--
 
-  -- Text
+	-- Text
 
-  use {"windwp/nvim-autopairs"}
-  use {"blackCauldron7/surround.nvim"}
-  use {"tpope/vim-repeat"}
+	use({ "windwp/nvim-autopairs" })
+	use({ "blackCauldron7/surround.nvim" })
+	use({ "tpope/vim-repeat" })
 
-  -- Visuals
+	-- Visuals
 
-  use {"norcalli/nvim-colorizer.lua"}
-  use {"folke/todo-comments.nvim", requires = plenary}
-  use {"lewis6991/gitsigns.nvim", requires = plenary, tag = "release"}
-  use {"lukas-reineke/indent-blankline.nvim"}
+	use({ "norcalli/nvim-colorizer.lua" })
+	use({ "folke/todo-comments.nvim", requires = plenary })
+	use({ "lewis6991/gitsigns.nvim", requires = plenary, tag = "release" })
+	use({ "lukas-reineke/indent-blankline.nvim" })
 
-  -- VCS
+	-- VCS
 
-  use {"tpope/vim-fugitive"}
+	use({ "tpope/vim-fugitive" })
 
-  -- Previewers
+	-- Previewers
 
-  use {"ellisonleao/glow.nvim"}
+	use({ "ellisonleao/glow.nvim" })
 
-  --
-  -- Update and compile
-  --
+	--
+	-- Update and compile
+	--
 
-  if bootstrapped then
-    require("packer").sync()
-  end
+	if bootstrapped then
+		require("packer").sync()
+	end
 end)
-

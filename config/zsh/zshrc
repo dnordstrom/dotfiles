@@ -47,7 +47,7 @@ export BAT_THEME="Nord"
 # fzf
 
 export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*" --glob "!node_modules/*"'
-export FZF_DEFAULT_OPTS="--ansi --color='bg+:-1' --no-info --prompt '› ' --pointer '➔ ' --marker '» ' --bind 'alt-p:toggle-preview,tab:down,btab:up,ctrl-y:execute-silent(echo {} | wl-copy),ctrl-o:execute-silent(xdg-open {}),ctrl-u:half-page-up,ctrl-d:half-page-down' --preview-window ':hidden' --preview '([[ -f {} ]] && (bat --style=changes --color=always {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'"
+export FZF_DEFAULT_OPTS="--ansi --color='bg+:-1' --cycle --no-info --prompt '› ' --pointer '➔ ' --marker '» ' --bind 'alt-p:toggle-preview,tab:down,btab:up,ctrl-y:execute-silent(echo {} | wl-copy),ctrl-o:execute-silent(xdg-open {}),ctrl-u:half-page-up,ctrl-d:half-page-down' --preview-window ':hidden' --preview '([[ -f {} ]] && (bat --style=changes --color=always {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_CTRL_T_OPTS="$FZF_DEFAULT_OPTS"
 export FZF_ALT_C_OPTS="$FZF_DEFAULT_OPTS"
@@ -57,18 +57,30 @@ export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS"
 # Aliases
 #
 
+# Utilities
+alias icat="kitty +kitten icat"
+
+# List files
 alias l="ls -lAh --hyperlink=auto"
 alias lx="exa --icons --all --group-directories-first --git --long"
 alias lxg="exa --long --git --sort=modified --all --icons"
 alias lxt="exa --icons --all --group-directories-first --tree --level 2"
 alias ld="lsd --long --group-dirs first --almost-all"
 alias ldt="lsd --tree --depth 2 --group-dirs first"
+
+# Show contents
 alias cat="bat"
+
+# Navigate
 alias cdn="cd /etc/nixos"
+
+# Edit and build NixOS
 alias nb="$HOME/.nix-prebuild; sudo nixos-rebuild switch --flake /etc/nixos --upgrade-all"
 alias ne="nix-with nvim"
 alias nkate="nix-with kate"
 alias ncode="nix-with codium"
+
+# Shell environments
 alias n12="nix-shell /etc/nixos/shell/node12.nix"
 
 #

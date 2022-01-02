@@ -11,4 +11,4 @@ fi
 
 active=$(swaymsg -t get_inputs | jq -r "first(.[] | select(.identifier==\"$id\").xkb_active_layout_name)")
 
-echo "$active"
+printf "%s" "{ \"text\": \"$active\", \"tooltip\": \"$id\", \"class\": \"keyboard\" }"

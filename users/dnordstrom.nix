@@ -858,8 +858,8 @@ in {
   programs.bat = {
     enable = true;
     config = {
-      theme = "Nord";
-      style = "numbers,rule";
+      theme = "base16-256"; # Uses terminal colors
+      style = "numbers,changes"; # Shows line numbers and Git changes
     };
   };
 
@@ -894,17 +894,20 @@ in {
 
   programs.mako = {
     actions = true;
-    backgroundColor = "#DADAE8";
-    borderColor = "#575268";
-    borderRadius = 3;
+    backgroundColor = "#B7E5E6";
+    borderColor = "#6E6C7E";
+    borderRadius = 0;
     defaultTimeout = 5000;
     enable = true;
+    icons = true;
+    maxIconSize = 48;
+    iconPath = "/etc/profiles/per-user/dnordstrom/share/icons/Papirus-Dark";
     font = "Input Sans Compressed 8";
-    margin = "20";
+    margin = "12";
     markup = true;
-    padding = "7,12,10";
+    padding = "12,24";
     textColor = "#1E1E28";
-    width = 275;
+    width = 325;
   };
 
   programs.dircolors = {

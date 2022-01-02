@@ -1,5 +1,5 @@
 /**
- * Catpuccin theme ported to Waybar.
+ * Catppuccin theme ported to Waybar.
  *
  * Author:      Daniel Nordstrom
  * Repository:  https://github.com/dnordstrom/dotfiles
@@ -40,7 +40,7 @@
 @define-color white     #DADAE8;
 
 /**
- * CONTAINER
+ * CONTAINERS
  */
 
 * {
@@ -49,19 +49,22 @@
   font-size: 12px;
 }
 
-/* Outer container */
+/* Outer */
+
 #waybar {
   background: transparent;
   color: @black2;
 }
 
-/* Inner container */
+/* Inner */
+
 #waybar:first-child > box {
   background: transparent;
   margin: 10px 10px 0 10px;
 }
 
-/* Section containers */ 
+/* Sections */ 
+
 .modules-left,
 .modules-center,
 .modules-right {
@@ -82,7 +85,7 @@ box > box > widget > label {
 }
 
 /**
- * LEFT
+ * LEFT SECTION
  */
 
 #workspaces {
@@ -95,7 +98,7 @@ box > box > widget > label {
   margin: 0;
   padding: 0 10px;
   color: @gray2;
-  border-top: 4px solid transparent;
+  border-top: 4px solid @black2;
   border-bottom: 3px solid @black2;
   border-right: none;
   border-left: none;
@@ -106,6 +109,7 @@ box > box > widget > label {
 #workspaces button.urgent:hover {
   background: @black3;
   border-bottom: 3px solid @peach;
+  border-top-color: @black3;
   color: @peach;
   transition: none;
 }
@@ -117,6 +121,7 @@ box > box > widget > label {
 #workspaces button.focused {
   background: @black3;
   border-bottom: 3px solid @blue;
+  border-top-color: @black3;
   color: @blue;
 }
 
@@ -159,7 +164,7 @@ box > box > widget > label {
 }
 
 /**
- * CENTER
+ * CENTER SECTION
  */
 
 #clock {
@@ -169,21 +174,49 @@ box > box > widget > label {
 }
 
 /**
- * RIGHT
+ * RIGHT SECTION
  */
 
-.modules-right widget:first-child > box {
-  padding: 0 6px 0 16px;
+.modules-right label {
+  padding: 0 16px;
+}
+
+#tray {
+  padding-left: 18px;
+}
+
+#idle_inhibitor {
+  padding: 0 8px;
+}
+
+#custom-tmpmail,
+#custom-snap {
+  padding: 0 12px;
+}
+
+#cpu {
+  padding: 0 13px;
+}
+
+#temperature {
+  padding: 0 10px;
+}
+
+#memory {
+  padding: 0 8px 0 3px;
+}
+
+#custom-diskinfo {
+  padding: 0 8px;
+}
+
+#custom-keyboard {
+  padding: 0 12px 0 8px;
 }
 
 #custom-wttr {
   background: @magenta;
   color: @black2;
-}
-
-#custom-tmpmail,
-#custom-keyboard {
-  padding: 0 10px;
 }
 
 #pulseaudio {

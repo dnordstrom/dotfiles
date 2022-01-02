@@ -2,13 +2,10 @@
 #
 # FZF APPLICATION LAUNCHER
 #
-# Opens new terminal window listing applications with fzf, and launches selected application with
-# swaymsg exec.
+# Opens new terminal window listing commands with fzf, and runs the selected command in yet another
+# terminal window.
 #
-# Entirely based on fzf-startify by ldelossa. Rewritten for NixOS support, POSIX and shfmt compliance, ANSI
-# colored output, and improved readability.
-#
-# https://github.com/ldelossa/sway-fzfify
+# Based on the application launcher, which in turn is based on fzf-startify by ldelossa.
 #
 
 #
@@ -28,6 +25,7 @@ NORMAL="\e[0m"
 
 # Terminal
 terminal="kitty"
+shell="zsh"
 class="fuzzyterm"
 title="fuzzyterm"
 opacity="0.9"
@@ -48,47 +46,25 @@ if [ -n "$LAUNCHER_FIFO" ]; then
   choices="" # Items to pass fzf, e.g. "Firefox (Web Browser)\nDolphin (File Manager)\n ..."
   entries="" # Items mapped to commands, e.g. "Firefox (Web Browser):firefox\n ..."
 
-  # Find .desktop files
-  fd -e desktop -tx -tl . /etc/profiles/per-user/dnordstrom/share/applications /var/lib/flatpak/app >"$LAUNCHER_FIFO" &
+  # Find commands using bash's compgen built-in
+  bash -c "compgen -c" >"$LAUNCHER_FIFO" &
 
   # Read results from pipe
   while read -r path; do
-    unset flatpak
+    cmd="$path"
+    name="$namestyle$path$NORMAL"
+    desc=""
 
-    # Make sure the right .desktop files are used for Flatpak applications since they exist in both
-    # export/ and files/ but only the former contain `flatpak run` commands
-    if [ "${path#*"files/share/applications"}" != "$path" ]; then
-      # Wrong file
-      continue
-    elif [ "${path#*"export/share/applications"}" != "$path" ]; then
-      # Correct file
-      flatpak="true"
-    fi
+    [ "$path" = "launch-application" ] && desc="fzf application launcher"
+    [ "$path" = "waybar-reloader" ] && desc="Reloads Waybar on configuration change"
+    [ "$path" = "waybar-keyboard" ] && desc="Keyboard layout script for status bar"
+    [ "$path" = "nix-preview" ] && desc="Symlinks NixOS config files for preview without build"
+    [ "$path" = "screensnap" ] && desc="Screenshot script using slurp"
+    [ "$path" = "colorsnap" ] && desc="Color picker script using slurp"
+    [ "$path" = "wofi-powermenu" ] && desc="Power menu script for wofi"
+    [ "$path" = "1secmail" ] && desc="Throwaway email address generator"
 
-    # Get .desktop file contents and use grep with Perl expressions to find application name,
-    # description, and command stripped of any field codes such as %U, Flatpak codes like @@, and
-    # surrounding quotes. We make an ANSI colored label to pass to fzf but the selected item is
-    # returned without formatting so we keep name in sync and use that for command lookup.
-    cmd="$(grep -Pwo -m 1 -e "(?<=^Exec=).*" <"$path")"
-    name="$namestyle$(grep -Pwo -m 1 -e "(?<=^Name=).*" <"$path")$NORMAL"
-    generic="$(grep -Pwo -m 1 -e "(?<=^GenericName=).*" <"$path")"
-
-    # Skip if command is empty (check duplicates with "${entries#*"$path"}" != "$entries")
-    if [ -z "$cmd" ]; then
-      continue
-    fi
-
-    # Add generic name
-    if [ -n "$generic" ]; then
-      name="$name ($descstyle$generic$NORMAL)"
-    fi
-
-    # Add application type
-    if [ -n "$flatpak" ]; then
-      name="$name$typestyle [Flatpak]$NORMAL"
-    else
-      name="$name$typestyle [Nix]$NORMAL"
-    fi
+    [ -n "$desc" ] && name="$name ($descstyle$desc$NORMAL)"
 
     entries="$name:$cmd\n$entries"
     choices="$name\n$choices"
@@ -101,6 +77,7 @@ if [ -n "$LAUNCHER_FIFO" ]; then
   if [ -n "$selection" ]; then
     # Remove escape sequences from entries and find mapped command
     cmd="$(printf "%b" "$entries" | sed 's,\x1B\[[0-9;]*[a-zA-Z],,g' | grep -Pwo -m 1 -e "(?<=^$selection:).*" | sed 's,%.,,g' | sed 's,^"\(.*\)"$,\1,g' | sed 's,@@.*@@,,g')"
+    cmd="$terminal --class $class --title $title --hold -e $shell -c $cmd"
 
     # Run the command associated with the entry (using `swaymsg exec` if possible)
     if [ -x "$(command -v swaymsg)" ]; then
@@ -134,4 +111,4 @@ mkfifo -m 600 "$LAUNCHER_FIFO"
   --class "$class" \
   --override "background_opacity=$opacity" \
   -e \
-  sh -c "LAUNCHER_FIFO=$LAUNCHER_FIFO $SCRIPT"
+  "$shell" -c "LAUNCHER_FIFO=$LAUNCHER_FIFO $SCRIPT"

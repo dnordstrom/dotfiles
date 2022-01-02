@@ -1,0 +1,171 @@
+#!/usr/bin/env sh
+#
+# Watches for changes to Waybar configuration and reloads it on change. Must
+# be used with the live previewing script.
+##
+
+##
+# SETTINGS
+##
+
+title="Waybar reloader"
+frequency=5
+path="/etc/nixos/config/waybar"
+debug=0   # Start Waybar with GDK inspector
+noclear=0 # Clear screen on start
+
+##
+# ARGUMENTS
+##
+
+if ! options="$(getopt -o w:,p:,d,n -l wait:,path:,debug,noclear -n "$title" -- "$@")"; then
+  exit 1
+fi
+
+eval set -- "$options"
+
+while true; do
+  case "$1" in
+  -w | --wait)
+    frequency="$2"
+    shift
+    ;;
+  -p | --path)
+    path="$2"
+    shift
+    ;;
+  -d | --debug)
+    debug=1
+    shift
+    ;;
+  -n | --noclear)
+    noclear=1
+    shift
+    ;;
+  --)
+    shift
+    break
+    ;;
+  *) break ;;
+  esac
+  shift
+done
+
+##
+# UTILITIES
+##
+
+#
+# Constants
+#
+
+C_CLEAR="$(tput clear)"
+C_B="$(tput bold)"
+C_H1="$(
+  tput bold
+  tput setaf 236
+  tput setab 2
+)"
+C_EVENT="$(
+  tput bold
+  tput setaf 236
+  tput setab 4
+)"
+C_NONE="$(tput sgr0)"
+
+#
+# Functions
+#
+
+str_uppercase() {
+  printf "%s" "$*" | tr '[:lower:]' '[:upper:]'
+}
+
+fmt_title() {
+  printf "$C_H1%s$C_NONE\n" " ﲊ $(str_uppercase "$*") "
+}
+
+fmt_event() {
+  printf "$C_EVENT%s$C_NONE: %s\n" " $(str_uppercase "$1") " "$2"
+}
+
+fmt_n() {
+  printf "\n"
+}
+
+fmt_clear() {
+  printf "%s" "$C_CLEAR"
+}
+
+##
+# START
+##
+
+#
+# Print title
+#
+
+[ "$noclear" -eq 0 ] && fmt_clear
+
+fmt_n
+fmt_title "$title"
+fmt_n
+
+#
+# Handle arguments
+#
+
+# Validate wait time
+if ! [ "$frequency" -gt 0 ]; then
+  fmt_event "Error" "Invalid wait time $frequency. Please specify a positive value."
+  exit 1
+fi
+
+# Validate path
+if ! [ -e "$path" ]; then
+  fmt_event "Error" "Invalid path $path. Please specify an existing file or directory."
+  exit 1
+fi
+
+# Pluralize if needed
+[ "$frequency" -gt 1 ] && unit="seconds" || unit="second"
+
+# Show arguments
+fmt_event "Init" "Path set to $C_B$path$C_NONE."
+fmt_event "Init" "Waiting time set to $C_B$frequency $unit$C_NONE."
+
+#
+# Start Waybar
+#
+
+# Start if not running, kill and restart if debug flag is used
+if [ -z "$(pgrep waybar)" ] || [ "$debug" -gt 0 ]; then
+  if [ "$debug" -gt 0 ]; then
+    # Debug flag used: kill any running instance and start with GTK inspector
+    pkill waybar
+    GTK_DEBUG=interactive nohup waybar >/dev/null 2>&1 &
+    fmt_event "Init" "Starting Waybar with GTK inspector."
+  else
+    # Not running, no debug flag used: start normally
+    nohup waybar >/dev/null 2>&1 &
+    fmt_event "Init" "Starting Waybar."
+  fi
+fi
+
+fmt_event "Init" "Watching for changes. Press ${C_B}Ctrl-C$C_NONE to quit."
+
+##
+# AWAIT CHANGES
+##
+
+modtime="$(stat -c %Z "$path")"
+
+while sleep "$frequency"; do
+  nowtime="$(stat -c %Z "$path")"
+
+  if [ "$nowtime" != "$modtime" ]; then
+    fmt_event "Info" "Change detected. ${C_B}Reloading$C_NONE."
+    modtime=$nowtime
+    pkill -SIGUSR2 waybar # SIGUSR1 hides, SIGUSR2 restarts
+  fi
+done

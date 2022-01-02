@@ -11,7 +11,7 @@
 #
 
 set $font Input Sans Condensed 9
-set $colors catpuccin
+set $colors catppuccin
 
 #
 # Keys
@@ -44,12 +44,14 @@ set $workspace10 10
 #
 
 set $term kitty --single-instance
-set $scratchterm $term --class scratchterm --session /etc/nixos/config/kitty/scratchpad.session
+set $scratchterm $term --class scratchterm --title scratchterm --session /etc/nixos/config/kitty/scratchpad.session
 set $menu wofi
+set $launcher launch-application
 set $files dolphin
 set $snaparea file="$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png" ; grim -g "$(slurp)" "$file" && swappy -f "$file"
 set $snapfull file="$(slurp -o -f '%o')" "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png" ; grim -o "$file" && swappy -f "$file"
-set $sway-props "file=$(mktemp) ; swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true) | { name, type, title, app_id }' > $file ; kitty --class popupterm less $file"
+set $sway-props-attrs name, type, title, app_id, con_mark, con_type
+set $sway-props fifo=$(mkfifo sway-props) ; swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true) | { $sway-props-attrs }') > sway-props ; $term -- echo < sway-props
 
 set $lock swaylock \
   --font "Input Sans Compressed" \
@@ -196,9 +198,14 @@ bindsym {
   #
   # Launch
   #
-
+  $mod+t exec swaymsg scratchpad show
   $mod+Return exec $term
+  $mod+Shift+Return exec $scratchterm
+  $mod+Shift+Ctrl+Return exec $scratchterm
   $mod+d exec $menu
+  $mod+Shift+d exec /etc/nixos/scripts/launch/launch-application
+  $mod+Shift+Ctrl+d exec /etc/nixos/scripts/launch/launch-command
+  $mod+Shift+period exec wofi-emoji
   $mod+g exec $files
   $mod+Backspace exec $powermenu
   $mod+Shift+p exec $sway-props
@@ -227,16 +234,16 @@ bindsym {
 
   # Focus workspace: Number keys
 
-  $mod+1 workspace $workspace1
-  $mod+2 workspace $workspace2
-  $mod+3 workspace $workspace3
-  $mod+4 workspace $workspace4
-  $mod+5 workspace $workspace5
-  $mod+6 workspace $workspace6
-  $mod+7 workspace $workspace7
-  $mod+8 workspace $workspace8
-  $mod+9 workspace $workspace9
-  $mod+0 workspace $workspace10
+  $mod+1 workspace number 1
+  $mod+2 workspace number 2
+  $mod+3 workspace number 3
+  $mod+4 workspace number 4
+  $mod+5 workspace number 5
+  $mod+6 workspace number 6
+  $mod+7 workspace number 7
+  $mod+8 workspace number 8
+  $mod+9 workspace number 9
+  $mod+0 workspace number 10
 
   # Focus workspace: Mod+Tab switches, Alt+Tab cycles
 
@@ -276,25 +283,22 @@ bindsym {
 
   # Modes
   
-  $mod+s layout stacking
-  $mod+w layout tabbed
-  $mod+e layout toggle split
-
-  # Fullscreen
-  
-  $mod+f fullscreen
-  $mod+Shift+Space floating toggle
-  $mod+Space focus mode_toggle
-  $mod+a focus parent
+  $mod+s            layout stacking
+  $mod+w            layout tabbed
+  $mod+e            layout toggle split
+  $mod+Shift+Space  floating toggle
+  $mod+Space        focus mode_toggle
+  $mod+a            focus parent
+  $mod+f            fullscreen
 
   #
   # Scratchpad
   #
   
-  $mod+Shift+z mark --add __fs, move scratchpad, scratchpad show
-  $mod+z scratchpad show; [con_mark="^__fs$"] fullscreen enable
-  $mod+Shift+Ctrl+x fullscreen disable, unmark 
-  $mod+Shift+Ctrl+z fullscreen enable, mark --add __fs
+  $mod+Shift+z        mark --add newest, move scratchpad
+  $mod+z              scratchpad show, [con_mark="fs"] fullscreen enable
+  $mod+Shift+Ctrl+x   fullscreen disable, unmark 
+  $mod+Shift+Ctrl+z   fullscreen enable, mark --add fs
 
   #
   # Functional
@@ -432,13 +436,12 @@ exec_always pkill flashfocus ; flashfocus > /tmp/flashfocus.log 2>&1
 
 exec_always pkill swayrd ; env RUST_BACKTRACE=1 swayrd > /tmp/swayrd.log 2>&1
 
-# Start workspace renamer
-
-exec_always pkill -f sway-dynamic-workspace-names ; sway-dynamic-workspace-names > /tmp/sway-dynamic-workspace-names.log 2>&1
-
 # Start inactive window dimmer
 
 exec_always pkill -f sway-dim-inactive-windows ; sway-dim-inactive-windows --opacity 0.9 > /tmp/sway-dim-inactive-windows.log 2>&1
+
+# Start monitor temperature daemon
+exec_always pkill wlsunset ; wlsunset -t 4500 -T 6500 -l 62.39 -L 17.30 > /tmp/wlsunset.log 2>&1
 
 #
 # STATUS BAR
@@ -467,13 +470,14 @@ for_window {
   [window_type="dialog"] floating enable
 
   # Launchers
-  [app_id="wofi"] floating enable, border none
+  [app_id="wofi"] floating enable, sticky enable, border none
 
   # Terminals
   [app_id="transterm"] border none
   [app_id="scratchterm"] move scratchpad, floating enable, resize set 1280 720
+  [app_id="scratchterm" con_mark="__fullscreen__"] fullscreen enable
   [app_id="popupterm"] floating enable, resize set 920 720
-  [app_id="fuzzyterm"] floating enable, resize set 500 300
+  [app_id="fuzzyterm"] floating enable, sticky enable, resize set 600 350
 }
 
 #

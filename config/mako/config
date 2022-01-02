@@ -1,0 +1,28 @@
+max-visible=5
+sort=-time
+
+layer=top
+anchor=top-right
+
+font=Input Sans Compressed 8
+background-color=#DADAE8
+text-color=#1E1E28
+width=275
+height=100
+margin=20
+padding=7,12,10
+border-size=1
+border-color=#575268
+border-radius=3
+progress-color=over #5588AAFF
+icons=true
+max-icon-size=32
+icon-path=/etc/profiles/per-user/dnordstrom/share/icons/Papirus-Dark
+markup=true
+actions=true
+format=<b>%s</b>\n%b
+default-timeout=5000
+ignore-timeout=false
+
+
+

@@ -1,12 +1,11 @@
 {
-  "name": "catpuccin",
+  "name": "catppuccin",
   "layer": "top",
   "position": "top",
   "height": 30,
   "width": 1920,
   "modules-left": [
     "sway/workspaces",
-    "sway/window",
     "custom/files",
     "custom/browser",
     "custom/mail",
@@ -19,7 +18,12 @@
     "tray",
     "idle_inhibitor",
     "custom/tmpmail",
+    "custom/snap",
+    "cpu",
+    "memory",
+    "temperature",
     "custom/protoncheck",
+    "custom/diskinfo",
     "custom/keyboard",
     "custom/wttr",
     "pulseaudio"
@@ -33,35 +37,28 @@
       "(.*) - zsh": " [$1]"
     }
   },
-  "custom/separator": {
-    "format": "·",
-    "tooltip": false
-  },
-  "sway/mode": {
-    "format": "{}"
-  },
   "sway/workspaces": {
-    "format": "{name}",
+    "format": "{icon}",
     "format-icons": {
-      /* "1": "", */
-      "focused": "",
-      "default": "﬿",
-      "urgent": "",
+      "1": "",
+      "focused": "綠",
+      "default": "祿",
+      "urgent": "",
     },
     "strip_workspace_numbers": true,
     "enable-bar-scroll": true,
     "current-only": false,
     "persistent_workspaces": {
-      /* "1": ["DP-1"], */
-      /* "2": ["DP-1"], */
-      /* "3": ["DP-1"], */
-      /* "4": ["DP-1"], */
-      /* "5": ["DP-1"], */
-      /* "6": ["DVI-D-1"], */
-      /* "7": ["DVI-D-1"], */
-      /* "8": ["DVI-D-1"], */
-      /* "9": ["DVI-D-1"], */
-      /* "10": ["DVI-D-1"] */
+      "1": ["DP-1"],
+      "2": ["DP-1"],
+      "3": ["DP-1"],
+      "4": ["DP-1"],
+      "5": ["DP-1"],
+      "6": ["DVI-D-1"],
+      "7": ["DVI-D-1"],
+      "8": ["DVI-D-1"],
+      "9": ["DVI-D-1"],
+      "10": ["DVI-D-1"]
     }
   },
   "tray": {
@@ -108,8 +105,8 @@
     "exec": "/etc/nixos/scripts/waybar/waybar-keyboard",
     "format": "<span font='12' rise='-1500'> </span><span rise='500'>{}</span>",
     "interval": 30,
-    "tooltip": false,
     "on-click": "/etc/nixos/scripts/waybar/waybar-keyboard switch",
+    "return-type": "json"
   },
   "disk": {
     "interval": 30,
@@ -119,8 +116,17 @@
     "tooltip": true,
     "tooltip-format": "{used} / {total}"
   },
+  "custom/diskinfo": {
+    "interval": 30,
+    "format": "<span font='12' rise='-1500'> </span><span rise='500'>{}</span>",
+    "return-type": "json",
+    "exec": "/etc/nixos/scripts/waybar/waybar-diskinfo",
+    "on-click": "kitty --class popupterm gotop",
+    "tooltip": true,
+    "tooltip-format": "{used} / {total}"
+  },
    "custom/snap": {
-    "format": "<span font='11' rise='-1500'></span>",
+    "format": "<span font='12' rise='-1500'></span>",
     "on-click": "grim -g \"$(slurp)\" \"$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png\"",
     "tooltip": false
   },
@@ -132,7 +138,7 @@
   },
   "custom/tmpmail": {
     "interval": 30,
-    "format": "<span font='11' rise='-1500'>ﯬ</span>",
+    "format": "<span font='11' rise='-1500'></span>",
     "exec": "echo \"\"; echo \"$(cat /tmp/tmpmailgen 2>/dev/null || echo -n 'No address available')\"; echo \"tmpmail\"
 ",
     "on-click": "generated=$(cat /tmp/tmpmailgen) && swaymsg exec wl-copy $generated",
@@ -173,36 +179,25 @@
     "on-click-middle": "pavucontrol",
     "tooltip": false
   },
-  "temperature": {
-    "thermal-zone": 2,
-    "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
-    "critical-threshold": 80,
-    "on-click": "kitty --class popupterm gotop",
-    "format-critical": "{temperatureC}°C ",
-    "format": " {temperatureC}°C"
-  },
   "cpu": {
     "on-click": "kitty --class popupterm gotop",
     "tooltip": false,
-    "format": " {usage}%",
+    "format": "<span font='12' rise='-1500'>﬙ </span><span rise='500'>{usage}%</span>",
     "interval": 10
   },
   "network": {
-    "format": "{icon} {ifname}",
-    "format-wifi": "{icon} {essid}",
-    "format-ethernet": "{icon} {ifname}",
-    "format-disconnected": "{icon} Offline",
+    "format": "<span font='12' rise='-1500'>{icon}</span>",
     "format-icons": {
-      "wifi": [""],
-      "ethernet": [""],
-      "disconnected": [""]
+      "wifi": ["直"],
+      "ethernet": [""],
+      "disconnected": [""]
     },
     "tooltip": true,
-    "tooltip-format": "IP: {ipaddr}\nRate: {bandwidthUpBits} / {bandwidthDownBits}"
+    "tooltip-format": "{essid}{ifname}\nIP: {ipaddr}\nRate: {bandwidthUpBits} / {bandwidthDownBits}"
   },
   "memory": {
     "interval": 30,
-    "format": " {avail:0.1f}GB",
+    "format": "<span font='12' rise='-1500'> </span><span rise='500'>{used:0.1f}GB</span>",
     "tooltip": true,
     "tooltip-format": "{used:0.1f}GB / {total:0.1f}GB"
   },
@@ -219,5 +214,12 @@
     "format-good": "{icon} {capacity}%",
     "format-full": "{icon} {capacity}%",
     "format-icons": ["", "", "", "", ""]
+  },
+  "temperature": {
+    "thermal-zone": 2,
+    "hwmon-path": "/sys/class/hwmon/hwmon3/temp1_input",
+    "critical-threshold": 80,
+    "format": "<span font='12' rise='-1500'>﨎 </span><span rise='500'>{temperatureC}°C</span>",
+    "format-critical": "<span font='12' rise='-1500'>﨎 </span><span rise='500'>{temperatureC}°C</span>",
   }
 }
