@@ -131,7 +131,7 @@
     "tooltip": false
   },
   "custom/protoncheck": {
-		"exec": "source /etc/nixos/secrets/env ; protoncheck --username $PROTONMAIL_USERNAME --password $PROTONMAIL_PASSWORD",
+		"exec": "source /etc/nixos/secrets/env ; cd /tmp ; protoncheck --username $PROTONMAIL_USERNAME --password $PROTONMAIL_PASSWORD",
 		"format": "<span font='12' rise='-1500'> </span>{}",
 		"interval": 30,
 		"on-click": "xdg-open https://mail.protonmail.com/inbox"
