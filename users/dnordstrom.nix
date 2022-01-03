@@ -496,6 +496,8 @@ in {
     git-crypt
     cliphist
 
+    # ;packages end; (for quick navigation with fzf grep in nvim, since marks move as contents change)
+
     # For sway-fzfify
     pv
   ];

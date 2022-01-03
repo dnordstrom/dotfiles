@@ -2,12 +2,14 @@
 -- AUTOCOMMANDS
 ----
 
-vim.api.nvim_exec([[
+local autocommands = [[
   "
-  " Commands
+  " COMMANDS
   "
+
   augroup utils
     autocmd!
+
     " Utilities
     autocmd BufRead utils.lua command! NUpdateUtilsReturn lua NORDUtils.update_utils_return()
     autocmd VimEnter * command! -nargs=* NBrowserSearch lua NORDUtils.browsersearch(<q-args>)
@@ -21,19 +23,22 @@ vim.api.nvim_exec([[
   augroup end
 
   "
-  " Line diagnostics on hover
+  " HOVER DIAGNOSTICS
   "
+
   augroup line_diagnostics
     autocmd!
     autocmd CursorHold * silent! lua vim.diagnostic.open_float()
   augroup end
 
   "
-  " Quick highlight on yank
+  " YANK HIGHLIGHT
   "
+
   augroup highlight_yank
     autocmd!
     autocmd TextYankPost * silent! lua require("vim.highlight").on_yank({timeout = 100})
   augroup end
-]], false)
+]]
 
+vim.api.nvim_exec(autocommands, false)

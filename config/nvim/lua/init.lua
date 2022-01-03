@@ -1,12 +1,14 @@
 ----
--- LOAD CONFIGURATION
+-- CONFIGURATION
 ----
 
+-- Load global utils
 NORDUtils = require("utils")
+_N = NORDUtils -- Extra shortcut
 
+-- Load configs
 require("options")
 require("plugins")
-require("pluginsetup")
-require("maps")
+require("keymaps")
 require("lsp")
 require("autocmds")

@@ -1,0 +1,5 @@
+----
+-- COLORIZER
+----
+
+require("colorizer").setup()

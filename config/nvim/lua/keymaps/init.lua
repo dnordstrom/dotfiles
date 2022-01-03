@@ -271,37 +271,43 @@ nvim_set_keymap("n", "<Leader>ts", "<Cmd>set spell!<CR>", opts.nore)
 -- Find...
 --
 
+-- ...by shift tap: anything (shows menu)
+nvim_set_keymap("n", "<Leader>F", "<Cmd>FzfLua<CR>", opts.nore)
+
 -- ...by double tap: files
 nvim_set_keymap("n", "<Leader>ff", "<Cmd>FzfLua files<CR>", opts.nore)
 
--- ...menu
-nvim_set_keymap("n", "<Leader>fz", "<Cmd>FzfLua<CR>", opts.nore)
+-- ...anything (shows menu)
+nvim_set_keymap("n", "<Leader>fa", "<Cmd>FzfLua<CR>", opts.nore)
 
--- ...colorschemes with live preview
-nvim_set_keymap("n", "<Leader>fC", "<Cmd>FzfLua colorschemes<CR>", opts.nore)
+-- ...file by (g)rep
+nvim_set_keymap("n", "<Leader>fg", "<Cmd>FzfLua live_grep_native<CR>", opts.nore)
 
--- ...buffers
+-- ...buffer
 nvim_set_keymap("n", "<Leader>fb", "<Cmd>FzfLua buffers<CR>", opts.nore)
 
--- ...commands
+-- ...command
 nvim_set_keymap("n", "<Leader>fc", "<Cmd>FzfLua commands<CR>", opts.nore)
 
--- ...files by (g)repping content
-nvim_set_keymap("n", "<Leader>fg", "<Cmd>FzfLua live_grep_native<CR>", opts.nore)
+-- ...colorscheme with live preview
+nvim_set_keymap("n", "<Leader>fC", "<Cmd>FzfLua colorschemes<CR>", opts.nore)
 
 -- ...help
 nvim_set_keymap("n", "<Leader>fh", "<Cmd>FzfLua help_tags<CR>", opts.nore)
 
--- ...marks
+-- ...mark
 nvim_set_keymap("n", "<Leader>fm", "<Cmd>FzfLua marks<CR>", opts.nore)
 
--- ...symbols in file using LSP
-nvim_set_keymap("n", "<Leader>ft", "<Cmd>FzfLua lsp_document_symbols<CR>", opts.nore)
+-- ...key maps
+nvim_set_keymap("n", "<Leader>fk", "<Cmd>FzfLua keymaps<CR>", opts.nore)
 
--- ...symbols in workspace using LSP
-nvim_set_keymap("n", "<Leader>ft", "<Cmd>FzfLua lsp_workspace_symbols<CR>", opts.nore)
+-- ...symbol (file)
+nvim_set_keymap("n", "<Leader>fs", "<Cmd>FzfLua lsp_document_symbols<CR>", opts.nore)
 
--- ...files by (r)esuming last query
+-- ...symbol (workspace)
+nvim_set_keymap("n", "<Leader>fS", "<Cmd>FzfLua lsp_workspace_symbols<CR>", opts.nore)
+
+-- ...file by (r)esuming last query
 nvim_set_keymap("n", "<Leader>fr", "<Cmd>FzfLua files_resume<CR>", opts.nore)
 
 --

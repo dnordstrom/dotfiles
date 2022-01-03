@@ -1,5 +1,5 @@
 ----
--- PLUGINS
+-- PLUGINS SETUP
 ----
 
 local fn = vim.fn
