@@ -17,15 +17,19 @@
  * COLOR PALETTE
  */
 
-@define-color flamingo  #F2CECF;
+@define-color flamingo  #F5E0DC;
+@define-color rosewater #F2CECF;
 @define-color magenta   #C6AAE8;
 @define-color pink      #E5B4E2;
+@define-color maroon    #E49CB3;
 @define-color red       #E38C8F;
 @define-color peach     #F9C096;
 @define-color yellow    #EBDDAA;
 @define-color green     #B1E3AD;
 @define-color blue      #A4B9EF;
 @define-color teal      #BEE4ED;
+@define-color sky       #92D2E8;
+@define-color lavender  #C9CBFF;
 
 @define-color black0    #15121C;
 @define-color black1    #1B1923;
@@ -158,8 +162,8 @@ box > box > widget > label {
 }
 
 #mode {
-  color: @black2;
-  background: transparent;
+  color: @black3;
+  background: @maroon;
   font-style: italic;
 }
 
@@ -167,7 +171,8 @@ box > box > widget > label {
  * CENTER SECTION
  */
 
-#clock {
+#clock,
+#custom-clock {
   background: @magenta;
   color: @black2;
   padding: 0 16px;

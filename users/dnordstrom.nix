@@ -495,6 +495,7 @@ in {
     krusader
     git-crypt
     cliphist
+    jetbrains.datagrip
 
     # ;packages end; (for quick navigation with fzf grep in nvim, since marks move as contents change)
 

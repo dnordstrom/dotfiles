@@ -11,9 +11,9 @@
     "custom/mail",
     "custom/editor",
     "custom/terminal",
-    "sway/mode"
+    "sway/mode",
   ],
-  "modules-center": ["clock"],
+  "modules-center": [ "custom/clock" ],
   "modules-right": [
     "tray",
     "idle_inhibitor",
@@ -71,6 +71,15 @@
     "tooltip": false,
     "on-click-middle": "xdg-open https://calendar.protonmail.com",
     "on-click-right": "xdg-open https://calendar.google.com"
+  },
+  "custom/clock": {
+    "interval": 1,
+    "exec": "/etc/nixos/scripts/waybar/waybar-clock",
+    "format": "{}",
+    "on-click": "/etc/nixos/scripts/waybar/waybar-clock toggle",
+    "on-click-middle": "/etc/nixos/scripts/waybar/waybar-clock time",
+    "on-click-right": "/etc/nixos/scripts/waybar/waybar-clock window",
+    "return-type": "json"
   },
   "custom/browser": {
     "format": "<span font='12' rise='-1500'></span>",

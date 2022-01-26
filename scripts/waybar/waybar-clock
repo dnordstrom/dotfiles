@@ -1,0 +1,56 @@
+#!/usr/bin/env sh
+
+title="$(swaymsg -t get_tree | jq -r '.. | select(.type?) | select(.focused==true) .name' | sed 's/\(.\{45\}\).*/\1…/')"
+app="$(swaymsg -t get_tree | jq -r '.. | select(.type?) | select(.focused==true) .app_id' | sed 's/\(.\)/\U\1/')"
+time="$(date +'%H:%M')"
+modefile="/tmp/waybar-clock-window-mode"
+icon=""
+output=""
+
+if [ $# -eq 1 ]; then
+  if [ "$1" = "toggle" ]; then
+    if [ -f "$modefile" ]; then 
+      rm "$modefile"
+    else
+      touch "$modefile"
+    fi
+  elif [ "$1" = "window" ]; then
+    touch "$modefile"
+  elif [ "$1" = "time" ]; then
+    rm "$modefile"
+  fi 
+fi
+
+if [ -f "$modefile" ]; then
+  output="$app - $title"
+
+  case $app in
+    "Firefox")
+    output="$title"
+    icon=""
+    ;;
+    "Kitty")
+    output="$title"
+    icon=""
+    ;;
+    "Org.kde.dolphin")
+    output="$(printf "%s" "$title" | sed 's,/home/dnordstrom,~,' | sed 's,\ \—\ \Dolphin,,')"
+    icon=""
+    ;;
+    *)
+    icon=""
+    ;;
+  esac
+
+  case $title in
+    "vim")
+    icon=""
+    ;;
+    *)
+    ;;
+  esac
+
+  printf "%s" "{ \"text\": \"<span font='12' rise='-1500'>$icon</span> <span rise='500'>$output</span>\", \"tooltip\": \"$time\" }"
+else
+  printf "%s" "{ \"text\": \"<span font='12' rise='-1500'>$icon</span> <span rise='500'>$time</span>\", \"tooltip\": \"$title\" }"
+fi

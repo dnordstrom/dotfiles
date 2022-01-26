@@ -18,7 +18,6 @@ set $colors catppuccin
 #
 
 set $mod Mod4
-
 set $left h
 set $down j
 set $up k
@@ -48,10 +47,11 @@ set $scratchterm $term --class scratchterm --title scratchterm --session /etc/ni
 set $menu wofi
 set $launcher launch-application
 set $files dolphin
-set $snaparea file="$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png" ; grim -g "$(slurp)" "$file" && swappy -f "$file"
-set $snapfull file="$(slurp -o -f '%o')" "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png" ; grim -o "$file" && swappy -f "$file"
+set $snaparea grim -g "$(slurp)" - | swappy -f - -o "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png"
+set $snapfull grim -g "$(slurp -o)" - | swappy -f - -o "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png"
 set $sway-props-attrs name, type, title, app_id, con_mark, con_type
-set $sway-props fifo=$(mkfifo sway-props) ; swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true) | { $sway-props-attrs }') > sway-props ; $term -- echo < sway-props
+set $sway-props sh -c "swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true) | { $sway-props-attrs }' > /tmp/sway-props.json && $term --class popupterm -e -- vim /tmp/sway-props.json -c 'set ft=json'"
+set $sway-props-all sh -c "swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true)' > /tmp/sway-props.json && $term --class popupterm -e -- vim /tmp/sway-props.json -c 'set ft=json'"
 
 set $lock swaylock \
   --font "Input Sans Compressed" \
@@ -209,6 +209,7 @@ bindsym {
   $mod+g exec $files
   $mod+Backspace exec $powermenu
   $mod+Shift+p exec $sway-props
+  $mod+Shift+Ctrl+p exec $sway-props-all
 
   $mod+q kill
   $mod+Shift+q kill
@@ -340,12 +341,12 @@ bindsym $mod+n mode "$mode_navigation"
 #   PrintSc -> select area (PrintSc > PrintSc)
 #
 
-set $mode_screenshot Screenshot
+set $mode_screenshot  Screenshot (a)rea (s)creen
 
 mode "$mode_screenshot" {
-  bindsym Print exec swaymsg mode "default" && $snaparea
-  bindsym a exec swaymsg mode "default" && $snaparea
-  bindsym s exec swaymsg mode "default" && $snapfull
+  bindsym Print mode default, exec $snaparea
+  bindsym a mode default, exec $snaparea
+  bindsym s mode default, exec $snapfull
 
   bindsym Return mode "default"
   bindsym Escape mode "default"
@@ -433,15 +434,16 @@ for_window {
 exec_always pkill flashfocus ; flashfocus > /tmp/flashfocus.log 2>&1
 
 # Start swayr daemon
-
 exec_always pkill swayrd ; env RUST_BACKTRACE=1 swayrd > /tmp/swayrd.log 2>&1
 
 # Start inactive window dimmer
-
 exec_always pkill -f sway-dim-inactive-windows ; sway-dim-inactive-windows --opacity 0.9 > /tmp/sway-dim-inactive-windows.log 2>&1
 
 # Start monitor temperature daemon
 exec_always pkill wlsunset ; wlsunset -t 4500 -T 6500 -l 62.39 -L 17.30 > /tmp/wlsunset.log 2>&1
+
+# Start network manager tray application
+exec_always pkill nm-tray ; nm-tray
 
 #
 # STATUS BAR
@@ -472,6 +474,12 @@ for_window {
   # Launchers
   [app_id="wofi"] floating enable, sticky enable, border none
 
+  # Network manager
+  [title="nm-tray"] floating enable, sticky enable
+  [title="nmtui-edit"] floating enable
+  [title="Connection information"] floating enable
+  [instance="bitwarden"] floating enable
+  
   # Terminals
   [app_id="transterm"] border none
   [app_id="scratchterm"] move scratchpad, floating enable, resize set 1280 720
