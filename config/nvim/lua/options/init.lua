@@ -41,8 +41,8 @@ opt.list = false
 opt.listchars:append("space:⋅")
 opt.listchars:append("eol:↴")
 opt.listchars:append("tab: ")
-			 	 
---	
+
+--
 -- EXPLORER
 --
 
@@ -101,7 +101,7 @@ opt.formatoptions = "cjroql"
 -- })
 
 require("catppuccin").setup({
-	transparent_background = false,
+	transparent_background = true,
 	term_colors = false,
 	styles = {
 		comments = "italic",

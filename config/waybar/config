@@ -99,7 +99,7 @@
     "format": "<span font='12'>ﲵ</span>",
     "tooltip": false,
     "on-click": "swaymsg scratchpad show",
-    "on-click-right": "kitty --class transterm --override background_opacity=0"
+    "on-click-right": "kitty --class transterm"
   },
   "custom/keyboard": {
     "exec": "/etc/nixos/scripts/waybar/waybar-keyboard",

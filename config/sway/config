@@ -313,17 +313,35 @@ bindsym {
 }
 
 #
-# NAVIGATION MODE
+# MODES (e.g. resize or navigate)
 #
 
-set $mode_navigation Navigate
+#
+# Vim mode
+#
+#   h -> left
+#   j -> down
+#   k -> up
+#   l -> right
+#   0 -> home
+#   $ -> end
+#
 
-mode "$mode_navigation" {
+set $mode_vim_icon 
+set $mode_vim_title Vim
+set $mode_vim_hints (h) left (j) down (k) up (l) right…
+set $mode_vim $mode_vim_icon $mode_vim_title $mode_vim_hints
+
+mode "$mode_vim" {
   bindsym {
     h exec wtype -k left
     j exec wtype -k down
     k exec wtype -k up
     l exec wtype -k right
+    0 exec wtype -k home
+    dollar exec wtype -k end
+    Ctrl+u exec wtype -k pageup
+    Ctrl+d exec wtype -k pagedown
   }
 
   bindsym Return mode "default"
@@ -331,19 +349,22 @@ mode "$mode_navigation" {
   bindsym Space mode "default"
 }
 
-bindsym $mod+n mode "$mode_navigation"
+bindsym $mod+n mode "$mode_vim"
 
 #
-# SCREENSHOT MODE
+# Screenshot mode
 #
 #   a -> select area
 #   s -> select screen
 #   PrintSc -> select area (PrintSc > PrintSc)
 #
 
-set $mode_screenshot  Screenshot (a)rea (s)creen
+set $mode_snap_icon 
+set $mode_snap_title Screenshot
+set $mode_snap_hints (a)rea (s)creen
+set $mode_snap $mode_snap_icon $mode_snap_title $mode_snap_hints
 
-mode "$mode_screenshot" {
+mode "$mode_snap" {
   bindsym Print mode default, exec $snaparea
   bindsym a mode default, exec $snaparea
   bindsym s mode default, exec $snapfull
@@ -353,13 +374,22 @@ mode "$mode_screenshot" {
   bindsym Space mode "default"
 }
 
-bindsym Print mode "$mode_screenshot"
+bindsym Print mode "$mode_snap"
 
 #
-# RESIZE MODE
+# Resize mode
+#
+#   h -> thinner
+#   j -> taller
+#   k -> shorter
+#   l -> wider
 #
 
-set $mode_resize Resize
+
+set $mode_resize_icon 
+set $mode_resize_title Resize
+set $mode_resize_hints (h) thinner (j) taller (k) shorter (l) wider
+set $mode_resize $mode_resize_icon $mode_resize_title $mode_resize_hints
 
 mode "$mode_resize" {
   bindsym $left resize shrink width 20px
@@ -380,10 +410,13 @@ mode "$mode_resize" {
 bindsym $mod+r mode "$mode_resize"
 
 #
-# System Mode
+# System mode
 #
 
-set $mode_system System
+set $mode_system_icon 襤
+set $mode_system_label System
+set $mode_system_hints (e)xit (r)eload (r)eboot (s)hutdown
+set $mode_system $mode_system_icon $mode_system_label $mode_system_hints
 
 mode "$mode_system" {
   bindsym e exec swaymsg exit, mode "default"
@@ -458,34 +491,59 @@ bar {
 #
 
 for_window {
+  #
   # File managers
+  #
+
   [app_id="org.gnome.Nautilus"] floating enable
   [app_id="org.kde.dolphin"] floating enable
 
-  # Dialog windows
-  [app_id="pavucontrol"] floating enable
-  [app_id="pinentry-qt"] floating enable
-  [app_id="pinentry-gtk2"] floating enable
+  #
+  # Dialogs
+  #
+
+  # General
   [window_role="pop-up"] floating enable
   [window_role="bubble"] floating enable
   [window_role="dialog"] floating enable
   [window_type="dialog"] floating enable
 
+  # Sound control
+  [app_id="pavucontrol"] floating enable
+
+  # Password entry
+  [app_id="pinentry-qt"] floating enable
+  [app_id="pinentry-gtk2"] floating enable
+
+  #
   # Launchers
+  #
+
   [app_id="wofi"] floating enable, sticky enable, border none
 
-  # Network manager
+  #
+  # Tray
+  #
+
   [title="nm-tray"] floating enable, sticky enable
   [title="nmtui-edit"] floating enable
   [title="Connection information"] floating enable
   [instance="bitwarden"] floating enable
   
+  #
   # Terminals
-  [app_id="transterm"] border none
-  [app_id="scratchterm"] move scratchpad, floating enable, resize set 1280 720
+  #
+
+  # Scratchpad
+  [app_id="scratchterm"] move scratchpad, resize set 1790 940
   [app_id="scratchterm" con_mark="__fullscreen__"] fullscreen enable
+
+  # Popups (e.g. when clicking items in bar)
   [app_id="popupterm"] floating enable, resize set 920 720
   [app_id="fuzzyterm"] floating enable, sticky enable, resize set 600 350
+
+  # Transparent (opacity itself is set in terminal options so only the background is affected)
+  [app_id="transterm"] border none
 }
 
 #
