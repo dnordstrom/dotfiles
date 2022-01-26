@@ -337,10 +337,16 @@ in {
     #
 
     celluloid
+    clementineUnfree # Unfree for Spotify integration
     handbrake
     haruna
     smplayer
     sayonara
+    spicetify-cli
+    spotify-qt
+    spotify-tui
+    spotify-tray
+    spotifyd
 
     #
     # Development

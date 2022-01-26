@@ -23,6 +23,7 @@ g.mapleader = " "
 -- GENERAL
 --
 
+opt.undofile = true
 opt.termguicolors = true
 opt.ignorecase = true
 opt.smartcase = true
