@@ -101,6 +101,7 @@ box > box > widget > label {
 #workspaces button {
   margin: 0;
   padding: 0 10px;
+  box-shadow: none;
   color: @gray2;
   border-top: 4px solid @black2;
   border-bottom: 3px solid @black2;

@@ -16,14 +16,6 @@
   "modules-center": [ "custom/clock" ],
   "modules-right": [
     "tray",
-    "idle_inhibitor",
-    "custom/tmpmail",
-    "custom/snap",
-    "cpu",
-    "memory",
-    "temperature",
-    "custom/protoncheck",
-    "custom/diskinfo",
     "custom/keyboard",
     "custom/wttr",
     "pulseaudio"
@@ -32,9 +24,8 @@
     "format": "<span>{}</span>",
     "max-length": 50,
     "rewrite": {
-      "(.*)Firefox Nightly": " $1",
-      "(.*) - vim": " $1",
-      "(.*) - zsh": " [$1]"
+      "(.*)Firefox Nightly$": " $1",
+      "(.*)vim$": " $1",
     }
   },
   "sway/workspaces": {
@@ -88,24 +79,24 @@
     "on-click-right": "firefox --new-window"
   },
   "custom/mail": {
-    "format": "<span font='12' rise='-1500'></span>",
+    "format": "<span font='12'></span>",
     "tooltip": false,
     "on-click": "xdg-open https://mail.protonmail.com",
   },
   "custom/files": {
-    "format": "<span font='12' rise='-1500'></span>",
+    "format": "<span font='12'></span>",
     "tooltip": false,
     "on-click": "dolphin",
     "on-click-right": "nautilus"
   },
   "custom/editor": {
-    "format": "<span font='14' rise='-1500'></span>",
+    "format": "<span font='12'></span>",
     "tooltip": false,
     "on-click": "sh -c \"if swaymsg -t get_tree | grep vimterm; then swaymsg [app_id=\"vimterm\"] focus; else kitty --class=vimterm; fi\"",
     "on-right-click": "if pgrep codium; then swaymsg [instance=\"vscodium\"] focus; else codium; fi"
   },
   "custom/terminal": {
-    "format": "<span font='14' rise='-1500'>ﲵ</span>",
+    "format": "<span font='12'>ﲵ</span>",
     "tooltip": false,
     "on-click": "swaymsg scratchpad show",
     "on-click-right": "kitty --class transterm --override background_opacity=0"

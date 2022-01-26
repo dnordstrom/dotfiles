@@ -244,42 +244,60 @@ in {
     zsh-fzf-tab
     zsh-nix-shell
 
-    #
-    # Sway and Wayland
-    #
+    # Notifications
+    fnott # Keyboard driven notification daemon
 
-    fnott
-    grim
-    imagemagick
-    imv
-    kanshi
-    swaykbdd
-    libinput # For trackpad gestures
+    # Wayland layer shell, panels, and effects
     nwg-drawer
     nwg-launchers
     nwg-menu
     nwg-panel
     nwg-panel
-    slurp
-    swappy
     swayidle
     swaylock-effects
     swaywsr
+    swaykbdd
+
+    # Screenshots
+    grim
+    imagemagick
+    slurp
+    swappy
+
+    # Images
+    imv
     vimiv-qt # QT image viewer
-    wdisplays # Display manager
-    wev
+    kanshi
+
+    # Recording and wl-clipboard
     wf-recorder
     wl-clipboard
+
+    # Dashboards
     wlogout
+
+    # Monitor
+    wdisplays
     wlsunset
+
+    # Launchers
     masterPackages.wofi
+    ulauncher
     wofi-emoji
     workstyle
+
+    # Window managers
+    # river - Requires wlroots 0.14 while 0.15 is installed: check out why it doesn't work
+
+    # Input
+    libinput # For trackpad gestures
+    swaykbdd
+    wev
     wtype
     ydotool
 
     #
-    # Gnome utilities
+    # Gnome
     #
 
     glib
@@ -300,10 +318,8 @@ in {
     # Email
     #
 
-    bitwarden # Password manager
-
-    electron-mail # Unofficial ProtonMail client
-    protonmail-bridge # Official
+    electron-mail
+    protonmail-bridge
     thunderbird
 
     #
@@ -311,6 +327,7 @@ in {
     #
 
     authy
+    bitwarden
     go-2fa
     qtpass
     pinentry-gtk2
@@ -497,9 +514,11 @@ in {
     cliphist
     jetbrains.datagrip
 
-    # ;packages end; (for quick navigation with fzf grep in nvim, since marks move as contents change)
+    #
+    # Dependencies
+    #
 
-    # For sway-fzfify
+    # sway-fzfify
     pv
   ];
 
