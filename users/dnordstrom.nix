@@ -801,6 +801,7 @@ in {
   programs.kitty = { enable = true; };
 
   programs.git = {
+    enable = true;
     userName = "dnordstrom";
     userEmail = "d@mrnordstrom.com";
     aliases = {
