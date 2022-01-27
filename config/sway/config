@@ -100,8 +100,8 @@ font pango:$font
 
 # Gaps
 
-gaps inner 14
-gaps outer 12
+gaps inner 12
+gaps outer 10
 
 smart_gaps off
 
