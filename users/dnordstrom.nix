@@ -163,16 +163,16 @@ in {
     nordpkgs.protonvpn-gui
     nordpkgs.protonvpn-cli
 
+    #
+    # Networking
+    #
+
     networkmanager-openvpn
     openvpn
-    gnome.gnome-keyring
-    libgnome-keyring
     nm-tray
     speedcrunch
-    libsForQt5.kcalc
-    pro-office-calculator
-    gnome.gnome-calculator
-    lumina.lumina-calculator
+    gnome.gnome-keyring
+    libgnome-keyring
     ytmdesktop
     enlightenment.econnman
     krita
@@ -510,6 +510,12 @@ in {
     git-crypt
     cliphist
     jetbrains.datagrip
+
+    # Calculator tryouts
+    libsForQt5.kcalc
+    pro-office-calculator
+    gnome.gnome-calculator
+    lumina.lumina-calculator
 
     #
     # Dependencies
