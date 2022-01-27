@@ -15,6 +15,7 @@ let
     "audio/*" = xdgMediaPlayer;
     "video/*" = xdgMediaPlayer;
     "image/*" = xdgImageViewer;
+    "inode/directory" = xdgFileBrowser;
     "text/html" = xdgBrowser;
     "text/plain" = xdgEditor;
     "text/markdown" = xdgEditor;
@@ -440,17 +441,11 @@ in {
     # Themes
     nordic # GTK, QT, and Kvantum
     masterPackages.ayu-theme-gtk
-    qogir-theme
-    adwaita-qt
-    ant-theme
     dracula-theme
     arc-icon-theme
     paper-icon-theme
     papirus-icon-theme
-    pop-icon-theme
     flat-remix-icon-theme
-    tela-icon-theme
-    qogir-icon-theme
     moka-icon-theme # Fallback for Arc icon theme
     vimix-icon-theme
     capitaine-cursors
@@ -484,10 +479,8 @@ in {
     tmpmail # CLI temporary email generator
     httpie # HTTP client, simpler alternative to cURL
     brave
-    pcmanfm
     pcmanfm-qt
     gnome.nautilus
-    index-fm
     yubikey-personalization-gui
     yubikey-personalization
     yubico-pam
@@ -498,8 +491,6 @@ in {
     yubikey-manager-qt
     yubikey-touch-detector
     otpclient
-    dfilemanager
-    xfce.thunar
     CuboCore.corefm
     CuboCore.libcsys
     CuboCore.corepdf
@@ -814,13 +805,12 @@ in {
     userEmail = "d@mrnordstrom.com";
     aliases = {
       co = "checkout";
-      ci = "commit";
-      cia = "commit --amend";
+      c = "commit";
+      a = "commit -am";
       s = "status";
-      st = "status";
       b = "branch";
-      p = "pull --rebase";
-      pu = "push";
+      pu = "pull";
+      p = "push";
     };
   };
 
