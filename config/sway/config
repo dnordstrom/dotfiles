@@ -431,62 +431,6 @@ mode "$mode_system" {
 bindsym $mod+Shift+e mode "$mode_system"
 
 #
-# STARTUP
-#
-
-# Import environment
-
-exec systemctl --user import-environment XDG_SESSION_TYPE XDG_CURRENT_DESKTOP
-exec dbus-update-activation-environment WAYLAND_DISPLAY
-exec ~/.nix-profile/libexec/polkit-gnome-authentication-agent-1
-
-# Start systemd targets
-
-exec systemctl --user start sway-session.target
-exec systemctl --user start graphical-session.target
-
-# Start scratchpad terminal
-
-exec $scratchterm
-
-# Turn off monitor after 10 minutes and lock screen after 30 minutes
-
-exec swayidle -w \
-  timeout 900 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-  timeout 1800 '$lock' \
-  before-sleep '$lock'
-
-# Don't turn off monitor if any app is fullscreen
-
-for_window {
-  [class="^.*"] inhibit_idle fullscreen
-  [app_id="^.*"] inhibit_idle fullscreen
-}
-
-# Start flashfocus for flashing window animation on focus change
-exec_always pkill flashfocus ; flashfocus > /tmp/flashfocus.log 2>&1
-
-# Start swayr daemon
-exec_always pkill swayrd ; env RUST_BACKTRACE=1 swayrd > /tmp/swayrd.log 2>&1
-
-# Start inactive window dimmer
-exec_always pkill -f sway-dim-inactive-windows ; sway-dim-inactive-windows --opacity 0.9 > /tmp/sway-dim-inactive-windows.log 2>&1
-
-# Start monitor temperature daemon
-exec_always pkill wlsunset ; wlsunset -t 4500 -T 6500 -l 62.39 -L 17.30 > /tmp/wlsunset.log 2>&1
-
-# Start network manager tray application
-exec_always pkill nm-tray ; nm-tray
-
-#
-# STATUS BAR
-#
-
-bar {
-  swaybar_command waybar
-}
-
-#
 # WINDOW SPECIFIC
 #
 
@@ -547,16 +491,80 @@ for_window {
 }
 
 #
+# STARTUP
+#
+
+# Import environment
+
+exec systemctl --user import-environment XDG_SESSION_TYPE XDG_CURRENT_DESKTOP
+exec dbus-update-activation-environment WAYLAND_DISPLAY
+exec ~/.nix-profile/libexec/polkit-gnome-authentication-agent-1
+
+# Start systemd targets
+
+exec systemctl --user start sway-session.target
+exec systemctl --user start graphical-session.target
+
+# Start scratchpad terminal
+
+exec $scratchterm
+
+# Turn off monitor after 10 minutes and lock screen after 30 minutes
+
+exec swayidle -w \
+  timeout 900 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+  timeout 1800 '$lock' \
+  before-sleep '$lock'
+
+# Don't turn off monitor if any app is fullscreen
+
+for_window {
+  [class="^.*"] inhibit_idle fullscreen
+  [app_id="^.*"] inhibit_idle fullscreen
+}
+
+# Start flashfocus for flashing window animation on focus change
+exec_always pkill flashfocus ; flashfocus > /tmp/flashfocus.log 2>&1
+
+# Start swayr daemon
+exec_always pkill swayrd ; env RUST_BACKTRACE=1 swayrd > /tmp/swayrd.log 2>&1
+
+# Start inactive window dimmer
+exec_always pkill -f sway-dim-inactive-windows ; sway-dim-inactive-windows --opacity 0.9 > /tmp/sway-dim-inactive-windows.log 2>&1
+
+# Start monitor temperature daemon
+exec_always pkill wlsunset ; wlsunset -t 4500 -T 6500 -l 62.39 -L 17.30 > /tmp/wlsunset.log 2>&1
+
+# Start network manager tray application
+exec_always pkill nm-tray ; nm-tray
+
+#
+# STATUS BAR
+#
+
+bar {
+  swaybar_command waybar
+}
+
+#
 # GTK SETTINGS
 #
 
 set $gnome-schema org.gnome.desktop.interface
 
 exec_always {
-  gsettings set $gnome-schema gtk-theme "Nordic-v40"
-  gsettings set $gnome-schema icon-theme "Papirus-Dark"
+  gsettings set $gnome-schema gtk-theme "Ayu-Dark"
+  gsettings set $gnome-schema icon-theme "Vimix"
   gsettings set $gnome-schema cursor-theme "Quintom_Snow"
   gsettings set $gnome-schema font-name "Input Sans Compressed 8"
+  gsettings set gtk-cursor-theme-size=24
+  gsettings set gtk-font-name=Input Sans Condensed 8
+  gsettings set gtk-xft-antialias=1
+  gsettings set gtk-xft-hinting=1
+  gsettings set gtk-xft-hintstyle=hintslight
+  gsettings set gtk-xft-rgba=rgb
+  gsettings set gtk-xft-dpi=98304
+  gsettings set gtk-overlay-scrolling=true
 }
 
 #
