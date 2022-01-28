@@ -311,6 +311,7 @@ in {
     gsettings-qt
     packagekit
     libsForQt5.packagekit-qt # For installing some KDE services
+    libsForQt5.kpackage
 
     #
     # Web browsing
@@ -560,8 +561,8 @@ in {
 
   qt = {
     enable = true;
-    platformTheme = "gnome"; # For "qt5ct-style", "gtk2" should supposedly be more suitable
-    style = { name = "kvantum"; }; # But we're using Kvantum currently
+    platformTheme = "gtk";
+    style = { name = "kvantum"; };
   };
 
   #
