@@ -28,6 +28,8 @@ let
     "x-scheme-handler/unknown" = xdgBrowser;
     "application/pdf" = xdgPdfViewer;
     "application/json" = xdgEditor;
+    "application/zip" = xdgFileBrowser;
+    "application/x-compressed-tar" = xdgFileBrowser;
     "application/xhtml+xml" = xdgBrowser;
     "application/x-extension-htm" = xdgBrowser;
     "application/x-extension-html" = xdgBrowser;
@@ -298,7 +300,7 @@ in {
     ydotool
 
     #
-    # Gnome
+    # UI toolkits and libraries
     #
 
     glib
@@ -307,6 +309,8 @@ in {
     gnomeExtensions.gsconnect
     gsettings-desktop-schemas
     gsettings-qt
+    packagekit
+    libsForQt5.packagekit-qt # For installing some KDE services
 
     #
     # Web browsing
@@ -422,6 +426,7 @@ in {
     powerline-fonts
 
     # Qt libs
+    libsForQt5.ark
     libsForQt5.qqc2-breeze-style
     libsForQt5.breeze-gtk
     libsForQt5.breeze-qt5
@@ -431,6 +436,7 @@ in {
     qgnomeplatform
 
     # Theming
+    icoutils
     masterPackages.themechanger
     qt5ct
     gtk-engine-murrine
@@ -537,8 +543,8 @@ in {
       export MOZ_ENABLE_WAYLAND=1
       export MOZ_USE_XINPUT2=1
       export QT_QPA_PLATFORM=wayland
-      export QT_QPA_PLATFORMTHEME=gtk2
-      export QT_STYLE_OVERRIDE=qt5ct
+      export QT_QPA_PLATFORMTHEME=gnome
+      export QT_STYLE_OVERRIDE=kvantum
       export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
       export SDL_VIDEODRIVER=wayland
       export XDG_CURRENT_DESKTOP=sway
@@ -554,8 +560,8 @@ in {
 
   qt = {
     enable = true;
-    platformTheme = "gtk";
-    style = { name = "qt5ct-style"; };
+    platformTheme = "gnome"; # For "qt5ct-style", "gtk2" should supposedly be more suitable
+    style = { name = "kvantum"; }; # But we're using Kvantum currently
   };
 
   #
