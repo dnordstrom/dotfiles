@@ -13,7 +13,7 @@ buildGoModule rec {
 
   vendorSha256 = "sha256-p1vFi0F0C1JvQQm0iJbL2riCj1CA8zIMbGYWpfy3yLs=";
 
-  runVend = true;
+  proxyVendor = true;
 
   doCheck = false; # Due to failing test of $PAGER in pkg/tui/helper_test.go
 
