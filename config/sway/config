@@ -553,21 +553,10 @@ bar {
 set $gnome-schema org.gnome.desktop.interface
 
 exec_always {
-  gsettings set $gnome-schema gtk-theme "Nordic-Darker"
+  gsettings set $gnome-schema gtk-theme "rxyhn_phocus"
   gsettings set $gnome-schema icon-theme "Vimix-dark"
   gsettings set $gnome-schema cursor-theme "Quintom_Snow"
   gsettings set $gnome-schema font-name "Input Sans Compressed 8"
-
-  # This can be further customized in gtkrc-X and settings.ini entries using Home Manager, e.g.:
-  #
-  # gsettings set gtk-cursor-theme-size=24
-  # gsettings set gtk-font-name=Input Sans Compressed 8
-  # gsettings set gtk-xft-antialias=1
-  # gsettings set gtk-xft-hinting=1
-  # gsettings set gtk-xft-hintstyle=hintslight
-  # gsettings set gtk-xft-rgba=rgb
-  # gsettings set gtk-xft-dpi=98304
-  # gsettings set gtk-overlay-scrolling=true
 }
 
 #

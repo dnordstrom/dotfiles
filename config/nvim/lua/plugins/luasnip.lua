@@ -65,14 +65,14 @@ ls.snippets.all = {
 --
 
 ls.config.setup({
-	updateevents = "TextChanged,TextChangedI",
+	-- updateevents = "TextChanged,TextChangedI",
 	-- Use nvim-treesitter to determine filetype based on cursor position to get the right snippets
-	-- in embedded contexts like CSS in JS
-	ft_func = filetype_functions.from_pos_or_filetype,
+	-- in embedded contexts like CSS in JS. Unfortunately doesn't work as it should.
+	-- ft_func = filetype_functions.from_pos_or_filetype,
 })
 
 --
--- Load snippets (mus come after our own snippets unless we extend `ls.snippets` tables)
+-- Load snippets (must come after our own snippets unless we extend `ls.snippets` tables)
 --
 
 from_vscode.lazy_load()

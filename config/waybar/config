@@ -149,7 +149,7 @@
   "custom/wttr": {
     "format": "{}",
     "exec": "curl https://wttr.in/Sundsvall,Sweden?format=%c%3Cspan%20rise=%22-1750%22%3E%t%3C/span%3E",
-    "on-click": "kitty --hold --class popupterm curl wttr.in/Sundsvall,Sweden",
+    "on-click": "kitty --hold --class popupterm curl wttr.in/Sundsvall",
     "interval": 1800,
     "tooltip": false
   },

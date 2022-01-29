@@ -17,31 +17,31 @@
  * COLOR PALETTE
  */
 
-@define-color flamingo  #F5E0DC;
-@define-color rosewater #F2CECF;
-@define-color magenta   #C6AAE8;
-@define-color pink      #E5B4E2;
-@define-color maroon    #E49CB3;
-@define-color red       #E38C8F;
-@define-color peach     #F9C096;
-@define-color yellow    #EBDDAA;
-@define-color green     #B1E3AD;
-@define-color blue      #A4B9EF;
-@define-color teal      #BEE4ED;
-@define-color sky       #92D2E8;
+@define-color flamingo  #F2CDCD;
+@define-color rosewater #F5E0DC;
+@define-color mauve     #DDB6F2;
+@define-color pink      #F5C2E7;
+@define-color maroon    #E8A2AF;
+@define-color red       #F28FAD;
+@define-color peach     #F8BD96;
+@define-color yellow    #FAE3B0;
+@define-color green     #ABE9B3;
+@define-color blue      #96CDFB;
+@define-color teal      #B5E8E0;
+@define-color sky       #89DCEB;
 @define-color lavender  #C9CBFF;
 
-@define-color black0    #15121C;
-@define-color black1    #1B1923;
-@define-color black2    #1E1E28;
-@define-color black3    #332E41;
+@define-color black0    #161320;
+@define-color black1    #1A1826;
+@define-color black2    #1E1E2E;
+@define-color black3    #302D41;
 @define-color black4    #575268;
 
 @define-color gray0     #6E6C7E;
 @define-color gray1     #988BA2;
 @define-color gray2     #C3BAC6;
 
-@define-color white     #DADAE8;
+@define-color white     #D9E0EE;
 
 /**
  * CONTAINERS
@@ -174,7 +174,7 @@ box > box > widget > label {
 
 #clock,
 #custom-clock {
-  background: @magenta;
+  background: @mauve;
   color: @black2;
   padding: 0 16px;
 }
@@ -221,7 +221,7 @@ box > box > widget > label {
 }
 
 #custom-wttr {
-  background: @magenta;
+  background: @mauve;
   color: @black2;
 }
 

@@ -163,9 +163,9 @@ nvim_set_keymap("v", "<Leader>cs", ":sort<CR>", opts.nore)
 
 -- Insert new and toggle commenting (exit or begin comment block)
 nvim_set_keymap("i", "<C-CR>", "<Cmd>lua NORDUtils.insert_line_and_toggle_comment()<CR>", opts.re)
-nvim_set_keymap("i", "<S-C-CR>", "<Cmd>lua NORDUtils.insert_line_and_toggle_comment({above=true})<CR>", opts.re)
+nvim_set_keymap("i", "<S-C-CR>", "<Cmd>lua NORDUtils.insert_line_and_toggle_comment({ above = true })<CR>", opts.re)
 nvim_set_keymap("n", "<C-CR>", "<Cmd>lua NORDUtils.insert_line_and_toggle_comment()<CR>", opts.re)
-nvim_set_keymap("n", "<S-C-CR>", "<Cmd>lua NORDUtils.insert_line_and_toggle_comment({above=true})<CR>", opts.re)
+nvim_set_keymap("n", "<S-C-CR>", "<Cmd>lua NORDUtils.insert_line_and_toggle_comment({ above = true })<CR>", opts.re)
 
 -- Duplicate
 nvim_set_keymap("i", "<S-CR>", "<Esc>yypA", opts.nore) -- Shift-Enter to duplicate in insert mode
@@ -213,7 +213,6 @@ nvim_set_keymap("c", "<C-k>", "repeat('<Del>', strchars(getcmdline()[getcmdpos()
 nvim_set_keymap("c", "<M-i>", "<Home><Right><Right><Right><Right>NORDUtils.inspect(<End>)<Left>", opts.nore) -- Inspect
 nvim_set_keymap("c", "<M-l>", "<Home><Right><Right><Right><Right>NORDUtils.echo(<End>)<Left>", opts.nore) -- Echo
 nvim_set_keymap("c", "<M-f>", "expand('%')", opts.expr) -- Insert path to current file
-nvim_set_keymap("c", "<M-s>", "<C-u>w !sudo tee > /dev/null %", opts.re) -- Insert sudo write
 nvim_set_keymap("c", "<M-r>", "<C-u><C-r>:", opts.re) -- Insert last command
 
 -- Prefill

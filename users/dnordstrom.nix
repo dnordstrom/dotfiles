@@ -351,7 +351,6 @@ in {
     spicetify-cli
     spotify-qt
     spotify-tui
-    spotify-tray
     spotifyd
 
     #
@@ -408,12 +407,14 @@ in {
     nodePackages.typescript
 
     # CSS
+    nodePackages.sass
     nodePackages.stylelint
 
     # Vim
     nodePackages.vim-language-server
 
-    # Yaml
+    # Build 
+    gnumake
 
     #
     # Appearance
@@ -437,16 +438,21 @@ in {
     qgnomeplatform
 
     # Theming
-    icoutils
-    masterPackages.themechanger
-    qt5ct
+    flashfocus
     gtk-engine-murrine
     gtk_engines
+    icoutils
+    libsForQt5.qtcurve
     lxappearance
-    flashfocus
+    masterPackages.themechanger
+    qt5ct
 
     # Themes
     nordic # GTK, QT, and Kvantum
+    lightly-qt
+    libsForQt5.grantleetheme
+    lxqt.lxqt-themes
+    zuki-themes
     masterPackages.ayu-theme-gtk
     dracula-theme
     arc-icon-theme
@@ -455,6 +461,7 @@ in {
     flat-remix-icon-theme
     moka-icon-theme # Fallback for Arc icon theme
     vimix-icon-theme
+    vimix-gtk-themes
     capitaine-cursors
     numix-cursor-theme
     numix-gtk-theme
@@ -478,7 +485,6 @@ in {
     gnomecast
     castnow
     go-chromecast
-    fx_cast_bridge
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
     corgi # CLI workflow manager
     navi # CLI cheatsheet tool
@@ -540,18 +546,39 @@ in {
     enable = true;
     config = null;
     extraSessionCommands = ''
-      export GDK_BACKEND=wayland
+      # Firefox
       export MOZ_ENABLE_WAYLAND=1
       export MOZ_USE_XINPUT2=1
+
+      # Wayland
       export QT_QPA_PLATFORM=wayland
-      export QT_QPA_PLATFORMTHEME=gnome
-      export QT_STYLE_OVERRIDE=kvantum
       export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
-      export SDL_VIDEODRIVER=wayland
+      export GDK_BACKEND=wayland
+
+      # Sway
       export XDG_CURRENT_DESKTOP=sway
       export XDG_SESSION_DESKTOP=sway
       export XDG_SESSION_TYPE=wayland
+
+      # Miscellaneous
+      export SDL_VIDEODRIVER=wayland
       export _JAVA_AWT_WM_NONREPARENTING=1
+
+      # Styling
+      #
+      # See `programs.qt` and `programs.gtk` below. Currently `qt5ct` is used to manually set QT
+      # style. Possibly `kvantum` with max effects if screensharing with clients or C-level execs...
+      #
+      # qt5ct says to remove the platform theme variable here (in contrast to other's
+      # recommendations) and set style override to e.g. `kvantum` or `qt5-style` (I guess just `qt5`
+      # was too short...). But since we set them in Home Manager's `programs.qt.style` and
+      # `programs.qt.platformTheme` options, HM handles it all for us and sets these on boot:
+      #
+      # export QT_QPA_PLATFORMTHEME=gtk2
+      # export QT_STYLE_OVERRIDE=qt5-style
+      #
+      # TODO: Once confirmed working, remove this comment to prune the docs a bit.
+
     '';
   };
 
@@ -562,7 +589,7 @@ in {
   qt = {
     enable = true;
     platformTheme = "gtk";
-    style = { name = "kvantum"; };
+    style = { name = "qt5-style"; };
   };
 
   #
@@ -575,8 +602,8 @@ in {
       name = "Input Sans Condensed";
       size = 8;
     };
-    theme.name = "Dracula";
-    iconTheme.name = "Zafiro-icons";
+    theme.name = "rxyhn_phocus";
+    iconTheme.name = "Vimix-dark";
     gtk3 = {
       extraConfig.gtk-application-prefer-dark-theme = "true";
       extraCss = "";
@@ -674,9 +701,18 @@ in {
   xdg.configFile."alacritty/alacritty.yml".source =
     ../config/alacritty/alacritty.yml;
 
+  # Foot
+
+  xdg.configFile."foot".source = ../config/foot;
+
   #
   # PROGRAMS
   #
+
+  programs.foot = {
+    enable = true;
+    server.enable = true;
+  };
 
   programs.qutebrowser.enable = true;
   programs.nnn.enable = true;
