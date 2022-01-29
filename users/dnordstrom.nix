@@ -343,7 +343,6 @@ in {
     #
 
     celluloid
-    clementineUnfree # Unfree for Spotify integration
     handbrake
     haruna
     smplayer
@@ -415,6 +414,9 @@ in {
 
     # Build 
     gnumake
+
+    # APIs and testing 
+    insomnia
 
     #
     # Appearance
@@ -491,6 +493,7 @@ in {
     tealdeer # TLDR in Rust
     tmpmail # CLI temporary email generator
     httpie # HTTP client, simpler alternative to cURL
+    curlie # HTTP client, simpler alternative to cURL
     brave
     pcmanfm-qt
     gnome.nautilus
