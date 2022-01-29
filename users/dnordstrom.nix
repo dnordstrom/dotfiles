@@ -642,6 +642,10 @@ in {
 
   xdg.configFile."kitty".source = ../config/kitty;
 
+  # Wezterm
+
+  xdg.configFile."wezterm".source = ../config/wezterm;
+
   # tmux
 
   xdg.configFile."tmux".source = ../config/tmux;
