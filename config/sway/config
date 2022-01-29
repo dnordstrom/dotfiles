@@ -139,7 +139,7 @@ workspace $workspace10 output DVI-D-1
 #
 
 # All monitors
-output "*" bg ~/Pictures/Wallpapers/active.png fill
+output "*" bg ~/Pictures/Wallpapers/active.png fit
 
 # Primary monitor
 output "DP-1" {

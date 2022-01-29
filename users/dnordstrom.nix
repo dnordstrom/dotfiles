@@ -332,7 +332,6 @@ in {
     # Security
     #
 
-    authy
     bitwarden
     go-2fa
     qtpass
@@ -526,6 +525,7 @@ in {
     git-crypt
     cliphist
     jetbrains.datagrip
+    wezterm
 
     # Calculator tryouts
     libsForQt5.kcalc
