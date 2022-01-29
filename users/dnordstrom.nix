@@ -314,6 +314,12 @@ in {
     libsForQt5.kpackage
 
     #
+    # Office 
+    #
+
+    libreoffice-fresh
+
+    #
     # Web browsing
     #
 

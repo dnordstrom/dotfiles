@@ -440,7 +440,7 @@ for_window {
   #
 
   [app_id="org.gnome.Nautilus"] floating enable
-  [app_id="org.kde.dolphin"] floating enable
+  [app_id="org.kde.dolphin"] floating enable, resize set 1550 900
 
   #
   # Dialogs
@@ -479,7 +479,7 @@ for_window {
   #
 
   # Scratchpad
-  [app_id="scratchterm"] move scratchpad, resize set 1790 940
+  [app_id="scratchterm"] resize set 1790 940, move scratchpad
   [app_id="scratchterm" con_mark="__fullscreen__"] fullscreen enable
 
   # Popups (e.g. when clicking items in bar)
