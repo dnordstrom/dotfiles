@@ -5,8 +5,6 @@
 # prevent sadness.
 #
 
-set -eu
-
 # Set up error and interruption traps to show if toggle fails or is cancelled
 trap 'printf "\n\n%s\n\n" "Error: Preview mode not enabled."; exit 1;' ERR
 trap 'printf "\n\n%s\n\n" "Cancelled: Preview mode not enabled."; exit 1;' SIGINT
@@ -43,6 +41,12 @@ for arg in "$@"; do
   -c | --cleanup-file)
     shift
     cleanup="$1"
+    ;;
+  # Automatically confirm warning prompts when removing directories from ~/.config (this will
+  # enable all items)
+  -y | --yes)
+    shift
+    confirmed=true
     ;;
   -h | --help)
     printf "\n%s\n" "$usage"
@@ -178,7 +182,7 @@ stringstartswith() {
 printf "\n%s\n\n" "Any symlinks created need to be removed before a nixos-rebuild. A cleanup script for this will be generated at $cleanupfile. For convenience, create a prebuild script or alias, e.g. aliasing \"nb\" to \"$cleanupfile; nixos-rebuild switch --upgrade;\"."
 
 # Ask about Sway
-if confirm --strict "Enable for Sway (rm -f ~/.config/sway)?"; then
+if [ -n "$confirmed" ] || confirm --strict "Enable for Sway (rm -f ~/.config/sway)?"; then
   printf "\n"
   loudly "rm -f ~/.config/sway"
   loudly "ln -s /etc/nixos/config/sway ~/.config/sway"
@@ -188,7 +192,7 @@ fi
 printf "\n"
 
 # Ask about Waybar
-if confirm --strict "Enable for Waybar (rm -f ~/.config/waybar)?"; then
+if [ -n "$confirmed" ] || confirm --strict "Enable for Waybar (rm -f ~/.config/waybar)?"; then
   printf "\n"
   loudly "rm -f ~/.config/waybar"
   loudly "ln -s /etc/nixos/config/waybar ~/.config/waybar"
@@ -198,7 +202,7 @@ fi
 printf "\n"
 
 # Ask about wofi
-if confirm --strict "Enable for wofi (rm -f ~/.config/wofi)?"; then
+if [ -n "$confirmed" ] || confirm --strict "Enable for wofi (rm -f ~/.config/wofi)?"; then
   printf "\n"
   loudly "rm -f ~/.config/wofi"
   loudly "ln -s /etc/nixos/config/wofi ~/.config/wofi"
@@ -208,7 +212,7 @@ fi
 printf "\n"
 
 # Ask about tmux
-if confirm --strict "Enable for tmux (rm -rf ~/.config/tmux)?"; then
+if [ -n "$confirmed" ] || confirm --strict "Enable for tmux (rm -rf ~/.config/tmux)?"; then
   printf "\n"
   loudly "rm -rf ~/.config/tmux"
   loudly "ln -s /etc/nixos/config/tmux ~/.config/tmux"
@@ -218,7 +222,7 @@ fi
 printf "\n"
 
 # Ask about Glow
-if confirm --strict "Enable for Glow (rm -rf ~/.config/glow)?"; then
+if [ -n "$confirmed" ] || confirm --strict "Enable for Glow (rm -rf ~/.config/glow)?"; then
   printf "\n"
   loudly "rm -rf ~/.config/glow"
   loudly "ln -s /etc/nixos/config/glow ~/.config/glow"
@@ -228,7 +232,7 @@ fi
 printf "\n"
 
 # Ask about Alacritty
-if confirm --strict "Enable for Alacritty (rm -rf ~/.config/alacritty)?"; then
+if [ -n "$confirmed" ] || confirm --strict "Enable for Alacritty (rm -rf ~/.config/alacritty)?"; then
   printf "\n"
   loudly "rm -rf ~/.config/alacritty"
   loudly "ln -s /etc/nixos/config/alacritty ~/.config/alacritty"
@@ -238,7 +242,7 @@ fi
 printf "\n"
 
 # Ask about Kitty
-if confirm --strict "Enable for Kitty (rm -rf ~/.config/kitty)?"; then
+if [ -n "$confirmed" ] || confirm --strict "Enable for Kitty (rm -rf ~/.config/kitty)?"; then
   printf "\n"
   loudly "rm -rf ~/.config/kitty"
   loudly "ln -s /etc/nixos/config/kitty ~/.config/kitty"
@@ -247,8 +251,18 @@ fi
 
 printf "\n"
 
+# Ask about Wezterm
+if [ -n "$confirmed" ] || confirm --strict "Enable for wezterm (rm -rf ~/.config/wezterm)?"; then
+  printf "\n"
+  loudly "rm -rf ~/.config/wezterm"
+  loudly "ln -s /etc/nixos/config/wezterm ~/.config/wezterm"
+  cleanup="$cleanup\nrm ~/.config/wezterm"
+fi
+
+printf "\n"
+
 # Ask about Foot
-if confirm --strict "Enable for Foot (rm -rf ~/.config/foot)?"; then
+if [ -n "$confirmed" ] || confirm --strict "Enable for Foot (rm -rf ~/.config/foot)?"; then
   printf "\n"
   loudly "rm -rf ~/.config/foot"
   loudly "ln -s /etc/nixos/config/foot ~/.config/foot"
@@ -258,7 +272,7 @@ fi
 printf "\n"
 
 # Ask about Tridactyl
-if confirm --strict "Enable for Tridactyl (rm -rf ~/.config/tridactyl)?"; then
+if [ -n "$confirmed" ] || confirm --strict "Enable for Tridactyl (rm -rf ~/.config/tridactyl)?"; then
   printf "\n"
   loudly "rm -rf ~/.config/tridactyl"
   loudly "ln -s /etc/nixos/config/firefox/tridactyl ~/.config/tridactyl"
@@ -268,7 +282,7 @@ fi
 printf "\n"
 
 # Ask about Neovim
-if confirm --strict "Enable for Neovim (rm -rf ~/.config/nvim/ftplugin + lua)?"; then
+if [ -n "$confirmed" ] || confirm --strict "Enable for Neovim (rm -rf ~/.config/nvim/ftplugin + lua)?"; then
   printf "\n"
   loudly "rm -rf ~/.config/nvim/ftplugin"
   loudly "rm -rf ~/.config/nvim/lua"
@@ -280,7 +294,7 @@ fi
 printf "\n"
 
 # Ask about Vifm
-if confirm --strict "Enable for Vifm (rm -rf ~/.config/vifm)?"; then
+if [ -n "$confirmed" ] || confirm --strict "Enable for Vifm (rm -rf ~/.config/vifm)?"; then
   printf "\n"
   loudly "rm -rf ~/.config/vifm"
   loudly "ln -s /etc/nixos/config/vifm ~/.config/vifm"
