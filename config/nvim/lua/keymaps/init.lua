@@ -66,8 +66,8 @@ nvim_set_keymap("n", "<Leader><Leader>", "<C-^>", opts.nore)
 nvim_set_keymap("v", "<Tab>", ">gv", opts.nore)
 nvim_set_keymap("v", "<S-Tab>", "<gv", opts.nore)
 
--- ...highlight toggle
-nvim_set_keymap("n", "<Esc>", "<Cmd>set hlsearch!<CR>", opts.nore)
+-- ...highlight toggle (one press optimal but annoys incurable key spammers, can personally confirm)
+nvim_set_keymap("n", "<Esc><Esc>", "<Cmd>set hlsearch!<CR>", opts.nore)
 
 -- ...find
 nvim_set_keymap("n", "<C-Space>", "<Cmd>FzfLua<CR>", opts.nore)

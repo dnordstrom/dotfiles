@@ -317,6 +317,7 @@ in {
     # Office 
     #
 
+    # Fresh is the possibly unstable newer build, otherwise use libreoffice-qt or libreoffice-still
     libreoffice-fresh
 
     #
@@ -532,6 +533,7 @@ in {
     cliphist
     jetbrains.datagrip
     wezterm
+    cawbird # Twitter client
 
     # Calculator tryouts
     libsForQt5.kcalc
