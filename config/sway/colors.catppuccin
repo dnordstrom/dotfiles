@@ -2,7 +2,7 @@
 # Nord
 #
 
-set $border #F9C096
+set $border #F8BD96
 set $border_inactive #1E1E28
 set $foreground #DADAE8
 set $foreground_inactive #C3BAC6

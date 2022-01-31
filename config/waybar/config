@@ -87,7 +87,7 @@
     "format": "<span font='12'></span>",
     "tooltip": false,
     "on-click": "dolphin",
-    "on-click-middle": "kitty --class popupterm -e zsh -c vifm",
+    "on-click-middle": "kitty --class popupterm -e vifm",
     "on-click-right": "nautilus"
   },
   "custom/editor": {

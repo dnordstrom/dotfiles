@@ -107,10 +107,10 @@ gaps outer 10
 
 smart_gaps off
 
-# Borders (pixel disables title bar)
+# Borders (pixel border type disables title bar)
 
-default_border pixel 2
-default_floating_border pixel 2
+default_border pixel 4
+default_floating_border pixel 4
 
 hide_edge_borders smart_no_gaps
 

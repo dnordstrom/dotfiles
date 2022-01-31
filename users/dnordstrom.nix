@@ -420,6 +420,8 @@ in {
 
     # Build 
     gnumake
+    nodePackages.node-gyp
+    nodePackages.node-gyp-build
 
     # APIs and testing 
     insomnia
