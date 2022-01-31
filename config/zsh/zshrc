@@ -25,6 +25,10 @@ export ANSI_STYLE_MH=$(tput dim)
 export ANSI_STYLE_STATUS=$(tput bold; tput setaf 0; tput setab 3)
 export ANSI_STYLE_STATUS_END=$(tput sgr0)
 
+# QT (unsure where this is actually set, probably Home Manager)
+
+unset QT_STYLE_OVERRIDE
+
 # less
 
 local statusline=$ANSI_STYLE_STATUS"\ ?f\ %f:藍\ STDIN"$ANSI_STYLE_STATUS_END

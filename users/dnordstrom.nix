@@ -577,6 +577,7 @@ in {
 
       # Styling
       export QT_QPA_PLATFORMTHEME=qt5ct
+      unset QT_STYLE_OVERRIDE
     '';
   };
 
