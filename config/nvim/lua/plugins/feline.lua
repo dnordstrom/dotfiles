@@ -29,10 +29,10 @@ local blend = utils.color.blend
 
 -- Colors
 local status_fg = darken(get_hex("Normal", "fg"), 0.8)
-local status_bg = get_hex("CokeUnfocused", "bg")
+local status_bg = get_hex("TabLineSel", "bg")
 local status_style = "bold"
-local status_em_fg = lighten(get_hex("CokeFocused", "fg"), 0.95)
-local status_em_bg = get_hex("CokeFocused", "bg")
+local status_em_fg = lighten("#1E1E28", 0.95)
+local status_em_bg = "#EBDDAA"
 local status_inactive_bg = darken(status_bg, 0.65)
 local status_inactive_fg = darken(status_fg, 0.65)
 

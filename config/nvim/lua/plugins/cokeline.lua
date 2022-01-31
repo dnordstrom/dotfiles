@@ -171,10 +171,12 @@ vim.cmd("hi TabLineFill guibg=none gui=none")
 
 -- Tabline settings
 require("cokeline").setup({
-	cycle_prev_next_mappings = true,
 	buffers = {
-		new_buffers_position = "last",
+		new_buffers_position = "next",
 	},
+  mappings = {
+    cycle_prev_next = true,
+  },
 	default_hl = {
 		focused = {
 			fg = focused_fg,
@@ -188,9 +190,7 @@ require("cokeline").setup({
 	components = {
 		-- Separator
 		{
-			text = function(buffer)
-				return buffer.index ~= 1 and separator
-			end,
+			text = separator,
 			hl = { fg = separator_fg, bg = "none" },
 		},
 		-- Corner
@@ -230,11 +230,19 @@ require("cokeline").setup({
 		-- Modified indicator
 		{
 			text = function(buffer)
+        local output = ""
+
 				if buffer.is_modified then
-					return modified ~= "" and modified .. " "
+					if modified ~= "" then
+            output = modified .. " "
+          end
 				else
-					return unmodified ~= "" and unmodified .. " "
+					if unmodified ~= "" then
+            output = unmodified .. " "
+          end
 				end
+
+        return output
 			end,
 			hl = { fg = tab_suffix, bg = tab_bg },
 		},

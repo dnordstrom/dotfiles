@@ -167,6 +167,10 @@ nvim_set_keymap("i", "<S-C-CR>", "<Cmd>lua NORDUtils.insert_line_and_toggle_comm
 nvim_set_keymap("n", "<C-CR>", "<Cmd>lua NORDUtils.insert_line_and_toggle_comment()<CR>", opts.re)
 nvim_set_keymap("n", "<S-C-CR>", "<Cmd>lua NORDUtils.insert_line_and_toggle_comment({ above = true })<CR>", opts.re)
 
+-- Insert line above and below current comment (more prominent)
+nvim_set_keymap("i", "<M-CR>", "<Esc>O<Esc>jo<Esc>i", opts.re)
+nvim_set_keymap("n", "<M-CR>", "O<Esc>jo<Esc>", opts.re)
+
 -- Duplicate
 nvim_set_keymap("i", "<S-CR>", "<Esc>yypA", opts.nore) -- Shift-Enter to duplicate in insert mode
 nvim_set_keymap("n", "<S-CR>", "yyp$", opts.nore) -- Shift-Enter to duplicate in insert mode

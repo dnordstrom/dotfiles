@@ -1,20 +1,25 @@
 "
-" Tridactyl configuration
+" TRIDACTYL CONFIGURATION
 "
 " Author: Daniel Nordstrom <d@mrnordstrom.com>
 " Repository: https://github.com/dnordstrom/dotfiles
 "
 
-" Reset
+"
+" RESET
+"
+
 sanitise tridactyllocal tridactylsync
 
 "
-" Settings
+" SETTINGS
 "
 
 colorscheme catppuccin
 
+"
 " General
+"
 
 set newtab https://nordix.blue#photo
 set allowautofocus false
@@ -28,7 +33,9 @@ set tabopencontaineraware true
 set visualenterauto true
 set viewsource tridactyl
 
+"
 " Search
+"
 
 set searchurls.g https://www.google.com/search?q=%s&num=100
 set searchurls.google https://www.google.com/search?q=%s&num=100
@@ -43,7 +50,7 @@ set searchurls.startpage https://www.startpage.com/do/search?query=%s
 set searchurls.duckduckgo https://duckduckgo.com/?kp=-2&q=%s&ia=web
 
 "
-" Commands
+" COMMANDS
 "
 
 " Pass current URL to command
@@ -93,28 +100,36 @@ command reconfig source
 command writeinstagram js (() => { const a = document.createElement('a'); const cv = document.createElement('canvas'); const cx = cv.getContext('2d'); const img = document.querySelector('[role="dialog"] img'); cv.width = img.width; cv.height = img.height; cx.drawImage(img, 0,0); const ext = new URL(img.src).pathname.match(/(\w+)$/)[0]; const url = cv.toDataURL(`image/${ext == 'jpg' ? 'jpeg' : ext}`); a.download = `${img.alt.toLowerCase().replace(/[^\s\w]/g, '').replace(/\s+/g, '_')}.${ext}`; a.href = url; document.body.appendChild(a); a.click(); document.body.removeChild(a); })()
 
 "
-" Key binds
+" KEY BINDS
 "
 
+"
 " Configuration
+"
 
 bind <Space>rr composite reconfig ; notify Configuration reloaded.
 bind <Space>rR composite reconfiglive ; notify Live configuration reloaded.
 bind <C-,> viewconfig
 
+"
 " Notes
+"
 
 bind <Space>nn fillcmdline note
 bind <Space>ny fillcmdline_note_selection
 bind <Space>np fillcmdline_note_clipboard
 
+"
 " Buffers/tabs
+"
 
 bind <Space><Space> fillcmdline_notrail
 bind <Space>bb fillcmdline taball
 bind <Space>bd tabdetach
 
+"
 " Search
+"
 
 bind / fillcmdline find
 bind ? fillcmdline find -?
@@ -122,28 +137,38 @@ bind n findnext 1
 bind N findnext -1
 bind <Space>h nohlsearch
 
+"
 " Yank
+"
 
 bind yj yankjiraissue
 bind yJ yankjiraurl
 
+"
 " Write/save
+"
 
 bind <Space>wi writeinstagram
 
+"
 " Change
+"
 
 bind cp open about:profiles
 bind cs fillcmdline set
 
+"
 " Navigation
+"
 
 bind H tabprev
 bind J back
 bind K forward
 bind L tabnext
 
+"
 " Movement
+"
 
 bind x tabclose
 
@@ -153,7 +178,9 @@ bind gD composite tabduplicate ; tabdetach
 bind ZQ composite sanitise tridactyllocal tridactylsync ; exclaim_quiet killall firefox
 bind ZZ exclaim_quiet killall firefox
 
+"
 " Command mode
+"
 
 " Vim style
 bind --mode=ex <C-h> exclaim_quiet wtype -k left
@@ -169,7 +196,9 @@ bind --mode=ex <C-e> exclaim_quiet wtype -k end
 bind --mode=ex <A-n> exclaim_quiet wtype -k down
 bind --mode=ex <A-p> exclaim_quiet wtype -k up
 
+"
 " Insert mode
+"
 
 " Vim style
 bind --mode=insert <C-a> exclaim_quiet wtype -k home
@@ -179,9 +208,14 @@ bind --mode=insert <C-e> exclaim_quiet wtype -k end
 bind --mode=insert <AC-i> editor
 bind --mode=insert <C-.> editor
 
-" Marks
+"
+" MARKS
+"
 
+"
 " Personal
+"
+
 quickmark i https://imgur.com
 quickmark y https://youtube.com
 quickmark r https://www.reddit.com
@@ -191,7 +225,10 @@ quickmark m https://mail.protonmail.com/u/1/
 quickmark c https://calendar.protonmail.com/u/1/
 quickmark c https://drive.protonmail.com/u/1/
 
+"
 " Work
+"
+
 quickmark J https://leeroy-group.atlassian.net/jira/software/c/projects/OF/boards/69
 quickmark C https://calendar.google.com/calendar/r?pli=1
 quickmark P https://leeroy-group.atlassian.net/wiki/spaces/BI/overview
@@ -199,23 +236,35 @@ quickmark M https://mail.google.com/mail/u/0/#inbox
 quickmark G https://github.com/LeeroyGroup
 quickmark A https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-1#Instances:sort=instanceId
 
+"
 " Marks on ' and ` like Vim
+"
+
 bindreplaceprefix go '
 bindreplaceprefix go `
 
 "
-" Blacklist
+" BLACKLIST
 "
 
 blacklistadd localhost
 blacklistadd protonmail.com
 blacklistadd mail.google.com
+blacklistadd calendar.google.com
+blacklistadd whimsical.com
+blacklistadd figma.com
 
 "
-" Auto Commands
+" AUTO COMMANDS
+"
+" Unfortunately restricted to one line so I recommend pasting into Firefox's console in multi-line
+" mode and using its built-in pretty print feature. When done, minify again using editor or one of a
+" thousand online tools. Pasting it into a single-line text field such as the URL field also works.
 "
 
+"
 " DocLoad
+"
 
 " Helpers
 autocmd DocLoad .* js N = { param(str) { new URLSearchParams(location.search).get(str); }, pathStart(str) { return location.pathname.startsWith(str); }, pathMatch(regex) { const matches = location.href.match(regex); return matches; }, log: console.log.bind(window, "%c N.log ", "background: #d8dee9; color: #2e3440; font-weight: bold;"), yank(str) { navigator.clipboard.writeText(str); }, yankLoud(str) { N.yank(str); N.notify(`Yanked "${str}"`); }, run(str) { tri.excmds.composite(str); }, notify(str) { N.run(`notify ${str}`); }, query(str) { return document.querySelector(str); }, queryAll(str) { return document.querySelectorAll(str); }, q(str) { return N.query(str); }, qa(str) { return N.queryAll(str); } }
@@ -227,7 +276,7 @@ autocmd DocLoad .*search\.nixos\.org/packages.+ js setTimeout(() => { const node
 autocmd DocLoad .*nix-community\.github\.io/home-manager/options\.html.* js document.querySelectorAll('dt span.term').forEach(node => { const dt = node.parentElement.nextElementSibling; const textEl = dt.querySelector('.programlisting') || dt.querySelector('.literal'); if (textEl) { const copy = document.createElement('span'); copy.appendChild(document.createTextNode(' - ')); copy.style.cursor = 'pointer'; const code = document.createElement('code'); code.className = 'copy'; code.setAttribute('data-copy', `${node.textContent} = ${textEl.textContent.trim()};`); code.appendChild(document.createTextNode('Copy to clipboard')); copy.appendChild(code); node.appendChild(copy); } }); document.querySelector('dl').addEventListener('click', event => { if (event.target.className === 'copy') { const text = event.target.getAttribute('data-copy'); navigator.clipboard.writeText(text); console.log(text); }});
 
 "
-" Notes
+" NOTES
 "
 
 " Nord base00 color (background)
