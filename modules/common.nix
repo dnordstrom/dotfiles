@@ -227,10 +227,6 @@
   # SYSTEM ENVIRONMENT
   #
 
-  qt5.platformTheme = "gtk2";
-  qt5.enable = true;
-  qt5.style = "gtk2";
-
   environment.etc.hosts.mode = "0644";
 
   environment.systemPackages = with pkgs; [
@@ -243,4 +239,3 @@
     xdg-desktop-portal
   ];
 }
-

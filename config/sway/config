@@ -553,7 +553,7 @@ bar {
 set $gnome-schema org.gnome.desktop.interface
 
 exec_always {
-  gsettings set $gnome-schema gtk-theme "rxyhn_phocus"
+  gsettings set $gnome-schema gtk-theme "Ayu-Dark"
   gsettings set $gnome-schema icon-theme "Vimix-dark"
   gsettings set $gnome-schema cursor-theme "Quintom_Snow"
   gsettings set $gnome-schema font-name "Input Sans Compressed 8"

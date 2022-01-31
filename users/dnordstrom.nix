@@ -576,20 +576,7 @@ in {
       export _JAVA_AWT_WM_NONREPARENTING=1
 
       # Styling
-      #
-      # See `programs.qt` and `programs.gtk` below. Currently `qt5ct` is used to manually set QT
-      # style. Possibly `kvantum` with max effects if screensharing with clients or C-level execs...
-      #
-      # qt5ct says to remove the platform theme variable here (in contrast to other's
-      # recommendations) and set style override to e.g. `kvantum` or `qt5-style` (I guess just `qt5`
-      # was too short...). But since we set them in Home Manager's `programs.qt.style` and
-      # `programs.qt.platformTheme` options, HM handles it all for us and sets these on boot:
-      #
-      # export QT_QPA_PLATFORMTHEME=gtk2
-      # export QT_STYLE_OVERRIDE=qt5-style
-      #
-      # TODO: Once confirmed working, remove this comment to prune the docs a bit.
-
+      export QT_QPA_PLATFORMTHEME=qt5ct
     '';
   };
 
@@ -599,8 +586,9 @@ in {
 
   qt = {
     enable = true;
-    platformTheme = "gtk";
-    style = { name = "qt5-style"; };
+    # These do not seem to set the correct environment variables for qt5ct:
+    # platformTheme = "gtk";
+    # style = { name = "qt5ct-style"; };
   };
 
   #
