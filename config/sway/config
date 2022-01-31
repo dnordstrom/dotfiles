@@ -46,7 +46,9 @@ set $term kitty --single-instance
 set $scratchterm $term --class scratchterm --title scratchterm --session /etc/nixos/config/kitty/scratchpad.session
 set $menu wofi
 set $launcher launch-application
-set $files dolphin
+set $filesqt5 dolphin
+set $filesgtk neutilus
+set $filestui neutilus
 set $snaparea grim -g "$(slurp)" - | swappy -f - -o "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png"
 set $snapfull grim -g "$(slurp -o)" - | swappy -f - -o "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png"
 set $sway-props-attrs name, type, title, app_id, con_mark, con_type
@@ -206,7 +208,9 @@ bindsym {
   $mod+Shift+d exec /etc/nixos/scripts/launch/launch-application
   $mod+Shift+Ctrl+d exec /etc/nixos/scripts/launch/launch-command
   $mod+Shift+period exec wofi-emoji
-  $mod+g exec $files
+  $mod+g exec $filesqt5
+  $mod+Shift+g exec $filesgtk
+  $mod+Shift+Ctrl+g exec $filestui
   $mod+Backspace exec $powermenu
   $mod+Shift+p exec $sway-props
   $mod+Shift+Ctrl+p exec $sway-props-all
