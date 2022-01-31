@@ -23,14 +23,14 @@ client.focused \
   $border
 
 client.unfocused \
-  $transparent \
+  $border_inactive \
   $border_inactive \
   $foreground_inactive \
   $border_inactive \
   $transparent
 
 client.focused_inactive \
-  $transparent \
+  $border_inactive \
   $border_inactive \
   $foreground_inactive \
   $border_inactive \
