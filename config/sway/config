@@ -47,8 +47,8 @@ set $scratchterm $term --class scratchterm --title scratchterm --session /etc/ni
 set $menu wofi
 set $launcher launch-application
 set $filesqt5 dolphin
-set $filesgtk neutilus
-set $filestui neutilus
+set $filesgtk nautilus
+set $filestui $term --class popupterm -e vifm
 set $snaparea grim -g "$(slurp)" - | swappy -f - -o "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png"
 set $snapfull grim -g "$(slurp -o)" - | swappy -f - -o "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png"
 set $sway-props-attrs name, type, title, app_id, con_mark, con_type
@@ -537,7 +537,7 @@ exec_always pkill swayrd ; env RUST_BACKTRACE=1 swayrd > /tmp/swayrd.log 2>&1
 exec_always pkill -f sway-dim-inactive-windows ; sway-dim-inactive-windows --opacity 0.9 > /tmp/sway-dim-inactive-windows.log 2>&1
 
 # Start monitor temperature daemon
-exec_always sleep 3 ; pkill wlsunset ; wlsunset -t 4500 -T 6500 -l 62.39 -L 17.30 > /tmp/wlsunset.log 2>&1
+exec_always pkill wlsunset ; wlsunset -t 4500 -T 6500 -l 62.39 -L 17.30 > /tmp/wlsunset.log 2>&1
 
 # Start network manager tray application
 exec_always pkill nm-tray ; nm-tray
