@@ -13,7 +13,7 @@ enabled_layouts horizontal
 # Start editors
 
 cd ~/Code/ticker
-launch --title "Frontend" --copy-env
+launch --title "Frontend"
 
 cd ~/Code/ticker-backend
 launch --title "Backend" -- nix-shell /etc/nixos/shell/node12.nix --command zsh
@@ -29,15 +29,15 @@ enabled_layouts horizontal
 # Start servers
 
 cd ~/Code/ticker
-launch --title "Frontend server" --copy-env
+launch --title "Frontend server"
 
 cd ~/Code/ticker-backend
-launch --title "Backend server" -- nix-shell /etc/nixos/shell/node12.nix --command zsh
+launch --title "Backend server" nix-shell /etc/nixos/shell/node12.nix --command zsh
 
 # Prefill command lines (delay for zsh launch)
 
-launch sh -c "sleep 1 && kitty @ send-text --match title:^ticker$ 'yarn && yarn dev'"
-launch sh -c "sleep 1 && kitty @ send-text --match title:^ticker-backend$ 'yarn && yarn dev'"
+launch sh -c "sleep 1 && kitty @ send-text --match title:'^Frontend server$' 'yarn && yarn dev'"
+launch sh -c "sleep 1 && kitty @ send-text --match title:'^Backend server$' 'yarn && yarn dev'"
 
 #
 # PROXIES

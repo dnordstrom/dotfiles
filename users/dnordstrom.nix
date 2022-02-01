@@ -7,10 +7,10 @@ let
   xdgEditor = [ "neovim-kitty.desktop" ];
   xdgMarkdown = [ "neovim-kitty.desktop" ];
   xdgBrowser = [ "firefox.desktop" ];
-  xdgPdfViewer = [ "zathura.desktop" ];
-  xdgFileBrowser = [ "dolphine.desktop" ];
-  xdgImageViewer = [ "imv-qt.desktop" ];
-  xdgMediaPlayer = [ "haruna.desktop" ];
+  xdgPdfViewer = [ "org.pwmt.zathura.desktop" ];
+  xdgFileBrowser = [ "org.kde.dolphin.desktop" ];
+  xdgImageViewer = [ "qView.desktop" ];
+  xdgMediaPlayer = [ "org.kde.haruna.desktop" ];
   mimeAassociations = {
     "audio/*" = xdgMediaPlayer;
     "video/*" = xdgMediaPlayer;
@@ -126,7 +126,7 @@ in {
         type = "Application";
         genericName = "Slack Client for Linux";
         exec =
-          "slack --enable-features=UseOzonePlatform --ozone-platform=wayland -s %U";
+          "slack --enable-features=UseOzonePlatform,WebRTCPipeWireCapturer --ozone-platform=wayland -s %U";
         terminal = false;
         icon = "slack";
         categories = [ "GNOME" "GTK" "Network" "InstantMessaging" ];
@@ -959,7 +959,7 @@ in {
 
   programs.go = {
     enable = true;
-    goPath = "Applications/Go";
+    goPath = ".go"; # By default not a hidden directory
   };
 
   programs.direnv = {
