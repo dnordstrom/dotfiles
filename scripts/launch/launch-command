@@ -48,28 +48,14 @@ if [ -n "$LAUNCHER_FIFO" ]; then
   bash -c "compgen -c" >"$LAUNCHER_FIFO" &
 
   # Read results from pipe
-  while read -r path; do
-    cmd="$path"
-    name="$namestyle$path$NORMAL"
-    desc=""
-
-    [ "$path" = "launch-application" ] && desc="fzf application launcher"
-    [ "$path" = "waybar-reloader" ] && desc="Reloads Waybar on configuration change"
-    [ "$path" = "waybar-keyboard" ] && desc="Keyboard layout script for status bar"
-    [ "$path" = "nix-preview" ] && desc="Symlinks NixOS config files for preview without build"
-    [ "$path" = "screensnap" ] && desc="Screenshot script using slurp"
-    [ "$path" = "colorsnap" ] && desc="Color picker script using slurp"
-    [ "$path" = "wofi-powermenu" ] && desc="Power menu script for wofi"
-    [ "$path" = "1secmail" ] && desc="Throwaway email address generator"
-
-    [ -n "$desc" ] && name="$name ($descstyle$desc$NORMAL)"
-
+  while read -r cmd; do
+    name="$namestyle$cmd$NORMAL"
     entries="$name:$cmd\n$entries"
     choices="$name\n$choices"
   done <"$LAUNCHER_FIFO"
 
   # Show menu and get selection with parenthesis and brackets escaped (for grep)
-  selection="$(printf "%b" "$choices" | fzf --color='bg+:-1' --ansi --cycle --no-info --prompt '› ' --pointer '➔ ' --marker '» ' --bind 'tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down' | sed 's,[][()\.^$\/?*+],\\&,g')"
+  selection="$(printf "%b" "$choices" | fzf --color="bg+:-1" --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down,alt-y:execute-silent(which {} | wl-copy --trim-newline)+abort,ctrl-y:execute-silent(wl-copy {})+abort" | sed 's,[][()\.^$\/?*+],\\&,g')"
 
   # If selection is not empty, launch mapped command
   if [ -n "$selection" ]; then

@@ -11,6 +11,11 @@
 # https://github.com/ldelossa/sway-fzfify
 #
 
+# if [ "$1" = "yank" ]; then
+#   printf "%s" "$2" | wl-copy
+#   kitty --hold -- echo "Command: $2"
+#   exit 0
+# fi
 #
 # CONSTANTS
 #
@@ -70,7 +75,8 @@ if [ -n "$LAUNCHER_FIFO" ]; then
     # surrounding quotes. We make an ANSI colored label to pass to fzf but the selected item is
     # returned without formatting so we keep name in sync and use that for command lookup.
     cmd="$(grep -Pwo -m 1 -e "(?<=^Exec=).*" <"$path")"
-    name="$namestyle$(grep -Pwo -m 1 -e "(?<=^Name=).*" <"$path")$NORMAL"
+    name="$(grep -Pwo -m 1 -e "(?<=^Name=).*" <"$path")"
+    label="$namestyle$name$NORMAL"
     generic="$(grep -Pwo -m 1 -e "(?<=^GenericName=).*" <"$path")"
 
     # Skip if command is empty (check duplicates with "${entries#*"$path"}" != "$entries")
@@ -80,22 +86,31 @@ if [ -n "$LAUNCHER_FIFO" ]; then
 
     # Add generic name
     if [ -n "$generic" ]; then
-      name="$name ($descstyle$generic$NORMAL)"
+      label="$label ($descstyle$generic$NORMAL)"
+      name="$name ($generic)"
     fi
 
     # Add application type
     if [ -n "$flatpak" ]; then
-      name="$name$typestyle [Flatpak]$NORMAL"
+      label="$label$typestyle [Flatpak]$NORMAL"
+      name="$name [Flatpak]"
     else
-      name="$name$typestyle [Nix]$NORMAL"
+      label="$label$typestyle [Nix]$NORMAL"
+      name="$name [Nix]"
+    fi
+
+    # Yank command to clipboard if the yank argument matches the generated name
+    if [ "$1" = "yank" ] && [ "$2" = "$name" ]; then
+      printf "%s" "$cmd" | wl-copy
+      exit 0
     fi
 
     entries="$name:$cmd\n$entries"
-    choices="$name\n$choices"
+    choices="$label\n$choices"
   done <"$LAUNCHER_FIFO"
 
   # Show menu and get selection with parenthesis and brackets escaped (for grep)
-  selection="$(printf "%b" "$choices" | fzf --color='bg+:-1' --ansi --cycle --no-info --prompt '› ' --pointer '➔ ' --marker '» ' --bind 'tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down' | sed 's,[][()\.^$\/?*+],\\&,g')"
+  selection="$(printf "%b" "$choices" | fzf --color="bg+:-1" --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down,ctrl-y:execute-silent(kitty -- /etc/nixos/scripts/launch/launch-application yank {})+abort" | sed 's,[][()\.^$\/?*+],\\&,g')"
 
   # If selection is not empty, launch mapped command
   if [ -n "$selection" ]; then
