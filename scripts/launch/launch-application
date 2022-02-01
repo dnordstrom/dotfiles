@@ -22,7 +22,7 @@
 
 SCRIPT="$0"
 BOLD="\e[1m"
-MAGENTA="\e[35m"
+BLUE="\e[34m"
 BLACK="\e[30m"
 ITALIC="\e[3m"
 NORMAL="\e[0m"
@@ -38,8 +38,8 @@ title="fuzzyterm"
 opacity="0.9"
 
 # Styles
-namestyle="$BOLD$MAGENTA"
-descstyle="$ITALIC"
+namestyle="$BOLD$BLUE"
+descstyle="$ITALIC$BLACK"
 typestyle="$BLACK"
 
 #
