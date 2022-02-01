@@ -366,6 +366,7 @@ in {
     jetbrains.goland
     jetbrains.idea-ultimate
     jetbrains.webstorm
+    libsForQt5.kate
 
     # LSP and syntax
     nodePackages.vscode-langservers-extracted # HTML, CSS, and JSON

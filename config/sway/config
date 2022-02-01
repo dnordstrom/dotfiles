@@ -266,16 +266,16 @@ bindsym {
 
   # Move window to workspace and focus
 
-  $mod+Shift+1 move container to workspace number 1
-  $mod+Shift+2 move container to workspace number 2
-  $mod+Shift+3 move container to workspace number 3
-  $mod+Shift+4 move container to workspace number 4
-  $mod+Shift+5 move container to workspace number 5
-  $mod+Shift+6 move container to workspace number 6
-  $mod+Shift+7 move container to workspace number 7
-  $mod+Shift+8 move container to workspace number 8
-  $mod+Shift+9 move container to workspace number 9
-  $mod+Shift+0 move container to workspace number 10
+  $mod+Shift+1 move container to workspace number 1, workspace number 1
+  $mod+Shift+2 move container to workspace number 2, workspace number 2
+  $mod+Shift+3 move container to workspace number 3, workspace number 3
+  $mod+Shift+4 move container to workspace number 4, workspace number 4
+  $mod+Shift+5 move container to workspace number 5, workspace number 5
+  $mod+Shift+6 move container to workspace number 6, workspace number 6
+  $mod+Shift+7 move container to workspace number 7, workspace number 7
+  $mod+Shift+8 move container to workspace number 8, workspace number 8
+  $mod+Shift+9 move container to workspace number 9, workspace number 9
+  $mod+Shift+0 move container to workspace number 10, workspace number 10
 
   #
   # Layout 
@@ -456,10 +456,10 @@ for_window {
   [window_role="dialog"] floating enable
   [window_type="dialog"] floating enable
 
-  # Sound control
+  # Sound
   [app_id="pavucontrol"] floating enable
 
-  # Password entry
+  # Password
   [app_id="pinentry-qt"] floating enable
   [app_id="pinentry-gtk2"] floating enable
 
@@ -486,12 +486,24 @@ for_window {
   [app_id="scratchterm"] move scratchpad, resize set 1790 940
   [app_id="scratchterm" con_mark="__fullscreen__"] fullscreen enable
 
-  # Popups (e.g. when clicking items in bar)
+  # Popup
   [app_id="popupterm"] floating enable, resize set 920 720
+
+  # Launcher
   [app_id="fuzzyterm"] floating enable, sticky enable, resize set 600 350
 
-  # Transparent (opacity itself is set in terminal options so only the background is affected)
+  # Transparent
   [app_id="transterm"] border none
+
+  #
+  # Utilities
+  #
+
+  # qt5ct
+  [app_id="qt5ct"] floating enable, resize set 1100 900
+
+  # Kvantum Manager
+  [title="Kvantum Manager"] floating enable, resize set 1200 860
 }
 
 #

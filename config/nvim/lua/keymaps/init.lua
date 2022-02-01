@@ -22,7 +22,7 @@ local nvim_set_keymap = vim.api.nvim_set_keymap
 local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
 local opts = {
 	-- "Regular"
-	re = {},
+	re = { noremap = false },
 	expr = { expr = true },
 	silent = { silent = true },
 	silentExpr = { silent = true, expr = true },
@@ -144,10 +144,10 @@ nvim_set_keymap("n", "<Leader>rp", "<Cmd>PackerSync<CR>", opts.nore)
 --
 
 -- ...bufferline
-nvim_set_keymap("n", "<M-h>", "<Cmd>lua require('cokeline/buffers').focus_by_step(-1)<CR>", opts.nore)
-nvim_set_keymap("n", "<M-l>", "<Cmd>lua require('cokeline/buffers').focus_by_step(1)<CR>", opts.nore)
-nvim_set_keymap("n", "<M-H>", "<Cmd>lua require('cokeline/buffers').switch_by_step(-1)<CR>", opts.nore)
-nvim_set_keymap("n", "<M-L>", "<Cmd>lua require('cokeline/buffers').switch_by_step(1)<CR>", opts.nore)
+nvim_set_keymap("n", "<M-h>", "<Plug>(cokeline-focus-prev)", opts.re)
+nvim_set_keymap("n", "<M-l>", "<Plug>(cokeline-focus-next)", opts.re)
+nvim_set_keymap("n", "<M-H>", "<Plug>(cokeline-switch-prev)", opts.re)
+nvim_set_keymap("n", "<M-L>", "<Plug>(cokeline-switch-next)", opts.re)
 
 --
 -- Change...
