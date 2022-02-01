@@ -16,7 +16,7 @@ cd ~/Code/ticker
 launch --title "Frontend" --copy-env
 
 cd ~/Code/ticker-backend
-launch --title "Backend" -- nix-shell /etc/nixos/shell/node12.nix
+launch --title "Backend" -- nix-shell /etc/nixos/shell/node12.nix --command zsh
 
 #
 # SERVERS

@@ -148,5 +148,6 @@ mkfifo -m 600 "$LAUNCHER_FIFO"
   --title "$title" \
   --class "$class" \
   --override "background_opacity=$opacity" \
+  --override "adjust_line_height=200%" \
   -e \
   sh -c "LAUNCHER_FIFO=$LAUNCHER_FIFO $SCRIPT"
