@@ -31,7 +31,6 @@ opacity="0.9"
 
 # Styles
 namestyle="$BOLD$MAGENTA"
-descstyle="$ITALIC"
 
 #
 # LAUNCHER
@@ -55,7 +54,7 @@ if [ -n "$LAUNCHER_FIFO" ]; then
   done <"$LAUNCHER_FIFO"
 
   # Show menu and get selection with parenthesis and brackets escaped (for grep)
-  selection="$(printf "%b" "$choices" | fzf --color="bg+:-1" --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down,alt-y:execute-silent(which {} | wl-copy --trim-newline)+abort,ctrl-y:execute-silent(wl-copy {})+abort" | sed 's,[][()\.^$\/?*+],\\&,g')"
+  selection="$(printf "%b" "$choices" | fzf --color="bg+:-1" --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down,alt-y:execute-silent(which {} | xargs readlink -f | wl-copy --trim-newline)+abort,ctrl-y:execute-silent(wl-copy {})+abort" | sed 's,[][()\.^$\/?*+],\\&,g')"
 
   # If selection is not empty, launch mapped command
   if [ -n "$selection" ]; then
