@@ -13,10 +13,10 @@ enabled_layouts horizontal
 # Start editors
 
 cd ~/Code/ticker
-launch --title "Frontend" --copy-env -- zsh -c "nvim"
+launch --title "Frontend" --copy-env
 
 cd ~/Code/ticker-backend
-launch --title "Backend" -- nix-shell /etc/nixos/shell/node12.nix --command zsh -c "nvim"
+launch --title "Backend" -- nix-shell /etc/nixos/shell/node12.nix
 
 #
 # SERVERS
