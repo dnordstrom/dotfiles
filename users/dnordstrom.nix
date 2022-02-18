@@ -437,6 +437,7 @@ in {
     jetbrains-mono
     line-awesome
     powerline-fonts
+    victor-mono
 
     # Qt libs
     libsForQt5.ark
