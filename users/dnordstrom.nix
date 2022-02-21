@@ -162,8 +162,7 @@ in {
     nordpkgs.convox
     nordpkgs.jira-cli
     nordpkgs.protoncheck
-    nordpkgs.protonvpn-gui
-    nordpkgs.protonvpn-cli
+    # nordpkgs.protonvpn-cli
 
     #
     # Networking
@@ -343,6 +342,7 @@ in {
     go-2fa
     qtpass
     pinentry-gtk2
+    protonvpn-gui
 
     #
     # Multimedia
