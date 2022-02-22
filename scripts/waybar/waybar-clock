@@ -3,7 +3,7 @@
 title="$(swaymsg -t get_tree | jq -r '.. | select(.type?) | select(.focused==true) .name' | sed 's/\(.\{45\}\).*/\1…/')"
 app="$(swaymsg -t get_tree | jq -r '.. | select(.type?) | select(.focused==true) .app_id' | sed 's/\(.\)/\U\1/')"
 time="$(date +'%H:%M')"
-date="$(date +'%A %M, %+4Y')"
+date="$(date +'%A %-d, %+4Y')"
 modefile="/tmp/waybar-clock-window-mode"
 icon=""
 output=""
@@ -51,7 +51,7 @@ if [ -f "$modefile" ]; then
 
   esac
 
-  printf "%s" "{ \"text\": \"<span font='16' rise='-1500'>$icon</span> <span rise='500'>$output</span>\", \"tooltip\": \"$time\" }"
+  printf "%s" "{ \"text\": \"<span font='16' rise='-1500'>$icon</span> <span rise='2000'>$output</span>\", \"tooltip\": \"$time\" }"
 else
-  printf "%s" "{ \"text\": \"<span font='16' rise='-1500'>$icon</span> <span rise='500'>$time</span>\", \"tooltip\": \"$date\" }"
+  printf "%s" "{ \"text\": \"<span font='16' rise='-1500'>$icon</span> <span rise='2000'>$time</span>\", \"tooltip\": \"$date\" }"
 fi

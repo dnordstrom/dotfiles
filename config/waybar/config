@@ -104,7 +104,7 @@
   },
   "custom/keyboard": {
     "exec": "/etc/nixos/scripts/waybar/waybar-keyboard",
-    "format": "<span font='16' rise='-1500'> </span><span rise='500'>{}</span>",
+    "format": "<span font='16' rise='-1500'> </span><span rise='2000'>{}</span>",
     "interval": 30,
     "on-click": "/etc/nixos/scripts/waybar/waybar-keyboard switch",
     "return-type": "json"
