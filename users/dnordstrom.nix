@@ -162,7 +162,6 @@ in {
     nordpkgs.convox
     nordpkgs.jira-cli
     nordpkgs.protoncheck
-    # nordpkgs.protonvpn-cli
 
     #
     # Networking
@@ -191,6 +190,7 @@ in {
     #
 
     networkmanager_dmenu
+    speedtest-cli
 
     # General
     appimage-run
@@ -342,7 +342,7 @@ in {
     go-2fa
     qtpass
     pinentry-gtk2
-    protonvpn-gui
+    protonvpn-cli
 
     #
     # Multimedia

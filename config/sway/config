@@ -13,6 +13,15 @@
 set $font Input Sans Condensed 9
 set $colors catppuccin
 
+set $termpopupwidth 920
+set $termpopupheight 920
+
+set $termscratchwidth 1790
+set $termscratchheight 940
+
+set $fuzzytermwidth 600
+set $fuzzytermheight 350
+
 #
 # Keys
 #
@@ -42,18 +51,53 @@ set $workspace10 10
 # Commands
 #
 
+# Terminals
+#   TODO: Make titles consistent with variables and adjust Waybar config accordingly.
+
 set $term kitty --single-instance
-set $scratchterm $term --class scratchterm --title scratchterm --session /etc/nixos/config/kitty/scratchpad.session
-set $menu wofi
-set $launcher launch-application
+set $termpopup $term --title popupterm
+set $termscratch $term --title scratchterm --session /etc/nixos/config/kitty/scratchpad.session
+
+# Launchers
+
+set $launchapp /etc/nixos/scripts/launch/launch-application
+set $launchcmd /etc/nixos/scripts/launch/launch-command
+set $launchgui wofi
+
+# Files
+
 set $filesqt5 dolphin
 set $filesgtk nautilus
-set $filestui $term --class popupterm -e vifm
+set $filestui $termpopup -e vifm
+
+# Screenshots
+
 set $snaparea grim -g "$(slurp)" - | swappy -f - -o "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png"
 set $snapfull grim -g "$(slurp -o)" - | swappy -f - -o "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png"
-set $sway-props-attrs name, type, title, app_id, con_mark, con_type
-set $sway-props sh -c "swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true) | { $sway-props-attrs }' > /tmp/sway-props.json && $term --class popupterm -e -- vim /tmp/sway-props.json -c 'set ft=json'"
-set $sway-props-all sh -c "swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true)' > /tmp/sway-props.json && $term --class popupterm -e -- vim /tmp/sway-props.json -c 'set ft=json'"
+
+# Window properties
+set $swaypropsattrs \
+  name, \
+  type, \
+  title, \
+  app_id, \
+  con_mark, \
+  con_type, \
+  marks, \
+  sticky, \
+  pid, \
+  nodes, \
+  fullscreen_mode, \
+  urgent, \
+  orientation, \
+  layout, \
+  focused, \
+  border, \
+  rect
+set $swayprops sh -c "swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true) | { $swaypropsattrs }' > /tmp/sway-props.json && $termpopup -e -- bat --paging=always --style=plain --theme=Dracula /tmp/sway-props.json"
+set $swaypropsall sh -c "swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true)' > /tmp/sway-props.json && $termpopup -e -- bat --paging=always --style=plain --theme=Dracula /tmp/sway-props.json"
+
+# Lockscreen
 
 set $lock swaylock \
   --font "Input Sans Compressed" \
@@ -82,6 +126,8 @@ set $lock swaylock \
   --effect-greyscale \
   --effect-blur 6x8 \
   --effect-vignette 0.6:0.8
+
+# Power menu
 
 set $powermenu wlogout \
   --buttons-per-row 2 \
@@ -198,25 +244,44 @@ floating_modifier $mod normal
 
 bindsym {
   #
-  # Launch
+  # Launchers
+  #   Mod+Return            -> FZF applications
+  #   Mod+Shift+Return      -> FZF commands
+  #   Mod+Shift+Ctrl+Return -> GUI launcher
+  #   Mod+Shift+.           -> GUI emoji picker
   #
-  $mod+t exec swaymsg scratchpad show
-  $mod+Return exec $term
-  $mod+Shift+Return exec $scratchterm
-  $mod+Shift+Ctrl+Return exec $scratchterm
-  $mod+d exec $menu
-  $mod+Shift+d exec /etc/nixos/scripts/launch/launch-application
-  $mod+Shift+Ctrl+d exec /etc/nixos/scripts/launch/launch-command
+
+  $mod+d exec $launchapp
+  $mod+Shift+d exec $launchcmd
+  $mod+Shift+Ctrl+d $launchgui
   $mod+Shift+period exec wofi-emoji
+
+  #
+  # Terminal emulators
+  #   Mod+Return            -> Plain
+  #   Mod+Shift+Return      -> Scratchpad
+  #   Mod+Shift+Ctrl+Return -> Plain in scratchpad
+  #
+  $mod+Return exec $term
+  $mod+Shift+Return exec $termscratch
+  $mod+Shift+Ctrl+Return exec $term, move scratchpad
+  
+  #
+  # File managers
+  #
+
   $mod+g exec $filesqt5
   $mod+Shift+g exec $filesgtk
   $mod+Shift+Ctrl+g exec $filestui
-  $mod+Backspace exec $powermenu
-  $mod+Shift+p exec $sway-props
-  $mod+Shift+Ctrl+p exec $sway-props-all
+
+  #
+  # WM
+  #
 
   $mod+q kill
-  $mod+Shift+q kill
+  $mod+Backspace exec $powermenu
+  $mod+Shift+p exec $swayprops
+  $mod+Shift+Ctrl+p exec $swaypropsall
   $mod+Shift+c reload
 
   #
@@ -288,22 +353,24 @@ bindsym {
 
   # Modes
   
-  $mod+s            layout stacking
-  $mod+w            layout tabbed
-  $mod+e            layout toggle split
-  $mod+Shift+Space  floating toggle
-  $mod+Space        focus mode_toggle
-  $mod+a            focus parent
-  $mod+f            fullscreen
+  $mod+Space focus mode_toggle
+  $mod+Shift+Space floating toggle
+
+  $mod+s layout stacking
+  $mod+w layout tabbed
+  $mod+e layout toggle split
+
+  $mod+a focus parent
+  $mod+f fullscreen
 
   #
   # Scratchpad
   #
   
-  $mod+Shift+z        mark --add newest, move scratchpad
-  $mod+z              scratchpad show, [con_mark="fs"] fullscreen enable
-  $mod+Shift+Ctrl+x   fullscreen disable, unmark 
-  $mod+Shift+Ctrl+z   fullscreen enable, mark --add fs
+  $mod+z scratchpad show, [con_mark="fullterm"] fullscreen enable
+  $mod+Shift+z move scratchpad, mark --add newest
+  $mod+Shift+Ctrl+z fullscreen enable, mark --add fullterm
+  $mod+Shift+Ctrl+x fullscreen disable, mark --remove fullterm
 
   #
   # Functional
@@ -419,13 +486,14 @@ bindsym $mod+r mode "$mode_resize"
 
 set $mode_system_icon 襤
 set $mode_system_label System
-set $mode_system_hints (e)xit (r)eload (r)eboot (s)hutdown
+set $mode_system_hints (l)ogout (r)estart (s)shutdown (c)onfi
 set $mode_system $mode_system_icon $mode_system_label $mode_system_hints
 
 mode "$mode_system" {
   bindsym e exec swaymsg exit, mode "default"
   bindsym s exec systemctl poweroff, mode "default"
   bindsym r exec systemctl reboot, mode "default"
+  bindsym c exec swaymsg reload, mode "default"
 
   bindsym Return mode "default"
   bindsym Escape mode "default"
@@ -483,26 +551,41 @@ for_window {
   #
 
   # Scratchpad
-  [app_id="scratchterm"] move scratchpad, resize set 1790 940
-  [app_id="scratchterm" con_mark="__fullscreen__"] fullscreen enable
+
+  [title="scratchterm"] \
+    move scratchpad, \
+    resize set $termscratchwidth $termscratchheight, \
+    move position center
+  [title="scratchterm" con_mark="fullterm"] \
+    fullscreen enable
 
   # Popup
-  [app_id="popupterm"] floating enable, resize set 920 720
+
+  [title="popupterm"] \
+    floating enable, \
+    resize set $termpopupwidth $termpopupheight
 
   # Launcher
-  [app_id="fuzzyterm"] floating enable, sticky enable, resize set 600 350
+
+  [title="fuzzyterm"] \
+    floating enable, \
+    sticky enable, \
+    resize set $fuzzytermwidth $fuzzytermheight
 
   # Transparent
-  [app_id="transterm"] border none
+
+  [title="transterm"] border none
 
   #
   # Utilities
   #
 
   # qt5ct
+
   [app_id="qt5ct"] floating enable, resize set 1100 900
 
   # Kvantum Manager
+
   [title="Kvantum Manager"] floating enable, resize set 1200 860
 }
 
@@ -523,7 +606,7 @@ exec systemctl --user start graphical-session.target
 
 # Start scratchpad terminal
 
-exec $scratchterm
+exec $termscratch
 
 # Turn off monitor after 10 minutes and lock screen after 30 minutes
 
