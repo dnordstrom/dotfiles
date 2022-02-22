@@ -5,10 +5,16 @@ input=$(swaymsg -t get_inputs | jq "first(.[] | select(.identifier==\"$id\"))")
 index=$(printf "%s" "$input" | jq ".xkb_active_layout_index")
 count=$(printf "%s" "$input" | jq ".xkb_layout_names | length")
 
-if [ "$1" = "switch" ]; then
+if [ "switch" = "$1" ]; then
   swaymsg input "$id" xkb_switch_layout $(((index + 1) % count))
 fi
 
-active=$(swaymsg -t get_inputs | jq -r "first(.[] | select(.identifier==\"$id\").xkb_active_layout_name)")
+active=$(swaymsg -t get_inputs | jq -r "last(.[] | select(.identifier==\"$id\")).xkb_active_layout_name")
+
+if [ "null" = "$active" ]; then
+  active="Unknown"
+else
+  active="$(printf "%s" "$active" | cut -d' ' -f1)"
+fi
 
 printf "%s" "{ \"text\": \"$active\", \"tooltip\": \"$id\", \"class\": \"keyboard\" }"

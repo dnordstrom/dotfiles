@@ -245,10 +245,10 @@ floating_modifier $mod normal
 bindsym {
   #
   # Launchers
-  #   Mod+Return            -> FZF applications
-  #   Mod+Shift+Return      -> FZF commands
+  #   Mod+Return -> FZF applications
+  #   Mod+Shift+Return -> FZF commands
   #   Mod+Shift+Ctrl+Return -> GUI launcher
-  #   Mod+Shift+.           -> GUI emoji picker
+  #   Mod+Shift+. -> GUI emoji picker
   #
 
   $mod+d exec $launchapp
@@ -258,8 +258,8 @@ bindsym {
 
   #
   # Terminal emulators
-  #   Mod+Return            -> Plain
-  #   Mod+Shift+Return      -> Scratchpad
+  #   Mod+Return -> Plain
+  #   Mod+Shift+Return -> Scratchpad
   #   Mod+Shift+Ctrl+Return -> Plain in scratchpad
   #
   $mod+Return exec $term

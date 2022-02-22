@@ -51,7 +51,7 @@ if [ -f "$modefile" ]; then
 
   esac
 
-  printf "%s" "{ \"text\": \"<span font='12' rise='-1500'>$icon</span> <span rise='500'>$output</span>\", \"tooltip\": \"$time\" }"
+  printf "%s" "{ \"text\": \"<span font='16' rise='-1500'>$icon</span> <span rise='500'>$output</span>\", \"tooltip\": \"$time\" }"
 else
-  printf "%s" "{ \"text\": \"<span font='12' rise='-1500'>$icon</span> <span rise='500'>$time</span>\", \"tooltip\": \"$date\" }"
+  printf "%s" "{ \"text\": \"<span font='16' rise='-1500'>$icon</span> <span rise='500'>$time</span>\", \"tooltip\": \"$date\" }"
 fi
