@@ -167,16 +167,17 @@ in {
     # Networking
     #
 
-    networkmanager-openvpn
-    openvpn
-    nm-tray
-    speedcrunch
-    gnome.gnome-keyring
-    libgnome-keyring
-    ytmdesktop
     enlightenment.econnman
+    gnome.gnome-keyring
+    haskellPackages.network-manager-tui
     krita
+    libgnome-keyring
+    networkmanager-openvpn
+    nm-tray
+    openvpn
     qview
+    speedcrunch
+    ytmdesktop
 
     #
     # Nix
