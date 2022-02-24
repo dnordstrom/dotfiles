@@ -16,6 +16,9 @@ set $colors catppuccin
 set $termpopupwidth 920
 set $termpopupheight 920
 
+set $termplainwidth 920
+set $termplainheight 920
+
 set $termscratchwidth 1790
 set $termscratchheight 940
 
@@ -56,6 +59,7 @@ set $workspace10 10
 
 set $term kitty --single-instance
 set $termpopup $term --title popupterm
+set $termplain $term --title plainterm
 set $termscratch $term --title scratchterm --session /etc/nixos/config/kitty/scratchpad.session
 
 # Launchers
@@ -256,7 +260,7 @@ bindsym {
 
   $mod+Return exec $term
   $mod+Shift+Return exec $termscratch
-  $mod+Shift+Ctrl+Return exec $term, exec sleep 1, move scratchpad
+  $mod+Shift+Ctrl+Return exec $termplain
   
   #
   # File managers
@@ -554,6 +558,15 @@ for_window {
     resize set $termscratchwidth $termscratchheight, \
     move position center
   [title="scratchterm" con_mark="fullterm"] \
+    fullscreen enable
+
+  # Scratchpad (small)
+
+  [title="plainterm"] \
+    move scratchpad, \
+    resize set $termplainwidth $termplainheight, \
+    move position center
+  [title="plainterm" con_mark="fullterm"] \
     fullscreen enable
 
   # Popup
