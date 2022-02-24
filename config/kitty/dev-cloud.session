@@ -3,20 +3,6 @@
 #
 
 #
-# EDITORS
-#
-
-new_tab Editors
-
-enabled_layouts horizontal
-
-cd ~/Code/ticker
-launch --title "Frontend editor" -- zsh -c vim
-
-cd ~/Code/ticker-backend
-launch --title "Backend editor" -- nix-shell /etc/nixos/shell/node12.nix --command zsh -c vim
-
-#
 # SHELLS
 #
 
@@ -29,6 +15,20 @@ launch --title "Frontend shell"
 
 cd ~/Code/ticker-backend
 launch --title "Backend shell" -- nix-shell /etc/nixos/shell/node12.nix --command zsh
+
+#
+# EDITORS
+#
+
+new_tab Editors
+
+enabled_layouts horizontal
+
+cd ~/Code/ticker
+launch --title "Frontend editor" -- zsh -c vim
+
+cd ~/Code/ticker-backend
+launch --title "Backend editor" -- nix-shell /etc/nixos/shell/node12.nix --command zsh -c vim
 
 #
 # SERVERS

@@ -74,6 +74,16 @@
 
 }
 
+.TridactylStatusIndicator {
+  padding: 5px 8px 6px !important;
+  text-transform: uppercase !important;
+  font-weight: bold !important;
+  right: 4px !important;
+  bottom: 4px !important;
+  border: none !important;
+  border-radius: 2px !important;
+}
+
 #completions .sectionHeader {
   padding-left: var(--nord-padding);
   padding-top: 2px;

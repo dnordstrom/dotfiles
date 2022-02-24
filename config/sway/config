@@ -127,15 +127,6 @@ set $lock swaylock \
   --effect-blur 6x8 \
   --effect-vignette 0.6:0.8
 
-# Power menu
-
-set $powermenu wlogout \
-  --buttons-per-row 2 \
-  --row-spacing 34 \
-  --column-spacing 34 \
-  --margin 34 \
-  --protocol layer-shell
-
 #
 # SETTINGS
 #
@@ -253,7 +244,7 @@ bindsym {
 
   $mod+d exec $launchapp
   $mod+Shift+d exec $launchcmd
-  $mod+Shift+Ctrl+d $launchgui
+  $mod+Shift+Ctrl+d exec $launchgui
   $mod+Shift+period exec wofi-emoji
 
   #
@@ -262,9 +253,10 @@ bindsym {
   #   Mod+Shift+Return -> Scratchpad
   #   Mod+Shift+Ctrl+Return -> Plain in scratchpad
   #
+
   $mod+Return exec $term
   $mod+Shift+Return exec $termscratch
-  $mod+Shift+Ctrl+Return exec $term, move scratchpad
+  $mod+Shift+Ctrl+Return exec $term, exec sleep 1, move scratchpad
   
   #
   # File managers
@@ -275,14 +267,19 @@ bindsym {
   $mod+Shift+Ctrl+g exec $filestui
 
   #
-  # WM
+  # Window manager
   #
 
   $mod+q kill
-  $mod+Backspace exec $powermenu
   $mod+Shift+p exec $swayprops
   $mod+Shift+Ctrl+p exec $swaypropsall
   $mod+Shift+c reload
+
+  #
+  # Notifications
+  #
+
+  $mod+Shift+n exec swaync-client -t -sw
 
   #
   # Movement

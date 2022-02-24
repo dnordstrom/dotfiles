@@ -50,6 +50,12 @@ set searchurls.startpage https://www.startpage.com/do/search?query=%s
 set searchurls.duckduckgo https://duckduckgo.com/?kp=-2&q=%s&ia=web
 
 "
+" Site-specific
+"
+
+seturl atlassian.net allowautofocus true
+
+"
 " COMMANDS
 "
 

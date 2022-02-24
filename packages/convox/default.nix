@@ -10,7 +10,7 @@ in stdenv.mkDerivation {
 
   src = pkgs.fetchurl {
     url = "https://convox.com/cli/linux/convox";
-    sha256 = "sha256-v7I+CKkojLgXjWWGkH6M5TioiDJsm4482nsjuO3wVRY=";
+    sha256 = "sha256-5KTR2OaynlCrc3SixTnSM01S43kbEuInVgvHn8WPtac=";
   };
 
   phases = [ "installPhase" ];
@@ -21,4 +21,3 @@ in stdenv.mkDerivation {
     chmod 755 $out/bin/convox
   '';
 }
-

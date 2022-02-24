@@ -1,8 +1,9 @@
 mode=drun,run
 normal_window=true
+no_actions=true
 matching=contains
 gtk_dark=true
-filter_rate=100
+filter_rate=250
 allow_images=true
 allow_markup=true
 image_size=32px

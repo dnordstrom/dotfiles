@@ -1,0 +1,12 @@
+##
+# SWAY CONFIGURATION SNIPPETS
+##
+
+# Power menu
+
+set $powermenu wlogout \
+  --buttons-per-row 2 \
+  --row-spacing 34 \
+  --column-spacing 34 \
+  --margin 34 \
+  --protocol layer-shell

@@ -14,14 +14,14 @@
   time.timeZone = "Europe/Stockholm";
 
   nix.package = pkgs.nixUnstable;
-  nix.trustedUsers = [ "root" "dnordstrom" ];
+  nix.settings.trusted-users = [ "root" "dnordstrom" ];
 
   #
   # Optimization
   #
 
   # Automatically symlink files with identical contents
-  nix.autoOptimiseStore = true;
+  nix.settings.auto-optimise-store = true;
 
   # Automatically remove unused packages
   nix.gc = {
@@ -147,7 +147,8 @@
   # Privilege escalation
   security.polkit.enable = true;
 
-  # Make swaylock accept correct password
+  # Make swaylock accept correct password.
+  # See: https://github.com/mortie/swaylock-effects/blob/master/pam/swaylock
   security.pam.services.swaylock = {
     text = ''
       auth include login

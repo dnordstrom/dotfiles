@@ -246,19 +246,27 @@ in {
     zsh-fzf-tab
     zsh-nix-shell
 
-    # Notifications
-    fnott # Keyboard driven notification daemon
+    #
+    # Wayland
+    #
 
-    # Wayland layer shell, panels, and effects
+    # Window managers
+    # river - Requires wlroots 0.14 while 0.15 is installed: check out why it doesn't work
+
+    # layer shell, panels, and effects
     nwg-drawer
     nwg-launchers
     nwg-menu
     nwg-panel
     nwg-panel
     swayidle
-    swaylock-effects
-    swaywsr
     swaykbdd
+    swaylock-effects
+    swaynotificationcenter
+    swaywsr
+
+    # Notifications
+    fnott # Keyboard driven notification daemon
 
     # Screenshots
     grim
@@ -287,9 +295,10 @@ in {
     ulauncher
     wofi-emoji
     workstyle
-
-    # Window managers
-    # river - Requires wlroots 0.14 while 0.15 is installed: check out why it doesn't work
+    rofi-wayland
+    rofi-calc
+    rofi-emoji
+    rofi-systemd
 
     # Input
     libinput # For trackpad gestures
@@ -438,6 +447,7 @@ in {
     line-awesome
     powerline-fonts
     victor-mono
+    fcft # Font loading library used by foot
 
     # Qt libs
     libsForQt5.ark
@@ -944,17 +954,26 @@ in {
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
+    enableFishIntegration = false;
+    enableBashIntegration = false;
   };
 
   # Fuzzy finder written in Rust (both sk and fzf works with fzf-lua for nvim)
 
-  programs.skim = { enable = true; };
+  programs.skim = {
+    enable = false; # Currently using fzf
+    enableZshIntegration = true;
+    enableFishIntegration = false;
+    enableBashIntegration = false;
+  };
 
   # Lua alternative to z.sh for (even) faster navigation
 
   programs.z-lua = {
     enable = true;
     enableZshIntegration = true;
+    enableBashIntegration = false;
+    enableFishIntegration = false;
     enableAliases = false; # Disabling to try zoxide
   };
 
