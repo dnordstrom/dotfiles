@@ -225,7 +225,7 @@ nvim_set_keymap("n", "<Leader>;u", ":lua NORDUtils.", opts.re) -- Utilities
 nvim_set_keymap("n", "<Leader>;l", ":lua ", opts.re) -- Lua
 nvim_set_keymap("n", "<Leader>;h", ":help ", opts.re) -- Help
 nvim_set_keymap("n", "<Leader>;H", 'feedkeys(":help " . expand("<cword>"))', opts.expr) -- Help
-nvim_set_keymap("n", "<Leader>;s", ":w <M-f>", opts.re) -- Write with filepath
+nvim_set_keymap("n", "<Leader>;s", ":w <M-f>", opts.re) -- Write with file path
 nvim_set_keymap("n", "<Leader>;S", ":w !sudo tee > /dev/null %", opts.re) -- Sudo write
 nvim_set_keymap("n", "<Leader>;r", ":<C-r>:", opts.re) -- Last command
 
@@ -267,7 +267,7 @@ nvim_set_keymap("n", "[c", "&diff ? ']c' : '<Cmd>lua require(\"gitsigns.actions\
 -- ...highlights
 nvim_set_keymap("n", "<Leader>th", "<Cmd>set hlsearch!<CR>", opts.nore)
 
--- Spelling
+-- ...spellchecking
 nvim_set_keymap("n", "<Leader>ts", "<Cmd>set spell!<CR>", opts.nore)
 
 --
@@ -292,7 +292,7 @@ nvim_set_keymap("n", "<Leader>fb", "<Cmd>FzfLua buffers<CR>", opts.nore)
 -- ...command
 nvim_set_keymap("n", "<Leader>fc", "<Cmd>FzfLua commands<CR>", opts.nore)
 
--- ...colorscheme with live preview
+-- ...color scheme with live preview
 nvim_set_keymap("n", "<Leader>fC", "<Cmd>FzfLua colorschemes<CR>", opts.nore)
 
 -- ...help
@@ -310,8 +310,8 @@ nvim_set_keymap("n", "<Leader>fs", "<Cmd>FzfLua lsp_document_symbols<CR>", opts.
 -- ...symbol (workspace)
 nvim_set_keymap("n", "<Leader>fS", "<Cmd>FzfLua lsp_workspace_symbols<CR>", opts.nore)
 
--- ...file by (r)esuming last query
-nvim_set_keymap("n", "<Leader>fr", "<Cmd>FzfLua files_resume<CR>", opts.nore)
+-- ...recent files
+nvim_set_keymap("n", "<Leader>fr", "<Cmd>FzfLua oldfiles<CR>", opts.nore)
 
 --
 -- Buffer...
@@ -326,8 +326,11 @@ nvim_set_keymap("n", "<Space>bl", "<Cmd>FzfLua buffers<CR>", opts.nore)
 -- ...list (old-school using ls)
 nvim_set_keymap("n", "<Space>bL", "<Cmd>ls<CR>:b<Space>", opts.nore)
 
--- ...delete (wipeout, not just hide)
-nvim_set_keymap("n", "<Space>bd", "<Cmd>bwipeout<CR>", opts.nore)
+-- ...delete (default is hide)
+nvim_set_keymap("n", "<Space>bd", "<Cmd>Bwipeout<CR>", opts.nore)
+
+-- ...delete despite changes (default is hide)
+nvim_set_keymap("n", "<Space>bD", "<Cmd>Bwipeout!<CR>", opts.nore)
 
 --
 -- Put/paste...
@@ -396,3 +399,25 @@ nvim_set_keymap("n", "gs", "<Cmd>NBrowserSearch<CR>", opts.re)
 
 -- ...search web
 nvim_set_keymap("n", "<Leader>gs", "<Cmd>lua NORDUtils.browsersearch()<CR>", opts.re)
+
+--
+-- New...
+--
+-- By default uses active file directory, and capital letter variants use working directory.
+--
+
+-- ..file
+nvim_set_keymap("n", "<Leader>nf", 'feedkeys(":e " . expand("%:~:h") . "/")', opts.expr)
+nvim_set_keymap("n", "<Leader>nF", 'feedkeys(":e " . getcwd() . "/")', opts.expr)
+
+-- ..directory
+nvim_set_keymap("n", "<Leader>nd", 'feedkeys(":!mkdir -p " . expand("%:~:h") . "/")', opts.expr)
+nvim_set_keymap("n", "<Leader>nD", 'feedkeys(":!mkdir -p " . getcwd() . "/")', opts.expr)
+
+-- ..buffer (unnamed, no input required)
+nvim_set_keymap("n", "<Leader>nb", '<Cmd>execute("e " . expand("%:~:h") . "/Unnamed")<CR>', opts.nore)
+nvim_set_keymap("n", "<Leader>nB", '<Cmd>execute("e " . getcwd() . "/Unnamed")<CR>', opts.nore)
+
+-- To use the built-in prompt, if you prefer less flexibility for no added value:
+-- nvim_set_keymap("n", "<Leader>nF", '<Cmd>execute("e " . getcwd() . "/" . input("New file (relative): "))<CR>', opts.nore)
+

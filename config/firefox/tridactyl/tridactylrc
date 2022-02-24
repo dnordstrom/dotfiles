@@ -9,6 +9,7 @@
 " RESET
 "
 
+" Reset all existing settings, binds, and autocmds (so broken configs are reloaded cleanly restarting FF)
 sanitise tridactyllocal tridactylsync
 
 "
