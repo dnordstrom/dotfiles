@@ -25,6 +25,9 @@ set $termscratchheight 940
 set $fuzzytermwidth 600
 set $fuzzytermheight 350
 
+set $floatdefaultwidth 1000
+set $floatdefaultheight 800
+
 #
 # Keys
 #
@@ -355,7 +358,11 @@ bindsym {
   # Modes
   
   $mod+Space focus mode_toggle
-  $mod+Shift+Space floating toggle
+  $mod+Shift+Space floating toggle, resize set $floatdefaultwidth $floatdefaultheight
+
+  #
+  # Defaults
+  #
 
   $mod+s layout stacking
   $mod+w layout tabbed
