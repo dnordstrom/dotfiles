@@ -348,10 +348,11 @@ in {
     #
 
     bitwarden
+    MozWire
     go-2fa
-    qtpass
     pinentry-gtk2
     protonvpn-cli
+    qtpass
 
     #
     # Multimedia
