@@ -16,6 +16,7 @@
   "modules-center": [ "custom/clock" ],
   "modules-right": [
     "tray",
+    "cpu",
     "custom/keyboard",
     "custom/wttr",
     "pulseaudio"
