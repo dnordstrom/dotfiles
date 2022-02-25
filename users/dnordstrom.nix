@@ -349,7 +349,7 @@ in {
     #
 
     bitwarden
-    MozWire
+    mozwire
     go-2fa
     pinentry-gtk2
     protonvpn-cli
