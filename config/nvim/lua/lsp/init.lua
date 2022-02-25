@@ -78,7 +78,7 @@ null_ls.setup({
 			extra_args = function(params)
 				return {
 					"-i",
-          nvim_buf_get_option(params.bufnr, "shiftwidth"),
+					nvim_buf_get_option(params.bufnr, "shiftwidth"),
 				}
 			end,
 		}),
@@ -105,6 +105,9 @@ null_ls.setup({
 for _, lsp in ipairs(autoload) do
 	lspconfig[lsp].setup({
 		capabilities = capabilities,
+		flags = {
+			debounce_text_changes = 5000, -- Wait 5 seconds before sending didChange (may solve slow LSP)
+		},
 		on_attach = function(client)
 			disable_formatting(client)
 		end,

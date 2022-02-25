@@ -31,7 +31,6 @@
   "sway/workspaces": {
     "format": "{icon}",
     "format-icons": {
-      "1": "",
       "focused": "綠",
       "default": "祿",
       "urgent": "",

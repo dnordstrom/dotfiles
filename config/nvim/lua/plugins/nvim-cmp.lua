@@ -104,12 +104,6 @@ cmp.setup({
 		-- Use lspkind-nvim to display icon instead of text
 		format = lspkind.cmp_format({ with_text = false, maxwidth = 50 }),
 	},
-
-	-- Experimental features default to false
-	experimental = {
-		native_menu = true,
-		ghost_text = true,
-	},
 })
 
 -- Search completion
