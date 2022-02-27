@@ -4,8 +4,7 @@ Flake based configuration used on a Dell XPS work laptop as well as my Ryzen 7 h
 
 ## Catppuccin 
 
-The setup is styled based on the Catppuccin color palette. Aside from using some of the official
-themes, my own ports can be found here--just note that I'm not a designer and that they are a constant work in progress:
+The setup is styled based on the [Catppuccin](https://github.com/catppuccin) colors. Aside from using the official themes I've also created a few ports you can find below. Just note that I'm not a designer and that these are a constant work in progress:
 
 * [Tridactyl](https://github.com/dnordstrom/dotfiles/blob/main/config/firefox/tridactyl/themes/catppuccin.css)
 * [Mako](https://github.com/dnordstrom/dotfiles/blob/main/config/mako/config) (or in [Home
