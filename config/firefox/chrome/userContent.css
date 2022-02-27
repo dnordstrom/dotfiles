@@ -4,6 +4,8 @@
  * Uses dark background for new tabs, based on the Catppuccin color palette:
  * https://github.com/catppuccin
  *
+ * Requires toolkit.legacyUserProfileCustomizations.stylesheets to be true (defaults to false).
+ *
  * Author: Daniel Nordstrom
  * Repository: https://github.com/dnordstrom/dotfiles
  **/
