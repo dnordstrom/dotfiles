@@ -1,13 +1,21 @@
-/* Use dark background for Tridactyl new tabs */
+/**
+ * Content style overrides for Firefox
+ *
+ * Uses dark background for new tabs, based on the Catppuccin color palette:
+ * https://github.com/catppuccin
+ *
+ * Author: Daniel Nordstrom
+ * Repository: https://github.com/dnordstrom/dotfiles
+ **/
+
 :root {
-  --nord-bg: #2e3440;
-  --nord-fg: #e5e9f0;
-  --tridactyl-bg: var(--nord-bg) !important;
-  --tridactyl-fg: var(--nord-fg) !important;
+  --catppuccin-bg: #1E1E2E;
+  --catppuccin-fg: #D9E0EE;
 }
 
 @-moz-document url-prefix(about:home), url-prefix(about:newtab) {
   body {
-    background: var(--nord-bg);
+    background: var(--catppuccin-bg);
+    color: var(--catppuccin-fg);
   }
 }
