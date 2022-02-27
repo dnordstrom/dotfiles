@@ -2,6 +2,19 @@
 
 Flake based configuration used on a Dell XPS work laptop as well as my Ryzen 7 home desktop. It uses the unstable channel (which is actually very stable) for packages, and it's a constant work in progress. See the links below for further information on Nix and NixOS.
 
+## Catppuccin 
+
+The setup is styled based on the Catppuccin color palette. Aside from using some of the official
+themes, my own ports can be found here--just note that I'm not a designer and that they are a constant work in progress:
+
+* [Tridactyl](https://github.com/dnordstrom/dotfiles/blob/main/config/firefox/tridactyl/themes/catppuccin.css)
+* [Mako](https://github.com/dnordstrom/dotfiles/blob/main/config/mako/config) (or in [Home
+  Manager](https://github.com/dnordstrom/dotfiles/blob/e8537da24030315fc815c4a67e786d562d0e58c8/users/dnordstrom.nix#L992))
+* [Slack](https://github.com/dnordstrom/dotfiles/blob/main/config/slack/catppuccin.colors)
+* [Sway WM](https://github.com/dnordstrom/dotfiles/blob/main/config/sway/colors.catppuccin)
+* [Waybar](https://github.com/dnordstrom/dotfiles/blob/main/config/waybar/style.css)
+* [Wofi](https://github.com/dnordstrom/dotfiles/blob/main/config/wofi/style.css)
+
 ## Notes
 
 * [This script](https://github.com/NixOS/nixpkgs/blob/master/pkgs/misc/vscode-extensions/update_installed_exts.sh) checks for VSCodium/VSCode extension updates so that one can update the version numbers and hashes accordingly in the module file.
