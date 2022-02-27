@@ -103,7 +103,7 @@ opt.formatoptions = "cjroql"
 
 require("catppuccin").setup({
 	transparent_background = true,
-	term_colors = false,
+	term_colors = true,
 	styles = {
 		comments = "italic",
 		functions = "italic",
@@ -130,7 +130,7 @@ require("catppuccin").setup({
 		},
 		lsp_trouble = true,
 		lsp_saga = true,
-		gitgutter = false,
+		gitgutter = true,
 		gitsigns = true,
 		telescope = false,
 		nvimtree = {
@@ -139,8 +139,8 @@ require("catppuccin").setup({
 		},
 		which_key = true,
 		indent_blankline = {
-			enabled = true,
-			colored_indent_levels = true,
+			enabled = false,
+			colored_indent_levels = false,
 		},
 		dashboard = false,
 		neogit = false,

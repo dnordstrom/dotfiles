@@ -1,20 +1,36 @@
-"
+""
 " TRIDACTYL CONFIGURATION
+"
+" Adds new commands and binds, and mimics my Neovim configuration as much as possible.
+"
+" Binds may have several variants: without modifier/leader if complimenting defaults, leader key
+" (Space key) binds for more custom functionality, and both if uncertain so it doesn't matter if
+" they get mixed up. Time will tell which ones feel most natural.
+"
+" Search engines usually have full and abbreviated versions, e.g. googlerecent and gr both search
+" Google for results from the past year.
+"
+" The configuration is "immutable" in the sense that it resets all settings on launch. This makes
+" it simple to do or try things since we can just restart Firefox to get back to normal.
+"
+" Color scheme and styles are based on the Catppuccin color palette. See separate CSS file.
+"
+" Last but not least, thanks to all of you contributing to this great add-on.
 "
 " Author: Daniel Nordstrom <d@mrnordstrom.com>
 " Repository: https://github.com/dnordstrom/dotfiles
-"
+""
 
-"
+""
 " RESET
-"
+""
 
-" Reset all existing settings, binds, and autocmds (so broken configs are reloaded cleanly restarting FF)
+" Reset all existing settings, binds, and autocmds
 sanitise tridactyllocal tridactylsync
 
-"
+""
 " SETTINGS
-"
+""
 
 colorscheme catppuccin
 
@@ -40,25 +56,30 @@ set viewsource tridactyl
 
 set searchurls.g https://www.google.com/search?q=%s&num=100
 set searchurls.google https://www.google.com/search?q=%s&num=100
+set searchurls.gr https://www.google.com/search?q=%s&num=100&tbs=qdr:y
 set searchurls.googlerecent https://www.google.com/search?q=%s&num=100&tbs=qdr:y
 set searchurls.reddit https://www.google.com/search?q=%s%20site:reddit.com&num=100
 set searchurls.mdn https://developer.mozilla.org/en-US/search?q=%s&topic=api&topic=js
 set searchurls.npm https://www.npmjs.com/search?q=%s
 set searchurls.n https://search.nixos.org/packages?channel=unstable&size=500&query=%s
 set searchurls.nix https://search.nixos.org/packages?channel=unstable&size=500&query=%s
+set searchurls.sx https://searx.be/?q=%s
 set searchurls.searx https://searx.be/?q=%s
+set searchurls.sp https://www.startpage.com/do/search?query=%s
 set searchurls.startpage https://www.startpage.com/do/search?query=%s
+set searchurls.ddg https://duckduckgo.com/?kp=-2&q=%s&ia=web
 set searchurls.duckduckgo https://duckduckgo.com/?kp=-2&q=%s&ia=web
 
 "
 " Site-specific
 "
 
+" Fix unresponsive assignee field in Jira
 seturl atlassian.net allowautofocus true
 
-"
+""
 " COMMANDS
-"
+""
 
 " Pass current URL to command
 command withurl composite get_current_url |
@@ -106,17 +127,27 @@ command reconfig source
 " Save Instagram with proper filename
 command writeinstagram js (() => { const a = document.createElement('a'); const cv = document.createElement('canvas'); const cx = cv.getContext('2d'); const img = document.querySelector('[role="dialog"] img'); cv.width = img.width; cv.height = img.height; cx.drawImage(img, 0,0); const ext = new URL(img.src).pathname.match(/(\w+)$/)[0]; const url = cv.toDataURL(`image/${ext == 'jpg' ? 'jpeg' : ext}`); a.download = `${img.alt.toLowerCase().replace(/[^\s\w]/g, '').replace(/\s+/g, '_')}.${ext}`; a.href = url; document.body.appendChild(a); a.click(); document.body.removeChild(a); })()
 
-"
+""
 " KEY BINDS
-"
+""
 
 "
-" Configuration
+" General
+"
+
+" Escape also hides search highlights
+bind <Escape> composite mode normal ; hidecmdline ; nohlsearch
+
+" View configuration in Firefox's JSON viewer
+bind <C-.> viewconfig
+
+"
+" Reload
 "
 
 bind <Space>rr composite reconfig ; notify Configuration reloaded.
 bind <Space>rR composite reconfiglive ; notify Live configuration reloaded.
-bind <C-,> viewconfig
+bind <Space>ra reloadall
 
 "
 " Notes
@@ -130,9 +161,19 @@ bind <Space>np fillcmdline_note_clipboard
 " Buffers/tabs
 "
 
-bind <Space><Space> fillcmdline_notrail
+" List tabs
 bind <Space>bb fillcmdline taball
+
+" Detatch or duplicate tab to new window
+bind gd tabdetach
+bind gD composite tabduplicate ; tabdetach
 bind <Space>bd tabdetach
+bind <Space>bD composite tabduplicate ; tabdetach
+
+" Kill all Firefox processes
+bind ZZ exclaim_quiet pkill firefox
+bind ZA exclaim_quiet pkill firefox
+bind ZQ exclaim_quiet pkill firefox
 
 "
 " Search
@@ -142,12 +183,12 @@ bind / fillcmdline find
 bind ? fillcmdline find -?
 bind n findnext 1
 bind N findnext -1
-bind <Space>h nohlsearch
 
 "
 " Yank
 "
 
+" Jira issue key or URL
 bind yj yankjiraissue
 bind yJ yankjiraurl
 
@@ -161,29 +202,55 @@ bind <Space>wi writeinstagram
 " Change
 "
 
+" Profile
 bind cp open about:profiles
+bind <Space>cp open about:profiles
+
+" Settings
 bind cs fillcmdline set
+bind <Space>cs fillcmdline set
+
+" Change container on capital C followed by another C for no container, W for work, and so on.
+" Multiple version created so that it doesn't matter if Shift is pressed or released on the second
+" key press.
+
+" Container -> none
+bind CC recontain none
+bind Cc recontain none
+bind <Space>CC recontain none
+bind <Space>Cc recontain none
+
+" Container -> work
+bind Cw recontain leeroy
+bind CW recontain leeroy
+bind <Space>CC recontain leeroy
+bind <Space>Cc recontain leeroy
+
+" Container -> remember
+bind CR recontain remember
+bind Cr recontain remember
+bind <Space>Cr recontain remember
+bind <Space>CR recontain remember
+
+" Container -> whatever
+bind CA recontain area 51
+bind Ca recontain area 51
+bind <Space>CC recontain area 51
+bind <Space>Cc recontain area 51
 
 "
 " Navigation
 "
 
+" Scroll half page on h and l
+bind h scrollpage -0.5
+bind l scrollpage 0.5
+
+" Navigate tab and history using Shift
 bind H tabprev
 bind J back
 bind K forward
 bind L tabnext
-
-"
-" Movement
-"
-
-bind x tabclose
-
-bind gd tabdetach
-bind gD composite tabduplicate ; tabdetach
-
-bind ZQ composite sanitise tridactyllocal tridactylsync ; exclaim_quiet killall firefox
-bind ZZ exclaim_quiet killall firefox
 
 "
 " Command mode
@@ -198,50 +265,78 @@ bind --mode=ex <C-l> exclaim_quiet wtype -k right
 " Emacs style
 bind --mode=ex <C-a> exclaim_quiet wtype -k home
 bind --mode=ex <C-e> exclaim_quiet wtype -k end
+bind --mode=ex <A-f> exclaim_quiet wtype -M ctrl -k right
+bind --mode=ex <A-b> exclaim_quiet wtype -M ctrl -k left
+bind --mode=ex <A-d> exclaim_quiet wtype -M ctrl -k delete
 
-" Compromise style
+" Compromise style (when Control can't be used)
 bind --mode=ex <A-n> exclaim_quiet wtype -k down
 bind --mode=ex <A-p> exclaim_quiet wtype -k up
 
 "
-" Insert mode
+" Insert mode (from click) and input mode (from gi bind)
 "
 
 " Vim style
+bind --mode=insert <C-h> exclaim_quiet wtype -k left
+bind --mode=insert <C-j> exclaim_quiet wtype -k down
+bind --mode=insert <C-k> exclaim_quiet wtype -k up
+bind --mode=insert <C-l> exclaim_quiet wtype -k right
+
+bind --mode=input <C-h> exclaim_quiet wtype -k left
+bind --mode=input <C-j> exclaim_quiet wtype -k down
+bind --mode=input <C-k> exclaim_quiet wtype -k up
+bind --mode=input <C-l> exclaim_quiet wtype -k right
+
+" Emacs stylinsert
 bind --mode=insert <C-a> exclaim_quiet wtype -k home
 bind --mode=insert <C-e> exclaim_quiet wtype -k end
+bind --mode=insert <A-f> exclaim_quiet wtype -M ctrl -k right
+bind --mode=insert <A-b> exclaim_quiet wtype -M ctrl -k left
+bind --mode=insert <A-d> exclaim_quiet wtype -M ctrl -k delete
+
+bind --mode=input <C-a> exclaim_quiet wtype -k home
+bind --mode=input <C-e> exclaim_quiet wtype -k end
+bind --mode=input <A-f> exclaim_quiet wtype -M ctrl -k right
+bind --mode=input <A-b> exclaim_quiet wtype -M ctrl -k left
+bind --mode=input <A-d> exclaim_quiet wtype -M ctrl -k delete
 
 " Open in editor (<C-i> doesn't always work)
-bind --mode=insert <AC-i> editor
+bind --mode=insert <A-i> editor
 bind --mode=insert <C-.> editor
 
-"
+bind --mode=input <A-i> editor
+bind --mode=input <C-.> editor
+
+""
 " MARKS
-"
+""
 
 "
 " Personal
 "
 
+quickmark c https://calendar.protonmail.com/u/1
+quickmark d https://drive.protonmail.com/u/1
+quickmark g https://github.com
 quickmark i https://imgur.com
+quickmark m https://mail.protonmail.com/u/1
+quickmark n https://search.nixos.org/packages?channel=unstable&size=500
+quickmark r https://reddit.com
 quickmark y https://youtube.com
-quickmark r https://www.reddit.com
-quickmark g https://www.github.com/
-quickmark n https://search.nixos.org
-quickmark m https://mail.protonmail.com/u/1/
-quickmark c https://calendar.protonmail.com/u/1/
-quickmark c https://drive.protonmail.com/u/1/
 
 "
 " Work
 "
 
-quickmark J https://leeroy-group.atlassian.net/jira/software/c/projects/OF/boards/69
-quickmark C https://calendar.google.com/calendar/r?pli=1
-quickmark P https://leeroy-group.atlassian.net/wiki/spaces/BI/overview
-quickmark M https://mail.google.com/mail/u/0/#inbox
-quickmark G https://github.com/LeeroyGroup
 quickmark A https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-1#Instances:sort=instanceId
+quickmark C https://calendar.google.com/calendar/r?pli=1
+quickmark D https://drive.google.com/drive/shared-drives
+quickmark G https://github.com/LeeroyGroup
+quickmark J https://leeroy-group.atlassian.net/jira/software/c/projects/OF/boards/69
+quickmark M https://mail.google.com/mail/u/0/#inbox
+quickmark P https://leeroy-group.atlassian.net/wiki/spaces/BI/overview
+quickmark V https://meet.google.com/landing?authuser=1
 
 "
 " Marks on ' and ` like Vim
@@ -250,9 +345,9 @@ quickmark A https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-
 bindreplaceprefix go '
 bindreplaceprefix go `
 
-"
+""
 " BLACKLIST
-"
+""
 
 blacklistadd localhost
 blacklistadd protonmail.com
@@ -261,13 +356,15 @@ blacklistadd calendar.google.com
 blacklistadd whimsical.com
 blacklistadd figma.com
 
-"
+""
 " AUTO COMMANDS
 "
 " Unfortunately restricted to one line so I recommend pasting into Firefox's console in multi-line
 " mode and using its built-in pretty print feature. When done, minify again using editor or one of a
 " thousand online tools. Pasting it into a single-line text field such as the URL field also works.
 "
+" If using Vim, just bounce something on "J".
+""
 
 "
 " DocLoad
@@ -282,14 +379,11 @@ autocmd DocLoad .*search\.nixos\.org/packages.+ js setTimeout(() => { const node
 " nix-community.github.io/home-manager: Add copy to clipboard button
 autocmd DocLoad .*nix-community\.github\.io/home-manager/options\.html.* js document.querySelectorAll('dt span.term').forEach(node => { const dt = node.parentElement.nextElementSibling; const textEl = dt.querySelector('.programlisting') || dt.querySelector('.literal'); if (textEl) { const copy = document.createElement('span'); copy.appendChild(document.createTextNode(' - ')); copy.style.cursor = 'pointer'; const code = document.createElement('code'); code.className = 'copy'; code.setAttribute('data-copy', `${node.textContent} = ${textEl.textContent.trim()};`); code.appendChild(document.createTextNode('Copy to clipboard')); copy.appendChild(code); node.appendChild(copy); } }); document.querySelector('dl').addEventListener('click', event => { if (event.target.className === 'copy') { const text = event.target.getAttribute('data-copy'); navigator.clipboard.writeText(text); console.log(text); }});
 
-"
+""
 " NOTES
-"
+""
 
-" Nord base00 color (background)
-" #2e3440
-
-" If it becomes possible to use data-uri's as new tab page, something like this:
+" If it becomes possible to use data-uri's as new tab page, something like this would work:
 " set newtab data:text/html,<html><head><title>New tab</title><style>body { background: rgb(46, 52, 64); color: white; padding: 60px 20px; text-align: center; font: 1rem sans; } h1 { margin: 0 0 20px; } body > div { display: inline-block; text-align: left; } div > div {} span { display: inline-block; } span:first-child { margin: 0 20px 0 0; } pre { margin: 0; } a,a:hover { color: white; display: inline-block; text-decoration: none; top: 12px; right: 12px; position: absolute; }</style></head><body><h1>Where to?</h1><div><div><span><pre>:o</pre></span><span>Open...</span></div><div><span><pre>:t</pre></span><span>Open in tab...</span></div></div><a href="">?</a></body></html>
 
 " vim: set filetype=vim:

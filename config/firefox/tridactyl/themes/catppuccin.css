@@ -1,78 +1,112 @@
 /**
- * Tridactyl theme based on the Catppuccin color palette.
+ * Catppuccin color scheme port for Tridactyl.
+ *
+ * Credit: https://github.com/catppuccin
+ * Variables: https://github.com/catppuccin/palette/blob/main/Catppuccin.css
  *
  * Author: Daniel Nordstrom <d@mrnordstrom.com>
- * Updated: 
- * See also:
- *   
+ * Repository: https://github.com/dnordstrom/dotfiles
  */
 
-#TridactylViewsourceElement {
-  line-height: 1.8 !important;
-  padding: 14px 20px !important;
-}
+/**
+ * VARIABLES
+ */
 
 :root {
   /* Color palette */
-  --base00: #2e3440;
-  --base01: #3b4252;
-  --base02: #434c5e;
-  --base03: #4c566a;
-  --base04: #d8dee9;
-  --base05: #e5e9f0;
-  --base06: #eceff4;
-  --base07: #8fbcbb;
-  --base08: #88c0d0;
-  --base09: #81a1c1;
-  --base0A: #5e81ac;
-  --base0B: #bf616a;
-  --base0C: #d08770;
-  --base0D: #ebcb8b;
-  --base0E: #a3be8c;
-  --base0F: #b48ead;
+
+  --rosewater_hsl:  10,  56%,  91%;
+  --flamingo_hsl:    0,  59%,  88%;
+  --mauve_hsl:     279,  70%,  83%;
+  --pink_hsl:      316,  72%,  86%;
+  --maroon_hsl:    349,  60%,  77%;
+  --red_hsl:       342,  79%,  75%;
+  --peach_hsl:      24,  88%,  78%;
+  --yellow_hsl:     41,  88%,  84%;
+  --green_hsl:     128,  58%,  79%;
+  --teal_hsl:      171,  53%,  81%;
+  --blue_hsl:      207,  93%,  79%;
+  --sky_hsl:       189,  71%,  73%;
+  --lavender_hsl:  238, 100%,  89%;
+
+  --black0_hsl:    254,  25%,  10%;
+  --black1_hsl:    249,  23%,  12%;
+  --black2_hsl:    240,  21%,  15%;
+  --black3_hsl:    249,  18%,  22%;
+  --black4_hsl:    254,  12%,  36%;
+  --gray0_hsl:     247,   8%,  46%;
+  --gray1_hsl:     274,  11%,  59%;
+  --gray2_hsl:     285,  10%,  75%;
+  --white_hsl:     220,  38%,  89%;
+
+  --rosewater:     hsl(var(--rosewater_hsl));
+  --flamingo:      hsl(var(--flamingo_hsl));
+  --mauve:         hsl(var(--mauve_hsl));
+  --pink:          hsl(var(--pink_hsl));
+  --maroon:        hsl(var(--maroon_hsl));
+  --red:           hsl(var(--red_hsl));
+  --peach:         hsl(var(--peach_hsl));
+  --yellow:        hsl(var(--yellow_hsl));
+  --green:         hsl(var(--green_hsl));
+  --teal:          hsl(var(--teal_hsl));
+  --blue:          hsl(var(--blue_hsl));
+  --sky:           hsl(var(--sky_hsl));
+  --lavender:      hsl(var(--lavender_hsl));
+  --black0:        hsl(var(--black0_hsl));
+  --black1:        hsl(var(--black1_hsl));
+  --black2:        hsl(var(--black2_hsl));
+  --black3:        hsl(var(--black3_hsl));
+  --black4:        hsl(var(--black4_hsl));
+  --gray0:         hsl(var(--gray0_hsl));
+  --gray1:         hsl(var(--gray1_hsl));
+  --gray2:         hsl(var(--gray2_hsl));
+  --white:         hsl(var(--white_hsl));
 
   /* Options */
 
-  --nord-padding: 10px; /* Left padding for command line and autocomplete container */
-  --nord-font-size: unset !important; /* Use browser default font size */
-  --nord-font-family: monospace !important; /* Use browser default monospace font */
+  --catppuccin-padding: 10px; /* Left padding for command line and autocomplete container */
+  --catppuccin-font-size: unset !important; /* Use browser default font size */
+  --catppuccin-font-family: "PragmataPro Mono Liga", "Input Mono Compressed", monospace !important;
 
-  --tridactyl-font-family: var(--nord-font-family);
-  --tridactyl-font-size: var(--nord-font-size);
+  --tridactyl-font-family: var(--catppuccin-font-family);
+  --tridactyl-font-size: var(--catppuccin-font-size);
 
-  --tridactyl-fg: var(--base06);
-  --tridactyl-bg: var(--base00);
-  --tridactyl-of-fg: var(--base06);
-  --tridactyl-of-bg: var(--base00);
+  --tridactyl-fg: var(--white);
+  --tridactyl-bg: var(--black0);
+  --tridactyl-of-fg: var(--white);
+  --tridactyl-of-bg: var(--black0);
 
-  --tridactyl-url-fg: var(--base08);
-  --tridactyl-url-bg: var(--base00);
+  --tridactyl-url-fg: var(--blue);
+  --tridactyl-url-bg: var(--black0);
 
-  --tridactyl-header-first-bg: var(--base00);
-  --tridactyl-header-second-bg: var(--base00);
-  --tridactyl-header-third-bg: var(--base00);
+  --tridactyl-cmdl-font-family: var(--catppuccin-font-family);
+
+  --tridactyl-header-first-bg: var(--black0);
+  --tridactyl-header-second-bg: var(--black0);
+  --tridactyl-header-third-bg: var(--black0);
   --tridactyl-header-font-weight: bold;
-  --tridactyl-header-font-size: var(--nord-font-size);
+  --tridactyl-header-font-size: var(--catppuccin-font-size);
 
-  --tridactyl-highlight-box-bg: var(--base0B);
-  --tridactyl-highlight-box-fg: var(--base00);
+  --tridactyl-highlight-box-bg: var(--red);
+  --tridactyl-highlight-box-fg: var(--black0);
 
-  --tridactyl-cmplt-fg: var(--base04);
+  --tridactyl-cmplt-fg: var(--gray0);
   --tridactyl-cmplt-font-family: var(--tridactyl-font-family);
   --tridactyl-cmplt-option-height: 1.6em;
 
-  /* Hint character tags */
-  --tridactyl-hintspan-fg: var(--base00) !important;
-  --tridactyl-hintspan-bg: var(--base0A) !important;
+  --tridactyl-hintspan-fg: var(--black0) !important;
+  --tridactyl-hintspan-bg: var(--blue) !important;
 
-  /* Element Highlights */
   --tridactyl-hint-active-fg: none;
   --tridactyl-hint-active-bg: none;
   --tridactyl-hint-active-outline: none;
   --tridactyl-hint-bg: none;
   --tridactyl-hint-outline: none;
-
 }
+
+/**
+ * MODE INDICATOR
+ */
 
 .TridactylStatusIndicator {
   padding: 5px 8px 6px !important;
@@ -84,13 +118,17 @@
   border-radius: 2px !important;
 }
 
+/**
+ * COMPLETIONS
+ */
+
 #completions .sectionHeader {
-  padding-left: var(--nord-padding);
+  padding-left: var(--catppuccin-padding);
   padding-top: 2px;
 }
 
 #completions table tr td {
-  padding-left: var(--nord-padding) !important;
+  padding-left: var(--catppuccin-padding) !important;
 }
 
 #completions table tr td.prefix {
@@ -98,9 +136,45 @@
 }
 
 #completions > div > table {
-  font-size: var(--nord-font-size);
+  font-size: var(--catppuccin-font-size);
 }
 
-.focused, .focused .url {
-  font-weight: bold;
+#completions .option .url {
+  color: var(--tridactyl-cmplt-fg) !important;
+  background: none !important;
 }
+
+#completions .option.focused {
+  background: var(--black2) !important;
+  font-weight: bold !important;
+}
+
+#completions .option.focused .excmd,
+#completions .option.focused .title {
+  color: var(--blue) !important;
+}
+
+#completions .option.focused .documentation,
+#completions .option.focused .url {
+  color: var(--gray1) !important;
+  font-weight: normal !important;
+}
+
+/**
+ * HINTS
+ */
+
+#TridactylHintHost #TridactylHint {
+  padding: 4px 5px !important;
+  text-transform: uppercase !important;
+}
+
+/**
+ * VIEW SOURCE PAGE
+ */
+
+#TridactylViewsourceElement {
+  line-height: 1.8 !important;
+  padding: 14px 20px !important;
+}
+
