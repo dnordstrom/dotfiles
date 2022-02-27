@@ -1,0 +1,28 @@
+/**
+ * Content style overrides for Firefox
+ *
+ * Uses dark background for new tabs (including Tridactyl's) based on the Catppuccin color palette,
+ * and prevents Tridactyl from "flashing" before its theme is loaded.
+ *
+ * Issue: https://github.com/tridactyl/tridactyl/issues/2510
+ * Colors: https://github.com/catppuccin
+ *
+ * Requires toolkit.legacyUserProfileCustomizations.stylesheets to be true (defaults to false).
+ *
+ * Author: Daniel Nordstrom <d@mrnordstrom.com>
+ * Repository: https://github.com/dnordstrom/dotfiles
+ **/
+
+:root {
+  --catppuccin-bg: #1E1E2E;
+  --catppuccin-fg: #D9E0EE;
+  --tridactyl-bg: var(--catppuccin-bg) !important;
+  --tridactyl-fg: var(--catppuccin-fg) !important;
+}
+
+@-moz-document url-prefix(about:home), url-prefix(about:newtab) {
+  body {
+    background: var(--catppuccin-bg);
+    color: var(--catppuccin-fg);
+  }
+}
