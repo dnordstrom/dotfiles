@@ -60,7 +60,7 @@ set $workspace10 10
 # Terminals
 #   TODO: Make titles consistent with variables and adjust Waybar config accordingly.
 
-set $term kitty --single-instance
+set $term kitty --title term --single-instance
 set $termpopup $term --title popupterm
 set $termplain $term --title plainterm
 set $termscratch $term --title scratchterm --session /etc/nixos/config/kitty/scratchpad.session

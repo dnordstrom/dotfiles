@@ -174,18 +174,12 @@ require("cokeline").setup({
 	buffers = {
 		new_buffers_position = "next",
 	},
-  mappings = {
-    cycle_prev_next = true,
-  },
+	mappings = {
+		cycle_prev_next = true,
+	},
 	default_hl = {
-		focused = {
-			fg = focused_fg,
-			bg = focused_bg,
-		},
-		unfocused = {
-			fg = unfocused_fg,
-			bg = unfocused_bg,
-		},
+		fg = tab_fg,
+		bg = tab_bg,
 	},
 	components = {
 		-- Separator
@@ -230,19 +224,19 @@ require("cokeline").setup({
 		-- Modified indicator
 		{
 			text = function(buffer)
-        local output = ""
+				local output = ""
 
 				if buffer.is_modified then
 					if modified ~= "" then
-            output = modified .. " "
-          end
+						output = modified .. " "
+					end
 				else
 					if unmodified ~= "" then
-            output = unmodified .. " "
-          end
+						output = unmodified .. " "
+					end
 				end
 
-        return output
+				return output
 			end,
 			hl = { fg = tab_suffix, bg = tab_bg },
 		},

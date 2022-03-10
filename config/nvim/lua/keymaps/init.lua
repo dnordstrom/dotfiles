@@ -251,6 +251,9 @@ nvim_set_keymap("", "<Leader>tl", "<Cmd>set list!<CR>", opts.nore)
 -- ...indent guides
 nvim_set_keymap("", "<Leader>ti", "<Cmd>IndentBlanklineToggle<CR>", opts.nore)
 
+-- ...color column
+nvim_set_keymap("", "<Leader>tc", '<Cmd>execute "set colorcolumn=" . (&colorcolumn == "" ? "+1" : "")<CR>', opts.nore)
+
 -- ...file manager
 nvim_set_keymap("n", "<Leader>tf", "<Cmd>Vifm<CR>", opts.nore)
 
@@ -387,10 +390,10 @@ nvim_set_keymap("n", "<Leader>dl", "<Cmd>lua vim.lsp.diagnostic.show_line_diagno
 -- Go to/do with word or line...
 --
 
--- ..help
+-- ...help
 nvim_set_keymap("n", "gh", '<Cmd>call execute("help " . expand("<cword>"))<CR>', opts.re) -- Help
 
--- ..search web
+-- ...search web
 nvim_set_keymap("n", "gs", "<Cmd>NBrowserSearch<CR>", opts.re)
 
 --
@@ -420,4 +423,3 @@ nvim_set_keymap("n", "<Leader>nB", '<Cmd>execute("e " . getcwd() . "/Unnamed")<C
 
 -- To use the built-in prompt, if you prefer less flexibility for no added value:
 -- nvim_set_keymap("n", "<Leader>nF", '<Cmd>execute("e " . getcwd() . "/" . input("New file (relative): "))<CR>', opts.nore)
-
