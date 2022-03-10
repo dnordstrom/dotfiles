@@ -215,6 +215,7 @@ in {
     # Command line
     awscli2
     bitwarden-cli
+    bottom # Resource monitor alternative to gotop
     fd
     figlet
     fortune
@@ -255,11 +256,6 @@ in {
     # river - Requires wlroots 0.14 while 0.15 is installed: check out why it doesn't work
 
     # layer shell, panels, and effects
-    nwg-drawer
-    nwg-launchers
-    nwg-menu
-    nwg-panel
-    nwg-panel
     swayidle
     swaykbdd
     swaylock-effects
@@ -278,7 +274,6 @@ in {
     # Images
     imv
     vimiv-qt # QT image viewer
-    kanshi
 
     # Recording and wl-clipboard
     wf-recorder
@@ -288,18 +283,18 @@ in {
     wlogout
 
     # Monitor
+    kanshi
     wdisplays
     wlsunset
 
     # Launchers
     masterPackages.wofi
-    ulauncher
-    wofi-emoji
-    workstyle
-    rofi-wayland
     rofi-calc
     rofi-emoji
     rofi-systemd
+    rofi-wayland
+    wofi-emoji
+    workstyle
 
     # Input
     libinput # For trackpad gestures
@@ -359,11 +354,9 @@ in {
     # Multimedia
     #
 
-    celluloid
+    celluloid # GTK frontend for MPV
     handbrake
-    haruna
-    smplayer
-    sayonara
+    haruna # QT frontend for MPV
     spicetify-cli
     spotify-qt
     spotify-tui
