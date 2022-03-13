@@ -311,12 +311,12 @@ nix-with() {
   in-dir "/etc/nixos" "$1"
 }
 
-# Open NixOS configuration in Vim/Neovim
+# Open NixOS configuration in Neovim
 configure-nixos() {
   in-dir "/etc/nixos" "nvim"
 }
 
-# Open NixOS configuration in Vim/Neovim
+# Build and switch NixOS configuration
 build-nixos() {
   $HOME/.nix-prebuild
   sudo nixos-rebuild switch --flake /etc/nixos --upgrade-all

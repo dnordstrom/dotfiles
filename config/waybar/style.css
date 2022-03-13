@@ -165,7 +165,7 @@ box > box > widget > label {
 #mode {
   color: @black3;
   background: @maroon;
-  font-style: italic;
+  border-left: 1px solid @gray1;
 }
 
 /**

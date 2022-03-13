@@ -26,7 +26,7 @@ local darken = utils.color.darken
 local blend = utils.color.blend
 
 -- Symbols
-local separator = " "
+local separator = ""
 local icon_modified = ""
 local modified = ""
 local unmodified = ""
@@ -185,7 +185,7 @@ require("cokeline").setup({
 		-- Separator
 		{
 			text = separator,
-			hl = { fg = separator_fg, bg = "none" },
+			hl = { fg = "NONE", bg = "NONE" },
 		},
 		-- Corner
 		{

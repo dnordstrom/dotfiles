@@ -162,6 +162,7 @@ in {
     nordpkgs.convox
     nordpkgs.jira-cli
     nordpkgs.protoncheck
+    nordpkgs.ayu-mirage-theme-gtk
 
     #
     # Networking
@@ -233,6 +234,7 @@ in {
     t-rec
     toilet
     tree
+    unzip # Dolphin uses unzip to treat archives as directories
     usbutils # For lsusb
     vifm-full
     weechat
@@ -611,7 +613,7 @@ in {
       name = "Input Sans Condensed";
       size = 8;
     };
-    theme.name = "rxyhn_phocus";
+    theme.name = "Ayu-Mirage";
     iconTheme.name = "Vimix-dark";
     gtk3 = {
       extraConfig.gtk-application-prefer-dark-theme = "true";

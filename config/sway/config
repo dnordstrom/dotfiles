@@ -407,9 +407,8 @@ bindsym {
 #
 
 set $mode_vim_icon 
-set $mode_vim_title Vim
-set $mode_vim_hints (h) left (j) down (k) up (l) right…
-set $mode_vim $mode_vim_icon $mode_vim_title $mode_vim_hints
+set $mode_vim_hints [H] Left [J] Down [K] Up [L] Right
+set $mode_vim $mode_vim_icon $mode_vim_hints
 
 mode "$mode_vim" {
   bindsym {
@@ -433,17 +432,18 @@ bindsym $mod+n mode "$mode_vim"
 #
 # Screenshot mode
 #
-#   a -> select area
-#   s -> select screen
-#   PrintSc -> select area (PrintSc > PrintSc)
+#   a -> Select area
+#   s -> Select screen
+#   PrintScr -> Select area
 #
 
 set $mode_snap_icon 
-set $mode_snap_title Screenshot
-set $mode_snap_hints (a)rea (s)creen
-set $mode_snap $mode_snap_icon $mode_snap_title $mode_snap_hints
+set $mode_snap_hints [A]rea [S]creen
+set $mode_snap $mode_snap_icon $mode_snap_hints
 
 mode "$mode_snap" {
+  bindsym p mode default, exec $snaparea
+  bindsym $mod+p mode default, exec $snaparea
   bindsym Print mode default, exec $snaparea
   bindsym a mode default, exec $snaparea
   bindsym s mode default, exec $snapfull
@@ -453,22 +453,23 @@ mode "$mode_snap" {
   bindsym Space mode "default"
 }
 
+# Super+P is the main bind used, but of course we want PrintScr to work as well.
+bindsym $mod+p mode "$mode_snap"
 bindsym Print mode "$mode_snap"
 
 #
 # Resize mode
 #
-#   h -> thinner
-#   j -> taller
-#   k -> shorter
-#   l -> wider
+#   h -> Thinner
+#   j -> Taller
+#   k -> Shorter
+#   l -> Wider
 #
 
 
 set $mode_resize_icon 
-set $mode_resize_title Resize
-set $mode_resize_hints (h) thinner (j) taller (k) shorter (l) wider
-set $mode_resize $mode_resize_icon $mode_resize_title $mode_resize_hints
+set $mode_resize_hints [H] Thinner [J] Taller [K] Shorter [L] Wider
+set $mode_resize $mode_resize_icon $mode_resize_hints
 
 mode "$mode_resize" {
   bindsym $left resize shrink width 20px
@@ -491,11 +492,15 @@ bindsym $mod+r mode "$mode_resize"
 #
 # System mode
 #
+#   e -> Exit
+#   s -> Shutdown
+#   r -> Reboot
+#   c -> Reload configuration
+#
 
-set $mode_system_icon 襤
-set $mode_system_label System
-set $mode_system_hints (l)ogout (r)estart (s)shutdown (c)onfi
-set $mode_system $mode_system_icon $mode_system_label $mode_system_hints
+set $mode_system_icon 漣
+set $mode_system_hints [S] Shutdown [R] Restart [L] Logout [C] Reload config
+set $mode_system $mode_system_icon $mode_system_hints
 
 mode "$mode_system" {
   bindsym e exec swaymsg exit, mode "default"
@@ -508,7 +513,7 @@ mode "$mode_system" {
   bindsym Space mode "default"
 }
 
-bindsym $mod+Shift+e mode "$mode_system"
+bindsym $mod+Backspace mode "$mode_system"
 
 #
 # WINDOW SPECIFIC
