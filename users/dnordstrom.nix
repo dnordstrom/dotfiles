@@ -171,11 +171,8 @@ in {
         comment = "Slack Desktop";
         type = "Application";
         genericName = "Slack Client for Linux";
-        exec = ''
-          slack 
-            --enable-features=UseOzonePlatform,WebRTCPipeWireCapturer 
-            --ozone-platform=wayland -s %U;
-        '';
+        exec =
+          "slack --enable-features=UseOzonePlatform,WebRTCPipeWireCapturer --ozone-platform=wayland -s %U";
         terminal = false;
         icon = "slack";
         categories = [ "GNOME" "GTK" "Network" "InstantMessaging" ];
