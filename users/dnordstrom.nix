@@ -1,5 +1,13 @@
+# USER MODULE: DNORDSTROM
+#
+# Author: Daniel Nordstrom <d@mrnordstrom.com>
+# Repository: https://github.com/dnordstrom/dotfiles
+#  
 { pkgs, nixpkgs, lib, ... }:
 
+#  
+# APPLICATIONS
+#  
 let
   editor = "nvim";
   browser = "firefox";
@@ -9,8 +17,12 @@ let
   xdgBrowser = [ "firefox.desktop" ];
   xdgPdfViewer = [ "org.pwmt.zathura.desktop" ];
   xdgFileBrowser = [ "org.kde.dolphin.desktop" ];
-  xdgImageViewer = [ "qView.desktop" ];
+  xdgImageViewer = [ "vimiv.desktop" ];
   xdgMediaPlayer = [ "org.kde.haruna.desktop" ];
+
+  # 
+  # MIME-TYPE ASSOCIATIONS 
+  # 
   mimeAassociations = {
     "audio/*" = xdgMediaPlayer;
     "video/*" = xdgMediaPlayer;
@@ -37,8 +49,11 @@ let
     "application/x-extension-xhtml" = xdgBrowser;
     "application/x-extension-xht" = xdgBrowser;
   };
+
+  # Dependencies for some Python applications
   python-packages = ps: with ps; [ i3ipc requests ];
   python-with-packages = pkgs.python3.withPackages python-packages;
+
 in {
   #
   # MODULES
@@ -57,6 +72,9 @@ in {
     TERMINAL = terminal;
   };
 
+  #
+  # Desktop entries
+  #
   xdg = {
     enable = true;
     mimeApps = {
@@ -64,25 +82,19 @@ in {
       associations.added = mimeAassociations;
       defaultApplications = mimeAassociations;
     };
+
+    #
+    # Terminal applications
+    #
+
     desktopEntries = {
       neovim-alacritty = {
         name = "Neovim (Alacritty)";
         type = "Application";
         genericName = "Text Editor";
-        exec = "alacritty --class popupterm --title popupterm -e nvim %F";
+        exec = "alacritty --class vimterm -e nvim %F";
         terminal = false;
         icon = "nvim";
-        categories = [ "Utility" "TextEditor" "Development" "IDE" ];
-        mimeType = [ "text/plain" "inode/directory" ];
-        startupNotify = false;
-      };
-      vifm-alacritty = {
-        name = "Vifm (Alacritty)";
-        type = "Application";
-        genericName = "File Manager";
-        exec = "alacritty --class popupterm --title popupterm -e vifm %F";
-        terminal = false;
-        icon = "vifm";
         categories = [ "Utility" "TextEditor" "Development" "IDE" ];
         mimeType = [ "text/plain" "inode/directory" ];
         startupNotify = false;
@@ -102,10 +114,21 @@ in {
         name = "Vifm (kitty)";
         type = "Application";
         genericName = "File Manager";
-        exec = "kitty --class popupterm --title popupterm -e vifm %F";
+        exec = "kitty --class popupterm -e vifm %F";
         terminal = false;
         icon = "vifm";
         categories = [ "System" "FileManager" ];
+        mimeType = [ "text/plain" "inode/directory" ];
+        startupNotify = false;
+      };
+      vifm-alacritty = {
+        name = "Vifm (Alacritty)";
+        type = "Application";
+        genericName = "File Manager";
+        exec = "alacritty --class popupterm -e vifm %F";
+        terminal = false;
+        icon = "vifm";
+        categories = [ "Utility" "TextEditor" "Development" "IDE" ];
         mimeType = [ "text/plain" "inode/directory" ];
         startupNotify = false;
       };
@@ -113,26 +136,18 @@ in {
         name = "Glow (kitty)";
         type = "Application";
         genericName = "Markdown Viewer";
-        exec = "kitty --class popupterm --title popupterm -e glow %F";
+        exec = "kitty --class popupterm -e glow %F";
         terminal = false;
         icon = "kitty";
         categories = [ "Utility" "TextEditor" ];
         mimeType = [ "text/markdown" ];
         startupNotify = false;
       };
-      slack-wayland = {
-        name = "Slack (Wayland)";
-        comment = "Slack Desktop";
-        type = "Application";
-        genericName = "Slack Client for Linux";
-        exec =
-          "slack --enable-features=UseOzonePlatform,WebRTCPipeWireCapturer --ozone-platform=wayland -s %U";
-        terminal = false;
-        icon = "slack";
-        categories = [ "GNOME" "GTK" "Network" "InstantMessaging" ];
-        mimeType = [ "x-scheme-handler/slack" ];
-        startupNotify = true;
-      };
+
+      #
+      # Development sessions
+      #
+
       kitty-session-cloud = {
         name = "Cloud development (kitty)";
         comment = "Cloud development (kitty)";
@@ -146,6 +161,28 @@ in {
         mimeType = [ "text/plain" "inode/directory" ];
         startupNotify = true;
       };
+
+      #
+      # Other applications
+      #
+
+      slack-wayland = {
+        name = "Slack (Wayland)";
+        comment = "Slack Desktop";
+        type = "Application";
+        genericName = "Slack Client for Linux";
+        exec = ''
+          slack 
+            --enable-features=UseOzonePlatform,WebRTCPipeWireCapturer 
+            --ozone-platform=wayland -s %U;
+        '';
+        terminal = false;
+        icon = "slack";
+        categories = [ "GNOME" "GTK" "Network" "InstantMessaging" ];
+        mimeType = [ "x-scheme-handler/slack" ];
+        startupNotify = true;
+      };
+
     };
   };
 
@@ -179,6 +216,8 @@ in {
     qview
     speedcrunch
     ytmdesktop
+    openconnect
+    networkmanager-openconnect
 
     #
     # Nix
@@ -194,7 +233,10 @@ in {
     networkmanager_dmenu
     speedtest-cli
 
+    #
     # General
+    #
+
     appimage-run
     dolphin
     element-desktop
@@ -213,7 +255,10 @@ in {
     tor-browser-bundle-bin
     zathura
 
+    #
     # Command line
+    #
+
     awscli2
     bitwarden-cli
     bottom # Resource monitor alternative to gotop
@@ -244,7 +289,7 @@ in {
     xsel
 
     #
-    # Zsh plugins, sourced in `program.zsh.interactiveShellInit`
+    # Zsh plugins (sourced in `program.zsh.interactiveShellInit`)
     #
 
     zsh-fzf-tab
@@ -254,18 +299,14 @@ in {
     # Wayland
     #
 
-    # Window managers
-    # river - Requires wlroots 0.14 while 0.15 is installed: check out why it doesn't work
-
     # layer shell, panels, and effects
     swayidle
     swaykbdd
     swaylock-effects
-    swaynotificationcenter
     swaywsr
 
     # Notifications
-    fnott # Keyboard driven notification daemon
+    fnott # keyboard driven notification daemon TODO: Try out
 
     # Screenshots
     grim
@@ -274,15 +315,11 @@ in {
     swappy
 
     # Images
-    imv
     vimiv-qt # QT image viewer
 
     # Recording and wl-clipboard
     wf-recorder
     wl-clipboard
-
-    # Dashboards
-    wlogout
 
     # Monitor
     kanshi
