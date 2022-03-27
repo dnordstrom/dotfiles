@@ -69,7 +69,7 @@ stdenv.mkDerivation rec {
     description = "OpenVPN 3 Linux client";
     license = licenses.agpl3Plus;
     homepage = "https://github.com/OpenVPN/openvpn3-linux/";
-    maintainers = with maintainers; [ shamilton ];
+    maintainers = with maintainers; [ dnordstrom ];
     platforms = platforms.linux;
   };
 }
