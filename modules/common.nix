@@ -1,4 +1,4 @@
-{ config, pkgs, nordpkgs, stdenv, lib, ... }:
+{ config, pkgs, stdenv, lib, ... }:
 
 {
   #
@@ -145,6 +145,8 @@
     };
   };
 
+  services.dbus.packages = [ pkgs.nordpkgs.openvpn3 ];
+
   services.flatpak.enable = true;
 
   services.yubikey-agent.enable = true;
@@ -199,6 +201,12 @@
   };
 
   #
+  # VMs
+  #
+
+  virtualisation.virtualbox.host.enable = true;
+
+  #
   # XDG
   #
 
@@ -240,26 +248,33 @@
   # USERS
   #
 
-  users.users.dnordstrom = {
-    isNormalUser = true;
-    extraGroups = [
-      "wheel"
-      "input" # For ydotool udev rule
-    ];
-    shell = pkgs.zsh;
+  users = {
+    users.dnordstrom = {
+      isNormalUser = true;
+      extraGroups = [
+        "wheel"
+        "input" # For ydotool udev rule
+        "vboxusers"
+      ];
+      shell = pkgs.zsh;
+    };
+    users.openvpn = {
+      isSystemUser = true;
+      group = "openvpn";
+    };
+    groups = { openvpn = { }; };
   };
 
   #
   # SYSTEM ENVIRONMENT
   #
 
-  environment.etc.hosts.mode = "0644";
-
   environment.systemPackages = with pkgs; [
     polkit_gnome
     git
     wget
     nodejs
+    nordpkgs.openvpn3
     yarn
     steam-run # Runs binaries compiled for other distributions
     xdg-desktop-portal

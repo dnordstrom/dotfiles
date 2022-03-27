@@ -207,14 +207,16 @@ in {
     haskellPackages.network-manager-tui
     krita
     libgnome-keyring
+    networkmanager-openconnect
     networkmanager-openvpn
+    networkmanager_dmenu
     nm-tray
+    openconnect
     openvpn
     qview
     speedcrunch
+    speedtest-cli
     ytmdesktop
-    openconnect
-    networkmanager-openconnect
 
     #
     # Nix
@@ -222,13 +224,6 @@ in {
 
     cachix
     nix-prefetch
-
-    #
-    # Networking
-    #
-
-    networkmanager_dmenu
-    speedtest-cli
 
     #
     # General
@@ -250,6 +245,7 @@ in {
     spotify
     sqlite
     tor-browser-bundle-bin
+    # virtualbox
     zathura
 
     #

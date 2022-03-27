@@ -8,6 +8,9 @@
   convox = pkgs.callPackage ./convox { };
   hydroxide = pkgs.callPackage ./hydroxide { };
   jira-cli = pkgs.callPackage ./jira-cli { };
+  openvpn3 = pkgs.callPackage ./openvpn3 {
+    inherit (pkgs.python3Packages) docutils jinja2;
+  };
   proton-client = pkgs.callPackage ./proton-client { };
   protoncheck = pkgs.callPackage ./protoncheck { };
   protonvpn-cli = pkgs.callPackage ./protonvpn-cli { };
