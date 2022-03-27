@@ -37,10 +37,8 @@ return require("packer").startup(function(use)
 	use({ "famiu/feline.nvim", branch = "develop" })
 	use({ "noib3/cokeline.nvim", requires = devicons })
 
-	-- Colorschemes
+	-- Colorscheme
 
-	use({ "shaunsingh/nord.nvim" })
-	use({ "rmehri01/onenord.nvim", branch = "main" })
 	use({ "catppuccin/nvim", as = "catppuccin" })
 
 	-- Files and buffers
@@ -119,7 +117,7 @@ return require("packer").startup(function(use)
 	-- Text
 
 	use({ "windwp/nvim-autopairs" })
-	use({ "blackCauldron7/surround.nvim" })
+	use({ "echasnovski/mini.nvim", branch = "main" }) -- For surround
 	use({ "tpope/vim-repeat" })
 
 	-- Visuals

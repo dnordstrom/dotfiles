@@ -647,7 +647,7 @@ in {
       name = "Input Sans Condensed";
       size = 8;
     };
-    theme.name = "Ayu-Mirage";
+    theme.name = "Ayu";
     iconTheme.name = "Vimix-dark";
     gtk3 = {
       extraConfig.gtk-application-prefer-dark-theme = "true";

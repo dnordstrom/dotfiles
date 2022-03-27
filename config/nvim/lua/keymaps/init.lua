@@ -149,6 +149,9 @@ nvim_set_keymap("n", "<M-l>", "<Plug>(cokeline-focus-next)", opts.re)
 nvim_set_keymap("n", "<M-H>", "<Plug>(cokeline-switch-prev)", opts.re)
 nvim_set_keymap("n", "<M-L>", "<Plug>(cokeline-switch-next)", opts.re)
 
+-- ...search/jump using lightspeed.nvim
+nvim_set_keymap("n", "<Leader>s", "<Plug>Lightspeed_omni_s", opts.nore)
+
 --
 -- Change...
 --
@@ -174,8 +177,6 @@ nvim_set_keymap("n", "<M-CR>", "O<Esc>jo<Esc>", opts.re)
 -- Duplicate
 nvim_set_keymap("i", "<S-CR>", "<Esc>yypA", opts.nore) -- Shift-Enter to duplicate in insert mode
 nvim_set_keymap("n", "<S-CR>", "yyp$", opts.nore) -- Shift-Enter to duplicate in insert mode
-nvim_set_keymap("n", "<Leader>ld", "yyp$", opts.nore) -- Leader-l-d => Line -> Duplicate
-nvim_set_keymap("n", "<Leader>lD", "yyP$", opts.nore) -- Leader-l-D => Line -> Duplicate backwards
 
 -- Move and reindent
 nvim_set_keymap("n", "<S-C-k>", "<Cmd>m-2<CR>==", opts.nore)

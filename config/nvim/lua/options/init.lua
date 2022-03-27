@@ -24,6 +24,7 @@ g.mapleader = " "
 --
 
 opt.undofile = true
+opt.laststatus = 3
 opt.termguicolors = true
 opt.ignorecase = true
 opt.smartcase = true
@@ -83,23 +84,6 @@ opt.formatoptions = "cjroql"
 --
 -- COLOR SCHEME
 --
-
--- require("onenord").setup({
---   borders = true,
---   italics = {
---     comments = true,
---     strings = false,
---     keywords = true,
---     functions = false,
---     variables = false,
---   },
---   disable = {
---     background = true,
---     cursorline = true,
---     eob_lines = true,
---   },
---   custom_highlights = {}
--- })
 
 require("catppuccin").setup({
 	transparent_background = true,
