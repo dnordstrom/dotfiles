@@ -124,60 +124,24 @@
     pulse.enable = true;
 
     config.pipewire = {
+      wireplumber.enable = true;
+      media-session.enable = false;
+
       "context.properties" = {
-        "default.clock.rate" = 48000;
-        "default.clock.quantum" = 32;
+        "link.max-buffers" = 64;
+        "default.clock.allowed-rates" = [ 48000 96000 192000 ];
+        "default.clock.rate" = 192000;
+        "default.clock.quantum" = 1024;
         "default.clock.min-quantum" = 32;
-        "default.clock.max-quantum" = 32;
+        "default.clock.max-quantum" = 8192;
+        "settings.check-quantum" = true;
+        "settings.check-rate" = true;
         "core.daemon" = true;
+        "core.name" = "pipewire-0";
       };
-
-      "context.modules" = [
-        {
-          name = "libpipewire-module-rtkit";
-          args = {
-            "nice.level" = -15;
-            "rt.prio" = 88;
-            "rt.time.soft" = 200000;
-            "rt.time.hard" = 200000;
-          };
-          flags = [ "ifexists" "nofail" ];
-        }
-        { name = "libpipewire-module-protocol-native"; }
-        { name = "libpipewire-module-client-node"; }
-        { name = "libpipewire-module-adapter"; }
-        { name = "libpipewire-module-metadata"; }
-        {
-          name = "libpipewire-module-protocol-pulse";
-          args = {
-            "pulse.min.req" = "32/48000";
-            "pulse.default.req" = "32/192000";
-            "pulse.max.req" = "32/48000";
-            "pulse.min.quantum" = "32/192000";
-            "pulse.max.quantum" = "32/192000";
-            "server.address" = [ "unix:native" ];
-          };
-        }
-      ];
-
       "stream.properties" = {
-        "node.latency" = "32/192000";
-        "resample.quality" = 1;
+        "resample.quality" = 15; # Max 15
       };
-    };
-    media-session.config.alsa-monitor = {
-      rules = [{
-        matches = [{ "node.name" = "alsa_output.*"; }];
-        actions = {
-          update-props = {
-            "audio.format" = "S32LE";
-            "audio.rate" =
-              384000; # For USB soundcards, it should be twice the desired rate
-            "api.alsa.period-size" =
-              32; # Defaults to 1024, tweak by trial-and-error
-          };
-        };
-      }];
     };
   };
 

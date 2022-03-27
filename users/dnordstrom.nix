@@ -390,6 +390,10 @@ in {
     # Multimedia
     #
 
+    alsa-firmware
+    alsa-tools
+    alsa-utils
+    carla
     celluloid # GTK frontend for MPV
     handbrake
     haruna # QT frontend for MPV
