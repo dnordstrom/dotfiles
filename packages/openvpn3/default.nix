@@ -5,37 +5,29 @@
 stdenv.mkDerivation rec {
   pname = "openvpn3";
   version = "v17_beta";
+  coreVersion = "3.git:master:7765540e";
   
   src = fetchFromGitHub {
     owner = "OpenVPN";
     repo = "openvpn3-linux";
-    rev = "${version}";
+    rev = "refs/tags/${version}";
     fetchSubmodules = true;
     sha256 = "sha256-vXmNErygbmrZ2zRo0uNNHTo24s93Cfs04cGCFktRyCw=";
   };
 
   postPatch = ''
-    # Hardcode version.m4 according to Git rev
-    {
-      cat <<EOF
-define([PRODUCT_NAME], [OpenVPN 3/Linux])
-define([PRODUCT_VERSION], [${version}])
-define([PRODUCT_GUIVERSION], [${version}])
-define([PRODUCT_TARNAME], [openvpn3-linux])
-define([PRODUCT_BUGREPORT], [openvpn-devel@lists.sourceforge.net])
-EOF
-    } > version.m4
-
-    # Ensure the config-version.h file gets updated
-    rm -f config-version.h
-
-    # Hardcode openvpn3-core version obtained from openvpn3-core/scripts/version
-    printf "%s" "3.git:HEAD:7765540e" > ./openvpn3-core-version
+    printf "define([PRODUCT_NAME], [OpenVPN 3/Linux])" > version.m4
+    printf "define([PRODUCT_VERSION], [%s])" "${version}" >> version.m4
+    printf "define([PRODUCT_GUIVERSION], [%s])" "${version}" >> version.m4
+    printf "define([PRODUCT_TARNAME], [openvpn3-linux])" >> version.m4
+    printf "define([PRODUCT_BUGREPORT], [openvpn-devel@lists.sourceforge.net])" >> version.m4
+    printf "%s" "${coreVersion}" > ./openvpn3-core-version
   '';
 
-  nativeBuildInputs =
-    [ autoreconfHook autoconf-archive docutils git jinja2 pkg-config ];
+  nativeBuildInputs = [ autoreconfHook autoconf-archive docutils git jinja2 pkg-config ];
+
   propagatedBuildInputs = [ python3 ];
+
   buildInputs =
     [ glib jsoncpp libcap_ng libnl libuuid lz4 openssl protobuf tinyxml-2 ];
 
