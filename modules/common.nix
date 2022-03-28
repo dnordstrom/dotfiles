@@ -129,8 +129,8 @@
 
       "context.properties" = {
         "link.max-buffers" = 64;
-        "default.clock.allowed-rates" = [ 48000 96000 192000 ];
-        "default.clock.rate" = 192000;
+        "default.clock.allowed-rates" = [ 48000 96000 ];
+        "default.clock.rate" = 96000;
         "default.clock.quantum" = 1024;
         "default.clock.min-quantum" = 32;
         "default.clock.max-quantum" = 8192;

@@ -389,6 +389,7 @@ in {
     alsa-firmware
     alsa-tools
     alsa-utils
+    audacious
     carla
     celluloid # GTK frontend for MPV
     handbrake
@@ -397,6 +398,7 @@ in {
     spotify-qt
     spotify-tui
     spotifyd
+    strawberry
 
     #
     # Development
