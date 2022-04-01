@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs = { url = "github:NixOS/nixpkgs/nixos-unstable"; };
     nixpkgs-master = { url = "github:NixOS/nixpkgs/master"; };
+    nixpkgs-staging = { url = "github:NixOS/nixpkgs/staging"; };
     nixpkgs-wayland = {
       url = "github:nix-community/nixpkgs-wayland";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -12,6 +13,7 @@
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.master.follows = "master";
     };
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
@@ -20,25 +22,38 @@
       url = "github:colemickens/flake-firefox-nightly";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    rust-overlay = { url = "github:oxalica/rust-overlay"; };
     utils = { url = "github:gytis-ivaskevicius/flake-utils-plus"; };
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-master, nixpkgs-wayland
-    , home-manager, neovim-nightly-overlay, firefox-nightly, utils, ... }:
+  outputs = inputs@{ self, nixpkgs, nixpkgs-master, nixpkgs-staging, nixpkgs-wayland
+    , home-manager, neovim-nightly-overlay, firefox-nightly, rust-overlay, utils, ... }:
     let
       inherit (utils.lib) mkFlake;
       system = "x86_64-linux";
       nixpkgs-master-overlay = final: prev: {
         masterPackages = nixpkgs-master.legacyPackages.${prev.system};
       };
+      nixpkgs-staging-overlay = final: prev: {
+        stagingPackages = nixpkgs-staging.legacyPackages.${prev.system};
+      };
       firefox-nightly-overlay = final: prev: {
         firefox-nightly-bin =
           firefox-nightly.packages.${prev.system}.firefox-nightly-bin;
       };
+      moz-url = builtins.fetchTarball {
+        url =
+          "https://github.com/marcenuc/nixpkgs-mozilla/archive/master.tar.gz";
+      };
+      temporaryNightlyOverlay = (import "${moz-url}/firefox-overlay.nix");
+
       input-overlays = [
         nixpkgs-master-overlay
         nixpkgs-wayland.overlay
-        firefox-nightly-overlay
+        nixpkgs-staging-overlay
+        # firefox-nightly-overlay
+        rust-overlay.overlay
+        temporaryNightlyOverlay
         neovim-nightly-overlay.overlay
       ];
       import-overlays = import ./overlays;
@@ -49,7 +64,7 @@
 
       channelsConfig = {
         allowBroken = true;
-        allowUnfree = true;
+        allowUnfree = false;
         allowUnsupportedSystem = true;
       };
 

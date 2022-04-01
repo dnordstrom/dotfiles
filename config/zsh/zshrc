@@ -79,7 +79,8 @@ alias cat="bat"
 alias cdn="cd /etc/nixos"
 
 # Edit and build NixOS
-alias nb="$HOME/.nix-prebuild; sudo nixos-rebuild switch --flake /etc/nixos --upgrade-all"
+alias nb="$HOME/.nix-prebuild; sudo nixos-rebuild switch --flake /etc/nixos --upgrade"
+alias nbi="$HOME/.nix-prebuild; sudo NIX_ALLOW_UNFREE=1 nixos-rebuild switch --flake /etc/nixos --impure --upgrade"
 alias ne="nix-with nvim"
 alias nkate="nix-with kate"
 alias ncode="nix-with codium"

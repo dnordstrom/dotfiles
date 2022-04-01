@@ -340,6 +340,7 @@ in {
     #
 
     glib
+    stagingPackages.glibc
     gnome-breeze
     gnome.dconf-editor
     gnomeExtensions.gsconnect
@@ -392,13 +393,31 @@ in {
     audacious
     carla
     celluloid # GTK frontend for MPV
+    easyeffects
     handbrake
     haruna # QT frontend for MPV
+    nordpkgs.hqplayer-desktop # Trial, there's also a simpler hqplayerd
+    hqplayerd
     spicetify-cli
     spotify-qt
     spotify-tui
     spotifyd
     strawberry
+
+    #
+    # Audio plugins
+    #
+
+    calf
+    libbs2b
+    libsamplerate
+    libsndfile
+    lsp-plugins
+    mda_lv2
+    nlohmann_json
+    rnnoise-plugin
+    speexdsp
+    tbb
 
     #
     # Development
@@ -840,7 +859,7 @@ in {
 
   programs.firefox = {
     enable = true;
-    package = pkgs.firefox-nightly-bin;
+    package = pkgs.latest.firefox-nightly-bin;
     profiles = {
       default = {
         id = 0;

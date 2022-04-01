@@ -43,6 +43,7 @@
       "steam-runtime"
       "spotify"
       "spotify-unwrapped"
+      "hqplayer-desktop"
     ];
 
   # TODO: Keep an eye on this outdated crap
@@ -56,6 +57,7 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.kernelPackages = pkgs.linuxPackages_zen;
 
   #
   # NETWORKING
@@ -118,32 +120,103 @@
 
   services.pipewire = {
     enable = true;
+    systemWide = false;
 
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    wireplumber.enable = true;
+    media-session.enable = false;
 
     config.pipewire = {
-      wireplumber.enable = true;
-      media-session.enable = false;
-
       "context.properties" = {
         "link.max-buffers" = 64;
-        "default.clock.allowed-rates" = [ 48000 96000 ];
-        "default.clock.rate" = 96000;
+        "log.level" = 2;
+        "default.clock.rate" = 48000;
+        "default.clock.allowed-rates" = [ 44100 48000 96000 192000 ];
         "default.clock.quantum" = 1024;
-        "default.clock.min-quantum" = 32;
-        "default.clock.max-quantum" = 8192;
-        "settings.check-quantum" = true;
-        "settings.check-rate" = true;
+        "default.clock.min-quantum" = 1024;
+        "default.clock.max-quantum" = 1024;
         "core.daemon" = true;
         "core.name" = "pipewire-0";
       };
+      "context.spa-libs" = {
+        "audio.convert.*" = "audioconvert/libspa-audioconvert";
+        "support.*" = "support/libspa-support";
+      };
+      "context.modules" = [
+        {
+          name = "libpipewire-module-rtkit";
+          args = {
+            "nice.level" = -15;
+            "rt.prio" = 88;
+            "rt.time.soft" = 200000;
+            "rt.time.hard" = 200000;
+          };
+          flags = [ "ifexists" "nofail" ];
+        }
+        { name = "libpipewire-module-protocol-native"; }
+        { name = "libpipewire-module-profiler"; }
+        { name = "libpipewire-module-metadata"; }
+        { name = "libpipewire-module-spa-device-factory"; }
+        { name = "libpipewire-module-spa-node-factory"; }
+        { name = "libpipewire-module-client-node"; }
+        { name = "libpipewire-module-client-device"; }
+        {
+          name = "libpipewire-module-portal";
+          flags = [ "ifexists" "nofail" ];
+        }
+        {
+          name = "libpipewire-module-access";
+          args = { };
+        }
+        { name = "libpipewire-module-adapter"; }
+        { name = "libpipewire-module-link-factory"; }
+        { name = "libpipewire-module-session-manager"; }
+        {
+          "name" = "libpipewire-module-filter-chain";
+          "args" = {
+            "node.name" = "rnnoise_source";
+            "node.description" = "Noise Canceling Source";
+            "media.name" = "Noise Canceling Source";
+            "filter.graph" = {
+              nodes = [{
+                type = "ladspa";
+                name = "rnnoise";
+                plugin = "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
+                label = "noise_suppressor_stereo";
+                control = { "VAD Threshold (%)" = 50.0; };
+              }];
+            };
+            "capture.props" = { "node.passive" = true; };
+            "playback.props" = { "media.class" = "Audio/Source"; };
+          };
+        }
+      ];
+
       "stream.properties" = {
-        "resample.quality" = 15; # Max 15
+        "node.latency" = "1024/48000";
+        "resample.quality" = 10;
+        "resample.disable" = true;
       };
     };
+
+    media-session.config.alsa-monitor = {
+      rules = [{
+        matches = [{ "node.name" = "alsa_output.*"; }];
+        actions = {
+          update-props = {
+            "audio.format" = "S32LE";
+            "audio.rate" = 48000;
+            "api.alsa.period-size" = 256;
+            "api.alsa.headroom" = 1024;
+          };
+        };
+      }];
+    };
   };
+
+  services.roon-server = { enable = true; };
 
   services.dbus.packages = [ pkgs.nordpkgs.openvpn3 ];
 
@@ -152,6 +225,14 @@
   services.yubikey-agent.enable = true;
 
   services.gnome.gnome-keyring.enable = true;
+
+  #
+  # Systemd
+  #
+
+  systemd.services.systemd-udev-settle.enable = false;
+
+  systemd.services.NetworkManager-wait-online.enable = false;
 
   #
   # SECURITY
@@ -186,6 +267,8 @@
   # HARDWARE
   #
 
+  sound.enable = false;
+
   hardware = {
     pulseaudio.enable = false;
 
@@ -213,19 +296,24 @@
   xdg = {
     menus.enable = true;
     icons.enable = true;
+
     portal = {
       enable = true;
       extraPortals = with pkgs; [
+        xdg-desktop-portal
         xdg-desktop-portal-gtk
         xdg-desktop-portal-wlr
         xdg-desktop-portal-kde
+        xdg-desktop-portal-gnome
       ];
+
       gtkUsePortal = true;
+
       wlr = {
         enable = true;
         settings = {
           screencast = {
-            max_fps = 30;
+            max_fps = 60;
             output_name = "DP-1";
             chooser_type = "simple";
             chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
@@ -268,15 +356,24 @@
   #
   # SYSTEM ENVIRONMENT
   #
+  
+  environment.variables = {
+    VST_PATH    = "/nix/var/nix/profiles/system/lib/vst:/var/run/current-system/sw/lib/vst:~/.vst";
+    LXVST_PATH  = "/nix/var/nix/profiles/system/lib/lxvst:/var/run/current-system/sw/lib/lxvst:~/.lxvst";
+    LADSPA_PATH = "/nix/var/nix/profiles/system/lib/ladspa:/var/run/current-system/sw/lib/ladspa:~/.ladspa";
+    LV2_PATH    = "/nix/var/nix/profiles/system/lib/lv2:/var/run/current-system/sw/lib/lv2:~/.lv2";
+    DSSI_PATH   = "/nix/var/nix/profiles/system/lib/dssi:/var/run/current-system/sw/lib/dssi:~/.dssi";
+  };
 
   environment.systemPackages = with pkgs; [
-    polkit_gnome
     git
-    wget
     nodejs
     nordpkgs.openvpn3
-    yarn
+    polkit_gnome
+    roon-server
     steam-run # Runs binaries compiled for other distributions
+    wget
     xdg-desktop-portal
+    yarn
   ];
 }
