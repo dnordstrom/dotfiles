@@ -25,10 +25,6 @@ export ANSI_STYLE_MH=$(tput dim)
 export ANSI_STYLE_STATUS=$(tput bold; tput setaf 0; tput setab 3)
 export ANSI_STYLE_STATUS_END=$(tput sgr0)
 
-# QT (unsure where this is actually set, probably Home Manager)
-
-unset QT_STYLE_OVERRIDE
-
 # less
 
 local statusline=$ANSI_STYLE_STATUS"\ ?f\ %f:藍\ STDIN"$ANSI_STYLE_STATUS_END
@@ -80,7 +76,7 @@ alias cdn="cd /etc/nixos"
 
 # Edit and build NixOS
 alias nb="$HOME/.nix-prebuild; sudo nixos-rebuild switch --flake /etc/nixos --upgrade"
-alias nbi="$HOME/.nix-prebuild; sudo NIX_ALLOW_UNFREE=1 nixos-rebuild switch --flake /etc/nixos --impure --upgrade"
+alias nbi="$HOME/.nix-prebuild; sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake /etc/nixos --impure --upgrade"
 alias ne="nix-with nvim"
 alias nkate="nix-with kate"
 alias ncode="nix-with codium"
@@ -323,7 +319,7 @@ build-nixos() {
   sudo nixos-rebuild switch --flake /etc/nixos --upgrade-all
 }
 
-# Run fg command if buffer line is empty, otherwise save input to stack,
+# Run fg command if buffer line is empty, otherwise save input to stack
 fancy-ctrl-z() {
   if [ $#BUFFER -eq 0 ]; then
     BUFFER="fg"
@@ -340,6 +336,7 @@ fancy-ctrl-z() {
 
 zle -N insert-date
 zle -N insert-timestamp
+zle -N prepend-sudo
 zle -N prepend-date
 zle -N prepend-timestamp
 zle -N fancy-ctrl-z
@@ -357,6 +354,9 @@ zle -N clear-backup-notes
 
 # Rebinds
 bindkey -s '^[l' "l\n" # Alt-L uses l instead of ls
+
+# Space for history
+bindkey ' ' magic-space
 
 # Ctrl-Z for fg
 bindkey "^Z" fancy-ctrl-z

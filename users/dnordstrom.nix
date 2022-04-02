@@ -287,6 +287,7 @@ in {
 
     zsh-fzf-tab
     zsh-nix-shell
+    zsh-autopair
 
     #
     # Wayland
@@ -343,9 +344,7 @@ in {
     stagingPackages.glibc
     gnome-breeze
     gnome.dconf-editor
-    gnomeExtensions.gsconnect
     gsettings-desktop-schemas
-    gsettings-qt
     packagekit
     libsForQt5.packagekit-qt # For installing some KDE services
     libsForQt5.kpackage
@@ -622,6 +621,13 @@ in {
   wayland.windowManager.sway = {
     enable = true;
     config = null;
+    systemdIntegration = true;
+
+    wrapperFeatures = {
+      base = true;
+      gtk = true;
+    };
+
     extraSessionCommands = ''
       # Firefox
       export MOZ_ENABLE_WAYLAND=1
@@ -639,7 +645,6 @@ in {
 
       # Miscellaneous
       export SDL_VIDEODRIVER=wayland
-      export _JAVA_AWT_WM_NONREPARENTING=1
 
       # Styling
       export QT_QPA_PLATFORMTHEME=qt5ct
@@ -966,9 +971,11 @@ in {
 
     cdpath = [ "/home/dnordstrom" "/home/dnordstrom/Code" ];
 
-    oh-my-zsh = {
-      enable = true;
-      plugins = [ "sudo" ];
+    dirHashes = {
+      bak = "$HOME/Backup";
+      docs = "$HOME/Documents";
+      shots = "$HOME/Pictures/Screenshots";
+      dl = "$HOME/Downloads";
     };
 
     plugins = [
@@ -979,6 +986,30 @@ in {
       {
         name = "nix-shell";
         src = "${pkgs.zsh-nix-shell}/share/zsh-nix-shell";
+      }
+      {
+        name = "autopair";
+        file = "autopair.zsh";
+        src = "${pkgs.zsh-autopair}/share/zsh/zsh-autopair";
+      }
+      {
+        name = "zsh-abbrev-alias";
+        src = pkgs.fetchFromGitHub {
+          owner = "momo-lab";
+          repo = "zsh-abbrev-alias";
+          rev = "33fe094da0a70e279e1cc5376a3d7cb7a5343df5";
+          sha256 = "sha256-jq5YEpIpvmBa/M7F4NeC77mE9WHSnza3tZwvgMPab7M=";
+        };
+        file = "abbrev-alias.plugin.zsh";
+      }
+      {
+        name = "sudo";
+        src = pkgs.fetchgit {
+          url = "https://github.com/ohmyzsh/ohmyzsh";
+          rev = "957dca698cd0a0cafc6d2551eeff19fe223f41bd";
+          sparseCheckout = "plugins/sudo";
+          sha256 = "sha256-iM8wFFIfDZIVyGvscoxxGyD38iOiQXYmagrhRo0ig9U=";
+        };
       }
     ];
 

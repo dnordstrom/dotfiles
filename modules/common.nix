@@ -20,7 +20,7 @@
   # Optimization
   #
 
-  # Automatically symlink files with identical contents
+  # Automatically symlink identical files
   nix.settings.auto-optimise-store = true;
 
   # Automatically remove unused packages
@@ -36,7 +36,6 @@
 
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [
-      "broadcom-sta"
       "corefonts"
       "input-fonts"
       "slack"
@@ -55,8 +54,14 @@
   # BOOTING
   #
 
-  boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.enable = false;
+  boot.loader.grub.enable = true;
+  boot.loader.grub.version = 2;
+  boot.loader.grub.efiSupport = true;
+  boot.loader.grub.device = "nodev";
+  boot.loader.grub.configurationLimit = 50;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.efi.efiSysMountPoint = "/boot";
   boot.kernelPackages = pkgs.linuxPackages_zen;
 
   #
@@ -284,10 +289,12 @@
   };
 
   #
-  # VMs
+  # Virtualization
   #
 
   virtualisation.virtualbox.host.enable = true;
+
+  virtualisation.docker.enable = true;
 
   #
   # XDG
@@ -365,6 +372,8 @@
     DSSI_PATH   = "/nix/var/nix/profiles/system/lib/dssi:/var/run/current-system/sw/lib/dssi:~/.dssi";
   };
 
+  environment.pathsToLink = [ "/share/zsh" ]; # Completion for system packages, e.g. systemctl
+
   environment.systemPackages = with pkgs; [
     git
     nodejs
@@ -375,5 +384,7 @@
     wget
     xdg-desktop-portal
     yarn
+    refind
+    qt5.qtwayland
   ];
 }

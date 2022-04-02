@@ -1,6 +1,26 @@
-# NixOS system setup
+# NORD's dotfiles
 
-Flake based configuration used on a Dell XPS work laptop as well as my Ryzen 7 home desktop. It uses the unstable channel (which is actually very stable) for packages, and it's a constant work in progress. See the links below for further information on Nix and NixOS.
+Flake based NixOS configuration used on work laptop and home desktop for consistent, declarative, and reproducible environments for development and leisure. See the links below for further information on Nix and NixOS.
+
+## Features
+
+* Zen kernel
+* Sway and Waybar
+* Firefox Nightly
+* Kitty terminal
+* Neovim
+* PipeWire audio
+  * Shure SM7B mic via Focusrite Scarlett Solo 3rd Gen and Cloudlifter CL-1
+  * Sennheiser HD 660S headphones via same interface
+  * Noise cancellation using rnnoise real-time plugin
+  * EasyEffects plugins
+  * Qobuz for high-res audio synced via Soundiiz
+* Portable dotfiles in `config`
+* Custom packages in `packages`
+* Shell scripts for launchers, screenshots, color picker, etc.
+* ...and much more.
+
+NixOS is awesome.
 
 ## Catppuccin 
 
