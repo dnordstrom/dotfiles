@@ -60,9 +60,10 @@
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.device = "nodev";
   boot.loader.grub.configurationLimit = 50;
+  boot.loader.grub.useOSProber = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot";
-  boot.kernelPackages = pkgs.linuxPackages_zen;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   #
   # NETWORKING
@@ -137,8 +138,9 @@
       "context.properties" = {
         "link.max-buffers" = 64;
         "log.level" = 2;
-        "default.clock.rate" = 48000;
-        "default.clock.allowed-rates" = [ 44100 48000 96000 192000 ];
+        "default.clock.rate" = 192000;
+        "default.clock.allowed-rates" =
+          [ 44100 48000 88200 96000 192000 384000 ];
         "default.clock.quantum" = 1024;
         "default.clock.min-quantum" = 1024;
         "default.clock.max-quantum" = 1024;
@@ -188,8 +190,10 @@
               nodes = [{
                 type = "ladspa";
                 name = "rnnoise";
-                plugin = "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
+                plugin =
+                  "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
                 label = "noise_suppressor_stereo";
+                channels = 2;
                 control = { "VAD Threshold (%)" = 50.0; };
               }];
             };
@@ -200,7 +204,7 @@
       ];
 
       "stream.properties" = {
-        "node.latency" = "1024/48000";
+        "node.latency" = "1024/192000";
         "resample.quality" = 10;
         "resample.disable" = true;
       };
@@ -212,7 +216,7 @@
         actions = {
           update-props = {
             "audio.format" = "S32LE";
-            "audio.rate" = 48000;
+            "audio.rate" = 192000;
             "api.alsa.period-size" = 256;
             "api.alsa.headroom" = 1024;
           };
@@ -221,7 +225,10 @@
     };
   };
 
-  services.roon-server = { enable = true; };
+  services.roon-server = {
+    enable = true;
+    openFirewall = true;
+  };
 
   services.dbus.packages = [ pkgs.nordpkgs.openvpn3 ];
 
@@ -347,6 +354,7 @@
     users.dnordstrom = {
       isNormalUser = true;
       extraGroups = [
+        "audio"
         "wheel"
         "input" # For ydotool udev rule
         "vboxusers"
@@ -363,16 +371,26 @@
   #
   # SYSTEM ENVIRONMENT
   #
-  
+
   environment.variables = {
-    VST_PATH    = "/nix/var/nix/profiles/system/lib/vst:/var/run/current-system/sw/lib/vst:~/.vst";
-    LXVST_PATH  = "/nix/var/nix/profiles/system/lib/lxvst:/var/run/current-system/sw/lib/lxvst:~/.lxvst";
-    LADSPA_PATH = "/nix/var/nix/profiles/system/lib/ladspa:/var/run/current-system/sw/lib/ladspa:~/.ladspa";
-    LV2_PATH    = "/nix/var/nix/profiles/system/lib/lv2:/var/run/current-system/sw/lib/lv2:~/.lv2";
-    DSSI_PATH   = "/nix/var/nix/profiles/system/lib/dssi:/var/run/current-system/sw/lib/dssi:~/.dssi";
+    VST_PATH =
+      "/nix/var/nix/profiles/system/lib/vst:/var/run/current-system/sw/lib/vst:~/.vst";
+    LXVST_PATH =
+      "/nix/var/nix/profiles/system/lib/lxvst:/var/run/current-system/sw/lib/lxvst:~/.lxvst";
+    LADSPA_PATH =
+      "/nix/var/nix/profiles/system/lib/ladspa:/var/run/current-system/sw/lib/ladspa:~/.ladspa";
+    LV2_PATH =
+      "/nix/var/nix/profiles/system/lib/lv2:/var/run/current-system/sw/lib/lv2:~/.lv2";
+    DSSI_PATH =
+      "/nix/var/nix/profiles/system/lib/dssi:/var/run/current-system/sw/lib/dssi:~/.dssi";
   };
 
-  environment.pathsToLink = [ "/share/zsh" ]; # Completion for system packages, e.g. systemctl
+  environment.pathsToLink =
+    [ "/share/zsh" ]; # Completion for system packages, e.g. systemctl
+
+  environment.loginShellInit = ''
+    [[ "$(tty)" == /dev/tty2 ]] && sway
+  '';
 
   environment.systemPackages = with pkgs; [
     git

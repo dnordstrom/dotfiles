@@ -797,8 +797,7 @@ in {
   programs.mpv.enable = true;
   programs.afew.enable = true;
   programs.mbsync.enable = true;
-
-  programs.waybar = { enable = true; };
+  programs.waybar.enable = true;
 
   programs.nix-index = {
     enable = true;

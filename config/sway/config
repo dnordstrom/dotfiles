@@ -503,10 +503,10 @@ set $mode_system_hints [S] Shutdown [R] Restart [L] Logout [C] Reload config
 set $mode_system $mode_system_icon $mode_system_hints
 
 mode "$mode_system" {
-  bindsym e exec swaymsg exit, mode "default"
+  bindsym l exec swaymsg -t command exit, mode "default"
   bindsym s exec systemctl poweroff, mode "default"
   bindsym r exec systemctl reboot, mode "default"
-  bindsym c exec swaymsg reload, mode "default"
+  bindsym c exec swaymsg -t command reload, mode "default"
 
   bindsym Return mode "default"
   bindsym Escape mode "default"
