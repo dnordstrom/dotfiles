@@ -1,0 +1,77 @@
+#!/usr/bin/env sh
+#
+# PipeWire volume control script based on: 
+# The metadata only contains the name of the default sink
+#
+
+usage="USAGE:
+    $(basename "$0") [subcommand]
+
+DESCRIPTION:
+    Change PipeWire volume and mute status.
+
+SUBCOMMANDS:
+    status      Show default sink and current volume and mute status
+    reset       Reset volume to 1.0
+    mute        Toggle mute status
+    up          Increase volume by 0.1
+    down        Decrease volume by 0.1
+    <num>       Adjust volume (negative to decrease)"
+
+#
+# Get required details
+#
+
+default_sink_name=$(pw-metadata 0 'default.audio.sink' | grep 'value' | sed "s/.* value:'//;s/' type:.*$//;" | jq -r .name)
+default_sink_id=$(pw-dump Node Device | jq '.[].info.props | select(."node.name" == "'"$default_sink_name"'") | ."object.id"')
+current_volume=$(pw-cli enum-params "$default_sink_id" 'Props' | grep -A 2 'Spa:Pod:Object:Param:Props:channelVolumes' | awk '/Float / {gsub(/.*Float\s/," "); print $1^(1/3) }')
+current_mute=$(pw-cli enum-params "$default_sink_id" 'Props' | grep -A 2 'Spa:Pod:Object:Param:Props:mute' | awk '/Bool / {gsub(/.*Bool\s/," "); print $1 }')
+
+#
+# Show current status
+#
+
+if [ $# -eq 0 ] || [ "status" = "$1" ]; then
+  printf "%s\n\nDefault sink: %s (ID: %s)\nCurrent volume: %s\nCurrent mute: %s\n" "$usage" "$default_sink_name" "$default_sink_id" "$current_volume" "$current_mute"
+  exit 0
+fi
+
+#
+# Toggle mute
+#
+
+if [ "mute" = "$1" ]; then
+  new_mute="true"
+  [ "true" = "$current_mute" ] && new_mute="false"
+
+  pw-cli set-param "$default_sink_id" Props "{ mute: $new_mute, channelVolumes: [ $current_volume , $current_volume ] }" >/dev/null 2>&1
+  exit 0
+fi
+
+#
+# Reset volume to 1.0
+#
+
+if [ "reset" = "$1" ]; then
+  pw-cli s "$default_sink_id" Props "{ mute: $current_mute, channelVolumes: [ 1.0 , 1.0 ] }" >/dev/null 2>&1
+  exit 0
+fi
+
+# 
+# Change volume
+#
+
+if [ "up" = "$1" ]; then
+  change="0.1"
+elif [ "down" = "$1" ]; then
+  change="-0.1"
+else
+  change="$1"
+fi
+
+# Calculate new volume and convert to cubic root
+new_volume=$(echo "$current_volume $change" | awk '{printf "%f", $1 + $2}')
+new_volume_cube=$(echo "$new_volume" | awk '{ print $1^3 }')
+
+pw-cli s "$default_sink_id" Props "{ mute: false, channelVolumes: [ $new_volume_cube , $new_volume_cube ] }" >/dev/null 2>&1
+

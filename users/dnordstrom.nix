@@ -239,14 +239,12 @@ in {
     lynx
     nextcloud-client
     pavucontrol
-    # pulseaudio # For pactl since pw-cli makes me cry
     qbittorrent
     signal-desktop
     slack
     spotify
     sqlite
     tor-browser-bundle-bin
-    # virtualbox
     zathura
 
     #
@@ -397,6 +395,7 @@ in {
     haruna # QT frontend for MPV
     nordpkgs.hqplayer-desktop # Trial, there's also a simpler hqplayerd
     hqplayerd
+    pulseaudio
     spicetify-cli
     spotify-qt
     spotify-tui

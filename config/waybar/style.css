@@ -225,7 +225,8 @@ box > box > widget > label {
   color: @black2;
 }
 
-#pulseaudio {
+#pulseaudio,
+#custom-pipewire {
   background: @peach;
   color: @black2;
 }

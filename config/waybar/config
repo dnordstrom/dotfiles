@@ -19,7 +19,8 @@
     "cpu",
     "custom/keyboard",
     "custom/wttr",
-    "pulseaudio"
+    "pulseaudio",
+    "custom/pipewire"
   ],
   "sway/window": {
     "format": "<span>{}</span>",
@@ -154,6 +155,22 @@
     "interval": 1800,
     "tooltip": false
   },
+  "custom/pipewire": {
+    "exec": "pw-volume status",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 8,
+    "format": "{icon} {percentage}0%",
+    "format-icons": {
+      "mute": "婢",
+      "default": ["奔", "墳"]
+    },
+    "on-scroll-up": "pw-volume change +1%; pkill -RTMIN+8 waybar",
+    "on-scroll-down": "pw-volume change -1%; pkill -RTMIN+8 waybar",
+    "on-click": "pw-volume mute toggle; pkill -RTMIN+8 waybar",
+    "on-click-right": "pavucontrol-qt",
+    "tooltip": false,
+  },
   "idle_inhibitor": {
     "format": "<span font='16' rise='-1500'>{icon}</span>",
     "tooltip": false,
@@ -177,7 +194,6 @@
     },
     "scroll-step": 5,
     "on-click": "amixer -D pipewire sset Master toggle",
-    "on-click-middle": "pavucontrol-qt",
     "on-click-right": "pavucontrol-qt",
     "tooltip": false
   },

@@ -537,9 +537,6 @@ for_window {
   [window_role="dialog"] floating enable
   [window_type="dialog"] floating enable
 
-  # Sound
-  [app_id="pavucontrol"] floating enable
-
   # Password
   [app_id="pinentry-qt"] floating enable
   [app_id="pinentry-gtk2"] floating enable
@@ -558,6 +555,9 @@ for_window {
   [title="nmtui-edit"] floating enable
   [title="Connection information"] floating enable
   [instance="bitwarden"] floating enable
+  [app_id="pavucontrol"] floating enable
+  [title="Volume Control"] floating enable
+
   
   #
   # Terminals
