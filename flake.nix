@@ -10,6 +10,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.master.follows = "master";
     };
+    nixpkgs-pulseaudio-fix = {
+      url = "github:jonringer/nixpkgs/5c14743a3cbeb6dffb37333b71fafc6b0a6b35da";
+    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -26,8 +29,9 @@
     utils = { url = "github:gytis-ivaskevicius/flake-utils-plus"; };
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-master, nixpkgs-staging, nixpkgs-wayland
-    , home-manager, neovim-nightly-overlay, firefox-nightly, rust-overlay, utils, ... }:
+  outputs = inputs@{ self, nixpkgs, nixpkgs-master, nixpkgs-staging
+    , nixpkgs-wayland, nixpkgs-pulseaudio-fix, home-manager, neovim-nightly-overlay, firefox-nightly
+    , rust-overlay, utils, ... }:
     let
       inherit (utils.lib) mkFlake;
       system = "x86_64-linux";
@@ -36,6 +40,9 @@
       };
       nixpkgs-staging-overlay = final: prev: {
         stagingPackages = nixpkgs-staging.legacyPackages.${prev.system};
+      };
+      nixpkgs-pulesaudio-fix-overlay = final: prev: {
+        pulseaudioFixPackages = nixpkgs-pulseaudio-fix.legacyPackages.${prev.system};
       };
       firefox-nightly-overlay = final: prev: {
         firefox-nightly-bin =
@@ -55,6 +62,7 @@
         rust-overlay.overlay
         temporaryNightlyOverlay
         neovim-nightly-overlay.overlay
+        nixpkgs-pulesaudio-fix-overlay
       ];
       import-overlays = import ./overlays;
     in mkFlake {

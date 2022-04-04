@@ -243,6 +243,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-pulseaudio-fix": {
+      "locked": {
+        "lastModified": 1647921228,
+        "narHash": "sha256-vS5hez+tlpUp4DKgbKTVRlA776YwCWgS/HTSUWrY9J8=",
+        "owner": "jonringer",
+        "repo": "nixpkgs",
+        "rev": "5c14743a3cbeb6dffb37333b71fafc6b0a6b35da",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jonringer",
+        "repo": "nixpkgs",
+        "rev": "5c14743a3cbeb6dffb37333b71fafc6b0a6b35da",
+        "type": "github"
+      }
+    },
     "nixpkgs-staging": {
       "locked": {
         "lastModified": 1648761898,
@@ -320,6 +336,7 @@
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-master": "nixpkgs-master",
+        "nixpkgs-pulseaudio-fix": "nixpkgs-pulseaudio-fix",
         "nixpkgs-staging": "nixpkgs-staging",
         "nixpkgs-wayland": "nixpkgs-wayland",
         "rust-overlay": "rust-overlay",

@@ -125,6 +125,8 @@
   services.udev.packages = [ pkgs.nordpkgs.udev-rules ];
 
   services.pipewire = {
+    package = pkgs.pulseaudioFixPackages.pipewire;
+
     enable = true;
     systemWide = false;
 
@@ -241,6 +243,9 @@
   #
   # Systemd
   #
+  #
+
+  # Fix for pulseaudio systemd.user.services.pipewire-pulse.path = [ pkgs.pulseaudio ];
 
   systemd.services.systemd-udev-settle.enable = false;
 
@@ -303,6 +308,8 @@
 
   virtualisation.docker.enable = true;
 
+  virtualisation.libvirtd.enable = true;
+
   #
   # XDG
   #
@@ -357,6 +364,7 @@
         "audio"
         "wheel"
         "input" # For ydotool udev rule
+        "libvirtd"
         "vboxusers"
       ];
       shell = pkgs.zsh;

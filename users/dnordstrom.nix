@@ -238,7 +238,7 @@ in {
     lynx
     nextcloud-client
     pavucontrol
-    pulseaudio # For pactl since pw-cli makes me cry
+    # pulseaudio # For pactl since pw-cli makes me cry
     qbittorrent
     signal-desktop
     slack
