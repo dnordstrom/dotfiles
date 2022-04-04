@@ -192,11 +192,12 @@ in {
     # Local
     #
 
-    nordpkgs.hydroxide
+    nordpkgs.ayu-mirage-theme-gtk
     nordpkgs.convox
+    nordpkgs.hydroxide
     nordpkgs.jira-cli
     nordpkgs.protoncheck
-    nordpkgs.ayu-mirage-theme-gtk
+    nordpkgs.pw-volume
 
     #
     # Networking
@@ -392,7 +393,6 @@ in {
     audacious
     carla
     celluloid # GTK frontend for MPV
-    easyeffects
     handbrake
     haruna # QT frontend for MPV
     nordpkgs.hqplayer-desktop # Trial, there's also a simpler hqplayerd
@@ -402,6 +402,7 @@ in {
     spotify-tui
     spotifyd
     strawberry
+    lxqt.pavucontrol-qt
 
     #
     # Audio plugins
@@ -673,7 +674,7 @@ in {
       name = "Input Sans Condensed";
       size = 8;
     };
-    theme.name = "Ayu";
+    theme.name = "Ayu-Dark";
     iconTheme.name = "Vimix-dark";
     gtk3 = {
       extraConfig.gtk-application-prefer-dark-theme = "true";

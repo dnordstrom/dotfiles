@@ -17,5 +17,6 @@
   protonvpn-cli = pkgs.callPackage ./protonvpn-cli { };
   protonvpn-gui = pkgs.callPackage ./protonvpn-gui { };
   protonvpn-nm-lib = pkgs.callPackage ./protonvpn-nm-lib { };
+  pw-volume = pkgs.callPackage ./pw-volume { };
   udev-rules = pkgs.callPackage ./udev-rules { };
 }

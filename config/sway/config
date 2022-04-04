@@ -618,7 +618,7 @@ for_window {
 # Import environment
 
 exec systemctl --user import-environment XDG_SESSION_TYPE XDG_CURRENT_DESKTOP
-exec dbus-update-activation-environment WAYLAND_DISPLAY
+exec --no-startup-id dbus-update-activation-environment --all
 exec ~/.nix-profile/libexec/polkit-gnome-authentication-agent-1
 
 # Start systemd targets

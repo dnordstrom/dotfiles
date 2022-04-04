@@ -95,31 +95,6 @@
   # SERVICES
   #
 
-  services.xserver = {
-    enable = true;
-
-    # SDDM with Sway sessions
-    displayManager = {
-      sddm = {
-        enable = true;
-        settings.Wayland.SessionDir = "${pkgs.sway}/share/wayland-sessions";
-      };
-    };
-
-    libinput = {
-      enable = true;
-      touchpad = {
-        tapping = true;
-        clickMethod = "clickfinger";
-      };
-    };
-
-    layout = "us,se";
-    xkbOptions =
-      "caps:escape_shifted_capslock,grp:shifts_toggle,terminate:ctrl_alt_bksp,lv3:ralt_switch_multikey";
-    xkbVariant = ",us";
-  };
-
   services.blueman.enable = true;
 
   services.udev.packages = [ pkgs.nordpkgs.udev-rules ];
@@ -149,10 +124,12 @@
         "core.daemon" = true;
         "core.name" = "pipewire-0";
       };
+
       "context.spa-libs" = {
         "audio.convert.*" = "audioconvert/libspa-audioconvert";
         "support.*" = "support/libspa-support";
       };
+
       "context.modules" = [
         {
           name = "libpipewire-module-rtkit";
@@ -208,7 +185,92 @@
       "stream.properties" = {
         "node.latency" = "1024/192000";
         "resample.quality" = 10;
-        "resample.disable" = true;
+      };
+    };
+
+    config.pipewire-pulse = {
+      "context.properties" = { "log.level" = 2; };
+
+      "context.modules" = [
+        {
+          name = "libpipewire-module-rt";
+          args = {
+            "nice.level" = -15;
+            "rt.prio" = 88;
+            "rt.time.soft" = 200000;
+            "rt.time.hard" = 200000;
+          };
+          flags = [ "ifexists" "nofail" ];
+        }
+        { name = "libpipewire-module-protocol-native"; }
+        { name = "libpipewire-module-client-node"; }
+        { name = "libpipewire-module-adapter"; }
+        { name = "libpipewire-module-metadata"; }
+        {
+          name = "libpipewire-module-protocol-pulse";
+          args = {
+            "server.address" = [ "unix:native" ];
+            "pulse.min.req" = "1024/44100";
+            "pulse.default.req" = "1024/192000";
+            "pulse.min.frag" = "1024/44100";
+            "pulse.default.frag" = "192000/44100";
+            "pulse.default.tlength" = "192000/44100";
+            "pulse.min.quantum" = "1024/44100";
+            "pulse.default.position" = [ "FL" "FR" ];
+            "vm.overrides" = { "pulse.min.quantum" = "1024/44100"; };
+          };
+        }
+      ];
+
+      "context.exec" = [{
+        path = "pactl";
+        args = "load-module module-always-sink";
+      }];
+
+      "stream.properties" = {
+        "node.latency" = "1024/192000";
+        "resample.quality" = 10;
+      };
+
+      "pulse.rules" = [
+        {
+          # Skype does not want to use devices that don't have an S16 sample format.
+          matches = [
+            { "application.process.binary" = "teams"; }
+            { "application.process.binary" = "skypeforlinux"; }
+          ];
+          actions = { quirks = [ "force-s16-info" ]; };
+        }
+        {
+          # Firefox marks the capture streams as don't move and then they
+          # can't be moved with pavucontrol or other tools.
+          matches = [{ "application.process.binary" = "firefox"; }];
+          actions = { quirks = [ "remove-capture-dont-move" ]; };
+        }
+        {
+          # Speech dispatcher asks for too small latency and then underruns.
+          matches = [{ "application.name" = "~speech-dispatcher*"; }];
+          actions = {
+            update-props = {
+              "pulse.min.req" = "1024/48000";
+              "pulse.min.quantum" = "1024/48000";
+            };
+          };
+        }
+      ];
+    };
+
+    config.client = {
+      "stream.properties" = {
+        "node.latency" = "1024/192000";
+        "resample.quality" = 10;
+      };
+    };
+
+    config.client-rt = {
+      "stream.properties" = {
+        "node.latency" = "1024/192000";
+        "resample.quality" = 10;
       };
     };
 
@@ -334,7 +396,7 @@
         enable = true;
         settings = {
           screencast = {
-            max_fps = 60;
+            max_fps = 30;
             output_name = "DP-1";
             chooser_type = "simple";
             chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
@@ -397,7 +459,9 @@
     [ "/share/zsh" ]; # Completion for system packages, e.g. systemctl
 
   environment.loginShellInit = ''
-    [[ "$(tty)" == /dev/tty2 ]] && sway
+    if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
+      dbus-run-session sway
+    fi
   '';
 
   environment.systemPackages = with pkgs; [

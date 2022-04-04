@@ -176,8 +176,9 @@
       "default": ["奔", "墳"]
     },
     "scroll-step": 5,
-    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
-    "on-click-middle": "pavucontrol",
+    "on-click": "amixer -D pipewire sset Master toggle",
+    "on-click-middle": "pavucontrol-qt",
+    "on-click-right": "pavucontrol-qt",
     "tooltip": false
   },
   "cpu": {
