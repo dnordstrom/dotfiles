@@ -16,15 +16,15 @@ rustPlatform.buildRustPackage rec {
     owner = "smasher164";
     repo = pname;
     rev = version;
-    sha256 = "";
+    sha256 = "sha256-e7TA41aoJJuYsiXOV4mHDeu9UKRwdnpRqW/PZ+rjLbo=";
   };
 
-  cargoSha256 = "";
+  cargoSha256 = "sha256-b4XSJwKDdEmpSovys0XY+Gal95vaKGqt7hKkOug0RME=";
 
   meta = with lib; {
     description = "Basic interface to PipeWire volume controls";
     homepage = "https://github.com/smasher164/pw-volume";
-    license = licenses.MIT;
+    license = licenses.mit;
     maintainers = [ maintainers.dnordstrom ];
   };
 }
