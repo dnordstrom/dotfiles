@@ -634,7 +634,7 @@ exec $termscratch
 
 exec swayidle -w \
   timeout 900 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-  timeout 1800 '$lock' \
+  timeout 1800 '$lock' resume 'swaymsg "output * dpms on"' \
   before-sleep '$lock'
 
 # Don't turn off monitor if any app is fullscreen
@@ -674,7 +674,7 @@ bar {
 set $gnome-schema org.gnome.desktop.interface
 
 exec_always {
-  gsettings set $gnome-schema gtk-theme "Ayu"
+  gsettings set $gnome-schema gtk-theme "Ayu-Dark"
   gsettings set $gnome-schema icon-theme "Vimix-dark"
   gsettings set $gnome-schema cursor-theme "Quintom_Snow"
   gsettings set $gnome-schema font-name "Input Sans Compressed 8"

@@ -20,7 +20,6 @@
     "custom/keyboard",
     "custom/wttr",
     "pulseaudio",
-    "custom/pipewire"
   ],
   "sway/window": {
     "format": "<span>{}</span>",
@@ -160,7 +159,7 @@
     "return-type": "json",
     "interval": "once",
     "signal": 8,
-    "format": "{icon} {percentage}0%",
+    "format": "<span font='13' rise='-1500'>{icon}</span> {percentage}%",
     "format-icons": {
       "mute": "婢",
       "default": ["奔", "墳"]

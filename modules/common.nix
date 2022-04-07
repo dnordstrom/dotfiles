@@ -100,27 +100,17 @@
   services.udev.packages = [ pkgs.nordpkgs.udev-rules ];
 
   services.pipewire = {
-    package = pkgs.pulseaudioFixPackages.pipewire;
-
     enable = true;
-    systemWide = false;
-
     alsa.enable = true;
-    alsa.support32Bit = true;
     pulse.enable = true;
     wireplumber.enable = true;
-    media-session.enable = false;
 
     config.pipewire = {
       "context.properties" = {
-        "link.max-buffers" = 64;
-        "log.level" = 2;
-        "default.clock.rate" = 192000;
+        "link.max-buffers" = 16;
+        "default.clock.rate" = 44100;
         "default.clock.allowed-rates" =
-          [ 44100 48000 88200 96000 192000 384000 ];
-        "default.clock.quantum" = 1024;
-        "default.clock.min-quantum" = 1024;
-        "default.clock.max-quantum" = 1024;
+          [ 44100 48000 88200 96000 176400 192000 384000 ];
         "core.daemon" = true;
         "core.name" = "pipewire-0";
       };
@@ -128,19 +118,13 @@
       "context.spa-libs" = {
         "audio.convert.*" = "audioconvert/libspa-audioconvert";
         "support.*" = "support/libspa-support";
+        "api.v4l2.*" = "v4l2/libspa-v4l2";
+        "api.libcamera.*" = "libcamera/libspa-libcamera";
+        "api.bluez5.*" = "bluez5/libspa-bluez5";
+        "api.vulkan.*" = "vulkan/libspa-vulkan";
       };
 
       "context.modules" = [
-        {
-          name = "libpipewire-module-rtkit";
-          args = {
-            "nice.level" = -15;
-            "rt.prio" = 88;
-            "rt.time.soft" = 200000;
-            "rt.time.hard" = 200000;
-          };
-          flags = [ "ifexists" "nofail" ];
-        }
         { name = "libpipewire-module-protocol-native"; }
         { name = "libpipewire-module-profiler"; }
         { name = "libpipewire-module-metadata"; }
@@ -158,135 +142,134 @@
         }
         { name = "libpipewire-module-adapter"; }
         { name = "libpipewire-module-link-factory"; }
-        { name = "libpipewire-module-session-manager"; }
         {
-          "name" = "libpipewire-module-filter-chain";
-          "args" = {
-            "node.name" = "rnnoise_source";
-            "node.description" = "Noise Canceling Source";
-            "media.name" = "Noise Canceling Source";
-            "filter.graph" = {
-              nodes = [{
-                type = "ladspa";
-                name = "rnnoise";
-                plugin =
-                  "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
-                label = "noise_suppressor_stereo";
-                channels = 2;
-                control = { "VAD Threshold (%)" = 50.0; };
-              }];
-            };
-            "capture.props" = { "node.passive" = true; };
-            "playback.props" = { "media.class" = "Audio/Source"; };
-          };
+          name = "libpipewire-module-session-manager";
         }
+        # {
+        #   "name" = "libpipewire-module-filter-chain";
+        #   "args" = {
+        #     "node.name" = "rnnoise_source";
+        #     "node.description" = "Noise Canceling Source";
+        #     "media.name" = "Noise Canceling Source";
+        #     "filter.graph" = {
+        #       nodes = [{
+        #         type = "ladspa";
+        #         name = "rnnoise";
+        #         plugin =
+        #           "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
+        #         label = "noise_suppressor_stereo";
+        #         channels = 2;
+        #         control = { "VAD Threshold (%)" = 95.0; };
+        #       }];
+        #     };
+        #     "capture.props" = { "node.passive" = true; };
+        #     "playback.props" = { "media.class" = "Audio/Source"; };
+        #   };
+        # }
       ];
-
-      "stream.properties" = {
-        "node.latency" = "1024/192000";
-        "resample.quality" = 10;
-      };
     };
 
     config.pipewire-pulse = {
-      "context.properties" = { "log.level" = 2; };
-
-      "context.modules" = [
-        {
-          name = "libpipewire-module-rt";
-          args = {
-            "nice.level" = -15;
-            "rt.prio" = 88;
-            "rt.time.soft" = 200000;
-            "rt.time.hard" = 200000;
-          };
-          flags = [ "ifexists" "nofail" ];
-        }
-        { name = "libpipewire-module-protocol-native"; }
-        { name = "libpipewire-module-client-node"; }
-        { name = "libpipewire-module-adapter"; }
-        { name = "libpipewire-module-metadata"; }
-        {
-          name = "libpipewire-module-protocol-pulse";
-          args = {
-            "server.address" = [ "unix:native" ];
-            "pulse.min.req" = "1024/44100";
-            "pulse.default.req" = "1024/192000";
-            "pulse.min.frag" = "1024/44100";
-            "pulse.default.frag" = "192000/44100";
-            "pulse.default.tlength" = "192000/44100";
-            "pulse.min.quantum" = "1024/44100";
-            "pulse.default.position" = [ "FL" "FR" ];
-            "vm.overrides" = { "pulse.min.quantum" = "1024/44100"; };
-          };
-        }
-      ];
-
-      "context.exec" = [{
-        path = "pactl";
-        args = "load-module module-always-sink";
-      }];
-
-      "stream.properties" = {
-        "node.latency" = "1024/192000";
-        "resample.quality" = 10;
-      };
-
-      "pulse.rules" = [
-        {
-          # Skype does not want to use devices that don't have an S16 sample format.
-          matches = [
-            { "application.process.binary" = "teams"; }
-            { "application.process.binary" = "skypeforlinux"; }
-          ];
-          actions = { quirks = [ "force-s16-info" ]; };
-        }
-        {
-          # Firefox marks the capture streams as don't move and then they
-          # can't be moved with pavucontrol or other tools.
-          matches = [{ "application.process.binary" = "firefox"; }];
-          actions = { quirks = [ "remove-capture-dont-move" ]; };
-        }
-        {
-          # Speech dispatcher asks for too small latency and then underruns.
-          matches = [{ "application.name" = "~speech-dispatcher*"; }];
-          actions = {
-            update-props = {
-              "pulse.min.req" = "1024/48000";
-              "pulse.min.quantum" = "1024/48000";
-            };
-          };
-        }
-      ];
+      "stream.properties" = { "resample.quality" = 10; };
     };
 
-    config.client = {
-      "stream.properties" = {
-        "node.latency" = "1024/192000";
-        "resample.quality" = 10;
-      };
-    };
+    config.client = { "stream.properties" = { "resample.quality" = 10; }; };
 
-    config.client-rt = {
-      "stream.properties" = {
-        "node.latency" = "1024/192000";
-        "resample.quality" = 10;
-      };
-    };
-
-    media-session.config.alsa-monitor = {
-      rules = [{
-        matches = [{ "node.name" = "alsa_output.*"; }];
+    media-session.config.alsa-monitor.rules = [
+      # USB digital output
+      {
+        matches = [{
+          "node.name" =
+            "alsa_output.usb-Focusrite_Scarlett_Solo_USB_Y7WND901607934-00.iec958-stereo";
+        }];
         actions = {
           update-props = {
-            "audio.format" = "S32LE";
-            "audio.rate" = 192000;
-            "api.alsa.period-size" = 256;
-            "api.alsa.headroom" = 1024;
+            "audio.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
+            "audio.format" = "S32_LE";
+            "audio.rate" = 44100;
+            "resample.quality" = 10;
           };
         };
-      }];
-    };
+      }
+      # USB digital input
+      {
+        matches = [{
+          "node.name" =
+            "alsa_input.usb-Focusrite_Scarlett_Solo_USB_Y7WND901607934-00.iec958-stereo";
+        }];
+        actions = {
+          update-props = {
+            "audio.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
+            "audio.format" = "S16_LE";
+            "audio.rate" = 44100;
+          };
+        };
+      }
+      # Onboard analog output
+      {
+        matches = [{
+          "node.name" =
+            "alsa_output.pci-0000_0b_00.3.analog-stereo";
+        }];
+        actions = {
+          update-props = {
+            "audio.allowed-rates" = [ 44100 48000 ];
+            "audio.format" = "S24_LE";
+            "audio.rate" = 44100;
+            "resample.quality" = 10;
+          };
+        };
+      }
+      # Onboard digital output
+      {
+        matches = [{
+          "node.name" =
+            "alsa_output.pci-0000_0b_00.3.iec958-stereo";
+        }];
+        actions = {
+          update-props = {
+            "audio.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
+            "audio.format" = "S32_LE";
+            "audio.rate" = 44100;
+            "resample.quality" = 10;
+          };
+        };
+      }
+      # Onboard analog input
+      {
+        matches = [{
+          "node.name" =
+            "alsa_input.pci-0000_0b_00.3.analog-stereo";
+        }];
+        actions = {
+          update-props = {
+            "audio.allowed-rates" = [ 44100 ];
+            "audio.format" = "S16_LE";
+            "audio.rate" = 44100;
+          };
+        };
+      }
+    ];
+
+    media-session.config.bluez-monitor.rules = [
+      {
+        matches = [{ "device.name" = "~bluez_card.*"; }];
+        actions = {
+          "update-props" = {
+            "bluez5.reconnect-profiles" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
+            "bluez5.msbc-support" = true;
+            "bluez5.sbc-xq-support" = true;
+          };
+        };
+      }
+      {
+        matches = [
+          { "node.name" = "~bluez_input.*"; }
+          { "node.name" = "~bluez_output.*"; }
+        ];
+        actions = { "node.pause-on-idle" = false; };
+      }
+    ];
   };
 
   services.roon-server = {
@@ -422,13 +405,7 @@
   users = {
     users.dnordstrom = {
       isNormalUser = true;
-      extraGroups = [
-        "audio"
-        "wheel"
-        "input" # For ydotool udev rule
-        "libvirtd"
-        "vboxusers"
-      ];
+      extraGroups = [ "audio" "wheel" "input" "libvirtd" "vboxusers" ];
       shell = pkgs.zsh;
     };
     users.openvpn = {

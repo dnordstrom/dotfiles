@@ -194,6 +194,7 @@ in {
 
     nordpkgs.ayu-mirage-theme-gtk
     nordpkgs.convox
+    nordpkgs.hqplayer-desktop
     nordpkgs.hydroxide
     nordpkgs.jira-cli
     nordpkgs.protoncheck
@@ -339,14 +340,12 @@ in {
     # UI toolkits and libraries
     #
 
-    glib
-    stagingPackages.glibc
     gnome-breeze
     gnome.dconf-editor
     gsettings-desktop-schemas
-    packagekit
-    libsForQt5.packagekit-qt # For installing some KDE services
     libsForQt5.kpackage
+    libsForQt5.packagekit-qt # For installing some KDE services
+    packagekit
 
     #
     # Office 
@@ -390,12 +389,13 @@ in {
     alsa-utils
     audacious
     carla
+    cava
     celluloid # GTK frontend for MPV
+    easyeffects
     handbrake
     haruna # QT frontend for MPV
-    nordpkgs.hqplayer-desktop # Trial, there's also a simpler hqplayerd
-    hqplayerd
     pulseaudio
+    pulsemixer
     spicetify-cli
     spotify-qt
     spotify-tui
@@ -599,6 +599,7 @@ in {
     jetbrains.datagrip
     wezterm
     cawbird # Twitter client
+    bottles
 
     # Calculator tryouts
     libsForQt5.kcalc
@@ -642,6 +643,9 @@ in {
       export XDG_CURRENT_DESKTOP=sway
       export XDG_SESSION_DESKTOP=sway
       export XDG_SESSION_TYPE=wayland
+
+      # Java
+      export _JAVA_AWT_WM_NONREPARENTING=1
 
       # Miscellaneous
       export SDL_VIDEODRIVER=wayland

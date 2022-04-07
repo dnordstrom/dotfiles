@@ -49,12 +49,12 @@ typestyle="$BLACK"
 # If LAUNCHER_FIFO is set then show launcher, otherwise rerun in new terminal window. Boilerplate
 # for setting window title and class is handled by the script itself, so we can run or bind it by
 # name, i.e. `launch-app` rather than `kitty --class launch --title Launch -- sh -c launch-app`.
-if [ -n "$LAUNCHER_FIFO" ]; then
+if [ "$LAUNCHER_FIFO" != "" ]; then
   choices="" # Items to pass fzf, e.g. "Firefox (Web Browser)\nDolphin (File Manager)\n ..."
   entries="" # Items mapped to commands, e.g. "Firefox (Web Browser):firefox\n ..."
 
   # Find .desktop files
-  fd -e desktop -tx -tl . /etc/profiles/per-user/dnordstrom/share/applications /var/lib/flatpak/app >"$LAUNCHER_FIFO" &
+  fd -e desktop -tx -tl --search-path /etc/profiles/per-user/dnordstrom/share/applications --search-path /var/lib/flatpak/app >"$LAUNCHER_FIFO" &
 
   # Read results from pipe
   while read -r path; do
@@ -74,24 +74,24 @@ if [ -n "$LAUNCHER_FIFO" ]; then
     # description, and command stripped of any field codes such as %U, Flatpak codes like @@, and
     # surrounding quotes. We make an ANSI colored label to pass to fzf but the selected item is
     # returned without formatting so we keep name in sync and use that for command lookup.
-    cmd="$(grep -Pwo -m 1 -e "(?<=^Exec=).*" <"$path")"
-    name="$(grep -Pwo -m 1 -e "(?<=^Name=).*" <"$path")"
+    cmd="$(grep -Po -m 1 -e "(?<=^Exec=).*" <"$path")"
+    name="$(grep -Po -m 1 -e "(?<=^Name=).*" <"$path")"
     label="$namestyle$name$NORMAL"
-    generic="$(grep -Pwo -m 1 -e "(?<=^GenericName=).*" <"$path")"
+    generic="$(grep -Po -m 1 -e "(?<=^GenericName=).*" <"$path")"
 
     # Skip if command is empty (check duplicates with "${entries#*"$path"}" != "$entries")
-    if [ -z "$cmd" ]; then
+    if [ "$cmd" = "" ]; then
       continue
     fi
 
     # Add generic name
-    if [ -n "$generic" ]; then
+    if [ "$generic" != "" ]; then
       label="$label ($descstyle$generic$NORMAL)"
       name="$name ($generic)"
     fi
 
     # Add application type
-    if [ -n "$flatpak" ]; then
+    if [ "$flatpak" != "" ]; then
       label="$label$typestyle [Flatpak]$NORMAL"
       name="$name [Flatpak]"
     else
@@ -110,10 +110,10 @@ if [ -n "$LAUNCHER_FIFO" ]; then
   done <"$LAUNCHER_FIFO"
 
   # Show menu and get selection with parenthesis and brackets escaped (for grep)
-  selection="$(printf "%b" "$choices" | fzf --color="bg+:-1" --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down,ctrl-y:execute-silent(kitty -- /etc/nixos/scripts/launch/launch-application yank {})+abort" | sed 's,[][()\.^$\/?*+],\\&,g')"
+  selection="$(printf "%b" "$choices" | fzf --history="$HOME/.launch-application" --color="bg+:-1" --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down,ctrl-y:execute-silent(kitty -- /etc/nixos/scripts/launch/launch-application yank {})+abort" | sed 's,[][()\.^$\/?*+],\\&,g')"
 
   # If selection is not empty, launch mapped command
-  if [ -n "$selection" ]; then
+  if [ "$selection" != "" ]; then
     # Remove escape sequences from entries and find mapped command
     cmd="$(printf "%b" "$entries" | sed 's,\x1B\[[0-9;]*[a-zA-Z],,g' | grep -Pwo -m 1 -e "(?<=^$selection:).*" | sed 's,%.,,g' | sed 's,^"\(.*\)"$,\1,g' | sed 's,@@.*@@,,g')"
 

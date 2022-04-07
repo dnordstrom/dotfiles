@@ -1,8 +1,8 @@
-{ alsa-lib, autoPatchelfHook, fetchurl, flac, gcc11, lib, pkgs
-, libmicrohttpd, llvmPackages_10, rpmextract, wavpack, qt5, mpg123 }:
+{ alsa-lib, autoPatchelfHook, fetchurl, flac, gcc11, lib, pkgs, libmicrohttpd
+, llvmPackages_10, rpmextract, wavpack, qt5, mpg123 }:
 
-let inherit (lib) getDev; in
-qt5.mkDerivation rec {
+let inherit (lib) getDev;
+in qt5.mkDerivation rec {
   pname = "hqplayer-desktop";
   version = "4.17.2-53";
 
@@ -16,10 +16,9 @@ qt5.mkDerivation rec {
     ${rpmextract}/bin/rpmextract $src
   '';
 
-  nativeBuildInputs = [ autoPatchelfHook rpmextract pkgs.stagingPackages.glibc ];
+  nativeBuildInputs = [ autoPatchelfHook rpmextract ];
 
   buildInputs = [
-    pkgs.stagingPackages.glibc
     alsa-lib
     flac
     gcc11.cc.lib
