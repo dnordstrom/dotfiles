@@ -1,0 +1,159 @@
+{
+  "output": {
+    "blocklist": [],
+    "equalizer": {
+      "input-gain": "-8.4",
+      "left": {
+        "band0": {
+          "frequency": "35",
+          "gain": "3",
+          "mode": "APO (DR)",
+          "mute": "false",
+          "q": "0.9399999976158142",
+          "slope": "x1",
+          "solo": "false",
+          "type": "Bell"
+        },
+        "band1": {
+          "frequency": "100",
+          "gain": "5.5",
+          "mode": "APO (DR)",
+          "mute": "false",
+          "q": "1.8899999856948853",
+          "slope": "x1",
+          "solo": "false",
+          "type": "Lo-shelf"
+        },
+        "band2": {
+          "frequency": "210",
+          "gain": "-2.200000047683716",
+          "mode": "APO (DR)",
+          "mute": "false",
+          "q": "1.7000000476837158",
+          "slope": "x1",
+          "solo": "false",
+          "type": "Bell"
+        },
+        "band3": {
+          "frequency": "1350",
+          "gain": "-2.4000000953674316",
+          "mode": "APO (DR)",
+          "mute": "false",
+          "q": "0.7900000214576721",
+          "slope": "x1",
+          "solo": "false",
+          "type": "Bell"
+        },
+        "band4": {
+          "frequency": "3200",
+          "gain": "-1.899999976158142",
+          "mode": "APO (DR)",
+          "mute": "false",
+          "q": "0.8399999737739563",
+          "slope": "x1",
+          "solo": "false",
+          "type": "Bell"
+        },
+        "band5": {
+          "frequency": "5520",
+          "gain": "-5.5",
+          "mode": "APO (DR)",
+          "mute": "false",
+          "q": "0.3799999952316284",
+          "slope": "x1",
+          "solo": "false",
+          "type": "Bell"
+        },
+        "band6": {
+          "frequency": "8000",
+          "gain": "3",
+          "mode": "APO (DR)",
+          "mute": "false",
+          "q": "1.0099999904632568",
+          "slope": "x1",
+          "solo": "false",
+          "type": "Bell"
+        }
+      },
+      "mode": "FIR",
+      "num-bands": "7",
+      "output-gain": "0",
+      "right": {
+        "band0": {
+          "frequency": "35",
+          "gain": "3",
+          "mode": "APO (DR)",
+          "mute": "false",
+          "q": "0.9399999976158142",
+          "slope": "x1",
+          "solo": "false",
+          "type": "Bell"
+        },
+        "band1": {
+          "frequency": "100",
+          "gain": "5.5",
+          "mode": "APO (DR)",
+          "mute": "false",
+          "q": "1.8899999856948853",
+          "slope": "x1",
+          "solo": "false",
+          "type": "Lo-shelf"
+        },
+        "band2": {
+          "frequency": "210",
+          "gain": "-2.200000047683716",
+          "mode": "APO (DR)",
+          "mute": "false",
+          "q": "1.7000000476837158",
+          "slope": "x1",
+          "solo": "false",
+          "type": "Bell"
+        },
+        "band3": {
+          "frequency": "1350",
+          "gain": "-2.4000000953674316",
+          "mode": "APO (DR)",
+          "mute": "false",
+          "q": "0.7900000214576721",
+          "slope": "x1",
+          "solo": "false",
+          "type": "Bell"
+        },
+        "band4": {
+          "frequency": "3200",
+          "gain": "-1.899999976158142",
+          "mode": "APO (DR)",
+          "mute": "false",
+          "q": "0.8399999737739563",
+          "slope": "x1",
+          "solo": "false",
+          "type": "Bell"
+        },
+        "band5": {
+          "frequency": "5520",
+          "gain": "-5.5",
+          "mode": "APO (DR)",
+          "mute": "false",
+          "q": "0.3799999952316284",
+          "slope": "x1",
+          "solo": "false",
+          "type": "Bell"
+        },
+        "band6": {
+          "frequency": "8000",
+          "gain": "3",
+          "mode": "APO (DR)",
+          "mute": "false",
+          "q": "1.0099999904632568",
+          "slope": "x1",
+          "solo": "false",
+          "type": "Bell"
+        }
+      },
+      "split-channels": "false"
+    },
+    "plugins_order": [
+      "equalizer"
+    ]
+  }
+}

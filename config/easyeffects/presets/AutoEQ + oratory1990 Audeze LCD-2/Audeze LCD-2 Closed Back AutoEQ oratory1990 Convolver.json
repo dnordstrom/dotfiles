@@ -1,0 +1,14 @@
+{
+    "output": {
+        "blocklist": [],
+        "convolver": {
+            "input-gain": -5.4,
+            "ir-width": 100,
+            "kernel-path": "/home/dnordstrom/.config/easyeffects/irs/Audeze LCD-2 Closed Back minimum phase 44100Hz.irs",
+            "output-gain": 0.0
+        },
+        "plugins_order": [
+            "convolver"
+        ]
+    }
+}
