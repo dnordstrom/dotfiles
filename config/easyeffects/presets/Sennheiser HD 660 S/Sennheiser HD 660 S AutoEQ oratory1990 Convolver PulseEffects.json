@@ -4,7 +4,7 @@
     "convolver": {
       "input-gain": "-5.4",
       "ir-width": "100",
-      "kernel-path": "/home/dnordstrom/.config/easyeffects/irs/Sennheiser HD 660 S minimum phase 44100Hz.irs",
+      "kernel-path": "~/.config/easyeffects/irs/Sennheiser HD 660 S AutoEQ oratory1990 44100Hz.irs",
       "output-gain": "0"
     },
     "plugins_order": [
