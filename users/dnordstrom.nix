@@ -700,6 +700,10 @@ in {
 
   home.file.".scripts".source = ../scripts;
 
+  # EasyEffects
+
+  xdg.configFile."easyeffects".source = ../config/easyeffects;
+
   # Sway
 
   xdg.configFile."sway".source = ../config/sway;
