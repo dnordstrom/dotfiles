@@ -251,6 +251,7 @@
       }
     ];
 
+    # Bluetooth audio
     media-session.config.bluez-monitor.rules = [
       {
         matches = [{ "device.name" = "~bluez_card.*"; }];
@@ -289,8 +290,6 @@
   # Systemd
   #
   #
-
-  # Fix for pulseaudio systemd.user.services.pipewire-pulse.path = [ pkgs.pulseaudio ];
 
   systemd.services.systemd-udev-settle.enable = false;
 

@@ -92,7 +92,7 @@ in {
         name = "Neovim (Alacritty)";
         type = "Application";
         genericName = "Text Editor";
-        exec = "alacritty --class vimterm -e nvim %F";
+        exec = "alacritty --class popupterm -e nvim %F";
         terminal = false;
         icon = "nvim";
         categories = [ "Utility" "TextEditor" "Development" "IDE" ];
@@ -103,7 +103,7 @@ in {
         name = "Neovim (kitty)";
         type = "Application";
         genericName = "Text Editor";
-        exec = "kitty --class vimterm -e nvim %F";
+        exec = "kitty --class popupterm -e nvim %F";
         terminal = false;
         icon = "nvim";
         categories = [ "Utility" "TextEditor" "Development" "IDE" ];
@@ -1017,6 +1017,7 @@ in {
           sparseCheckout = "plugins/sudo";
           sha256 = "sha256-iM8wFFIfDZIVyGvscoxxGyD38iOiQXYmagrhRo0ig9U=";
         };
+        file = "sudo.plugin.zsh";
       }
     ];
 
@@ -1046,25 +1047,6 @@ in {
     enableZshIntegration = true;
     enableFishIntegration = false;
     enableBashIntegration = false;
-  };
-
-  # Fuzzy finder written in Rust (both sk and fzf works with fzf-lua for nvim)
-
-  programs.skim = {
-    enable = false; # Currently using fzf
-    enableZshIntegration = true;
-    enableFishIntegration = false;
-    enableBashIntegration = false;
-  };
-
-  # Lua alternative to z.sh for (even) faster navigation
-
-  programs.z-lua = {
-    enable = true;
-    enableZshIntegration = true;
-    enableBashIntegration = false;
-    enableFishIntegration = false;
-    enableAliases = false; # Disabling to try zoxide
   };
 
   programs.go = {
@@ -1237,7 +1219,6 @@ in {
   manual = {
     html.enable = true;
     json.enable = true;
-    # Man pages are installed by default
   };
 
   #

@@ -336,7 +336,6 @@ fancy-ctrl-z() {
 
 zle -N insert-date
 zle -N insert-timestamp
-zle -N prepend-sudo
 zle -N prepend-date
 zle -N prepend-timestamp
 zle -N fancy-ctrl-z
