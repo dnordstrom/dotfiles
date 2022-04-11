@@ -11,11 +11,6 @@
 # https://github.com/ldelossa/sway-fzfify
 #
 
-# if [ "$1" = "yank" ]; then
-#   printf "%s" "$2" | wl-copy
-#   kitty --hold -- echo "Command: $2"
-#   exit 0
-# fi
 #
 # CONSTANTS
 #
@@ -31,11 +26,21 @@ NORMAL="\e[0m"
 # OPTIONS
 #
 
+# Behavior
+skip_duplicates="true" # Decreases performance significantly if enabled (using cache is required)
+show_description="true" # Show generic name, decreases performance slightly if enabled
+show_type="true" # Show type of all (OS vs Flatpak), decreases performance slightly if enabled
+use_cache="true" # Increases performance significantly (clear cache on Ctrl-C)
+
+# Files
+cache="$HOME/.cache/launch-application"
+
 # Terminal
 terminal="kitty"
 class="fuzzyterm"
 title="fuzzyterm"
 opacity="0.9"
+clipboard="wl-copy"
 
 # Styles
 namestyle="$BOLD$BLUE"
@@ -50,67 +55,73 @@ typestyle="$BLACK"
 # for setting window title and class is handled by the script itself, so we can run or bind it by
 # name, i.e. `launch-app` rather than `kitty --class launch --title Launch -- sh -c launch-app`.
 if [ "$LAUNCHER_FIFO" != "" ]; then
-  choices="" # Items to pass fzf, e.g. "Firefox (Web Browser)\nDolphin (File Manager)\n ..."
   entries="" # Items mapped to commands, e.g. "Firefox (Web Browser):firefox\n ..."
 
-  # Find .desktop files
-  fd -e desktop -tx -tl --search-path /etc/profiles/per-user/dnordstrom/share/applications --search-path /var/lib/flatpak/app >"$LAUNCHER_FIFO" &
+  # Check for cached menu items
+  if [ "$use_cache" = "true" ] && [ -f "$cache" ]; then
+    entries="$(cat "$cache")"
+  else
+    # Find .desktop files
+    for path in $(printf "%s" "$XDG_DATA_DIRS" | tr ':' '\n' | xargs -- fd . -e desktop -tx -tl 2>/dev/null); do
+      unset flatpak
 
-  # Read results from pipe
-  while read -r path; do
-    unset flatpak
+      if [ "${path#*"exports/share/applications"}" != "$path" ]; then
+        flatpak="true"
+      fi
 
-    # Make sure the right .desktop files are used for Flatpak applications since they exist in both
-    # export/ and files/ but only the former contain `flatpak run` commands
-    if [ "${path#*"files/share/applications"}" != "$path" ]; then
-      # Wrong file
-      continue
-    elif [ "${path#*"export/share/applications"}" != "$path" ]; then
-      # Correct file
-      flatpak="true"
+      # Get .desktop file contents and use grep with Perl expressions to find application name,
+      # description, and command stripped of any field codes such as %U, Flatpak codes like @@, and
+      # surrounding quotes. We make an ANSI colored label to pass to fzf.
+      content="$(cat "$path")"
+      cmd="$(printf "%s" "$content" | grep -Po -m 1 -e "(?<=^Exec=).*")"
+      name="$(printf "%s" "$content" | grep -Po -m 1 -e "(?<=^Name=).*")"
+      label="$namestyle$name$NORMAL"
+
+      # Skip duplicates
+      if [ "$skip_duplicates" = "true" ] && [ "${entries#*"$path"}" != "$entries" ]; then
+        continue
+      elif [ "$cmd" = "" ]; then
+        continue
+      fi
+
+      # Add generic name
+      if [ "$show_description" = "true" ]; then
+        generic="$(printf "%s" "$content" | grep -Po -m 1 -e "(?<=^GenericName=).*")"
+
+        if [ "$generic" != "" ]; then
+          label="$label ($descstyle$generic$NORMAL)"
+          name="$name ($generic)"
+        fi
+      fi
+
+      # Add application type
+      if [ "$show_type" = "true" ]; then
+        if [ "$flatpak" != "" ]; then
+          label="$label$typestyle [Flatpak]$NORMAL"
+          name="$name [Flatpak]"
+        else
+          label="$label$typestyle [Nix]$NORMAL"
+          name="$name [Nix]"
+        fi
+      fi
+
+      # Yank command to clipboard if the yank argument matches the generated name
+      if [ "$1" = "yank" ] && [ "$2" = "$name" ]; then
+        printf "%s" "$cmd" | "$clipboard"
+        exit 0
+      fi
+
+      entries="$label\t$cmd\n$entries"
+    done
+
+    # Cache menu items
+    if [ "$use_cache" = "true" ]; then
+      printf "%b" "$entries" >"$cache"
     fi
-
-    # Get .desktop file contents and use grep with Perl expressions to find application name,
-    # description, and command stripped of any field codes such as %U, Flatpak codes like @@, and
-    # surrounding quotes. We make an ANSI colored label to pass to fzf but the selected item is
-    # returned without formatting so we keep name in sync and use that for command lookup.
-    cmd="$(grep -Po -m 1 -e "(?<=^Exec=).*" <"$path")"
-    name="$(grep -Po -m 1 -e "(?<=^Name=).*" <"$path")"
-    label="$namestyle$name$NORMAL"
-    generic="$(grep -Po -m 1 -e "(?<=^GenericName=).*" <"$path")"
-
-    # Skip if command is empty (check duplicates with "${entries#*"$path"}" != "$entries")
-    if [ "$cmd" = "" ]; then
-      continue
-    fi
-
-    # Add generic name
-    if [ "$generic" != "" ]; then
-      label="$label ($descstyle$generic$NORMAL)"
-      name="$name ($generic)"
-    fi
-
-    # Add application type
-    if [ "$flatpak" != "" ]; then
-      label="$label$typestyle [Flatpak]$NORMAL"
-      name="$name [Flatpak]"
-    else
-      label="$label$typestyle [Nix]$NORMAL"
-      name="$name [Nix]"
-    fi
-
-    # Yank command to clipboard if the yank argument matches the generated name
-    if [ "$1" = "yank" ] && [ "$2" = "$name" ]; then
-      printf "%s" "$cmd" | wl-copy
-      exit 0
-    fi
-
-    entries="$name:$cmd\n$entries"
-    choices="$label\n$choices"
-  done <"$LAUNCHER_FIFO"
+  fi
 
   # Show menu and get selection with parenthesis and brackets escaped (for grep)
-  selection="$(printf "%b" "$choices" | fzf --history="$HOME/.launch-application" --color="bg+:-1" --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down,ctrl-y:execute-silent(kitty -- /etc/nixos/scripts/launch/launch-application yank {})+abort" | sed 's,[][()\.^$\/?*+],\\&,g')"
+  selection="$(printf "%b" "$entries" | fzf --delimiter="\t" --with-nth=1 --preview-window=":hidden" --preview="echo {2}" --color="bg+:-1" --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,alt-p:toggle-preview,ctrl-u:half-page-up,ctrl-d:half-page-down,ctrl-c:execute-silent(rm $cache)+abort,ctrl-y:execute-silent(wl-copy {2})+abort" | sed 's,[][()\.^$\/?*+],\\&,g')"
 
   # If selection is not empty, launch mapped command
   if [ "$selection" != "" ]; then

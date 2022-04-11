@@ -92,7 +92,7 @@ in {
         name = "Neovim (Alacritty)";
         type = "Application";
         genericName = "Text Editor";
-        exec = "alacritty --class popupterm -e nvim %F";
+        exec = "alacritty --title popupterm -e nvim %F";
         terminal = false;
         icon = "nvim";
         categories = [ "Utility" "TextEditor" "Development" "IDE" ];
@@ -103,7 +103,7 @@ in {
         name = "Neovim (kitty)";
         type = "Application";
         genericName = "Text Editor";
-        exec = "kitty --class popupterm -e nvim %F";
+        exec = "kitty --title popupterm -e nvim %F";
         terminal = false;
         icon = "nvim";
         categories = [ "Utility" "TextEditor" "Development" "IDE" ];
@@ -114,7 +114,7 @@ in {
         name = "Vifm (kitty)";
         type = "Application";
         genericName = "File Manager";
-        exec = "kitty --class popupterm -e vifm %F";
+        exec = "kitty --title popupterm -e vifm %F";
         terminal = false;
         icon = "vifm";
         categories = [ "System" "FileManager" ];
@@ -125,7 +125,7 @@ in {
         name = "Vifm (Alacritty)";
         type = "Application";
         genericName = "File Manager";
-        exec = "alacritty --class popupterm -e vifm %F";
+        exec = "alacritty --title popupterm -e vifm %F";
         terminal = false;
         icon = "vifm";
         categories = [ "Utility" "TextEditor" "Development" "IDE" ];
@@ -136,7 +136,7 @@ in {
         name = "Glow (kitty)";
         type = "Application";
         genericName = "Markdown Viewer";
-        exec = "kitty --class popupterm -e glow %F";
+        exec = "kitty --title popupterm -e glow %F";
         terminal = false;
         icon = "kitty";
         categories = [ "Utility" "TextEditor" ];
@@ -232,6 +232,7 @@ in {
     #
 
     appimage-run
+    dmg2img
     dolphin
     element-desktop
     fractal
@@ -246,6 +247,8 @@ in {
     spotify
     sqlite
     tor-browser-bundle-bin
+    ventoy-bin
+    woeusb-ng
     zathura
 
     #
@@ -326,6 +329,7 @@ in {
     rofi-emoji
     rofi-systemd
     rofi-wayland
+    j4-dmenu-desktop
     wofi-emoji
     workstyle
 
@@ -423,9 +427,6 @@ in {
     #
 
     # Editors
-    jetbrains.goland
-    jetbrains.idea-ultimate
-    jetbrains.webstorm
     libsForQt5.kate
 
     # LSP and syntax
@@ -976,14 +977,7 @@ in {
     enableSyntaxHighlighting = true;
     enableVteIntegration = true;
 
-    cdpath = [ "/home/dnordstrom" "/home/dnordstrom/Code" ];
-
-    dirHashes = {
-      bak = "$HOME/Backup";
-      docs = "$HOME/Documents";
-      shots = "$HOME/Pictures/Screenshots";
-      dl = "$HOME/Downloads";
-    };
+    cdpath = [ "$HOME" "$HOME/Code" "/etc/nixos" ];
 
     plugins = [
       {
@@ -1017,7 +1011,7 @@ in {
           sparseCheckout = "plugins/sudo";
           sha256 = "sha256-iM8wFFIfDZIVyGvscoxxGyD38iOiQXYmagrhRo0ig9U=";
         };
-        file = "sudo.plugin.zsh";
+        file = "plugins/sudo/sudo.plugin.zsh";
       }
     ];
 

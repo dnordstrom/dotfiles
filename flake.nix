@@ -57,7 +57,7 @@
 
       channelsConfig = {
         allowBroken = false;
-        allowUnfree = false;
+        allowUnfree = true;
         allowUnsupportedSystem = false;
       };
 

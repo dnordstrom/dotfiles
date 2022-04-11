@@ -37,6 +37,7 @@
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [
       "corefonts"
+      "datagrip"
       "input-fonts"
       "slack"
       "steam-runtime"
@@ -94,6 +95,17 @@
   #
   # SERVICES
   #
+
+  services.interception-tools = {
+    enable = true;
+    plugins = [ pkgs.interception-tools-plugins.caps2esc ];
+    udevmonConfig = ''
+      - JOB: "${pkgs.interception-tools}/bin/intercept -g $DEVNODE | ${pkgs.interception-tools-plugins.caps2esc}/bin/caps2esc 0.1 | ${pkgs.interception-tools}/bin/uinput -d $DEVNODE"
+        DEVICE:
+          EVENTS:
+            EV_KEY: [KEY_CAPSLOCK, KEY_ESC]
+    '';
+  };
 
   services.blueman.enable = true;
 
@@ -207,10 +219,8 @@
       }
       # Onboard analog output
       {
-        matches = [{
-          "node.name" =
-            "alsa_output.pci-0000_0b_00.3.analog-stereo";
-        }];
+        matches =
+          [{ "node.name" = "alsa_output.pci-0000_0b_00.3.analog-stereo"; }];
         actions = {
           update-props = {
             "audio.allowed-rates" = [ 44100 48000 ];
@@ -222,10 +232,8 @@
       }
       # Onboard digital output
       {
-        matches = [{
-          "node.name" =
-            "alsa_output.pci-0000_0b_00.3.iec958-stereo";
-        }];
+        matches =
+          [{ "node.name" = "alsa_output.pci-0000_0b_00.3.iec958-stereo"; }];
         actions = {
           update-props = {
             "audio.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
@@ -237,10 +245,8 @@
       }
       # Onboard analog input
       {
-        matches = [{
-          "node.name" =
-            "alsa_input.pci-0000_0b_00.3.analog-stereo";
-        }];
+        matches =
+          [{ "node.name" = "alsa_input.pci-0000_0b_00.3.analog-stereo"; }];
         actions = {
           update-props = {
             "audio.allowed-rates" = [ 44100 ];
@@ -307,8 +313,14 @@
     control = "sufficient";
   };
 
-  # Don't require `sudo` password for admin group users
-  security.sudo.wheelNeedsPassword = false;
+  # Disable `sudo`
+  security.sudo.enable = false;
+
+  # Enable `doas`
+  security.doas = {
+    enable = true;
+    wheelNeedsPassword = false;
+  };
 
   # For Pipewire (recommended in Nix wiki)
   security.rtkit.enable = true;
@@ -444,13 +456,14 @@
     git
     nodejs
     nordpkgs.openvpn3
+    ntfs3g
     polkit_gnome
+    qt5.qtwayland
+    refind
     roon-server
     steam-run # Runs binaries compiled for other distributions
     wget
     xdg-desktop-portal
     yarn
-    refind
-    qt5.qtwayland
   ];
 }

@@ -3,7 +3,28 @@
 ----
 
 require("nvim-treesitter.configs").setup({
-	ensure_installed = "all",
+	ensure_installed = {
+		"bash",
+		"css",
+		"dockerfile",
+		"html",
+		"javascript",
+		"jsdoc",
+		"json",
+		"jsonc",
+		"lua",
+		"make",
+		"markdown",
+		"nix",
+		"php",
+		"python",
+		"scss",
+		"toml",
+		"tsx",
+		"typescript",
+		"vim",
+		"yaml",
+	},
 	context_commentstring = {
 		enable = true,
 	},

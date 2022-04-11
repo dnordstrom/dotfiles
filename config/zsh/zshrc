@@ -75,8 +75,8 @@ alias cat="bat"
 alias cdn="cd /etc/nixos"
 
 # Edit and build NixOS
-alias nb="$HOME/.nix-prebuild; sudo nixos-rebuild switch --flake /etc/nixos --upgrade"
-alias nbi="$HOME/.nix-prebuild; sudo NIXPKGS_ALLOW_UNFREE=1 nixos-rebuild switch --flake /etc/nixos --impure --upgrade"
+alias nb="$HOME/.nix-prebuild; doas nixos-rebuild switch --flake /etc/nixos --upgrade"
+alias nbi="$HOME/.nix-prebuild; doas nixos-rebuild switch --flake /etc/nixos --impure --upgrade"
 alias ne="nix-with nvim"
 alias nkate="nix-with kate"
 alias ncode="nix-with codium"
@@ -316,7 +316,7 @@ configure-nixos() {
 # Build and switch NixOS configuration
 build-nixos() {
   $HOME/.nix-prebuild
-  sudo nixos-rebuild switch --flake /etc/nixos --upgrade-all
+  doas nixos-rebuild switch --flake /etc/nixos --upgrade-all
 }
 
 # Run fg command if buffer line is empty, otherwise save input to stack
@@ -328,6 +328,11 @@ fancy-ctrl-z() {
     zle push-input
     zle clear-screen
   fi
+}
+
+autocorrect() {
+  zle .spell-word
+  zle .$WIDGET
 }
 
 #
@@ -346,6 +351,7 @@ zle -N prepend-note
 zle -N edit-notes
 zle -N backup-notes
 zle -N clear-backup-notes
+zle -N magic-space autocorrect
 
 #
 # Binds

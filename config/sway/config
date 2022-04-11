@@ -206,8 +206,9 @@ output "DVI-D-1" {
 #   - Using ID instead of "*" can prevent Firefox from crashing on configuration reload
 #
 
-seat seat0 hide_cursor when-typing enable
+seat seat0 hide_cursor when-typing disable
 seat seat0 xcursor_theme "Quintom_Snow" 24
+seat seat0 idle_wake keyboard pointer
 
 input "12851:25345:Ducky_Ducky_One2_Mini_RGB" {
   repeat_delay 250
@@ -215,12 +216,17 @@ input "12851:25345:Ducky_Ducky_One2_Mini_RGB" {
 
   xkb_layout us,se
 
-  # CapsLock -> Escape
+  # CapsLock -> Escape (via interception-tools, not here)
+  #
   # LShift+RShift -> CapsLock
   # LCtrl+RCtrl -> Switch layout
   # RAlt -> AltGr
   # Shift+RAlt -> Compose
-  xkb_options caps:escape,shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey
+  xkb_options shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey
+}
+
+input "1133:16505:Logitech_G_Pro" {
+  middle_emulation disabled
 }
 
 input "1452:613:Apple_Inc._Magic_Trackpad_2" {
@@ -236,9 +242,6 @@ input "1452:613:Apple_Inc._Magic_Trackpad_2" {
 # Resize with right mouse button + $mod.
 # Change normal to inverse to use left button for resizing.
 floating_modifier $mod normal
-
-# To map single press on mod key to launch menu:
-# set $modrelease (pgrep $menu 1>/dev/null 2>&1 && pkill $menu) || $menu $menuargs | xargs swaymsg exec
 
 bindsym {
   #
@@ -281,12 +284,6 @@ bindsym {
   $mod+Shift+p exec $swayprops
   $mod+Shift+Ctrl+p exec $swaypropsall
   $mod+Shift+c reload
-
-  #
-  # Notifications
-  #
-
-  $mod+Shift+n exec swaync-client -t -sw
 
   #
   # Movement
@@ -524,8 +521,9 @@ for_window {
   # File managers
   #
 
-  [app_id="org.gnome.Nautilus"] floating enable
+  [app_id="org.gnome.Nautilus"] floating enable, resize set 1550 900
   [app_id="org.kde.dolphin"] floating enable, resize set 1550 900
+  [app_id="org.kde.krusader"] floating enable, resize set 1550 900
 
   #
   # Dialogs
@@ -599,6 +597,12 @@ for_window {
   [title="transterm"] border none
 
   #
+  # Editors
+  #
+
+  [app_id="org.kde.kate"] floating enable, resize set 800 840
+
+  #
   # Utilities
   #
 
@@ -644,20 +648,8 @@ for_window {
   [app_id="^.*"] inhibit_idle fullscreen
 }
 
-# Start flashfocus for flashing window animation on focus change
-exec_always pkill flashfocus ; flashfocus > /tmp/flashfocus.log 2>&1
-
-# Start swayr daemon
-exec_always pkill swayrd ; env RUST_BACKTRACE=1 swayrd > /tmp/swayrd.log 2>&1
-
-# Start inactive window dimmer
-exec_always pkill -f sway-dim-inactive-windows ; sway-dim-inactive-windows --opacity 0.9 > /tmp/sway-dim-inactive-windows.log 2>&1
-
 # Start monitor temperature daemon
-exec_always pkill wlsunset ; wlsunset -t 4500 -T 6500 -l 62.39 -L 17.30 > /tmp/wlsunset.log 2>&1
-
-# Start network manager tray application
-exec_always pkill nm-tray ; nm-tray
+exec_always 'pkill wlsunset ; wlsunset -t 4500 -T 6500 -l 62.39 -L 17.30 > /tmp/wlsunset.log 2>&1'
 
 #
 # STATUS BAR

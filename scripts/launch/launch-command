@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 #
-# FZF APPLICATION LAUNCHER
+# FZF COMMAND LAUNCHER
 #
 # Opens new terminal window listing commands with fzf, and runs the selected command in yet another
 # terminal window.
@@ -14,22 +14,30 @@
 
 SCRIPT="$0"
 BOLD="\e[1m"
-MAGENTA="\e[34m"
+BLUE="\e[34m"
 NORMAL="\e[0m"
 
 #
 # OPTIONS
 #
 
+# Behavior
+use_cache="false" # Increases performance significantly (clear cache on Ctrl-C)
+keep_shell="true" # Keep shell open after process exist
+
+# Files
+cache="$HOME/.cache/launch-command"
+
 # Terminal
 terminal="kitty"
 shell="zsh"
-class="fuzzyterm"
 title="fuzzyterm"
+runner_title="popupterm"
 opacity="0.9"
+clipboard="wl-copy"
 
 # Styles
-namestyle="$BOLD$MAGENTA"
+namestyle="$BOLD$BLUE"
 
 #
 # LAUNCHER
@@ -37,32 +45,48 @@ namestyle="$BOLD$MAGENTA"
 
 # If LAUNCHER_FIFO is set then show launcher, otherwise rerun in new terminal window. Boilerplate
 # for setting window title and class is handled by the script itself, so we can run or bind it by
-# name, i.e. `launch-app` rather than `kitty --class launch --title Launch -- sh -c launch-app`.
-if [ -n "$LAUNCHER_FIFO" ]; then
-  choices="" # Items to pass fzf, e.g. "Firefox (Web Browser)\nDolphin (File Manager)\n ..."
-  entries="" # Items mapped to commands, e.g. "Firefox (Web Browser):firefox\n ..."
+# name, i.e. `launch-app` rather than `kitty --title Launch -- sh -c launch-app`.
+if [ "$LAUNCHER_FIFO" != "" ]; then
+  entries="" # Items to pass fzf
 
-  # Find commands using bash's compgen built-in
-  bash -c "compgen -c" >"$LAUNCHER_FIFO" &
+  # Check for cached menu items
+  if [ "$use_cache" = "true" ] && [ -f "$cache" ]; then
+    entries="$(cat "$cache")"
+  else
+    # Find commands using bash's compgen built-in
+    bash -c "compgen -c" >"$LAUNCHER_FIFO" &
 
-  # Read results from pipe
-  while read -r cmd; do
-    name="$namestyle$cmd$NORMAL"
-    entries="$name:$cmd\n$entries"
-    choices="$name\n$choices"
-  done <"$LAUNCHER_FIFO"
+    # Read results from pipe
+    while read -r path; do
+      cmd="$path"
+      name="$namestyle$path$NORMAL"
+      entries="$name\n$entries"
+    done <"$LAUNCHER_FIFO"
+
+    # Cache menu items
+    if [ "$use_cache" = "true" ]; then
+      printf "%b" "$entries" >"$cache"
+    fi
+  fi
 
   # Show menu and get selection with parenthesis and brackets escaped (for grep)
-  selection="$(printf "%b" "$choices" | fzf --color="bg+:-1" --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down,alt-y:execute-silent(which {} | xargs readlink -f | wl-copy --trim-newline)+abort,ctrl-y:execute-silent(wl-copy {})+abort" | sed 's,[][()\.^$\/?*+],\\&,g')"
+  selection="$(printf "%b" "$entries" | fzf --color="bg+:-1" --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,alt-p:toggle-preview,ctrl-u:half-page-up,ctrl-d:half-page-down,ctrl-c:execute-silent(rm $cache)+abort,ctrl-y:execute-silent(which {} | tr -d '\n' | $clipboard)+abort")"
 
   # If selection is not empty, launch mapped command
-  if [ -n "$selection" ]; then
+  if [ "$selection" != "" ]; then
     # Remove escape sequences from entries and find mapped command
-    cmd="$(printf "%b" "$entries" | sed 's,\x1B\[[0-9;]*[a-zA-Z],,g' | grep -Pwo -m 1 -e "(?<=^$selection:).*" | sed 's,%.,,g' | sed 's,^"\(.*\)"$,\1,g' | sed 's,@@.*@@,,g')"
-    cmd="$terminal --class $class --title $title --hold -e $shell -c $cmd"
+    cmd="$(printf "%b" "$selection" | sed 's,\x1B\[[0-9;]*[a-zA-Z],,g')"
+
+    # Run in new terminal, otionally keep shell running after process exits
+    if [ "$keep_shell" = "true" ]; then
+      cmd="$terminal --title $runner_title -e $shell -c '$(which "$cmd") && $shell'"
+    else
+      cmd="$terminal --title $runner_title -e $shell -c '$(which "$cmd")'"
+    fi
 
     # Run the command associated with the entry (using `swaymsg exec` if possible)
     if [ -x "$(command -v swaymsg)" ]; then
+      sway-notify "$cmd"
       # Found swaymsg: use it to keep process alive after the shell exits
       swaymsg -t command exec "$cmd"
     elif [ -x "$(command -v bash)" ]; then
@@ -90,8 +114,6 @@ mkfifo -m 600 "$LAUNCHER_FIFO"
 # Rerun in new terminal window
 "$terminal" \
   --title "$title" \
-  --class "$class" \
   --override "background_opacity=$opacity" \
-  --override "adjust_line_height=200%" \
   -e \
   "$shell" -c "LAUNCHER_FIFO=$LAUNCHER_FIFO $SCRIPT"
