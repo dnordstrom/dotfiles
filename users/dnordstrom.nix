@@ -1004,14 +1004,14 @@ in {
         file = "abbrev-alias.plugin.zsh";
       }
       {
-        name = "sudo";
-        src = pkgs.fetchgit {
-          url = "https://github.com/ohmyzsh/ohmyzsh";
-          rev = "957dca698cd0a0cafc6d2551eeff19fe223f41bd";
-          sparseCheckout = "plugins/sudo";
-          sha256 = "sha256-iM8wFFIfDZIVyGvscoxxGyD38iOiQXYmagrhRo0ig9U=";
+        name = "doas";
+        src = pkgs.fetchFromGitHub {
+          owner = "Senderman";
+          repo = "doas-zsh-plugin";
+          rev = "f5c58a34df2f8e934b52b4b921a618b76aff96ba";
+          sha256 = "sha256-136DzYG4v/TuCeJatqS6l7qr7bItEJxENozpUGedJ9o=";
         };
-        file = "plugins/sudo/sudo.plugin.zsh";
+        file = "doas.plugin.zsh";
       }
     ];
 

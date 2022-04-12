@@ -27,7 +27,16 @@
     fsType = "vfat";
   };
 
+  fileSystems."/mnt/storage" = {
+    device = "/dev/sdb2";
+    fsType = "ntfs";
+  };
+
+  fileSystems."/mnt/storage2" = {
+    device = "/dev/sdc2";
+    fsType = "ntfs";
+  };
+
   swapDevices =
     [{ device = "/dev/disk/by-uuid/5920873f-f9a3-4e6c-85a4-6930d43fe32a"; }];
-
 }
