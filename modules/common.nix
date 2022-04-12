@@ -74,7 +74,7 @@
   networking.wireless.enable = false;
   networking.networkmanager.enable = true;
   networking.useDHCP = false;
-  networking.extraHosts = builtins.readFile ../secrets/hosts;
+  # networking.extraHosts = builtins.readFile ../secrets/hosts;
 
   #
   # FONTS
