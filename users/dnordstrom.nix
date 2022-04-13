@@ -395,6 +395,7 @@ in {
     carla
     cava
     celluloid # GTK frontend for MPV
+    deadbeef-with-plugins
     easyeffects
     handbrake
     haruna # QT frontend for MPV
