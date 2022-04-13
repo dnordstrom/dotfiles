@@ -1,26 +1,26 @@
 #!/usr/bin/env sh
-#
+
 # FZF APPLICATION LAUNCHER
 #
 # Opens new terminal window listing applications with fzf, and launches selected application with
-# swaymsg exec.
+# swaymsg exec (or other available alternatives for bash and sh).
 #
-# Entirely based on fzf-startify by ldelossa. Rewritten for NixOS support, POSIX and shfmt compliance, ANSI
+# Based on fzf-startify by ldelossa. Rewritten for NixOS support, POSIX and shfmt compliance, ANSI
 # colored output, and improved readability.
 #
-# https://github.com/ldelossa/sway-fzfify
+# See: https://github.com/ldelossa/sway-fzfify
 #
 
 #
-# CONSTANTS
+# GENERAL
 #
 
-SCRIPT="$0"
-BOLD="\e[1m"
-BLUE="\e[34m"
-BLACK="\e[30m"
-ITALIC="\e[3m"
-NORMAL="\e[0m"
+script="$0"
+bold="\e[1m"
+blue="\e[34m"
+black="\e[30m"
+italic="\e[3m"
+normal="\e[0m"
 
 #
 # OPTIONS
@@ -30,12 +30,11 @@ NORMAL="\e[0m"
 terminal="kitty"
 class="fuzzyterm"
 title="fuzzyterm"
-opacity="0.9"
 
 # Styles
-namestyle="$BOLD$BLUE"
-descstyle="$ITALIC$BLACK"
-typestyle="$BLACK"
+namestyle="$bold$blue"
+descstyle="$italic$black"
+typestyle="$black"
 
 #
 # LAUNCHER
@@ -44,10 +43,10 @@ typestyle="$BLACK"
 # If LAUNCHER_FIFO is set then show launcher, otherwise rerun in new terminal window. Boilerplate
 # for setting window title and class is handled by the script itself, so we can run or bind it by
 # name, i.e. `launch-app` rather than `kitty --class launch --title Launch -- sh -c launch-app`.
-if [ "$LAUNCHER_FIFO" != "" ]; then
+if [ -n "$LAUNCHER_FIFO" ]; then
   choices="" # Items to pass fzf, e.g. "Firefox (Web Browser)\nDolphin (File Manager)\n ..."
   entries="" # Items mapped to commands, e.g. "Firefox (Web Browser):firefox\n ..."
-  paths=$(printf "%s" "$XDG_DATA_DIRS" | tr ':' '\n' | xargs -- fd . -e desktop -tx -tl 2>/dev/null)
+  paths="$(printf "%s" "$XDG_DATA_DIRS" | tr ':' '\n' | xargs -- fd . -e desktop -tx -tl 2>/dev/null)"
 
   # Find cache
   if [ -f "$HOME/.cache/launch-application-entries" ] && [ -f "$HOME/.cache/launch-application-choices" ]; then
@@ -55,6 +54,10 @@ if [ "$LAUNCHER_FIFO" != "" ]; then
     choices="$(cat "$HOME/.cache/launch-application-choices")"
   else
     # Find desktop files
+    oldifs=$IFS
+    IFS='
+    '
+
     for path in $paths; do
       unset flatpak
 
@@ -64,7 +67,7 @@ if [ "$LAUNCHER_FIFO" != "" ]; then
 
       cmd="$(grep -Po -m 1 -e "(?<=^Exec=).*" <"$path")"
       name="$(grep -Po -m 1 -e "(?<=^Name=).*" <"$path")"
-      label="$namestyle$name$NORMAL"
+      label="$namestyle$name$normal"
       generic="$(grep -Po -m 1 -e "(?<=^GenericName=).*" <"$path")"
 
       # Skip if command is empty (check duplicates with "${entries#*"$path"}" != "$entries")
@@ -74,16 +77,16 @@ if [ "$LAUNCHER_FIFO" != "" ]; then
 
       # Add generic name
       if [ "$generic" != "" ]; then
-        label="$label ($descstyle$generic$NORMAL)"
+        label="$label ($descstyle$generic$normal)"
         name="$name ($generic)"
       fi
 
       # Add application type
       if [ "$flatpak" != "" ]; then
-        label="$label$typestyle [Flatpak]$NORMAL"
+        label="$label$typestyle [Flatpak]$normal"
         name="$name [Flatpak]"
       else
-        label="$label$typestyle [Nix]$NORMAL"
+        label="$label$typestyle [Nix]$normal"
         name="$name [Nix]"
       fi
 
@@ -94,21 +97,20 @@ if [ "$LAUNCHER_FIFO" != "" ]; then
       fi
 
       entries="$name:$cmd\n$entries"
-      choices="$label\n$choices"
+      choices="$label\t$cmd\n$choices"
 
-      printf "%b" "$entries" > "$HOME/.cache/launch-application-entries"
-      printf "%b" "$choices" > "$HOME/.cache/launch-application-choices"
+      # printf "%b" "$entries" >"$HOME/.cache/launch-application-entries"
+      # printf "%b" "$choices" >"$HOME/.cache/launch-application-choices"
     done
+
+    IFS=$oldifs
   fi
 
-  # Show menu and get selection with parenthesis and brackets escaped (for grep)
-  selection="$(printf "%b" "$choices" | fzf --color="bg+:-1" --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down,ctrl-c:execute-silent(rm $HOME/.cache/launch-application-entries $HOME/.cache/launch-application-choices),ctrl-y:execute-silent($SCRIPT yank {})+abort" | sed 's,[][()\.^$\/?*+],\\&,g')"
+  # Show menu and get selected command after removing %U, @@, and similar markers
+  cmd="$(printf "%b" "$choices" | fzf --color="bg+:-1" --delimiter='\t' --with-nth=1 --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down,ctrl-c:execute-silent(rm $HOME/.cache/launch-application-entries $HOME/.cache/launch-application-choices),ctrl-y:execute-silent(wl-copy {2})+abort" | cut -f 2 | sed 's,%.,,g' | sed 's,^"\(.*\)"$,\1,g' | sed 's,@@.*@@,,g')"
 
   # If selection is not empty, launch mapped command
-  if [ "$selection" != "" ]; then
-    # Remove escape sequences from entries and find mapped command
-    cmd="$(printf "%b" "$entries" | sed 's,\x1B\[[0-9;]*[a-zA-Z],,g' | grep -Pwo -m 1 -e "(?<=^$selection:).*" | sed 's,%.,,g' | sed 's,^"\(.*\)"$,\1,g' | sed 's,@@.*@@,,g')"
-
+  if [ -n "$cmd" ]; then
     # Run the command associated with the entry (using `swaymsg exec` if possible)
     if [ -x "$(command -v swaymsg)" ]; then
       # Found swaymsg: use it to keep process alive after the shell exits
@@ -132,14 +134,13 @@ fi
 #
 
 # Create named pipe for search results
-LAUNCHER_FIFO="$(mktemp -d)/results"
-mkfifo -m 600 "$LAUNCHER_FIFO"
+fifo="$(mktemp -d)/results"
+mkfifo -m 600 "$fifo"
 
 # Rerun in new terminal window
 "$terminal" \
   --title "$title" \
   --class "$class" \
-  --override "background_opacity=$opacity" \
   --override "adjust_line_height=200%" \
   -e \
-  sh -c "LAUNCHER_FIFO=$LAUNCHER_FIFO $SCRIPT"
+  sh -c "LAUNCHER_FIFO=$fifo $script"

@@ -8,9 +8,7 @@ local cmp_nvim_lsp = require("cmp_nvim_lsp")
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 local nvim_buf_get_option = vim.api.nvim_buf_get_option
 local autoload = {
-	"bashls",
 	"cssls",
-	"gopls",
 	"html",
 	"jsonls",
 	"rnix",
@@ -82,7 +80,6 @@ null_ls.setup({
 				}
 			end,
 		}),
-		null_ls.builtins.formatting.shellharden,
 		null_ls.builtins.formatting.stylelint,
 		null_ls.builtins.diagnostics.eslint_d,
 		null_ls.builtins.diagnostics.shellcheck,

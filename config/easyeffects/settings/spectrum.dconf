@@ -1,0 +1,12 @@
+[/]
+color=(0.70980393886566162, 0.90980392694473267, 0.87843137979507446, 1.0)
+color-axis-labels=(0.75, 0.24999998509883881, 0.24999998509883881, 0.0)
+fill=true
+height=160
+line-width=4.9999999999999964
+maximum-frequency=20000
+n-points=160
+rounded-corners=false
+show=true
+show-bar-border=true
+type='Bars'

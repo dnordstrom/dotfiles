@@ -3,7 +3,7 @@
 # Author: Daniel Nordstrom <d@mrnordstrom.com>
 # Repository: https://github.com/dnordstrom/dotfiles
 #  
-{ pkgs, nixpkgs, lib, ... }:
+{ pkgs, nixpkgs, lib, config, ... }:
 
 #  
 # APPLICATIONS
@@ -398,6 +398,7 @@ in {
     easyeffects
     handbrake
     haruna # QT frontend for MPV
+    jamesdsp
     pulseaudio
     pulsemixer
     spicetify-cli
@@ -702,8 +703,20 @@ in {
   home.file.".scripts".source = ../scripts;
 
   # EasyEffects
+  #
+  #   Settings directories are writable but presets direcotory read-only. This allows EasyEffects
+  #   to modify its settings while the presets are immutable since that's where the important
+  #   presets are saved.
 
-  xdg.configFile."easyeffects".source = ../config/easyeffects;
+  xdg.configFile."easyeffects/output".source =
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/easyeffects/output;
+  xdg.configFile."easyeffects/input".source =
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/easyeffects/input;
+  xdg.configFile."easyeffects/irs".source =
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/easyeffects/irs;
+  xdg.configFile."easyeffects/autoload".source =
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/easyeffects/autoload;
+  xdg.configFile."easyeffects/presets".source = ../config/easyeffects/presets;
 
   # Sway
 
