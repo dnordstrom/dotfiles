@@ -4,23 +4,56 @@ Flake based NixOS configuration used on work laptop and home desktop for consist
 
 ## Features
 
-* Zen kernel
-* Sway and Waybar
-* Firefox Nightly
-* Kitty terminal
-* Neovim
-* PipeWire audio
-  * Shure SM7B mic via Focusrite Scarlett Solo 3rd Gen and Cloudlifter CL-1
-  * Sennheiser HD 660S headphones via same interface
-  * Noise cancellation using rnnoise real-time plugin
-  * EasyEffects plugins
-  * Qobuz for high-res audio synced via Soundiiz
 * Portable dotfiles in `config`
 * Custom packages in `packages`
 * Shell scripts for launchers, screenshots, color picker, etc.
 * ...and much more.
 
 NixOS is awesome.
+
+## Hardware
+
+* Ryzen 7 2700X
+* Radeon RX 590 Fatboy
+* Ducky One 2 Mini, Vortex Pok3r RGB, and Das Keyboard Ultimate 4C keyboards
+* Shure SM7B microphone
+* Focusrite Scarlett Solo 3rd Gen (audio interface)
+* Cloudlifter CL-1 microphone amp
+* Audeze LCD-2 Closed Back headphones (via audio interface)
+* Sennheiser HD 660 S open back headphones (via front jack)
+* NAD C328 stereo amplifier
+* Logitech Brio webcam
+* Logitech G Pro Wireless and Apple Magic Trackpad 2
+
+## Software
+
+### System
+
+* Latest kernel (5.17)
+* LVM on LUKS encryption
+* Sway WM (Wayland)
+* Waybar
+* Kvantum (Qt styling)
+* Firefox Nightly
+* Kitty terminal
+* Neovim (with Lua exclusive configuration)
+* Vifm file manager (Dolphin if GUI)
+* Vimiv image viewer
+
+### Audio
+
+* PipeWire daemon (downsampling to 44.1kHz)
+* Wireplumber (session manager)
+* EasyEffects (or JamesDSP)
+* Parametric EQ and convolver presets
+    * Usually oratory1990's own EQ values from Reddit, manually created as EasyEffects
+      APO equalizer presets and ported to PulseEffects in case useful to someone.
+* Real-time learning noise cancellation using rnnoise plugin
+* Qobuz (high-res audio with playlists synced via Soundiiz)
+* Roon Server
+* Audacious (for FLAC file playback)
+
+Got audio equipment for sale? Hit me up!
 
 ## Catppuccin 
 
