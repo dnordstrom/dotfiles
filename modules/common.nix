@@ -97,9 +97,12 @@
 
   services.interception-tools = {
     enable = true;
-    plugins = [ pkgs.interception-tools-plugins.caps2esc ];
+    plugins = [
+      pkgs.interception-tools-plugins.caps2esc
+      pkgs.interception-tools-plugins.dual-function-keys
+    ];
     udevmonConfig = ''
-      - JOB: "${pkgs.interception-tools}/bin/intercept -g $DEVNODE | ${pkgs.interception-tools-plugins.caps2esc}/bin/caps2esc 0.1 | ${pkgs.interception-tools}/bin/uinput -d $DEVNODE"
+      - JOB: "${pkgs.interception-tools}/bin/intercept -g $DEVNODE | ${pkgs.interception-tools-plugins.dual-function-keys}/bin/dual-function-keys -c /etc/nixos/config/intercept/keyboard.yaml | ${pkgs.interception-tools}/bin/uinput -d $DEVNODE"
         DEVICE:
           EVENTS:
             EV_KEY: [KEY_CAPSLOCK, KEY_ESC]

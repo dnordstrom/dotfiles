@@ -142,7 +142,7 @@ command openchrome js (async () => { await tri.native.run(`xdg-open ${await tri.
 "
 
 " Escape also hides search highlights
-bind <Escape> composite hidecmdline ; mode normal ; nohlsearch
+" bind <Escape> composite hidecmdline ; mode normal ; nohlsearch
 
 " View configuration in Firefox's JSON viewer
 bind <C-.> viewconfig
@@ -151,7 +151,7 @@ bind <C-.> viewconfig
 bind gp openprofile
 
 " Open profile chrome directory
-bind gc openchrome
+bind gP openchrome
 
 "
 " Reload
@@ -218,11 +218,10 @@ bind <Space>wi writeinstagram
 bind cp open about:profiles
 
 " Config
-bind cc open about:profiles
+bind cc open about:config
 
 " Settings
 bind cs fillcmdline set
-bind <Space>cs fillcmdline set
 
 " Change container on capital C followed by another C for no container, W for work, and so on.
 " Multiple version created so that it doesn't matter if Shift is pressed or released on the second
