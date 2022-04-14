@@ -127,6 +127,12 @@ command reconfig source
 " Save Instagram with proper filename
 command writeinstagram js (() => { const a = document.createElement('a'); const cv = document.createElement('canvas'); const cx = cv.getContext('2d'); const img = document.querySelector('[role="dialog"] img'); cv.width = img.width; cv.height = img.height; cx.drawImage(img, 0,0); const ext = new URL(img.src).pathname.match(/(\w+)$/)[0]; const url = cv.toDataURL(`image/${ext == 'jpg' ? 'jpeg' : ext}`); a.download = `${img.alt.toLowerCase().replace(/[^\s\w]/g, '').replace(/\s+/g, '_')}.${ext}`; a.href = url; document.body.appendChild(a); a.click(); document.body.removeChild(a); })()
 
+" Open profile directory
+command openprofile js (async () => { await tri.native.run(`xdg-open ${await tri.native.getProfileDir()}`); })()
+
+" Open profile chrome directory
+command openchrome js (async () => { await tri.native.run(`xdg-open ${await tri.native.getProfileDir()}/chrome`); })()
+
 ""
 " KEY BINDS
 ""
@@ -136,10 +142,16 @@ command writeinstagram js (() => { const a = document.createElement('a'); const 
 "
 
 " Escape also hides search highlights
-bind <Escape> composite mode normal ; hidecmdline ; nohlsearch
+bind <Escape> composite hidecmdline ; mode normal ; nohlsearch
 
 " View configuration in Firefox's JSON viewer
 bind <C-.> viewconfig
+
+" Open profile directory
+bind gp openprofile
+
+" Open profile chrome directory
+bind gc openchrome
 
 "
 " Reload
@@ -204,7 +216,9 @@ bind <Space>wi writeinstagram
 
 " Profile
 bind cp open about:profiles
-bind <Space>cp open about:profiles
+
+" Config
+bind cc open about:profiles
 
 " Settings
 bind cs fillcmdline set
@@ -263,6 +277,7 @@ bind --mode=ex <C-k> exclaim_quiet wtype -k up
 bind --mode=ex <C-l> exclaim_quiet wtype -k right
 
 " Emacs style
+bind --mode=ex <C-u> fillcmdline_notrail
 bind --mode=ex <C-a> exclaim_quiet wtype -k home
 bind --mode=ex <C-e> exclaim_quiet wtype -k end
 bind --mode=ex <A-f> exclaim_quiet wtype -M ctrl -k right
@@ -369,6 +384,9 @@ blacklistadd figma.com
 "
 " DocLoad
 "
+
+# open.qobuz.com: Open Qobuz share links in the web player
+autocmd DocLoad open.qobuz.com urlmodify -t open.qobuz.com play.qobuz.com
 
 " Helpers
 autocmd DocLoad .* js N = { param(str) { new URLSearchParams(location.search).get(str); }, pathStart(str) { return location.pathname.startsWith(str); }, pathMatch(regex) { const matches = location.href.match(regex); return matches; }, log: console.log.bind(window, "%c N.log ", "background: #d8dee9; color: #2e3440; font-weight: bold;"), yank(str) { navigator.clipboard.writeText(str); }, yankLoud(str) { N.yank(str); N.notify(`Yanked "${str}"`); }, run(str) { tri.excmds.composite(str); }, notify(str) { N.run(`notify ${str}`); }, query(str) { return document.querySelector(str); }, queryAll(str) { return document.querySelectorAll(str); }, q(str) { return N.query(str); }, qa(str) { return N.queryAll(str); } }

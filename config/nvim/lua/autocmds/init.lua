@@ -7,8 +7,18 @@ local autocommands = [[
   " COMMANDS
   "
 
+  augroup resize
+    autocmd!
+
+    " Floating window resize issue fix
+    autocmd VimEnter * :silent exec "!kill -s SIGWINCH $PPID"
+  augroup end
+
   augroup utils
     autocmd!
+
+    " Floating window resize issue fix
+    autocmd VimEnter * :silent exec "!kill -s SIGWINCH $PPID"
 
     " Utilities
     autocmd BufRead utils.lua command! NUpdateUtilsReturn lua NORDUtils.update_utils_return()

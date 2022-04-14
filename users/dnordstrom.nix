@@ -515,6 +515,7 @@ in {
 
     # Theming
     flashfocus
+    glib.bin # For gsettings
     gtk-engine-murrine
     gtk_engines
     icoutils
@@ -884,60 +885,42 @@ in {
     }];
   };
 
-  programs.firefox = {
+  programs.firefox = let
+    config = {
+      # Disable annoyances
+      "browser.aboutConfig.showWarning" = false;
+      "browser.bookmarks.restore_default_bookmarks" = false;
+      "browser.shell.checkDefaultBrowser" = false;
+      "extensions.webextensions.restrictedDomains" = "";
+
+      # Enable userChrome.css and userContent.css
+      "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+
+      # Enable legacy screen share indicator that works better in Wayland
+      "privacy.webrtc.legacyGlobalIndicator" = false;
+
+      # Needed to make certain key combinations work with Tridactyl
+      "privacy.resistFingerprinting" = false;
+      "privacy.resistFingerprinting.block_mozAddonManager" = false;
+    };
+  in {
     enable = true;
     package = pkgs.latest.firefox-nightly-bin;
     profiles = {
       default = {
         id = 0;
         name = "Default";
-        settings = {
-          "browser.aboutConfig.showWarning" = false;
-          "browser.bookmarks.restore_default_bookmarks" = false;
-          "browser.shell.checkDefaultBrowser" = false;
-          "extensions.webextensions.restrictedDomains" = "";
-
-          # Use screen share indicator that works better in Wayland
-          "privacy.webrtc.legacyGlobalIndicator" = false;
-
-          # Needed to make certain key combinations work with Tridactyl
-          "privacy.resistFingerprinting" = false;
-          "privacy.resistFingerprinting.block_mozAddonManager" = false;
-        };
+        settings = config;
       };
       private = {
         id = 1;
         name = "Private";
-        settings = {
-          "browser.aboutConfig.showWarning" = false;
-          "browser.bookmarks.restore_default_bookmarks" = false;
-          "browser.shell.checkDefaultBrowser" = false;
-          "extensions.webextensions.restrictedDomains" = "";
-
-          # Use screen share indicator that works better in Wayland
-          "privacy.webrtc.legacyGlobalIndicator" = false;
-
-          # Needed to make certain key combinations work with Tridactyl
-          "privacy.resistFingerprinting" = false;
-          "privacy.resistFingerprinting.block_mozAddonManager" = false;
-        };
+        settings = config;
       };
       testing = {
         id = 2;
         name = "Testing";
-        settings = {
-          "browser.aboutConfig.showWarning" = false;
-          "browser.bookmarks.restore_default_bookmarks" = false;
-          "browser.shell.checkDefaultBrowser" = false;
-          "extensions.webextensions.restrictedDomains" = "";
-
-          # Use screen share indicator that works better in Wayland
-          "privacy.webrtc.legacyGlobalIndicator" = false;
-
-          # Needed to make certain key combinations work with Tridactyl
-          "privacy.resistFingerprinting" = false;
-          "privacy.resistFingerprinting.block_mozAddonManager" = false;
-        };
+        settings = config;
       };
     };
   };
