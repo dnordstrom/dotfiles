@@ -194,17 +194,11 @@ in {
 
     nordpkgs.ayu-mirage-theme-gtk
     nordpkgs.convox
-    nordpkgs.hqplayer-desktop
-    nordpkgs.hydroxide
-    nordpkgs.jira-cli
-    nordpkgs.protoncheck
-    nordpkgs.pw-volume
 
     #
     # Networking
     #
 
-    enlightenment.econnman
     gnome.gnome-keyring
     haskellPackages.network-manager-tui
     krita
@@ -332,6 +326,7 @@ in {
     j4-dmenu-desktop
     wofi-emoji
     workstyle
+    xdg_utils # For xdg-open
 
     # Input
     libinput # For trackpad gestures
@@ -604,6 +599,7 @@ in {
     wezterm
     cawbird # Twitter client
     bottles
+    qemu
 
     # Calculator tryouts
     libsForQt5.kcalc

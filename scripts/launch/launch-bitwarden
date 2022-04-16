@@ -1,0 +1,63 @@
+#!/usr/bin/env sh
+#
+# FZF BITWARDEN LAUNCHER
+#
+# Opens new terminal window listing password entries with fzf. Ctrl-o opens assigned URL, Ctrl-y
+# copies password, and Ctrl-o copies TOTP code if available. terminal window.
+#
+
+#
+# CONSTANTS
+#
+
+script="$0"
+
+#
+# OPTIONS
+#
+
+# Terminal
+terminal="kitty"
+shell="zsh"
+title="fuzzyterm"
+clipboard="wl-copy"
+notifier="sway-notify"
+
+#
+# Options
+#
+
+if [ -n "$LAUNCHER_FIFO" ]; then
+  # Prepare items
+  items="$(bw list items)"
+  entries="$(printf "%s" "$items" | jq -r 'unique_by(.name) | .[] | [.name, .login.username, (if .login.totp then "MFA" else "" end), (.login.uris | .[-1] | .uri), .login.password ] | @tsv')"
+  table="$(printf "%s" "$entries" | column -t -s"$(printf "\t")")"
+
+  # Show menu with binds (showing to column three without URL, but leaves URL searchable)
+  selection="$(printf "%s" "$table" | fzf --with-nth=..-3 --nth=..-4 --bind="ctrl-o:execute-silent(xdg-open {3})+abort,ctrl-y:execute-silent($clipboard {4} && sway-notify 'Copied {1} to clipboard')+abort")"
+
+  "$notifier" "Copied $selection to clipboard"
+  
+  # Copy password to clipboard and show notification
+  password=$(printf "$selection" | cut -f 4)
+  notification=$(printf "$selection" | cut -f 1)
+
+  # "$notifier" "Copied $notification to clipboard"
+  "$clipboard" "$password"
+
+  exit 0
+fi
+
+#
+# INITIALIZE
+#
+
+# Create named pipe for search results
+launcher_fifo="$(mktemp -d)/results"
+mkfifo -m 600 "$launcher_fifo"
+
+# Rerun in new terminal window
+"$terminal" \
+  --title "$title" \
+  -e \
+  "$shell" -c "LAUNCHER_FIFO=$launcher_fifo $script"
