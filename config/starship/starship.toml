@@ -1,113 +1,73 @@
-format = """
-$username\
-$hostname\
-$directory\
-$git_branch\
-$git_state\
+right_format = """
+$rust\
+$nodejs\
+$lua\
 $git_status\
-$cmd_duration\
-$symbol\
+$git_branch\
+$aws\
+$cmd_duration """
+
+format = """
+$directory\
+$nix_shell\
+$jobs\
 $line_break\
-$python\
 $character"""
 
 [aws]
-symbol = "  "
+disabled = true
+format = "[· ](black) [($symbol$profile$region)]($style)"
+symbol = " "
+style = "bright-black"
 
 [character]
-success_symbol = "[](bold purple)"
+success_symbol = "[](bold green)"
 error_symbol = "[](bold red)"
-vicmd_symbol = "[](bold green)"
+vicmd_symbol = "[](bold yellow)"
 
 [cmd_duration]
-format = "[$duration]($style) "
-style = "yellow"
-
-[conda]
-symbol = " "
-
-[dart]
-symbol = " "
+format = "[· ](black)[ $duration]($style)"
+style = "black"
 
 [directory]
 style = "bold blue"
 read_only = " "
-
-[docker_context]
-symbol = " "
-
-[elixir]
-symbol = " "
-
-[elm]
-symbol = " "
+read_only_style = "bright-black"
 
 [git_branch]
 format = "[$branch]($style)"
 style = "bright-black"
-symbol = " "
 
 [git_status]
-format = "[[(*$conflicted$untracked$modified$staged$renamed$deleted)](218) ($ahead_behind$stashed)]($style)"
-style = "cyan"
-conflicted = "​"
-untracked = "​"
-modified = "​"
-staged = "​"
-renamed = "​"
-deleted = "​"
-stashed = "≡"
-
-[git_state]
-format = '\([$state( $progress_current/$progress_total)]($style)\) '
-style = "bright-black"
+format = "[ $conflicted$ahead$behind$untracked$modified]($style)"
+style = "black"
+ahead = " "
+behind = " "
+conflicted = " "
+untracked = " "
+modified = " "
 
 [golang]
 symbol = " "
 
-[hg_branch]
-symbol = " "
+[jobs]
+format = "[$symbol$number]($style)"
+style = "black"
+symbol = "祈"
+number_threshold = 2
+symbol_threshold = 1
 
-[java]
-symbol = " "
-
-[julia]
-symbol = " "
-
-[memory_usage]
-symbol = " "
-
-[nim]
-symbol = " "
+[lua]
+format = "[ $version](black)[ · ](black)"
+version_format = "$raw"
 
 [nix_shell]
-symbol = " "
+format = '[\$ $name](black) '
 
-[package]
-symbol = " "
-
-[perl]
-symbol = " "
-
-[php]
-symbol = " "
-
-[python]
-symbol = " "
-format = "[$virtualenv]($style) "
-style = "bright-black"
-
-[ruby]
-symbol = " "
+[nodejs]
+format = '[ $version](black)[ · ](black)'
+version_format = "$raw"
 
 [rust]
-symbol = " "
-
-[scala]
-symbol = " "
-
-[shlvl]
-symbol = " "
-
-[swift]
-symbol = "ﯣ "
+format = '[( $version)](black)[ · ](black)'
+version_format = "$raw"

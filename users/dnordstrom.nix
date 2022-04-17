@@ -258,8 +258,10 @@ in {
     gh
     glow
     gotop
+    gotktrix
     libnotify
     lolcat
+    matrixcli
     neo-cowsay
     onefetch # Git summary
     neofetch # System summary
@@ -273,24 +275,26 @@ in {
     usbutils # For lsusb
     vifm-full
     weechat
+    weechatScripts.weechat-matrix
     xclip
     xdotool
     xorg.xev
     xsel
 
     #
-    # Zsh plugins (sourced in `program.zsh.interactiveShellInit`)
+    # Zsh plugins
     #
 
+    zsh-autopair
     zsh-fzf-tab
     zsh-nix-shell
-    zsh-autopair
+    zsh-vi-mode
 
     #
     # Wayland
     #
 
-    # layer shell, panels, and effects
+    # Sway
     swayidle
     swaykbdd
     swaylock-effects
@@ -445,8 +449,12 @@ in {
     nixfmt # Opinionated formatter, used by null-ls
     nixpkgs-fmt # Another formatter
     nixpkgs-lint
+    nixos-option
     vgo2nix # Go modules to packages
     statix # Static analysis
+
+    # Rust
+    rust-bin.stable.latest.default
 
     # Go
     gofumpt
@@ -973,6 +981,10 @@ in {
     cdpath = [ "$HOME" "$HOME/Code" "/etc/nixos" ];
 
     plugins = [
+      {
+        name = "zsh-vi-mode";
+        src = "${pkgs.zsh-vi-mode}/share/zsh-vi-mode";
+      }
       {
         name = "fzf-tab";
         src = "${pkgs.zsh-fzf-tab}/share/fzf-tab";

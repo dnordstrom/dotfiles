@@ -17,6 +17,7 @@
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
     };
+    rust-overlay = { url = "github:oxalica/rust-overlay"; };
     # Disabled pending https://github.com/mozilla/nixpkgs-mozilla/pull/290
     # firefox-nightly = {
     #   url = "github:colemickens/flake-firefox-nightly";
@@ -26,7 +27,7 @@
   };
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-master, nixpkgs-wayland
-    , home-manager, neovim-nightly-overlay, utils, ... }:
+    , home-manager, neovim-nightly-overlay, rust-overlay, utils, ... }:
     let
       inherit (utils.lib) mkFlake;
       system = "x86_64-linux";
@@ -48,6 +49,7 @@
         nixpkgs-wayland.overlay
         firefox-nightly.overlay
         neovim-nightly-overlay.overlay
+        rust-overlay.overlay
       ];
       import-overlays = import ./overlays;
     in mkFlake {

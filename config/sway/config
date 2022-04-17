@@ -13,8 +13,11 @@
 set $font Input Sans Condensed 9
 set $colors catppuccin
 
-set $termpopupwidth 920
-set $termpopupheight 920
+set $termweatherwidth 920
+set $termweatherheight 920
+
+set $termpopupwidth 1200
+set $termpopupheight 900
 
 set $termplainwidth 920
 set $termplainheight 920
@@ -272,9 +275,9 @@ bindsym {
   # File managers
   #
 
-  $mod+g exec $filesqt5
-  $mod+Shift+g exec $filesgtk
-  $mod+Shift+Ctrl+g exec $filestui
+  $mod+g exec $filestui
+  $mod+Shift+g exec $filesqt5
+  $mod+Shift+Ctrl+g exec $filesgtk
 
   #
   # Window manager
@@ -513,7 +516,15 @@ mode "$mode_system" {
 bindsym $mod+Backspace mode "$mode_system"
 
 #
-# WINDOW SPECIFIC
+# WINDOW ASSIGNMENTS
+#
+
+assign {
+  [app_id="com.github.wwmm.easyeffects"] $workspace5
+}
+
+#
+# WINDOW SETTINGS
 #
 
 for_window {
@@ -521,9 +532,15 @@ for_window {
   # File managers
   #
 
-  [app_id="org.gnome.Nautilus"] floating enable, resize set 1550 900
-  [app_id="org.kde.dolphin"] floating enable, resize set 1550 900
+  [app_id="org.gnome.Nautilus"] floating enable, resize set $floatdefaultwidth $floatdefaultheight
+  [app_id="org.kde.dolphin"] floating enable, resize set $floatdefaultwidth $floatdefaultheight
   [app_id="org.kde.krusader"] floating enable, resize set 1550 900
+
+  #
+  # Image viewers/editors
+  #
+
+  [app_id="vimiv"] floating enable, resize set $floatdefaultwidth $floatdefaultheight
 
   #
   # Dialogs
@@ -567,6 +584,7 @@ for_window {
     move scratchpad, \
     resize set $termscratchwidth $termscratchheight, \
     move position center
+
   [title="scratchterm" con_mark="fullterm"] \
     fullscreen enable
 
@@ -576,6 +594,7 @@ for_window {
     move scratchpad, \
     resize set $termplainwidth $termplainheight, \
     move position center
+
   [title="plainterm" con_mark="fullterm"] \
     fullscreen enable
 
@@ -584,6 +603,12 @@ for_window {
   [title="popupterm"] \
     floating enable, \
     resize set $termpopupwidth $termpopupheight
+
+  # Weather
+
+  [app_id="vimiv"] \
+    floating enable, \
+    resize set $termweatherwidth $termweatherheight
 
   # Launcher
 

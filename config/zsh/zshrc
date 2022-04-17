@@ -1,8 +1,33 @@
 #
-# Zsh configuration
+# ZSH CONFIGURATION
 #
-# Manual available at https://zsh.sourceforge.io/Doc
+# Manual: https://zsh.sourceforge.io/Doc
 #
+
+#
+# Options
+#
+
+# Use vi mode (recommened instead of `setopt vi`)
+bindkey -v
+
+# Show duplicates in history but ignore duplicates and space prefixed commands in reverse search
+setopt nohistignoredups
+setopt histfindnodups
+setopt histignorespace
+
+# Autocorrect command and arguments
+setopt correct
+setopt nocorrectall
+
+# Expand aliases
+setopt aliases
+
+# Allow comments
+setopt interactivecomments
+
+# Resolve symlinks to real paths when changing directory
+setopt chaselinks
 
 #
 # Variables
@@ -330,9 +355,9 @@ fancy-ctrl-z() {
   fi
 }
 
-autocorrect() {
-  zle .spell-word
-  zle .$WIDGET
+auto-correct() {
+  zle spell-word
+  zle self-insert
 }
 
 #
@@ -351,17 +376,23 @@ zle -N prepend-note
 zle -N edit-notes
 zle -N backup-notes
 zle -N clear-backup-notes
-zle -N magic-space autocorrect
+zle -N auto-correct
 
 #
 # Binds
 #
 
+# Fixes
+bindkey "^[[3~" delete-char # Fixes delete key outputting tilde character
+# bindkey -M emacs "^[^[" doas-command-line
+# bindkey -M vicmd "^[^[" doas-command-line
+# bindkey -M viins "^[^[" doas-command-line
+
 # Rebinds
-bindkey -s '^[l' "l\n" # Alt-L uses l instead of ls
+bindkey -s "^[l" "l\n" # Alt-L uses l instead of ls
 
 # Space for history
-bindkey ' ' magic-space
+bindkey " " magic-space # Until auto-correct spell-word has been fixed to keep quotation marks
 
 # Ctrl-Z for fg
 bindkey "^Z" fancy-ctrl-z
@@ -382,6 +413,10 @@ bindkey "^[ce" configure-nixos
 bindkey "^[ne" edit-notes
 bindkey "^[na" prepend-note
 bindkey "^[nv" view-notes
+
+# Next and previous (up and down) accounts for history
+bindkey "^P" history-beginning-search-backward
+bindkey "^N" history-beginning-search-forward
 
 #
 # Path
