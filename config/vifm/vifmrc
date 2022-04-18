@@ -55,7 +55,7 @@ set norunexec
 
 " List of color schemes to try (picks the first one supported by the terminal)
 
-colorscheme palenight Default-256 Default
+colorscheme catppuccin palenight Default-256 Default
 
 " Format for displaying time in file list. For example:
 " TIME_STAMP_FORMAT=%m/%d-%H:%M
@@ -129,8 +129,8 @@ nnoremap S :sort<cr>
 nnoremap w :view<cr>
 vnoremap w :view<cr>gv
 
-" Open file in existing instance of vim
-nnoremap e :!kitty -e zsh vim %c<cr>
+" Edit file
+nnoremap e :edit<cr>
 
 " Open file in the background using its default program
 nnoremap gb :file &<cr>l
@@ -170,6 +170,6 @@ nnoremap <a-o> :sync %c<cr>
 nnoremap <c-u> <c-w>x
 
 " Open image
-nnoremap <a-p> :vimiv %c<cr>
+nnoremap <a-p> :vimiv<cr>
 
 source ~/.config/vifm/favicons.vifm
