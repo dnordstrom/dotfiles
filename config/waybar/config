@@ -167,7 +167,7 @@
     "on-scroll-up": "pw-volume change +1%; pkill -RTMIN+8 waybar",
     "on-scroll-down": "pw-volume change -1%; pkill -RTMIN+8 waybar",
     "on-click": "pw-volume mute toggle; pkill -RTMIN+8 waybar",
-    "on-click-right": "pavucontrol-qt",
+    "on-click-right": "pavucontrol",
     "tooltip": false,
   },
   "idle_inhibitor": {
@@ -193,11 +193,11 @@
     },
     "scroll-step": 5,
     "on-click": "amixer -D pipewire sset Master toggle",
-    "on-click-right": "pavucontrol-qt",
+    "on-click-right": "pavucontrol",
     "tooltip": false
   },
   "cpu": {
-    "on-click": "kitty --title popupterm gotop",
+    "on-click": "kitty --title popupterm btm",
     "tooltip": false,
     "format": "<span font='16' rise='-1500'>﬙ </span><span rise='500'>{usage}%</span>",
     "interval": 10

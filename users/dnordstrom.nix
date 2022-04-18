@@ -192,7 +192,7 @@ in {
     # Local
     #
 
-    nordpkgs.ayu-mirage-theme-gtk
+    # nordpkgs.ayu-mirage-theme-gtk
     nordpkgs.convox
 
     #
@@ -201,16 +201,11 @@ in {
 
     gnome.gnome-keyring
     haskellPackages.network-manager-tui
-    krita
     libgnome-keyring
-    networkmanager-openconnect
-    networkmanager-openvpn
     networkmanager_dmenu
     nm-tray
-    openconnect
     openvpn
     qview
-    speedcrunch
     speedtest-cli
     ytmdesktop
 
@@ -230,18 +225,12 @@ in {
     dolphin
     element-desktop
     fractal
-    gcc
-    guvcview
-    lynx
-    nextcloud-client
     pavucontrol
     qbittorrent
     signal-desktop
     slack
     spotify
-    sqlite
     tor-browser-bundle-bin
-    ventoy-bin
     woeusb-ng
     zathura
 
@@ -254,31 +243,24 @@ in {
     bottom # Resource monitor alternative to gotop
     fd
     figlet
-    fortune
     gh
     glow
-    gotop
     gotktrix
     libnotify
-    lolcat
     matrixcli
-    neo-cowsay
     onefetch # Git summary
     neofetch # System summary
     parallel
     rdrview # URL article viewer based on Firefox's Readability
     ripgrep
-    t-rec
-    toilet
     tree
-    unzip # Dolphin uses unzip to treat archives as directories
-    usbutils # For lsusb
+    unzip
+    usbutils
     vifm-full
     weechat
     weechatScripts.weechat-matrix
     xclip
     xdotool
-    xorg.xev
     xsel
 
     #
@@ -300,9 +282,6 @@ in {
     swaylock-effects
     swaywsr
 
-    # Notifications
-    fnott # keyboard driven notification daemon TODO: Try out
-
     # Screenshots
     grim
     imagemagick
@@ -310,31 +289,28 @@ in {
     swappy
 
     # Images
-    vimiv-qt # QT image viewer
+    vimiv-qt
 
     # Recording and wl-clipboard
     wf-recorder
     wl-clipboard
 
     # Monitor
-    kanshi
     wdisplays
     wlsunset
 
     # Launchers
-    masterPackages.wofi
+    wofi
     rofi-calc
     rofi-emoji
     rofi-systemd
     rofi-wayland
     j4-dmenu-desktop
     wofi-emoji
-    workstyle
     xdg_utils # For xdg-open
 
     # Input
-    libinput # For trackpad gestures
-    swaykbdd
+    libinput
     wev
     wtype
     ydotool
@@ -343,12 +319,10 @@ in {
     # UI toolkits and libraries
     #
 
-    gnome-breeze
+    gdk-pixbuf
     gnome.dconf-editor
+    gnome.nautilus
     gsettings-desktop-schemas
-    libsForQt5.kpackage
-    libsForQt5.packagekit-qt # For installing some KDE services
-    packagekit
 
     #
     # Office 
@@ -377,7 +351,6 @@ in {
     #
 
     bitwarden
-    mozwire
     go-2fa
     pinentry-gtk2
     protonvpn-cli
@@ -405,8 +378,6 @@ in {
     spotify-qt
     spotify-tui
     spotifyd
-    strawberry
-    lxqt.pavucontrol-qt
 
     #
     # Audio plugins
@@ -428,7 +399,7 @@ in {
     #
 
     # Editors
-    libsForQt5.kate
+    kate
 
     # LSP and syntax
     nodePackages.vscode-langservers-extracted # HTML, CSS, and JSON
@@ -499,7 +470,6 @@ in {
 
     # Fonts
     corefonts
-    fontforge
     jetbrains-mono
     line-awesome
     powerline-fonts
@@ -518,39 +488,19 @@ in {
 
     # Theming
     flashfocus
-    glib.bin # For gsettings
     gtk-engine-murrine
     gtk_engines
     icoutils
-    libsForQt5.qtcurve
     lxappearance
-    masterPackages.themechanger
+    themechanger
     qt5ct
 
     # Themes
     nordic # GTK, QT, and Kvantum
     lightly-qt
     libsForQt5.grantleetheme
-    lxqt.lxqt-themes
-    zuki-themes
-    masterPackages.ayu-theme-gtk
-    dracula-theme
-    arc-icon-theme
-    paper-icon-theme
-    papirus-icon-theme
-    flat-remix-icon-theme
-    moka-icon-theme # Fallback for Arc icon theme
     vimix-icon-theme
-    vimix-gtk-themes
-    capitaine-cursors
-    numix-cursor-theme
-    numix-gtk-theme
-    numix-sx-gtk-theme
-    numix-icon-theme
-    numix-icon-theme-circle
-    numix-icon-theme-square
     quintom-cursor-theme
-    zafiro-icons
 
     #
     # Interesting prospects
@@ -558,13 +508,10 @@ in {
 
     swayr
     quaternion
-    nheko
     neochat
     mdcat
     mkchromecast
     gnomecast
-    castnow
-    go-chromecast
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
     corgi # CLI workflow manager
     navi # CLI cheatsheet tool
@@ -572,9 +519,7 @@ in {
     tmpmail # CLI temporary email generator
     httpie # HTTP client, simpler alternative to cURL
     curlie # HTTP client, simpler alternative to cURL
-    brave
     pcmanfm-qt
-    gnome.nautilus
     yubikey-personalization-gui
     yubikey-personalization
     yubico-pam
@@ -585,24 +530,8 @@ in {
     yubikey-manager-qt
     yubikey-touch-detector
     otpclient
-    CuboCore.corefm
-    CuboCore.libcsys
-    CuboCore.corepdf
-    CuboCore.corepad
-    CuboCore.coretime
-    CuboCore.coreshot
-    CuboCore.corehunt
-    CuboCore.corestuff
-    CuboCore.coreimage
-    CuboCore.corestats
-    CuboCore.coregarage
-    CuboCore.corerenamer
-    CuboCore.coreterminal
-    CuboCore.corearchiver
-    CuboCore.coretoppings
     krusader
     git-crypt
-    cliphist
     jetbrains.datagrip
     wezterm
     cawbird # Twitter client
@@ -610,10 +539,7 @@ in {
     qemu
 
     # Calculator tryouts
-    libsForQt5.kcalc
     pro-office-calculator
-    gnome.gnome-calculator
-    lumina.lumina-calculator
 
     #
     # Dependencies
@@ -659,8 +585,8 @@ in {
       export SDL_VIDEODRIVER=wayland
 
       # Styling
-      export QT_QPA_PLATFORMTHEME=qt5ct
-      unset QT_STYLE_OVERRIDE
+      # export QT_QPA_PLATFORMTHEME=qt5ct
+      # unset QT_STYLE_OVERRIDE
     '';
   };
 
@@ -670,9 +596,8 @@ in {
 
   qt = {
     enable = true;
-    # These do not seem to set the correct environment variables for qt5ct:
-    # platformTheme = "gtk";
-    # style = { name = "qt5ct-style"; };
+    platformTheme = "gtk";
+    style.name = "gtk2";
   };
 
   #
@@ -685,7 +610,7 @@ in {
       name = "Input Sans Condensed";
       size = 8;
     };
-    theme.name = "Ayu-Dark";
+    theme.name = "Catppuccin-yellow";
     iconTheme.name = "Vimix-dark";
     gtk3 = {
       extraConfig.gtk-application-prefer-dark-theme = "true";
@@ -750,6 +675,10 @@ in {
 
   xdg.configFile."starship.toml".source = ../config/starship/starship.toml;
 
+  # Zathura
+
+  xdg.configFile."zathura".source = ../config/zathura;
+
   # Firefox
 
   xdg.configFile."tridactyl".source = ../config/firefox/tridactyl;
@@ -791,13 +720,6 @@ in {
   xdg.configFile."wlogout/reboot.png".source = ../config/wlogout/reboot.png;
   xdg.configFile."wlogout/shutdown.png".source = ../config/wlogout/shutdown.png;
 
-  # dircolors
-
-  home.file.".dir_colors".source = builtins.fetchurl {
-    url =
-      "https://github.com/arcticicestudio/nord-dircolors/releases/download/v0.2.0/dir_colors";
-    sha256 = "0a6i9pvl4lj2k1snmc5ckip86akl6c0svzmc5x0vnpl4id0f3raw";
-  };
 
   # Alacritty
 
@@ -1074,11 +996,6 @@ in {
     padding = "12,24";
     textColor = "#1E1E28";
     width = 325;
-  };
-
-  programs.dircolors = {
-    enable = true;
-    enableZshIntegration = true;
   };
 
   programs.neomutt = {

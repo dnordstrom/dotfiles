@@ -210,7 +210,7 @@ output "DVI-D-1" {
 #
 
 seat seat0 hide_cursor when-typing disable
-seat seat0 xcursor_theme "Quintom_Snow" 24
+seat seat0 xcursor_theme "Catppuccin-Teal-Cursors" 24
 seat seat0 idle_wake keyboard pointer
 
 input "12851:25345:Ducky_Ducky_One2_Mini_RGB" {
@@ -691,9 +691,9 @@ bar {
 set $gnome-schema org.gnome.desktop.interface
 
 exec_always {
-  gsettings set $gnome-schema gtk-theme "Ayu-Dark"
+  gsettings set $gnome-schema gtk-theme "Catppuccin-yellow"
   gsettings set $gnome-schema icon-theme "Vimix-dark"
-  gsettings set $gnome-schema cursor-theme "Quintom_Snow"
+  gsettings set $gnome-schema cursor-theme "Catppuccin-Teal-Cursors"
   gsettings set $gnome-schema font-name "Input Sans Compressed 8"
 }
 
