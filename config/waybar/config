@@ -1,9 +1,16 @@
 {
+  //
+  // Settings
+  //
+
   "name": "catppuccin",
-  "layer": "top",
-  "position": "top",
-  "height": 30,
-  "width": 1920,
+  "layer": "bottom",
+  "margin": "0 0 -8 0",
+
+  //
+  // Modules
+  //
+
   "modules-left": [
     "sway/workspaces",
     "custom/files",
@@ -11,7 +18,7 @@
     "custom/mail",
     "custom/editor",
     "custom/terminal",
-    "sway/mode",
+    "sway/mode"
   ],
   "modules-center": [ "custom/clock" ],
   "modules-right": [
@@ -19,7 +26,7 @@
     "cpu",
     "custom/keyboard",
     "custom/wttr",
-    "pulseaudio",
+    "pulseaudio"
   ],
   "sway/window": {
     "format": "<span>{}</span>",
@@ -86,9 +93,9 @@
   "custom/files": {
     "format": "<span font='16'></span>",
     "tooltip": false,
-    "on-click": "dolphin",
+    "on-click": "nautilus",
     "on-click-middle": "kitty --title popupterm -e vifm",
-    "on-click-right": "nautilus"
+    "on-click-right": "dolphin"
   },
   "custom/editor": {
     "format": "<span font='16'></span>",

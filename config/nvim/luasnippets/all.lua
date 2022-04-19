@@ -1,0 +1,47 @@
+--
+-- ALL FILETYPES
+--
+
+-- return {
+-- 	time = { p(os.date, "%H:%M") },
+-- 	date = { p(os.date, "%Y-%m-%d") },
+-- 	datetime = { p(os.date, "%Y-%m-%d %H:%M") },
+-- }
+
+return {
+	s({ trig = "td", name = "TODO" }, {
+		c(1, {
+			t("TODO: "),
+			t("NOTE: "),
+			t("WARN: "),
+			t("FIXME: "),
+			t("HACK: "),
+			t("BUG: "),
+		}),
+		i(0),
+	}),
+
+	s(
+		{ trig = "hr", name = "Header" },
+		fmt(
+			[[
+            {1}
+            {2} {3}
+            {1}
+            {4}
+          ]],
+			{
+				f(function()
+					local comment = string.format(vim.bo.commentstring:gsub(" ", "") or "#%s", "-")
+					local col = vim.bo.textwidth or 80
+					return comment .. string.rep("-", col - #comment)
+				end),
+				f(function()
+					return vim.bo.commentstring:gsub("%%s", "")
+				end),
+				i(1, "HEADER"),
+				i(0),
+			}
+		)
+	),
+}

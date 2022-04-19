@@ -228,10 +228,6 @@ input "12851:25345:Ducky_Ducky_One2_Mini_RGB" {
   xkb_options shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey
 }
 
-input "1133:16505:Logitech_G_Pro" {
-  middle_emulation disabled
-}
-
 input "1452:613:Apple_Inc._Magic_Trackpad_2" {
   tap enable
   click_method clickfinger

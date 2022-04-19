@@ -94,7 +94,7 @@ return require("packer").startup(function(use)
 
 	-- Snippets
 
-	use({ "L3MON4D3/LuaSnip" })
+	use({ "L3MON4D3/LuaSnip", branch = "master" })
 	use({ "rafamadriz/friendly-snippets" })
 
 	-- Refactoring

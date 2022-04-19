@@ -437,6 +437,8 @@
   # PROGRAMS
   #
 
+  programs.qt5ct.enable = false;
+
   programs.dconf.enable = true;
 
   programs.ssh.askPassword =
@@ -462,6 +464,12 @@
   #
   # SYSTEM ENVIRONMENT
   #
+
+  qt5 = {
+    enable = true;
+    style = "gtk2";
+    platformTheme = "gtk2";
+  };
 
   environment.variables = {
     VST_PATH =
@@ -491,7 +499,6 @@
     nordpkgs.openvpn3
     ntfs3g
     polkit_gnome
-    qt5.qtwayland
     refind
     roon-server
     steam-run # Runs binaries compiled for other distributions

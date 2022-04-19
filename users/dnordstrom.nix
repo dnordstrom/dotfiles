@@ -477,13 +477,19 @@ in {
     fcft # Font loading library used by foot
 
     # Qt libs
+    lightly-qt
     libsForQt5.ark
-    libsForQt5.qqc2-breeze-style
-    libsForQt5.breeze-gtk
-    libsForQt5.breeze-qt5
     libsForQt5.qtstyleplugin-kvantum
+    libsForQt5.qqc2-desktop-style
+    libsForQt5.qtstyleplugins
+    libsForQt5.kwayland
     libsForQt5.qt5.qtwayland
     libsForQt5.qtcurve
+    libsForQt5.qt5.qtsvg
+    libsForQt5.grantleetheme
+    libsForQt5.qt5.qtquickcontrols
+    libsForQt5.qt5.qttools
+    libsForQt5.qt5.qtbase
     qgnomeplatform
 
     # Theming
@@ -493,12 +499,10 @@ in {
     icoutils
     lxappearance
     themechanger
-    qt5ct
+    glib.bin
 
     # Themes
     nordic # GTK, QT, and Kvantum
-    lightly-qt
-    libsForQt5.grantleetheme
     vimix-icon-theme
     quintom-cursor-theme
 
@@ -597,7 +601,10 @@ in {
   qt = {
     enable = true;
     platformTheme = "gtk";
-    style.name = "gtk2";
+    style = {
+      name = "gtk2";
+      package = pkgs.libsForQt5.qtstyleplugins;
+    };
   };
 
   #
