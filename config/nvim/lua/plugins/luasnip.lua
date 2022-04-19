@@ -5,9 +5,6 @@
 --
 --     - https://github.com/L3MON4D3/LuaSnip/blob/master/Examples/snippets.lua
 ----
--- Load
--- Extend
---     -
 
 local ls = require("luasnip")
 local fmt = require("luasnip.extras.fmt").fmt
@@ -34,7 +31,6 @@ local types = require("luasnip.util.types")
 -- Extend filetypes
 --
 
-ls.filetype_extend("sh", { "shell" })
 local conds = require("luasnip.extras.expand_conditions")
 local from_lua = require("luasnip.loaders.from_lua")
 local from_vscode = require("luasnip.loaders.from_vscode")
@@ -44,6 +40,7 @@ local from_vscode = require("luasnip.loaders.from_vscode")
 --
 
 ls.config.setup({})
+ls.filetype_extend("sh", { "shell" })
 ls.filetype_extend("javascriptreact", { "javascript" })
 ls.filetype_extend("typescript", { "javascript" })
 ls.filetype_extend("typescriptreact", { "typescript", "javascriptreact" })
@@ -53,4 +50,9 @@ ls.filetype_extend("typescriptreact", { "typescript", "javascriptreact" })
 --
 
 from_vscode.load()
-from_lua.load()
+
+--
+-- from_lua loader not currently working, using ls.add_snippets
+--
+
+vim.fn.execute("luafile " .. vim.fn.stdpath("config") .. "/luasnippets/all.lua")
