@@ -47,7 +47,8 @@
     ];
 
   # TODO: Keep an eye on this outdated crap
-  nixpkgs.config.permittedInsecurePackages = [ "electron-9.4.4" ];
+  nixpkgs.config.permittedInsecurePackages =
+    [ "electron-9.4.4" "electron-12.2.3" ];
   nixpkgs.config.input-fonts.acceptLicense = true;
   nixpkgs.config.firefox.enableTridactylNative = true;
 
@@ -317,7 +318,10 @@
     openFirewall = true;
   };
 
-  services.dbus.packages = [ pkgs.nordpkgs.openvpn3 ];
+  services.dbus = {
+    enable = true;
+    packages = [ pkgs.nordpkgs.openvpn3 ];
+  };
 
   services.flatpak.enable = true;
 
@@ -409,6 +413,7 @@
 
     portal = {
       enable = true;
+
       extraPortals = with pkgs; [
         xdg-desktop-portal
         xdg-desktop-portal-gtk
@@ -437,7 +442,7 @@
   # PROGRAMS
   #
 
-  programs.qt5ct.enable = false;
+  programs.qt5ct.enable = true;
 
   programs.dconf.enable = true;
 
@@ -465,12 +470,6 @@
   # SYSTEM ENVIRONMENT
   #
 
-  qt5 = {
-    enable = true;
-    style = "gtk2";
-    platformTheme = "gtk2";
-  };
-
   environment.variables = {
     VST_PATH =
       "/nix/var/nix/profiles/system/lib/vst:/var/run/current-system/sw/lib/vst:~/.vst";
@@ -483,15 +482,6 @@
     DSSI_PATH =
       "/nix/var/nix/profiles/system/lib/dssi:/var/run/current-system/sw/lib/dssi:~/.dssi";
   };
-
-  environment.pathsToLink =
-    [ "/share/zsh" ]; # Completion for system packages, e.g. systemctl
-
-  environment.loginShellInit = ''
-    if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-      dbus-run-session sway
-    fi
-  '';
 
   environment.systemPackages = with pkgs; [
     git
@@ -506,4 +496,13 @@
     xdg-desktop-portal
     yarn
   ];
+
+  environment.pathsToLink = [ "/share/zsh" "/libexec" ];
+
+  environment.loginShellInit = ''
+    if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
+      # Home manager wrapper should make the following use dbus-run-session
+      exec sway
+    fi
+  '';
 }

@@ -283,6 +283,7 @@ in {
     swaywsr
 
     # Screenshots
+    flameshot
     grim
     imagemagick
     slurp
@@ -298,6 +299,7 @@ in {
     # Monitor
     wdisplays
     wlsunset
+    gammastep
 
     # Launchers
     wofi
@@ -322,7 +324,6 @@ in {
     gdk-pixbuf
     gnome.dconf-editor
     gnome.nautilus
-    gsettings-desktop-schemas
 
     #
     # Office 
@@ -371,6 +372,7 @@ in {
     easyeffects
     handbrake
     haruna # QT frontend for MPV
+    nordpkgs.hqplayer-desktop
     jamesdsp
     pulseaudio
     pulsemixer
@@ -493,9 +495,9 @@ in {
     qgnomeplatform
 
     # Theming
-    flashfocus
     gtk-engine-murrine
     gtk_engines
+    gsettings-desktop-schemas
     icoutils
     lxappearance
     themechanger
@@ -513,6 +515,11 @@ in {
     swayr
     quaternion
     neochat
+    gomuks
+    gotktrix
+    schildichat-desktop-wayland
+    fluffychat
+    etcher
     mdcat
     mkchromecast
     gnomecast
@@ -570,10 +577,12 @@ in {
     extraSessionCommands = ''
       # Firefox
       export MOZ_ENABLE_WAYLAND=1
+      export MOZ_DBUS_REMOTE=1
       export MOZ_USE_XINPUT2=1
 
       # Wayland
       export QT_QPA_PLATFORM=wayland
+      export QT_STYLE_OVERRIDE=qt5ct-style
       export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
       export GDK_BACKEND=wayland
 
@@ -587,10 +596,6 @@ in {
 
       # Miscellaneous
       export SDL_VIDEODRIVER=wayland
-
-      # Styling
-      # export QT_QPA_PLATFORMTHEME=qt5ct
-      # unset QT_STYLE_OVERRIDE
     '';
   };
 
@@ -598,14 +603,7 @@ in {
   # QT
   #
 
-  qt = {
-    enable = true;
-    platformTheme = "gtk";
-    style = {
-      name = "gtk2";
-      package = pkgs.libsForQt5.qtstyleplugins;
-    };
-  };
+  qt.enable = true;
 
   #
   # GTK
@@ -697,6 +695,7 @@ in {
 
   xdg.configFile."nvim/lua".source = ../config/nvim/lua;
   xdg.configFile."nvim/ftplugin".source = ../config/nvim/ftplugin;
+  xdg.configFile."nvim/luasnippets".source = ../config/nvim/luasnippets;
 
   # Vifm
 
@@ -727,7 +726,6 @@ in {
   xdg.configFile."wlogout/reboot.png".source = ../config/wlogout/reboot.png;
   xdg.configFile."wlogout/shutdown.png".source = ../config/wlogout/shutdown.png;
 
-
   # Alacritty
 
   xdg.configFile."alacritty/alacritty.yml".source =
@@ -754,7 +752,11 @@ in {
   programs.mpv.enable = true;
   programs.afew.enable = true;
   programs.mbsync.enable = true;
-  programs.waybar.enable = true;
+
+  programs.waybar = {
+    enable = true;
+    systemdIntegration = true;
+  };
 
   programs.nix-index = {
     enable = true;

@@ -55,4 +55,5 @@ from_vscode.load()
 -- from_lua loader not currently working, using ls.add_snippets
 --
 
-vim.fn.execute("luafile " .. vim.fn.stdpath("config") .. "/luasnippets/all.lua")
+dofile(vim.fn.stdpath("config") .. "/luasnippets/all.lua")
+dofile(vim.fn.stdpath("config") .. "/luasnippets/lua.lua")

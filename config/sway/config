@@ -640,16 +640,7 @@ for_window {
 # STARTUP
 #
 
-# Import environment
-
-exec systemctl --user import-environment XDG_SESSION_TYPE XDG_CURRENT_DESKTOP
-exec --no-startup-id dbus-update-activation-environment --all
-exec ~/.nix-profile/libexec/polkit-gnome-authentication-agent-1
-
-# Start systemd targets
-
-exec systemctl --user start sway-session.target
-exec systemctl --user start graphical-session.target
+exec /run/current-system/sw/libexec/polkit-gnome-authentication-agent-1
 
 # Start scratchpad terminal
 
@@ -669,8 +660,9 @@ for_window {
   [app_id="^.*"] inhibit_idle fullscreen
 }
 
-# Start monitor temperature daemon
-exec_always 'pkill wlsunset ; wlsunset -t 4500 -T 6500 -l 62.39 -L 17.30 > /tmp/wlsunset.log 2>&1'
+# Start display temperature daemon
+
+exec_always pkill -USR1 gammastep ; gammastep -l "62.3:17.3" -t "6500:4500" -m wayland
 
 #
 # STATUS BAR
@@ -692,6 +684,12 @@ exec_always {
   gsettings set $gnome-schema cursor-theme "Catppuccin-Teal-Cursors"
   gsettings set $gnome-schema font-name "Input Sans Compressed 8"
 }
+
+#
+# SYSTEMD & DBUS
+#
+
+exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 
 #
 # INCLUDES
