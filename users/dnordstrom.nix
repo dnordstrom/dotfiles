@@ -755,7 +755,7 @@ in {
 
   programs.waybar = {
     enable = true;
-    systemdIntegration = true;
+    systemdTarget = "sway-session.target";
   };
 
   programs.nix-index = {
