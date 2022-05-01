@@ -23,11 +23,16 @@
     #   url = "github:colemickens/flake-firefox-nightly";
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
+    nixpkgs-mozilla = {
+      url = "github:marcenuc/nixpkgs-mozilla";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     utils = { url = "github:gytis-ivaskevicius/flake-utils-plus"; };
   };
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-master, nixpkgs-wayland
-    , home-manager, neovim-nightly-overlay, rust-overlay, utils, ... }:
+    , nixpkgs-mozilla, home-manager, neovim-nightly-overlay, rust-overlay, utils
+    , ... }:
     let
       inherit (utils.lib) mkFlake;
       system = "x86_64-linux";
@@ -39,15 +44,16 @@
       #   firefox-nightly-bin =
       #     firefox-nightly.packages.${prev.system}.firefox-nightly-bin;
       # };
-      moz-url = builtins.fetchTarball {
-        url =
-          "https://github.com/marcenuc/nixpkgs-mozilla/archive/master.tar.gz";
-      };
-      firefox-nightly = { overlay = import "${moz-url}/firefox-overlay.nix"; };
+      # moz-url = builtins.fetchTarball {
+      #   url =
+      #     "https://github.com/marcenuc/nixpkgs-mozilla/archive/master.tar.gz";
+      # };
+      # firefox-nightly = { overlay = import "${moz-url}/firefox-overlay.nix"; };
       input-overlays = [
         nixpkgs-master-overlay
         nixpkgs-wayland.overlay
-        firefox-nightly.overlay
+        nixpkgs-mozilla.overlay
+        # firefox-nightly.overlay
         neovim-nightly-overlay.overlay
         rust-overlay.overlay
       ];

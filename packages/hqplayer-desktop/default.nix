@@ -1,15 +1,25 @@
 { alsa-lib, autoPatchelfHook, fetchurl, flac, gcc11, lib, pkgs, libmicrohttpd
-, llvmPackages_10, rpmextract, wavpack, qt5, mpg123 }:
+, llvmPackages_10, rpmextract, wavpack, qt5, mpg123, libusb-compat-0_1, opencpn }:
 
 let inherit (lib) getDev;
 in qt5.mkDerivation rec {
   pname = "hqplayer-desktop";
-  version = "4.17.2-53";
+  version = "4.18.1-55";
 
   src = fetchurl {
     url =
       "https://www.signalyst.eu/bins/hqplayer/fc35/hqplayer4desktop-${version}.fc35.x86_64.rpm";
-    sha256 = "sha256-Z9wtlc0tjG2UPbB4jRau2tKGIxxPkslecc8PkWvlgos=";
+    sha256 = "sha256-5fjzOcRnZNYdxORkLeYb+DmuQzyNqlt0kUy5iBLSMj8=";
+  };
+
+  libsglnnx = fetchurl {
+    url = "https://github.com/bdbcat/o-charts_pi/raw/master/libs/oeserverd/linux64/libsgllnx64-2.29.02.so";
+    sha256 = "sha256-2NNQQOAsVkHaEF9N95EGCcMpWix5wGDjiHM0VOJhK3w=";
+  };
+
+  libusb = fetchurl {
+    url = "https://github.com/bdbcat/o-charts_pi/raw/master/libs/oeserverd/linux64/libusb-0.1.so.4";
+    sha256 = "sha256-XAvwQ4WcrP1WlZiYCtK60XWJ/oDbkro7sCzL2rU5B1I=";
   };
 
   unpackPhase = ''
@@ -31,6 +41,7 @@ in qt5.mkDerivation rec {
     qt5.qtwebengine
     qt5.qtwebview
     wavpack
+    opencpn
   ];
 
   dontConfigure = true;
@@ -54,6 +65,11 @@ in qt5.mkDerivation rec {
     # pixmaps
     mkdir -p $out/share/pixmaps
     cp ./usr/share/pixmaps/* $out/share/pixmaps
+
+    mkdir $out/lib
+    chmod 777 $out/lib
+    cp ${libsglnnx} $out/lib/libsgllnx64-2.29.02.so
+    cp ${libusb} $out/lib/libusb-0.1.so.4
 
     runHook postInstall
   '';

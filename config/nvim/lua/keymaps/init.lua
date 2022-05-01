@@ -91,8 +91,7 @@ nvim_set_keymap("n", "<Leader>|", ":vsplit | wincmd l<CR>", opts.nore)
 --
 
 -- ...save and keep (ZZ, ZQ)
-nvim_set_keymap("n", "ZA", "<Cmd>w<CR>", opts.nore)
-nvim_set_keymap("i", "ZA", "<Cmd>w<CR>", opts.nore)
+nvim_set_keymap("n", "ZA", "<Cmd>w!<CR>", opts.nore)
 
 --
 -- Modify defaults to...

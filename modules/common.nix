@@ -400,11 +400,24 @@
   # Virtualization
   #
 
-  virtualisation.virtualbox.host.enable = true;
+  virtualisation = {
+    docker.enable = true;
+    virtualbox.host.enable = true;
 
-  virtualisation.docker.enable = true;
+    libvirtd = {
+      enable = true;
+      qemu = {
+        package = pkgs.qemu_kvm;
+        ovmf = {
+          enable = true;
+          package = pkgs.OVMFFull;
+        };
+        swtpm.enable = true;
+      };
+    };
+  };
 
-  virtualisation.libvirtd.enable = true;
+  environment.sessionVariables.LIBVIRT_DEFAULT_URI = [ "qemu:///system" ];
 
   #
   # XDG
@@ -459,7 +472,15 @@
   users = {
     users.dnordstrom = {
       isNormalUser = true;
-      extraGroups = [ "audio" "wheel" "input" "libvirtd" "vboxusers" ];
+      extraGroups = [
+        "audio"
+        "input"
+        "kvm"
+        "libvirtd"
+        "qemu-libvirtd"
+        "vboxusers"
+        "wheel"
+      ];
       shell = pkgs.zsh;
     };
     users.openvpn = {
@@ -484,6 +505,7 @@
       "/nix/var/nix/profiles/system/lib/lv2:/var/run/current-system/sw/lib/lv2:~/.lv2";
     DSSI_PATH =
       "/nix/var/nix/profiles/system/lib/dssi:/var/run/current-system/sw/lib/dssi:~/.dssi";
+    LIBVIRT_DEFAULT_URI = "qemu:///system";
   };
 
   environment.systemPackages = with pkgs; [
@@ -495,7 +517,12 @@
     refind
     roon-server
     steam-run # Runs binaries compiled for other distributions
+    virt-manager
+    virt-manager-qt
+    virt-viewer
     wget
+    win-qemu
+    win-virtio
     xdg-desktop-portal
     yarn
   ];

@@ -19,6 +19,7 @@ let
   xdgFileBrowser = [ "org.kde.dolphin.desktop" ];
   xdgImageViewer = [ "vimiv.desktop" ];
   xdgMediaPlayer = [ "org.kde.haruna.desktop" ];
+  xdgHttpie = [ "httpie.desktop" ];
 
   # 
   # MIME-TYPE ASSOCIATIONS 
@@ -38,6 +39,7 @@ let
     "x-scheme-handler/chrome" = xdgBrowser;
     "x-scheme-handler/about" = xdgBrowser;
     "x-scheme-handler/unknown" = xdgBrowser;
+    "x-scheme-handler/pie" = xdgHttpie;
     "application/pdf" = xdgPdfViewer;
     "application/json" = xdgEditor;
     "application/zip" = xdgFileBrowser;
@@ -88,6 +90,18 @@ in {
     #
 
     desktopEntries = {
+      httpie = {
+        name = "HTTPie";
+        type = "Application";
+        genericName = "Modern HTTP client for the API era";
+        exec =
+          "appimage-run /home/dnordstrom/Applications/httpie/HTTPie-2022.7.0.AppImage %F";
+        terminal = false;
+        icon = "httpie";
+        categories = [ "Utility" "Development" ];
+        mimeType = [ "x-scheme-handler/pie" ];
+        startupNotify = false;
+      };
       neovim-alacritty = {
         name = "Neovim (Alacritty)";
         type = "Application";
@@ -192,7 +206,6 @@ in {
     # Local
     #
 
-    # nordpkgs.ayu-mirage-theme-gtk
     nordpkgs.convox
 
     #
@@ -202,11 +215,8 @@ in {
     gnome.gnome-keyring
     haskellPackages.network-manager-tui
     libgnome-keyring
-    networkmanager_dmenu
     nm-tray
     openvpn
-    qview
-    speedtest-cli
     ytmdesktop
 
     #
@@ -222,6 +232,7 @@ in {
 
     appimage-run
     dmg2img
+    gcc
     dolphin
     element-desktop
     fractal
@@ -229,7 +240,6 @@ in {
     qbittorrent
     signal-desktop
     slack
-    spotify
     tor-browser-bundle-bin
     woeusb-ng
     zathura
@@ -240,9 +250,8 @@ in {
 
     awscli2
     bitwarden-cli
-    bottom # Resource monitor alternative to gotop
+    bottom
     fd
-    figlet
     gh
     glow
     gotktrix
@@ -258,7 +267,6 @@ in {
     usbutils
     vifm-full
     weechat
-    weechatScripts.weechat-matrix
     xclip
     xdotool
     xsel
@@ -271,6 +279,13 @@ in {
     zsh-fzf-tab
     zsh-nix-shell
     zsh-vi-mode
+
+    #
+    # Virtualization
+    #
+
+    winetricks
+    wineWowPackages.waylandFull
 
     #
     # Wayland
@@ -298,8 +313,6 @@ in {
 
     # Monitor
     wdisplays
-    wlsunset
-    gammastep
 
     # Launchers
     wofi
@@ -337,15 +350,12 @@ in {
     #
 
     tridactyl-native # Firefox native messaging host
-    luakit # GTK, WebKit, Lua
 
     #
     # Email
     #
 
     electron-mail
-    protonmail-bridge
-    thunderbird
 
     #
     # Security
@@ -369,17 +379,12 @@ in {
     cava
     celluloid # GTK frontend for MPV
     deadbeef-with-plugins
-    easyeffects
     handbrake
     haruna # QT frontend for MPV
     nordpkgs.hqplayer-desktop
     jamesdsp
     pulseaudio
     pulsemixer
-    spicetify-cli
-    spotify-qt
-    spotify-tui
-    spotifyd
 
     #
     # Audio plugins
@@ -423,7 +428,6 @@ in {
     nixpkgs-fmt # Another formatter
     nixpkgs-lint
     nixos-option
-    vgo2nix # Go modules to packages
     statix # Static analysis
 
     # Rust
@@ -473,26 +477,14 @@ in {
     # Fonts
     corefonts
     jetbrains-mono
-    line-awesome
     powerline-fonts
     victor-mono
     fcft # Font loading library used by foot
 
     # Qt libs
-    lightly-qt
     libsForQt5.ark
     libsForQt5.qtstyleplugin-kvantum
-    libsForQt5.qqc2-desktop-style
     libsForQt5.qtstyleplugins
-    libsForQt5.kwayland
-    libsForQt5.qt5.qtwayland
-    libsForQt5.qtcurve
-    libsForQt5.qt5.qtsvg
-    libsForQt5.grantleetheme
-    libsForQt5.qt5.qtquickcontrols
-    libsForQt5.qt5.qttools
-    libsForQt5.qt5.qtbase
-    qgnomeplatform
 
     # Theming
     gtk-engine-murrine
@@ -500,11 +492,9 @@ in {
     gsettings-desktop-schemas
     icoutils
     lxappearance
-    themechanger
-    glib.bin
+    # glib.bin
 
     # Themes
-    nordic # GTK, QT, and Kvantum
     vimix-icon-theme
     quintom-cursor-theme
 
@@ -517,12 +507,9 @@ in {
     neochat
     gomuks
     gotktrix
-    schildichat-desktop-wayland
     fluffychat
     etcher
     mdcat
-    mkchromecast
-    gnomecast
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
     corgi # CLI workflow manager
     navi # CLI cheatsheet tool
@@ -530,7 +517,6 @@ in {
     tmpmail # CLI temporary email generator
     httpie # HTTP client, simpler alternative to cURL
     curlie # HTTP client, simpler alternative to cURL
-    pcmanfm-qt
     yubikey-personalization-gui
     yubikey-personalization
     yubico-pam
@@ -545,11 +531,7 @@ in {
     git-crypt
     jetbrains.datagrip
     wezterm
-    cawbird # Twitter client
     bottles
-    qemu
-
-    # Calculator tryouts
     pro-office-calculator
 
     #
@@ -567,13 +549,6 @@ in {
   wayland.windowManager.sway = {
     enable = true;
     config = null;
-    systemdIntegration = true;
-
-    wrapperFeatures = {
-      base = true;
-      gtk = true;
-    };
-
     extraSessionCommands = ''
       # Firefox
       export MOZ_ENABLE_WAYLAND=1
@@ -1155,9 +1130,20 @@ in {
     pinentryFlavor = "qt";
   };
 
-  # Gnome Keyring required for ProtonMail Bridge according to package source
-
   services.gnome-keyring.enable = true;
+
+  services.gammastep = {
+    enable = true;
+    tray = true;
+    temperature = {
+      day = 6500;
+      night = 5000;
+    };
+    latitude = 63.2;
+    longitude = 17.3;
+  };
+
+  services.easyeffects.enable = true;
 
   #
   # Systemd

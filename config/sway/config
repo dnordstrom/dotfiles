@@ -10,8 +10,11 @@
 # Appearance
 #
 
-set $font Input Sans Condensed 9
-set $colors catppuccin
+set $font "Input Sans Compressed 8"
+set $colors "catppuccin"
+set $gtk-theme "Catppuccin-yellow"
+set $cursor-theme "Catppuccin-Teal-Cursors"
+set $icon-theme "Vimix-dark"
 
 set $termweatherwidth 920
 set $termweatherheight 920
@@ -552,6 +555,9 @@ for_window {
   [app_id="pinentry-qt"] floating enable
   [app_id="pinentry-gtk2"] floating enable
 
+  # About
+  [title="^About.*"] floating enable
+
   #
   # Launchers
   #
@@ -640,29 +646,27 @@ for_window {
 # STARTUP
 #
 
-exec /run/current-system/sw/libexec/polkit-gnome-authentication-agent-1
+exec {
+  /run/current-system/sw/libexec/polkit-gnome-authentication-agent-1
 
-# Start scratchpad terminal
+  # Scratchpad terminal
 
-exec $termscratch
+  $termscratch
 
-# Turn off monitor after 10 minutes and lock screen after 30 minutes
+  # Monitor idle
 
-exec swayidle -w \
-  timeout 900 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-  timeout 1800 '$lock' resume 'swaymsg "output * dpms on"' \
-  before-sleep '$lock'
+  swayidle -w \
+    timeout 900 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+    timeout 1800 '$lock' resume 'swaymsg "output * dpms on"' \
+    before-sleep '$lock'
+}
 
-# Don't turn off monitor if any app is fullscreen
+# Fullscreen prevents idle
 
 for_window {
   [class="^.*"] inhibit_idle fullscreen
   [app_id="^.*"] inhibit_idle fullscreen
 }
-
-# Start display temperature daemon
-
-exec_always pkill -USR1 gammastep ; gammastep -l "62.3:17.3" -t "6500:4500" -m wayland
 
 #
 # STATUS BAR
@@ -679,17 +683,23 @@ bar {
 set $gnome-schema org.gnome.desktop.interface
 
 exec_always {
-  gsettings set $gnome-schema gtk-theme "Catppuccin-yellow"
-  gsettings set $gnome-schema icon-theme "Vimix-dark"
-  gsettings set $gnome-schema cursor-theme "Catppuccin-Teal-Cursors"
-  gsettings set $gnome-schema font-name "Input Sans Compressed 8"
+  gsettings set $gnome-schema gtk-theme $gtk-theme
+  gsettings set $gnome-schema icon-theme $icon-theme
+  gsettings set $gnome-schema cursor-theme $cursor-theme
+  gsettings set $gnome-schema font-name $font
+
+  doas flatpak override --filesystem=$HOME/.themes
+  doas flatpak override --env=GTK_THEME=$gtk-theme
 }
 
 #
 # SYSTEMD & DBUS
 #
 
-exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+exec {
+  dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP && \
+  systemctl --user start sway-session.target
+}
 
 #
 # INCLUDES
