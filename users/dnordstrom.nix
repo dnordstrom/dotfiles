@@ -613,6 +613,10 @@ in {
 
   home.file.".scripts".source = ../scripts;
 
+  # Wallpapers
+
+  home.file."Pictures/Wallpapers".source = ../wallpapers;
+
   # EasyEffects
   #
   #   Settings directories are writable but presets direcotory read-only. This allows EasyEffects
