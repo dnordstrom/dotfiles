@@ -14,6 +14,9 @@
   time.timeZone = "Europe/Stockholm";
 
   nix.package = pkgs.nixUnstable;
+  nix.extraOptions = ''
+    experimental-features = nix-command flakes
+  '';
   nix.settings.trusted-users = [ "root" "dnordstrom" ];
 
   #
@@ -71,7 +74,7 @@
   # NETWORKING
   #
 
-  networking.hostName = "nordix";
+  networking.hostName = "nordixlap";
   networking.wireless.enable = false;
   networking.networkmanager.enable = true;
   networking.useDHCP = false;

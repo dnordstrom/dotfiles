@@ -80,6 +80,6 @@
       ];
 
       hosts.nordix.modules = [ ./hosts/ryzen.nix ];
-      hosts.nordixlap.modules = [ ./hosts/xps.nix ];
+      hosts.nordixlap.modules = [ ./hosts/dell-xps.nix ];
     };
 }
