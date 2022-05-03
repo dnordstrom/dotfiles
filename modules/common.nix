@@ -74,7 +74,7 @@
   # NETWORKING
   #
 
-  networking.hostName = "nordixlap";
+  networking.hostName = "nordix";
   networking.wireless.enable = false;
   networking.networkmanager.enable = true;
   networking.useDHCP = false;

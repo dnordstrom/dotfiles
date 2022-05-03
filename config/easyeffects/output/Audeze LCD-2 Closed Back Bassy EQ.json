@@ -3,7 +3,7 @@
         "blocklist": [],
         "crossfeed": {
             "fcut": 650,
-            "feed": 9.499999999999998,
+            "feed": 9.0,
             "input-gain": 0.0,
             "output-gain": 0.0
         },

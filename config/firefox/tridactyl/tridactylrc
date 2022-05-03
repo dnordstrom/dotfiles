@@ -364,7 +364,6 @@ bindreplaceprefix go `
 ""
 
 blacklistadd localhost
-blacklistadd protonmail.com
 blacklistadd mail.google.com
 blacklistadd calendar.google.com
 blacklistadd whimsical.com

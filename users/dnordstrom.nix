@@ -331,14 +331,6 @@ in {
     ydotool
 
     #
-    # UI toolkits and libraries
-    #
-
-    gdk-pixbuf
-    gnome.dconf-editor
-    gnome.nautilus
-
-    #
     # Office 
     #
 
@@ -487,12 +479,15 @@ in {
     libsForQt5.qtstyleplugins
 
     # Theming
+    gdk-pixbuf
+    glib.bin
+    gnome.dconf-editor
+    gnome.nautilus
+    gsettings-desktop-schemas
     gtk-engine-murrine
     gtk_engines
-    gsettings-desktop-schemas
     icoutils
     lxappearance
-    # glib.bin
 
     # Themes
     vimix-icon-theme
