@@ -364,8 +364,8 @@ nvim_set_keymap("v", "<C-f>", '"ay:%s/<C-r>a//g<Left><Left>', opts.nore)
 nvim_set_keymap("n", "<Leader>dd", "<Cmd>TroubleToggle<CR>", opts.nore)
 
 -- ...formatting
-nvim_set_keymap("n", "<Leader>df", "<Cmd>lua vim.lsp.buf.formatting()<CR>", opts.silent)
-nvim_set_keymap("n", "<Leader>dF", "<Cmd>lua vim.lsp.buf.range_formatting()<CR>", opts.silent)
+nvim_set_keymap("n", "<Leader>df", "<Cmd>lua vim.lsp.buf.format()<CR>", opts.silent)
+nvim_set_keymap("n", "<Leader>dF", "<Cmd>lua vim.lsp.buf.range_format()<CR>", opts.silent)
 
 -- ...refactoring
 nvim_set_keymap("n", "<F2>", '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.nore)

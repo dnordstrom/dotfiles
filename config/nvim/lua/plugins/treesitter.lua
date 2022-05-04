@@ -26,7 +26,7 @@ require("nvim-treesitter.configs").setup({
 		"yaml",
 	},
 	context_commentstring = {
-		enable = true,
+		enable = false, -- TODO: Enable again once fixed
 	},
 	textobjects = {
 		select = {

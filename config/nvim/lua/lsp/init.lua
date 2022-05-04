@@ -2,11 +2,16 @@
 -- LANGUAGE SERVERS AND TOOLS
 ----
 
+local nvim_create_augroup = vim.api.nvim_create_augroup
+local nvim_create_autocmd = vim.api.nvim_create_autocmd
+local nvim_clear_autocmds = vim.api.nvim_clear_autocmds
+local nvim_buf_get_option = vim.api.nvim_buf_get_option
+local format = vim.lsp.buf.format
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+local augroup_autoformat = vim.api.nvim_create_augroup("autoformat", {})
 local null_ls = require("null-ls")
 local lspconfig = require("lspconfig")
 local cmp_nvim_lsp = require("cmp_nvim_lsp")
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-local nvim_buf_get_option = vim.api.nvim_buf_get_option
 local autoload = {
 	"cssls",
 	"html",
@@ -24,18 +29,20 @@ local signs = {
 }
 
 local disable_formatting = function(client)
-	client.resolved_capabilities.document_formatting = false
-	client.resolved_capabilities.document_range_formatting = false
+	client.server_capabilities.documentFormattingProvider = false
+	client.server_capabilities.documentRangeFormattingProvider = false
 end
 
-local enable_formatting = function(client)
-	if client.resolved_capabilities.document_formatting then
-		vim.cmd([[
-      augroup autoformat
-      autocmd!
-      autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()
-      augroup end
-    ]])
+local enable_formatting = function(client, bufnr)
+	if client.server_capabilities.documentFormattingProvider then
+    nvim_clear_autocmds({ group = augroup_autoformat, buffer = bufnr })
+		nvim_create_autocmd("BufWritePre", {
+      group = augroup_autoformat,
+      buffer = bufnr,
+			callback = function()
+				format()
+			end,
+		})
 	end
 end
 

@@ -2,7 +2,7 @@
     "output": {
         "blocklist": [],
         "convolver": {
-            "input-gain": -10.0,
+            "input-gain": -6.8,
             "ir-width": 100,
             "kernel-path": "/home/dnordstrom/.config/easyeffects/irs/Dolby Headphone Studio.irs",
             "output-gain": 0.0

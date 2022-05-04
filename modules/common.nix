@@ -14,9 +14,9 @@
   time.timeZone = "Europe/Stockholm";
 
   nix.package = pkgs.nixUnstable;
-  nix.extraOptions = ''
-    experimental-features = nix-command flakes
-  '';
+  # nix.extraOptions = ''
+  #   experimental-features = nix-command flakes
+  # '';
   nix.settings.trusted-users = [ "root" "dnordstrom" ];
 
   #
