@@ -2,6 +2,7 @@
   description = "nordix system configuration";
 
   inputs = {
+    agenix =  { url = "github:ryantm/agenix"; };
     nixpkgs = { url = "github:NixOS/nixpkgs/nixos-unstable"; };
     nixpkgs-master = { url = "github:NixOS/nixpkgs/master"; };
     nixpkgs-wayland = {
@@ -30,7 +31,7 @@
     utils = { url = "github:gytis-ivaskevicius/flake-utils-plus"; };
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-master, nixpkgs-wayland
+  outputs = inputs@{ self, agenix, nixpkgs, nixpkgs-master, nixpkgs-wayland
     , nixpkgs-mozilla, home-manager, neovim-nightly-overlay, rust-overlay, utils
     , ... }:
     let
@@ -75,6 +76,7 @@
 
       hostDefaults.modules = [
         ./modules/common.nix
+        agenix.nixosModule
 
         home-manager.nixosModules.home-manager
         {

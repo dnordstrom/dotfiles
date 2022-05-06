@@ -603,7 +603,7 @@ in {
 
   # Secrets
 
-  home.file.".env".source = ../secrets/environment/env;
+  # home.file.".env".source = ../secrets/environment/env;
 
   # Scripts
 
