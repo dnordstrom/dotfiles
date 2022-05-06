@@ -223,6 +223,7 @@ in {
     # Nix
     #
 
+    agenix
     cachix
     nix-prefetch
 
@@ -598,12 +599,18 @@ in {
   };
 
   #
+  # SECRETS
+  #
+
+  age.secrets.env.file = ../secrets/environment/env.age;
+
+  #
   # CONFIGURATION FILES
   #
 
   # Secrets
 
-  # home.file.".env".source = ../secrets/environment/env;
+  home.file.".env".source = ../secrets/environment/env;
 
   # Scripts
 

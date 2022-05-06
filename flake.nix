@@ -2,7 +2,10 @@
   description = "nordix system configuration";
 
   inputs = {
-    agenix =  { url = "github:ryantm/agenix"; };
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixpkgs = { url = "github:NixOS/nixpkgs/nixos-unstable"; };
     nixpkgs-master = { url = "github:NixOS/nixpkgs/master"; };
     nixpkgs-wayland = {
@@ -51,6 +54,7 @@
       # };
       # firefox-nightly = { overlay = import "${moz-url}/firefox-overlay.nix"; };
       input-overlays = [
+        agenix.overlay
         nixpkgs-master-overlay
         nixpkgs-wayland.overlay
         nixpkgs-mozilla.overlay
