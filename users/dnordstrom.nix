@@ -232,10 +232,11 @@ in {
 
     appimage-run
     dmg2img
-    gcc
     dolphin
     element-desktop
+    ferdi
     fractal
+    gcc
     pavucontrol
     qbittorrent
     signal-desktop

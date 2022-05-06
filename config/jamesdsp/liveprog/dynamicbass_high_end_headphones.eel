@@ -3,13 +3,13 @@ author: VipersAudio, thepbone
 
 dBassGain:60<0,100,1>Bass strength (%)
 
-dX1:180<0,8000,1>Filter 1 Minimum frequency (Hz)
-dX2:5800<0,8000,1>Filter 1 Maximum frequency (Hz)
-dSideGainX:10<0,100,1>Filter 1 Side gain
+dX1:140<0,8000,1>Filter 1 Minimum frequency (Hz)
+dX2:6200<0,8000,1>Filter 1 Maximum frequency (Hz)
+dSideGainX:0<0,100,1>Filter 1 Side gain
 
-dY1:55<0,8000,1>Filter 2 Minimum frequency (Hz)
-dY2:80<0,8000,1>Filter 2 Maximum frequency (Hz)
-dSideGainY:70<0,100,1>Filter 2 Side gain
+dY1:80<0,8000,1>Filter 2 Minimum frequency (Hz)
+dY2:140<0,8000,1>Filter 2 Maximum frequency (Hz)
+dSideGainY:0<0,100,1>Filter 2 Side gain
 
 // DYNSYS PRESET LIST             x1,  x2,  y1,y2, s1,s2
 //("Extreme Headphone (v2)",    ({140 ,6200,40,60 ,10,80}))
@@ -34,12 +34,12 @@ dSideGainY:70<0,100,1>Filter 2 Side gain
 
 @init
 dBassGain = 100;
-dX1 = 180;
-dX2 = 5800;
+dX1 = 140;
+dX2 = 6200;
 dSideGainX = 10;
-dY1 = 55;
-dY2 = 80;
-dSideGainY = 70;
+dY1 = 40;
+dY2 = 60;
+dSideGainY = 80;
 
 function LowPassFilter_Set(frequency qFactor)(
     x = (frequency * 2.f * $PI) / srate;

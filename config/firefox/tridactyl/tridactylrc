@@ -130,9 +130,6 @@ command writeinstagram js (() => { const a = document.createElement('a'); const 
 " Open profile directory
 command openprofile js (async () => { await tri.native.run(`xdg-open ${await tri.native.getProfileDir()}`); })()
 
-" Open profile chrome directory
-command openchrome js (async () => { await tri.native.run(`xdg-open ${await tri.native.getProfileDir()}/chrome`); })()
-
 ""
 " KEY BINDS
 ""
@@ -142,16 +139,15 @@ command openchrome js (async () => { await tri.native.run(`xdg-open ${await tri.
 "
 
 " Escape also hides search highlights
-" bind <Escape> composite hidecmdline ; mode normal ; nohlsearch
+bind <Escape> composite hidecmdline ; mode normal ; nohlsearch
 
-" View configuration in Firefox's JSON viewer
+" View Tridactyl configuration as JSON
 bind <C-.> viewconfig
 
-" Open profile directory
-bind gp openprofile
-
-" Open profile chrome directory
-bind gP openchrome
+" Kill Firefox
+bind ZZ exclaim_quiet pkill firefox-bin
+bind ZA exclaim_quiet pkill firefox-bin
+bind ZQ exclaim_quiet pkill firefox-bin
 
 "
 " Reload
@@ -170,22 +166,28 @@ bind <Space>ny fillcmdline_note_selection
 bind <Space>np fillcmdline_note_clipboard
 
 "
-" Buffers/tabs
+" Go to or do
 "
 
-" List tabs
-bind <Space>bb fillcmdline taball
+" Open profile directory
+bind gd openprofile
 
-" Detatch or duplicate tab to new window
+" Go to Firefox profile manager
+bind gp open about:profiles
+bind gP tabopen about:profiles
+
+" Go to Firefox advanced configuration
+bind gc open about:config
+bind gC tabopen about:config
+
+" View Tridactyl config as JSON
+bind gv viewconfig
+
+" Detach tab
 bind gd tabdetach
-bind gD composite tabduplicate ; tabdetach
-bind <Space>bd tabdetach
-bind <Space>bD composite tabduplicate ; tabdetach
 
-" Kill all Firefox processes
-bind ZZ exclaim_quiet pkill firefox
-bind ZA exclaim_quiet pkill firefox
-bind ZQ exclaim_quiet pkill firefox
+" Detach tab duplicate
+bind gD composite tabduplicate ; tabdetach
 
 "
 " Search
@@ -213,15 +215,6 @@ bind <Space>wi writeinstagram
 "
 " Change
 "
-
-" Profile
-bind cp open about:profiles
-
-" Config
-bind cc open about:config
-
-" Settings
-bind cs fillcmdline set
 
 " Change container on capital C followed by another C for no container, W for work, and so on.
 " Multiple version created so that it doesn't matter if Shift is pressed or released on the second
