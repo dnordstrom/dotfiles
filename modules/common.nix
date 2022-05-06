@@ -335,7 +335,6 @@
   #
   # Systemd
   #
-  #
 
   systemd.services.systemd-udev-settle.enable = false;
 
@@ -374,6 +373,21 @@
     text = ''
       auth include login
     '';
+  };
+
+  #
+  # SECRETS
+  #
+
+  age = {
+    identityPaths = [ /home/dnordstrom/.ssh/id_ed25519 ];
+    secrets = {
+      env = {
+        file = ../secrets/env.age;
+        owner = "dnordstrom";
+        group = "users";
+      };
+    };
   };
 
   #

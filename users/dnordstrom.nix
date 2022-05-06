@@ -599,18 +599,12 @@ in {
   };
 
   #
-  # SECRETS
-  #
-
-  config.age.secrets.env.file = ../secrets/environment/env.age;
-
-  #
   # CONFIGURATION FILES
   #
 
   # Secrets
 
-  home.file.".env".source = ../secrets/environment/env;
+  # home.file.".env".source = ../secrets/environment/env;
 
   # Scripts
 
