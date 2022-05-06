@@ -602,7 +602,7 @@ in {
   # SECRETS
   #
 
-  age.secrets.env.file = ../secrets/environment/env.age;
+  config.age.secrets.env.file = ../secrets/environment/env.age;
 
   #
   # CONFIGURATION FILES
