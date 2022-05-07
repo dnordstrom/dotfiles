@@ -376,17 +376,17 @@ blacklistadd figma.com
 " DocLoad
 "
 
-# open.qobuz.com: Open Qobuz share links in the web player
+" open.qobuz.com: Redirect Qobuz share links to the web player like registered users would expect
 autocmd DocLoad open.qobuz.com urlmodify -t open.qobuz.com play.qobuz.com
-
-" Helpers
-autocmd DocLoad .* js N = { param(str) { new URLSearchParams(location.search).get(str); }, pathStart(str) { return location.pathname.startsWith(str); }, pathMatch(regex) { const matches = location.href.match(regex); return matches; }, log: console.log.bind(window, "%c N.log ", "background: #d8dee9; color: #2e3440; font-weight: bold;"), yank(str) { navigator.clipboard.writeText(str); }, yankLoud(str) { N.yank(str); N.notify(`Yanked "${str}"`); }, run(str) { tri.excmds.composite(str); }, notify(str) { N.run(`notify ${str}`); }, query(str) { return document.querySelector(str); }, queryAll(str) { return document.querySelectorAll(str); }, q(str) { return N.query(str); }, qa(str) { return N.queryAll(str); } }
 
 " search.nixos.org: Add copy to clipboard button
 autocmd DocLoad .*search\.nixos\.org/packages.+ js setTimeout(() => { const node = document.createElement('li'); const link = document.createElement('a'); node.appendChild(link); link.href = '#'; link.classList.add('copy-to-clipboard'); link.innerText = 'Copy to clipboard'; document.querySelectorAll('.package ul').forEach(links => { const clone = node.cloneNode(true); clone.firstElementChild.title = links.parentElement.getElementsByClassName('search-result-button')[0].textContent; links.appendChild(clone); }); document.addEventListener('click', event => {  if (event.target.classList.contains('copy-to-clipboard')) { navigator.clipboard.writeText(event.target.title); event.preventDefault(); } }) }, 3000);
 
 " nix-community.github.io/home-manager: Add copy to clipboard button
 autocmd DocLoad .*nix-community\.github\.io/home-manager/options\.html.* js document.querySelectorAll('dt span.term').forEach(node => { const dt = node.parentElement.nextElementSibling; const textEl = dt.querySelector('.programlisting') || dt.querySelector('.literal'); if (textEl) { const copy = document.createElement('span'); copy.appendChild(document.createTextNode(' - ')); copy.style.cursor = 'pointer'; const code = document.createElement('code'); code.className = 'copy'; code.setAttribute('data-copy', `${node.textContent} = ${textEl.textContent.trim()};`); code.appendChild(document.createTextNode('Copy to clipboard')); copy.appendChild(code); node.appendChild(copy); } }); document.querySelector('dl').addEventListener('click', event => { if (event.target.className === 'copy') { const text = event.target.getAttribute('data-copy'); navigator.clipboard.writeText(text); console.log(text); }});
+
+" all: Helpers
+autocmd DocLoad .* js N = { param(str) { new URLSearchParams(location.search).get(str); }, pathStart(str) { return location.pathname.startsWith(str); }, pathMatch(regex) { const matches = location.href.match(regex); return matches; }, log: console.log.bind(window, "%c N.log ", "background: #d8dee9; color: #2e3440; font-weight: bold;"), yank(str) { navigator.clipboard.writeText(str); }, yankLoud(str) { N.yank(str); N.notify(`Yanked "${str}"`); }, run(str) { tri.excmds.composite(str); }, notify(str) { N.run(`notify ${str}`); }, query(str) { return document.querySelector(str); }, queryAll(str) { return document.querySelectorAll(str); }, q(str) { return N.query(str); }, qa(str) { return N.queryAll(str); } }
 
 ""
 " NOTES

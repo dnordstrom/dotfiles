@@ -234,17 +234,23 @@ in {
     appimage-run
     dmg2img
     dolphin
-    element-desktop
-    ferdi
-    fractal
     gcc
     pavucontrol
     qbittorrent
-    signal-desktop
-    slack
     tor-browser-bundle-bin
     woeusb-ng
     zathura
+
+    #
+    # Communication
+    #
+
+    element-desktop
+    ferdi
+    fractal
+    signal-desktop
+    slack
+    slack-term
 
     #
     # Command line
