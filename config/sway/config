@@ -15,6 +15,7 @@ set $colors "catppuccin"
 set $gtk-theme "Catppuccin-yellow"
 set $cursor-theme "Catppuccin-Teal-Cursors"
 set $icon-theme "Vimix-dark"
+set $gnome-schema org.gnome.desktop.interface
 
 set $termweatherwidth 920
 set $termweatherheight 920
@@ -25,14 +26,14 @@ set $termpopupheight 900
 set $termplainwidth 920
 set $termplainheight 920
 
-set $termscratchwidth 1790
-set $termscratchheight 940
+set $termscratchwidth 1800
+set $termscratchheight 950
 
 set $fuzzytermwidth 600
 set $fuzzytermheight 350
 
-set $floatdefaultwidth 1000
-set $floatdefaultheight 800
+set $floatdefaultwidth 1280
+set $floatdefaultheight 820
 
 #
 # Keys
@@ -64,27 +65,22 @@ set $workspace10 10
 #
 
 # Terminals
-#   TODO: Make titles consistent with variables and adjust Waybar config accordingly.
-
 set $term kitty --title term --single-instance
 set $termpopup $term --title popupterm
 set $termplain $term --title plainterm
 set $termscratch $term --title scratchterm --session /etc/nixos/config/kitty/scratchpad.session
 
 # Launchers
-
 set $launchapp /etc/nixos/scripts/launch/launch-application
 set $launchcmd /etc/nixos/scripts/launch/launch-command
 set $launchgui wofi
 
 # Files
-
 set $filesqt5 dolphin
 set $filesgtk nautilus
 set $filestui $termpopup -e vifm
 
 # Screenshots
-
 set $snaparea grim -g "$(slurp)" - | swappy -f - -o "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png"
 set $snapfull grim -g "$(slurp -o)" - | swappy -f - -o "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png"
 
@@ -111,7 +107,6 @@ set $swayprops sh -c "swaymsg -t get_tree | jq '.. | select(.type?) | select(.fo
 set $swaypropsall sh -c "swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true)' > /tmp/sway-props.json && $termpopup -e -- bat --paging=always --style=plain --theme=Dracula /tmp/sway-props.json"
 
 # Lockscreen
-
 set $lock swaylock \
   --font "Input Sans Compressed" \
   --font-size 12 \
@@ -148,20 +143,17 @@ set $lock swaylock \
 # Appearance
 #
 
+# Font
 font pango:$font
 
 # Gaps
-
 gaps inner 12
 gaps outer 10
-
 smart_gaps off
 
 # Borders (pixel border type disables title bar)
-
 default_border pixel 4
 default_floating_border pixel 4
-
 hide_edge_borders smart_no_gaps
 
 #
@@ -209,7 +201,7 @@ output "DVI-D-1" {
 # INPUTS
 # 
 # Notes:
-#   - Using ID instead of "*" can prevent Firefox from crashing on configuration reload
+#   - Using IDs instead of "*" can prevent Firefox from crashing on configuration reload.
 #
 
 seat seat0 hide_cursor when-typing disable
@@ -240,9 +232,9 @@ input "1452:613:Apple_Inc._Magic_Trackpad_2" {
 # KEY MAPS
 #
 
-# Drag windows by holding down $mod and left mouse button.
-# Resize with right mouse button + $mod.
-# Change normal to inverse to use left button for resizing.
+# Floating windows
+#   Drag windows by holding down $mod.
+#   Resize windows with right mouse button and $mod (use `inverse` for left mouse button)
 floating_modifier $mod normal
 
 bindsym {
@@ -251,7 +243,7 @@ bindsym {
   #   Mod+Return -> FZF applications
   #   Mod+Shift+Return -> FZF commands
   #   Mod+Shift+Ctrl+Return -> GUI launcher
-  #   Mod+Shift+. -> GUI emoji picker
+  #   Mod+Shift+Period -> GUI emoji picker
   #
 
   $mod+d exec $launchapp
@@ -262,8 +254,8 @@ bindsym {
   #
   # Terminal emulators
   #   Mod+Return -> Plain
-  #   Mod+Shift+Return -> Scratchpad
-  #   Mod+Shift+Ctrl+Return -> Plain in scratchpad
+  #   Mod+Shift+Return -> Scratchpad split
+  #   Mod+Shift+Ctrl+Return -> Scratchpad plain
   #
 
   $mod+Return exec $term
@@ -292,21 +284,18 @@ bindsym {
   #
 
   # Focus windows
-
   $mod+$left focus left
   $mod+$down focus down
   $mod+$up focus up
   $mod+$right focus right
 
   # Move windows
-
   $mod+Shift+$left move left
   $mod+Shift+$down move down
   $mod+Shift+$up move up
   $mod+Shift+$right move right
 
   # Focus workspace: Number keys
-
   $mod+1 workspace number 1
   $mod+2 workspace number 2
   $mod+3 workspace number 3
@@ -319,21 +308,17 @@ bindsym {
   $mod+0 workspace number 10
 
   # Focus workspace: Mod+Tab switches, Alt+Tab cycles
-
   $mod+Tab workspace back_and_forth
-
   Alt+Tab workspace next_on_output
   Alt+Shift+Tab workspace prev_on_output
 
   # Focus workspace: HJKL
-  
   $mod+Alt+$left workspace prev_on_output
   $mod+Alt+$down workspace next_on_output
   $mod+Alt+$up workspace prev_on_output
   $mod+Alt+$right workspace next_on_output
 
   # Move window to workspace and focus
-
   $mod+Shift+1 move container to workspace number 1, workspace number 1
   $mod+Shift+2 move container to workspace number 2, workspace number 2
   $mod+Shift+3 move container to workspace number 3, workspace number 3
@@ -350,18 +335,12 @@ bindsym {
   #
   
   # Split direction
-
   $mod+b splith
   $mod+v splitv
 
   # Modes
-  
   $mod+Space focus mode_toggle
   $mod+Shift+Space floating toggle, resize set $floatdefaultwidth $floatdefaultheight
-
-  #
-  # Defaults
-  #
 
   $mod+s layout stacking
   $mod+w layout tabbed
@@ -384,7 +363,6 @@ bindsym {
   #
 
   # Audio
-  
   XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
   XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
   XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
@@ -396,7 +374,6 @@ bindsym {
 
 #
 # Vim mode
-#
 #   h -> left
 #   j -> down
 #   k -> up
@@ -430,7 +407,6 @@ bindsym $mod+n mode "$mode_vim"
 
 #
 # Screenshot mode
-#
 #   a -> Select area
 #   s -> Select screen
 #   PrintScr -> Select area
@@ -458,7 +434,6 @@ bindsym Print mode "$mode_snap"
 
 #
 # Resize mode
-#
 #   h -> Thinner
 #   j -> Taller
 #   k -> Shorter
@@ -490,7 +465,6 @@ bindsym $mod+r mode "$mode_resize"
 
 #
 # System mode
-#
 #   e -> Exit
 #   s -> Shutdown
 #   r -> Reboot
@@ -515,6 +489,14 @@ mode "$mode_system" {
 bindsym $mod+Backspace mode "$mode_system"
 
 #
+# Status bar
+#
+
+bar {
+  swaybar_command waybar
+}
+
+#
 # WINDOW ASSIGNMENTS
 #
 
@@ -531,15 +513,25 @@ for_window {
   # File managers
   #
 
-  [app_id="org.gnome.Nautilus"] floating enable, resize set $floatdefaultwidth $floatdefaultheight
-  [app_id="org.kde.dolphin"] floating enable, resize set $floatdefaultwidth $floatdefaultheight
-  [app_id="org.kde.krusader"] floating enable, resize set 1550 900
+  [app_id="org.gnome.Nautilus"] \
+    floating enable, \
+    resize set $floatdefaultwidth $floatdefaultheight
+
+  [app_id="org.kde.dolphin"] \
+    floating enable, \
+    resize set $floatdefaultwidth $floatdefaultheight
+
+  [app_id="org.kde.krusader"] \
+    floating enable, \
+    resize set 1550 900
 
   #
   # Image viewers/editors
   #
 
-  [app_id="vimiv"] floating enable, resize set $floatdefaultwidth $floatdefaultheight
+  [app_id="vimiv"] \
+    floating enable, \
+    resize set $floatdefaultwidth $floatdefaultheight
 
   #
   # Dialogs
@@ -551,12 +543,12 @@ for_window {
   [window_role="dialog"] floating enable
   [window_type="dialog"] floating enable
 
-  # Password
+  # Password entry
   [app_id="pinentry-qt"] floating enable
   [app_id="pinentry-gtk2"] floating enable
 
-  # About
-  [title="^About.*"] floating enable
+  # About (excludes About Profiles in Firefox)
+  [title="^About (?!Profiles).*$"] floating enable
 
   #
   # Launchers
@@ -568,12 +560,8 @@ for_window {
   # Tray
   #
 
-  [title="nm-tray"] floating enable, sticky enable
   [title="nmtui-edit"] floating enable
-  [title="Connection information"] floating enable
-  [instance="bitwarden"] floating enable
   [app_id="pavucontrol"] floating enable
-  [title="Volume Control"] floating enable
 
   
   #
@@ -581,46 +569,37 @@ for_window {
   #
 
   # Scratchpad
-
   [title="scratchterm"] \
     move scratchpad, \
     resize set $termscratchwidth $termscratchheight, \
     move position center
 
+  # Scratchpad (fullscreen)
   [title="scratchterm" con_mark="fullterm"] \
     fullscreen enable
 
-  # Scratchpad (small)
-
+  # Scratchpad (plain)
   [title="plainterm"] \
     move scratchpad, \
     resize set $termplainwidth $termplainheight, \
     move position center
 
+  # Scratchpad (plain fullscreen)
   [title="plainterm" con_mark="fullterm"] \
     fullscreen enable
 
-  # Popup
-
+  # Popups (e.g. btm and wttr.in)
   [title="popupterm"] \
     floating enable, \
     resize set $termpopupwidth $termpopupheight
 
-  # Weather
-
-  [app_id="vimiv"] \
-    floating enable, \
-    resize set $termweatherwidth $termweatherheight
-
-  # Launcher
-
+  # Launchers
   [title="fuzzyterm"] \
     floating enable, \
     sticky enable, \
     resize set $fuzzytermwidth $fuzzytermheight
 
   # Transparent
-
   [title="transterm"] border none
 
   #
@@ -633,54 +612,49 @@ for_window {
   # Utilities
   #
 
-  # qt5ct
+  [app_id="vimiv"] \
+    floating enable, \
+    resize set $termweatherwidth $termweatherheight
 
   [app_id="qt5ct"] floating enable, resize set 1100 900
 
-  # Kvantum Manager
+  [title="Kvantum Manager"] floating enable, resize set $floatdefaultwidth $floatdefaultheight
 
-  [title="Kvantum Manager"] floating enable, resize set 1200 860
+  [title="Bitwarden"] floating enable, resize set $floatdefaultwidth $floatdefaultheight
+
+  #
+  # Miscellaneous
+  #
+
+  # Prevent idle when apps are fullscreen
+  [class="^.*"] inhibit_idle fullscreen
+  [app_id="^.*"] inhibit_idle fullscreen
 }
 
 #
 # STARTUP
 #
 
+#
+# Execute on login
+#
+
 exec {
   /run/current-system/sw/libexec/polkit-gnome-authentication-agent-1
 
   # Scratchpad terminal
-
   $termscratch
 
   # Monitor idle
-
   swayidle -w \
     timeout 900 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
     timeout 1800 '$lock' resume 'swaymsg "output * dpms on"' \
     before-sleep '$lock'
 }
 
-# Fullscreen prevents idle
-
-for_window {
-  [class="^.*"] inhibit_idle fullscreen
-  [app_id="^.*"] inhibit_idle fullscreen
-}
-
 #
-# STATUS BAR
+# Execute on login and reload
 #
-
-bar {
-  swaybar_command waybar
-}
-
-#
-# GTK SETTINGS
-#
-
-set $gnome-schema org.gnome.desktop.interface
 
 exec_always {
   gsettings set $gnome-schema gtk-theme $gtk-theme

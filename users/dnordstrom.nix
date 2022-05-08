@@ -205,8 +205,12 @@ in {
     #
     # Local
     #
+    # Either grabbed from the nixpkgs GitHub repository and patched to use newer versions, or custom
+    # package derivations not available in the repository.
+    #
 
-    nordpkgs.convox
+    nordpkgs.convox # Not in nixpkgs
+    nordpkgs.hqplayer-desktop # Outdated in nixpkgs
 
     #
     # Networking
@@ -215,9 +219,7 @@ in {
     gnome.gnome-keyring
     haskellPackages.network-manager-tui
     libgnome-keyring
-    nm-tray
     openvpn
-    ytmdesktop
 
     #
     # Nix
@@ -234,10 +236,8 @@ in {
     appimage-run
     dmg2img
     dolphin
-    gcc
     pavucontrol
     qbittorrent
-    tor-browser-bundle-bin
     woeusb-ng
     zathura
 
@@ -342,13 +342,13 @@ in {
     # Office 
     #
 
-    # Fresh is the possibly unstable newer build, otherwise use libreoffice-qt or libreoffice-still
     libreoffice-fresh
 
     #
     # Web browsing
     #
 
+    tor-browser-bundle-bin
     tridactyl-native # Firefox native messaging host
 
     #
@@ -379,9 +379,9 @@ in {
     cava
     celluloid # GTK frontend for MPV
     deadbeef-with-plugins
+    easyeffects # To run as service, use `services.easyeffects` instead (messes with JamesDSP)
     handbrake
     haruna # QT frontend for MPV
-    nordpkgs.hqplayer-desktop
     jamesdsp
     pulseaudio
     pulsemixer
@@ -405,6 +405,9 @@ in {
     # Development
     #
 
+    # General
+    gcc
+
     # Editors
     kate
 
@@ -425,10 +428,8 @@ in {
 
     # Nix
     nixfmt # Opinionated formatter, used by null-ls
-    nixpkgs-fmt # Another formatter
-    nixpkgs-lint
-    nixos-option
-    statix # Static analysis
+    nixos-option # Finds option values and where they're declared
+    statix # Static analysis, used by null-ls
 
     # Rust
     rust-bin.stable.latest.default
@@ -480,8 +481,9 @@ in {
     powerline-fonts
     victor-mono
     fcft # Font loading library used by foot
+    font-manager
 
-    # Qt libs
+    # Qt libs/apps
     libsForQt5.ark
     libsForQt5.qtstyleplugin-kvantum
     libsForQt5.qtstyleplugins
@@ -607,6 +609,13 @@ in {
   #
   # CONFIGURATION FILES
   #
+  # Most configuration files are stored in their normal format and here symlinked into ~/.config or
+  # wherever appropriate, even for software like Sway WM which can be configured via Home Manager.
+  #
+  # This is for portability reasons to make the files easier to both share with others and work on.
+  # For example, this makes it simple to copy and paste defaults or snippets from online sources,
+  # and the files remain useful for those not using NixOS or Home Manager.
+  #
 
   # Secrets
 
@@ -625,6 +634,8 @@ in {
   #   Settings directories are writable but presets direcotory read-only. This allows EasyEffects
   #   to modify its settings while the presets are immutable since that's where the important
   #   presets are saved.
+  #
+  #   Also see `services.easyeffects` for background service.
 
   xdg.configFile."easyeffects/output".source =
     config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/easyeffects/output;
@@ -806,12 +817,15 @@ in {
     config = {
       # Disable annoyances
       "browser.aboutConfig.showWarning" = false;
-      "browser.bookmarks.restore_default_bookmarks" = false;
       "browser.shell.checkDefaultBrowser" = false;
+      "browser.bookmarks.restore_default_bookmarks" = false;
       "extensions.webextensions.restrictedDomains" = "";
 
       # Enable userChrome.css and userContent.css
       "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+
+      # Enable showing compact mode option
+      "browser.compactmode.show" = true;
 
       # Enable legacy screen share indicator that works better in Wayland
       "privacy.webrtc.legacyGlobalIndicator" = false;
@@ -837,6 +851,11 @@ in {
       testing = {
         id = 2;
         name = "Testing";
+        settings = config;
+      };
+      music = {
+        id = 3;
+        name = "Music";
         settings = config;
       };
     };
@@ -1150,7 +1169,8 @@ in {
     longitude = 17.3;
   };
 
-  services.easyeffects.enable = true;
+  # If tis is false, remember to use the easyeffects package instead
+  services.easyeffects.enable = false;
 
   #
   # Systemd

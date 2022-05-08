@@ -1,6 +1,9 @@
 {
     "output": {
-        "blocklist": [],
+        "blocklist": [
+            "Nightly",
+            "PipeWire ALSA [signal-desktop]"
+        ],
         "convolver": {
             "input-gain": -6.8,
             "ir-width": 100,

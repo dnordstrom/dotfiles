@@ -58,7 +58,6 @@
         nixpkgs-master-overlay
         nixpkgs-wayland.overlay
         nixpkgs-mozilla.overlay
-        # firefox-nightly.overlay
         neovim-nightly-overlay.overlay
         rust-overlay.overlay
       ];
