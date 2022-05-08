@@ -49,6 +49,7 @@ set smoothscroll true
 set tabopencontaineraware true
 set visualenterauto true
 set viewsource tridactyl
+set rsscmd rsssave %u
 
 "
 " Search
@@ -130,6 +131,16 @@ command writeinstagram js (() => { const a = document.createElement('a'); const 
 " Open profile directory
 command openprofile js (async () => { await tri.native.run(`xdg-open ${await tri.native.getProfileDir()}`); })()
 
+" Open RSS feed in Feedly
+command rsssave jsb -p (async () => { await tri.excmds.tabopen(`https://feedly.com/i/subscription/feed/${encodeURIComponent(JS_ARG)}`); })()
+
+""
+" ALIASES
+""
+
+alias so source
+alias rss rssexec
+
 ""
 " KEY BINDS
 ""
@@ -139,10 +150,10 @@ command openprofile js (async () => { await tri.native.run(`xdg-open ${await tri
 "
 
 " Restore Ctrl+F for normal search since we're using / and ?
-unbind <C-f>
+unbind --mode=normal <C-f>
 
 " Restore Ctrl+B to show sidebar since it's useful, and Ctrl+B without Ctrl+F feels weird
-unbind <C-b>
+unbind --mode=normal <C-b>
 
 " Escape also hides search highlights
 bind <Escape> composite hidecmdline ; mode normal ; nohlsearch
