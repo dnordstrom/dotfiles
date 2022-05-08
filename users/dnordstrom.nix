@@ -836,7 +836,7 @@ in {
     };
   in {
     enable = true;
-    package = pkgs.latest.firefox-nightly-bin;
+    package = pkgs.firefox-nightly-bin;
     profiles = {
       default = {
         id = 0;

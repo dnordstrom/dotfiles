@@ -22,6 +22,22 @@
     },
     "cachix": {
       "locked": {
+        "lastModified": 1635350005,
+        "narHash": "sha256-tAMJnUwfaDEB2aa31jGcu7R7bzGELM9noc91L2PbVjg=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "1c1f5649bb9c1b0d98637c8c365228f57126f361",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-20.09",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "cachix_2": {
+      "locked": {
         "lastModified": 1651310835,
         "narHash": "sha256-MLk/zsLlbPhwFucxL64Fr+oIrvQC2/76Ap2F7ekbPNI=",
         "owner": "nixos",
@@ -33,6 +49,28 @@
         "owner": "nixos",
         "ref": "nixos-21.11",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "firefox-nightly": {
+      "inputs": {
+        "cachix": "cachix",
+        "mozilla": "mozilla",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1651970173,
+        "narHash": "sha256-4EKgEyKEXvsy2MIS1R/IkIL2rOEfaBaFuJYYiXiZv30=",
+        "owner": "colemickens",
+        "repo": "flake-firefox-nightly",
+        "rev": "2512b4f4cf5b4a748d2593e235233e01278bc858",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colemickens",
+        "repo": "flake-firefox-nightly",
         "type": "github"
       }
     },
@@ -133,6 +171,22 @@
         "type": "github"
       }
     },
+    "mozilla": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1651008893,
+        "narHash": "sha256-N6xPE/wNynlKhDSGxvYKkX9PJFsENIXR/RMVc9NzILU=",
+        "owner": "colemickens",
+        "repo": "nixpkgs-mozilla",
+        "rev": "dac859ea535d8abcd2146346d1dca1ee8fc50210",
+        "type": "github"
+      },
+      "original": {
+        "owner": "colemickens",
+        "repo": "nixpkgs-mozilla",
+        "type": "github"
+      }
+    },
     "neovim-flake": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -209,24 +263,9 @@
         "type": "github"
       }
     },
-    "nixpkgs-mozilla": {
-      "locked": {
-        "lastModified": 1648195945,
-        "narHash": "sha256-4P8lXb5p3CaPnKliPYt8UdYhVKYH8NfQ3By/twux52Y=",
-        "owner": "marcenuc",
-        "repo": "nixpkgs-mozilla",
-        "rev": "201b4b5bdf053a2dde53950ae2de91fdf14c5975",
-        "type": "github"
-      },
-      "original": {
-        "owner": "marcenuc",
-        "repo": "nixpkgs-mozilla",
-        "type": "github"
-      }
-    },
     "nixpkgs-wayland": {
       "inputs": {
-        "cachix": "cachix",
+        "cachix": "cachix_2",
         "flake-compat": "flake-compat_2",
         "nixpkgs": [
           "nixpkgs"
@@ -281,11 +320,11 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
+        "firefox-nightly": "firefox-nightly",
         "home-manager": "home-manager",
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-master": "nixpkgs-master",
-        "nixpkgs-mozilla": "nixpkgs-mozilla",
         "nixpkgs-wayland": "nixpkgs-wayland",
         "rust-overlay": "rust-overlay",
         "utils": "utils"

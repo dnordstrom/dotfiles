@@ -38,7 +38,7 @@ colorscheme catppuccin
 " General
 "
 
-set newtab https://nordix.blue#photo
+set newtab about:blank
 set allowautofocus false
 set editorcmd kitty --class popupterm -e nvim %f "+normal!%lGzv%c|"
 set hintchars fdsqjklmrezauiopwxcvghtybn
@@ -137,6 +137,12 @@ command openprofile js (async () => { await tri.native.run(`xdg-open ${await tri
 "
 " General
 "
+
+" Restore Ctrl+F for normal search since we're using / and ?
+unbind <C-f>
+
+" Restore Ctrl+B to show sidebar since it's useful, and Ctrl+B without Ctrl+F feels weird
+unbind <C-b>
 
 " Escape also hides search highlights
 bind <Escape> composite hidecmdline ; mode normal ; nohlsearch
