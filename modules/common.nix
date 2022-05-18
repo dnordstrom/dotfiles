@@ -110,6 +110,8 @@
     '';
   };
 
+  services.openssh.enable = true;
+
   services.blueman.enable = true;
 
   services.udev.packages = [ pkgs.nordpkgs.udev-rules ];
@@ -384,6 +386,7 @@
     secrets = {
       env = {
         file = ../secrets/env.age;
+        path = "/home/dnordstrom/.env";
         owner = "dnordstrom";
         group = "users";
       };

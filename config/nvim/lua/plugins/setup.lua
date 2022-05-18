@@ -34,7 +34,7 @@ return require("packer").startup(function(use)
 
 	-- Lines
 
-	use({ "famiu/feline.nvim", branch = "develop" })
+	use({ "famiu/feline.nvim", branch = "master" })
 	use({ "noib3/cokeline.nvim", requires = devicons })
 
 	-- Colorscheme
@@ -75,6 +75,7 @@ return require("packer").startup(function(use)
 	use({ "LnL7/vim-nix" })
 	use({ "fladson/vim-kitty" })
 	use({ "tpope/vim-markdown" })
+	use({ "tridactyl/vim-tridactyl" })
 	use({ "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" })
 	use({ "nvim-treesitter/nvim-treesitter-textobjects" })
 

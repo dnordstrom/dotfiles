@@ -10,12 +10,14 @@
 # Appearance
 #
 
+set $schema-gnome-interface org.gnome.desktop.interface
+set $schema-gnome-wm-preferences org.gnome.desktop.wm.preferences
+
 set $font "Input Sans Compressed 8"
 set $colors "catppuccin"
-set $gtk-theme "Catppuccin-yellow"
-set $cursor-theme "Catppuccin-Teal-Cursors"
+set $theme "Catppuccin-yellow"
+set $cursor-theme "Quintom_Snow"
 set $icon-theme "Vimix-dark"
-set $gnome-schema org.gnome.desktop.interface
 
 set $termweatherwidth 920
 set $termweatherheight 920
@@ -657,10 +659,11 @@ exec {
 #
 
 exec_always {
-  gsettings set $gnome-schema gtk-theme $gtk-theme
-  gsettings set $gnome-schema icon-theme $icon-theme
-  gsettings set $gnome-schema cursor-theme $cursor-theme
-  gsettings set $gnome-schema font-name $font
+  gsettings set $schema-gnome-wm-preferences button-layout $button-layout
+  gsettings set $schema-gnome-interface gtk-theme $gtk-theme
+  gsettings set $schema-gnome-interface icon-theme $icon-theme
+  gsettings set $schema-gnome-interface cursor-theme $cursor-theme
+  gsettings set $schema-gnome-interface font-name $font
 
   doas flatpak override --filesystem=$HOME/.themes
   doas flatpak override --env=GTK_THEME=$gtk-theme

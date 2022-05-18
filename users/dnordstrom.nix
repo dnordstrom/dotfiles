@@ -356,6 +356,7 @@ in {
     #
 
     electron-mail
+    thunderbird
 
     #
     # Security
@@ -406,6 +407,7 @@ in {
     #
 
     # General
+    cloudflared # Cloudflare Tunnel daemon for giving remote access to localhost
     gcc
 
     # Editors
@@ -513,6 +515,9 @@ in {
     gomuks
     gotktrix
     fluffychat
+    nheko
+    schildichat-desktop-wayland
+    mirage-im
     etcher
     mdcat
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
@@ -616,10 +621,6 @@ in {
   # For example, this makes it simple to copy and paste defaults or snippets from online sources,
   # and the files remain useful for those not using NixOS or Home Manager.
   #
-
-  # Secrets
-
-  home.file.".env".source = /run/agenix/env;
 
   # Scripts
 

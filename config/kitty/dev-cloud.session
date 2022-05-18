@@ -1,6 +1,34 @@
+##
+# LAUNCH LOCAL DEVELOPMENT ENVIRONMENT
+##
+
 #
-# START DEVELOPMENT SERVERS AND PROXIES
+# EDITORS
 #
+
+new_tab Editors
+
+enabled_layouts horizontal
+
+cd ~/Code/ticker
+launch --title "Frontend editor"
+launch zsh -c "sleep 1 && kitty @ send-text --match title:'^Frontend editor$' 'nvim'"
+
+#
+# SERVERS
+#
+
+new_tab Servers
+
+enabled_layouts horizontal
+
+cd ~/Code/ticker
+launch --title "Frontend server"
+launch zsh -c "sleep 1 && kitty @ send-text --match title:'^Frontend server$' 'yarn && yarn dev'"
+
+cd ~/Code/ticker-backend
+launch --title "Backend server" -- nix-shell /etc/nixos/shell/node12.nix --command zsh
+launch zsh -c "sleep 1 && kitty @ send-text --match title:'^Backend server$' 'yarn && yarn dev'"
 
 #
 # SHELLS
@@ -17,50 +45,14 @@ cd ~/Code/ticker-backend
 launch --title "Backend shell" -- nix-shell /etc/nixos/shell/node12.nix --command zsh
 
 #
-# EDITORS
-#
-
-new_tab Editors
-
-enabled_layouts horizontal
-
-cd ~/Code/ticker
-launch --title "Frontend editor" -- zsh -c vim
-
-cd ~/Code/ticker-backend
-launch --title "Backend editor" -- nix-shell /etc/nixos/shell/node12.nix --command zsh -c vim
-
-#
-# SERVERS
-#
-
-new_tab Servers
-
-enabled_layouts horizontal
-
-cd ~/Code/ticker
-launch --title "Frontend server"
-
-cd ~/Code/ticker-backend
-launch --title "Backend server" nix-shell /etc/nixos/shell/node12.nix --command zsh
-
-# Prefill command lines (delay for zsh launch)
-
-launch zsh -c "sleep 1 && kitty @ send-text --match title:'^Frontend server$' 'yarn && yarn dev'"
-launch zsh -c "sleep 1 && kitty @ send-text --match title:'^Backend server$' 'yarn && yarn dev'"
-
-#
 # PROXIES
 #
 
-new_tab Proxies
+new_tab VPN
 
 enabled_layouts vertical
 
-launch --title "Proxy" /etc/nixos/secrets/convox-proxy-engine-test.sh
-launch --title "Proxy" /etc/nixos/secrets/convox-proxy-engine-analytics-test.sh
-launch --title "Proxy" /etc/nixos/secrets/convox-proxy-icc-test.sh
-launch --title "Proxy" /etc/nixos/secrets/convox-proxy-estimates-test.sh
-launch --title "Proxy" /etc/nixos/secrets/convox-proxy-chronos-test.sh
+launch --title "VPN"
+launch zsh -c "sleep 1 && kitty @ send-text --match title:'^VPN$' 'openvpn3 session-start -c leeroy || openvpn3 config-import --config ~/Secrets/openvpn/leeroy.ovpn --name leeroy --persistent && openvpn3 session-start -c leeroy'"
 
 # vim:ft=kitty

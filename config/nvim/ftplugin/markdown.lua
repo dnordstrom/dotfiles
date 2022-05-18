@@ -3,14 +3,21 @@
 ----
 
 --
+-- Shortcuts
+--
+
+local opt = vim.opt
+local nvim_set_keymap = vim.api.nvim_set_keymap
+
+--
 -- Options
 --
 
-vim.opt.foldenable = false
-vim.opt.spell = true
+opt.foldenable = false
+opt.spell = true
 
 --
 -- Key maps
 --
 
-vim.api.nvim_set_keymap("n", "<Leader>p", "<Cmd>Glow<CR>", {noremap = true})
+nvim_set_keymap("n", "<Leader>p", "<Cmd>Glow<CR>", { noremap = true })
