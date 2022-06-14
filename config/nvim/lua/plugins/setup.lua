@@ -110,6 +110,12 @@ return require("packer").startup(function(use)
 
 	use({ "numToStr/Comment.nvim" })
 	use({ "JoosepAlviste/nvim-ts-context-commentstring" })
+	use({
+		"danymat/neogen",
+		config = function()
+			require("neogen").setup({ snippet_engine = "luasnip" })
+		end,
+	})
 
 	--
 	-- Utilities

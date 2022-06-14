@@ -11,13 +11,23 @@
   # GENERAL
   #
 
+  # Configuration version
+  system.stateVersion = "22.11";
+
+  # Set correct time-zone
   time.timeZone = "Europe/Stockholm";
 
+  # Use unstable `nix`
   nix.package = pkgs.nixUnstable;
-  # nix.extraOptions = ''
-  #   experimental-features = nix-command flakes
-  # '';
+
+  # Users with elevated `nix` command privileges
   nix.settings.trusted-users = [ "root" "dnordstrom" ];
+
+  # Max concurrent derivation builds
+  nix.settings.max-jobs = 1;
+
+  # Max cores per derivation build
+  nix.settings.cores = 8;
 
   #
   # Optimization
@@ -77,6 +87,7 @@
   networking.hostName = "nordix";
   networking.wireless.enable = false;
   networking.networkmanager.enable = true;
+  networking.firewall.enable = false;
   networking.useDHCP = false;
 
   #
@@ -427,7 +438,7 @@
         package = pkgs.qemu_kvm;
         ovmf = {
           enable = true;
-          package = pkgs.OVMFFull;
+          packages = [ pkgs.OVMFFull ];
         };
         swtpm.enable = true;
       };

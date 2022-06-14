@@ -1,0 +1,923 @@
+/**
+ * CATPPUCCIN FOR CODEMIRROR
+ */
+
+/**
+ * PALETTE
+ */
+
+:root {
+  /**
+   * Rosewater
+   */
+  
+  --ctp-latte-rosewater: #de9584;
+  --ctp-latte-rosewater-rgb: rgb(222, 149, 132);
+  --ctp-latte-rosewater-hsl: hsl(11, 58%, 69%);
+  
+  --ctp-frappe-rosewater: #f2d5cf;
+  --ctp-frappe-rosewater-rgb: rgb(242, 213, 207);
+  --ctp-frappe-rosewater-hsl: hsl(10, 57%, 88%);
+  
+  --ctp-macchiato-rosewater: #f4dbd6;
+  --ctp-macchiato-rosewater-rgb: rgb(244, 219, 214);
+  --ctp-macchiato-rosewater-hsl: hsl(10, 58%, 90%);
+  
+  --ctp-mocha-rosewater: #f5e0dc;
+  --ctp-mocha-rosewater-rgb: rgb(245, 224, 220);
+  --ctp-mocha-rosewater-hsl: hsl(10, 56%, 91%);
+  
+  /**
+   * Flamingo
+   */
+  
+  --ctp-latte-flamingo: #dd7878;
+  --ctp-latte-flamingo-rgb: rgb(221, 120, 120);
+  --ctp-latte-flamingo-hsl: hsl(0, 60%, 67%);
+  
+  --ctp-frappe-flamingo: #eebebe;
+  --ctp-frappe-flamingo-rgb: rgb(238, 190, 190);
+  --ctp-frappe-flamingo-hsl: hsl(0, 59%, 84%);
+  
+  --ctp-macchiato-flamingo: #f0c6c6;
+  --ctp-macchiato-flamingo-rgb: rgb(240, 198, 198);
+  --ctp-macchiato-flamingo-hsl: hsl(0, 58%, 86%);
+  
+  --ctp-mocha-flamingo: #f2cdcd;
+  --ctp-mocha-flamingo-rgb: rgb(242, 205, 205);
+  --ctp-mocha-flamingo-hsl: hsl(0, 59%, 88%);
+  
+  /**
+   * Pink
+   */
+  
+  --ctp-latte-pink: #ec83d0;
+  --ctp-latte-pink-rgb: rgb(236, 131, 208);
+  --ctp-latte-pink-hsl: hsl(316, 73%, 72%);
+  
+  --ctp-frappe-pink: #f4b8e4;
+  --ctp-frappe-pink-rgb: rgb(244, 184, 228);
+  --ctp-frappe-pink-hsl: hsl(316, 73%, 84%);
+  
+  --ctp-macchiato-pink: #f5bde6;
+  --ctp-macchiato-pink-rgb: rgb(245, 189, 230);
+  --ctp-macchiato-pink-hsl: hsl(316, 74%, 85%);
+  
+  --ctp-mocha-pink: #f5c2e7;
+  --ctp-mocha-pink-rgb: rgb(245, 194, 231);
+  --ctp-mocha-pink-hsl: hsl(316, 72%, 86%);
+  
+  /**
+   * Mauve
+   */
+  
+  --ctp-latte-mauve: #8839ef;
+  --ctp-latte-mauve-rgb: rgb(136, 57, 239);
+  --ctp-latte-mauve-hsl: hsl(266, 85%, 58%);
+  
+  --ctp-frappe-mauve: #ca9ee6;
+  --ctp-frappe-mauve-rgb: rgb(202, 158, 230);
+  --ctp-frappe-mauve-hsl: hsl(277, 59%, 76%);
+  
+  --ctp-macchiato-mauve: #c6a0f6;
+  --ctp-macchiato-mauve-rgb: rgb(198, 160, 246);
+  --ctp-macchiato-mauve-hsl: hsl(267, 83%, 80%);
+  
+  --ctp-mocha-mauve: #cba6f7;
+  --ctp-mocha-mauve-rgb: rgb(203, 166, 247);
+  --ctp-mocha-mauve-hsl: hsl(267, 84%, 81%);
+  
+  --ctp-latte-red: #d20f39;
+  --ctp-latte-red-rgb: rgb(210, 15, 57);
+  --ctp-latte-red-hsl: hsl(347, 87%, 44%);
+  
+  /**
+   * Red
+   */
+  
+  --ctp-frappe-red: #e78284;
+  --ctp-frappe-red-rgb: rgb(231, 130, 132);
+  --ctp-frappe-red-hsl: hsl(359, 68%, 71%);
+  
+  --ctp-macchiato-red: #ed8796;
+  --ctp-macchiato-red-rgb: rgb(237, 135, 150);
+  --ctp-macchiato-red-hsl: hsl(351, 74%, 73%);
+  
+  --ctp-mocha-red: #f38ba8;
+  --ctp-mocha-red-rgb: rgb(243, 139, 168);
+  --ctp-mocha-red-hsl: hsl(343, 81%, 75%);
+  
+  /**
+   * Maroon
+   */
+  
+  --ctp-latte-maroon: #e64553;
+  --ctp-latte-maroon-rgb: rgb(230, 69, 83);
+  --ctp-latte-maroon-hsl: hsl(355, 76%, 59%);
+  
+  --ctp-frappe-maroon: #ea999c;
+  --ctp-frappe-maroon-rgb: rgb(234, 153, 156);
+  --ctp-frappe-maroon-hsl: hsl(358, 66%, 76%);
+  
+  --ctp-macchiato-maroon: #ee99a0;
+  --ctp-macchiato-maroon-rgb: rgb(238, 153, 160);
+  --ctp-macchiato-maroon-hsl: hsl(355, 71%, 77%);
+  
+  --ctp-mocha-maroon: #eba0ac;
+  --ctp-mocha-maroon-rgb: rgb(235, 160, 172);
+  --ctp-mocha-maroon-hsl: hsl(350, 65%, 77%);
+  
+  /**
+   * Peach
+   */
+  
+  --ctp-latte-peach: #fe640b;
+  --ctp-latte-peach-rgb: rgb(254, 100, 11);
+  --ctp-latte-peach-hsl: hsl(22, 99%, 52%);
+  
+  --ctp-frappe-peach: #ef9f76;
+  --ctp-frappe-peach-rgb: rgb(239, 159, 118);
+  --ctp-frappe-peach-hsl: hsl(20, 79%, 70%);
+  
+  --ctp-macchiato-peach: #f5a97f;
+  --ctp-macchiato-peach-rgb: rgb(245, 169, 127);
+  --ctp-macchiato-peach-hsl: hsl(21, 86%, 73%);
+  
+  --ctp-mocha-peach: #fab387;
+  --ctp-mocha-peach-rgb: rgb(250, 179, 135);
+  --ctp-mocha-peach-hsl: hsl(23, 92%, 75%);
+  
+  /**
+   * Yellow
+   */
+  
+  --ctp-latte-yellow: #e49320;
+  --ctp-latte-yellow-rgb: rgb(228, 147, 32);
+  --ctp-latte-yellow-hsl: hsl(35, 78%, 51%);
+  
+  --ctp-frappe-yellow: #e5c890;
+  --ctp-frappe-yellow-rgb: rgb(229, 200, 144);
+  --ctp-frappe-yellow-hsl: hsl(40, 62%, 73%);
+  
+  --ctp-macchiato-yellow: #eed49f;
+  --ctp-macchiato-yellow-rgb: rgb(238, 212, 159);
+  --ctp-macchiato-yellow-hsl: hsl(40, 70%, 78%);
+  
+  --ctp-mocha-yellow: #f9e2af;
+  --ctp-mocha-yellow-rgb: rgb(249, 226, 175);
+  --ctp-mocha-yellow-hsl: hsl(41, 86%, 83%);
+  
+  /**
+   * Green
+   */
+  
+  --ctp-latte-green: #40a02b;
+  --ctp-latte-green-rgb: rgb(64, 160, 43);
+  --ctp-latte-green-hsl: hsl(109, 58%, 40%);
+  
+  --ctp-frappe-green: #a6d189;
+  --ctp-frappe-green-rgb: rgb(166, 209, 137);
+  --ctp-frappe-green-hsl: hsl(96, 44%, 68%);
+  
+  --ctp-macchiato-green: #a6da95;
+  --ctp-macchiato-green-rgb: rgb(166, 218, 149);
+  --ctp-macchiato-green-hsl: hsl(105, 48%, 72%);
+  
+  --ctp-mocha-green: #a6e3a1;
+  --ctp-mocha-green-rgb: rgb(166, 227, 161);
+  --ctp-mocha-green-hsl: hsl(115, 54%, 76%);
+  
+  /**
+   * Teal
+   */
+  
+  --ctp-latte-teal: #179299;
+  --ctp-latte-teal-rgb: rgb(23, 146, 153);
+  --ctp-latte-teal-hsl: hsl(183, 74%, 35%);
+  
+  --ctp-frappe-teal: #81c8be;
+  --ctp-frappe-teal-rgb: rgb(129, 200, 190);
+  --ctp-frappe-teal-hsl: hsl(172, 39%, 65%);
+  
+  --ctp-macchiato-teal: #8bd5ca;
+  --ctp-macchiato-teal-rgb: rgb(139, 213, 202);
+  --ctp-macchiato-teal-hsl: hsl(171, 47%, 69%);
+  
+  --ctp-mocha-teal: #94e2d5;
+  --ctp-mocha-teal-rgb: rgb(148, 226, 213);
+  --ctp-mocha-teal-hsl: hsl(170, 57%, 73%);
+  
+  /**
+   * Sky
+   */
+  
+  --ctp-latte-sky: #04a5e5;
+  --ctp-latte-sky-rgb: rgb(4, 165, 229);
+  --ctp-latte-sky-hsl: hsl(197, 97%, 46%);
+  
+  --ctp-frappe-sky: #99d1db;
+  --ctp-frappe-sky-rgb: rgb(153, 209, 219);
+  --ctp-frappe-sky-hsl: hsl(189, 48%, 73%);
+  
+  --ctp-macchiato-sky: #91d7e3;
+  --ctp-macchiato-sky-rgb: rgb(145, 215, 227);
+  --ctp-macchiato-sky-hsl: hsl(189, 59%, 73%);
+  
+  --ctp-mocha-sky: #89dceb;
+  --ctp-mocha-sky-rgb: rgb(137, 220, 235);
+  --ctp-mocha-sky-hsl: hsl(189, 71%, 73%);
+  
+  /**
+   * Sapphire
+   */
+  
+  --ctp-latte-sapphire: #209fb5;
+  --ctp-latte-sapphire-rgb: rgb(32, 159, 181);
+  --ctp-latte-sapphire-hsl: hsl(189, 70%, 42%);
+  
+  --ctp-frappe-sapphire: #85c1dc;
+  --ctp-frappe-sapphire-rgb: rgb(133, 193, 220);
+  --ctp-frappe-sapphire-hsl: hsl(199, 55%, 69%);
+  
+  --ctp-macchiato-sapphire: #7dc4e4;
+  --ctp-macchiato-sapphire-rgb: rgb(125, 196, 228);
+  --ctp-macchiato-sapphire-hsl: hsl(199, 66%, 69%);
+  
+  --ctp-mocha-sapphire: #74c7ec;
+  --ctp-mocha-sapphire-rgb: rgb(116, 199, 236);
+  --ctp-mocha-sapphire-hsl: hsl(199, 76%, 69%);
+  
+  /**
+   * Blue
+   */
+  
+  --ctp-latte-blue: #2a6ef5;
+  --ctp-latte-blue-rgb: rgb(42, 110, 245);
+  --ctp-latte-blue-hsl: hsl(220, 91%, 56%);
+  
+  --ctp-frappe-blue: #8caaee;
+  --ctp-frappe-blue-rgb: rgb(140, 170, 238);
+  --ctp-frappe-blue-hsl: hsl(222, 74%, 74%);
+  
+  --ctp-macchiato-blue: #8aadf4;
+  --ctp-macchiato-blue-rgb: rgb(138, 173, 244);
+  --ctp-macchiato-blue-hsl: hsl(220, 83%, 75%);
+  
+  --ctp-mocha-blue: #87b0f9;
+  --ctp-mocha-blue-rgb: rgb(135, 176, 249);
+  --ctp-mocha-blue-hsl: hsl(218, 90%, 75%);
+  
+  /**
+   * Lavender
+   */
+  
+  --ctp-latte-lavender: #7287fd;
+  --ctp-latte-lavender-rgb: rgb(114, 135, 253);
+  --ctp-latte-lavender-hsl: hsl(231, 97%, 72%);
+  
+  --ctp-frappe-lavender: #babbf1;
+  --ctp-frappe-lavender-rgb: rgb(186, 187, 241);
+  --ctp-frappe-lavender-hsl: hsl(239, 66%, 84%);
+  
+  --ctp-macchiato-lavender: #b7bdf8;
+  --ctp-macchiato-lavender-rgb: rgb(183, 189, 248);
+  --ctp-macchiato-lavender-hsl: hsl(234, 82%, 85%);
+  
+  --ctp-mocha-lavender: #b4befe;
+  --ctp-mocha-lavender-rgb: rgb(180, 190, 254);
+  --ctp-mocha-lavender-hsl: hsl(232, 97%, 85%);
+  
+  /**
+   * Text
+   */
+  
+  --ctp-latte-text: #4c4f69;
+  --ctp-latte-text-rgb: rgb(76, 79, 105);
+  --ctp-latte-text-hsl: hsl(234, 16%, 35%);
+  
+  --ctp-frappe-text: #c6ceef;
+  --ctp-frappe-text-rgb: rgb(198, 206, 239);
+  --ctp-frappe-text-hsl: hsl(228, 56%, 86%);
+  
+  --ctp-macchiato-text: #c5cff5;
+  --ctp-macchiato-text-rgb: rgb(197, 207, 245);
+  --ctp-macchiato-text-hsl: hsl(228, 71%, 87%);
+  
+  --ctp-mocha-text: #c6d0f5;
+  --ctp-mocha-text-rgb: rgb(198, 208, 245);
+  --ctp-mocha-text-hsl: hsl(227, 70%, 87%);
+  
+  /**
+   * Subtext #1
+   */
+  
+  --ctp-latte-subtext1: #5c5f77;
+  --ctp-latte-subtext1-rgb: rgb(92, 95, 119);
+  --ctp-latte-subtext1-hsl: hsl(233, 13%, 41%);
+  
+  --ctp-frappe-subtext1: #b5bddc;
+  --ctp-frappe-subtext1-rgb: rgb(181, 189, 220);
+  --ctp-frappe-subtext1-hsl: hsl(228, 36%, 79%);
+  
+  --ctp-macchiato-subtext1: #b3bce0;
+  --ctp-macchiato-subtext1-rgb: rgb(179, 188, 224);
+  --ctp-macchiato-subtext1-hsl: hsl(228, 42%, 79%);
+  
+  --ctp-mocha-subtext1: #b3bcdf;
+  --ctp-mocha-subtext1-rgb: rgb(179, 188, 223);
+  --ctp-mocha-subtext1-hsl: hsl(228, 41%, 79%);
+  
+  /**
+   * Subtext #0
+   */
+  
+  --ctp-latte-subtext0: #6c6f85;
+  --ctp-latte-subtext0-rgb: rgb(108, 111, 133);
+  --ctp-latte-subtext0-hsl: hsl(233, 10%, 47%);
+  
+  --ctp-frappe-subtext0: #a5acc9;
+  --ctp-frappe-subtext0-rgb: rgb(165, 172, 201);
+  --ctp-frappe-subtext0-hsl: hsl(228, 25%, 72%);
+  
+  --ctp-macchiato-subtext0: #a1aacb;
+  --ctp-macchiato-subtext0-rgb: rgb(161, 170, 203);
+  --ctp-macchiato-subtext0-hsl: hsl(227, 29%, 71%);
+  
+  --ctp-mocha-subtext0: #a1a8c9;
+  --ctp-mocha-subtext0-rgb: rgb(161, 168, 201);
+  --ctp-mocha-subtext0-hsl: hsl(229, 27%, 71%);
+  
+  /**
+   * Overlay #0
+   */
+  
+  --ctp-latte-overlay2: #7c7f93;
+  --ctp-latte-overlay2-rgb: rgb(124, 127, 147);
+  --ctp-latte-overlay2-hsl: hsl(232, 10%, 53%);
+  
+  --ctp-frappe-overlay2: #949bb7;
+  --ctp-frappe-overlay2-rgb: rgb(148, 155, 183);
+  --ctp-frappe-overlay2-hsl: hsl(228, 20%, 65%);
+  
+  --ctp-macchiato-overlay2: #8f97b7;
+  --ctp-macchiato-overlay2-rgb: rgb(143, 151, 183);
+  --ctp-macchiato-overlay2-hsl: hsl(228, 22%, 64%);
+  
+  --ctp-mocha-overlay2: #8e95b3;
+  --ctp-mocha-overlay2-rgb: rgb(142, 149, 179);
+  --ctp-mocha-overlay2-hsl: hsl(229, 20%, 63%);
+  
+  /**
+   * Overlay #1
+   */
+  
+  --ctp-latte-overlay1: #8c8fa1;
+  --ctp-latte-overlay1-rgb: rgb(140, 143, 161);
+  --ctp-latte-overlay1-hsl: hsl(231, 10%, 59%);
+  
+  --ctp-frappe-overlay1: #838aa4;
+  --ctp-frappe-overlay1-rgb: rgb(131, 138, 164);
+  --ctp-frappe-overlay1-hsl: hsl(227, 15%, 58%);
+  
+  --ctp-macchiato-overlay1: #7d84a2;
+  --ctp-macchiato-overlay1-rgb: rgb(125, 132, 162);
+  --ctp-macchiato-overlay1-hsl: hsl(229, 17%, 56%);
+  
+  --ctp-mocha-overlay1: #7b819d;
+  --ctp-mocha-overlay1-rgb: rgb(123, 129, 157);
+  --ctp-mocha-overlay1-hsl: hsl(229, 15%, 55%);
+  
+  /**
+   * Overlay #2
+   */
+  
+  --ctp-latte-overlay0: #9ca0b0;
+  --ctp-latte-overlay0-rgb: rgb(156, 160, 176);
+  --ctp-latte-overlay0-hsl: hsl(228, 11%, 65%);
+  
+  --ctp-frappe-overlay0: #737891;
+  --ctp-frappe-overlay0-rgb: rgb(115, 120, 145);
+  --ctp-frappe-overlay0-hsl: hsl(230, 12%, 51%);
+  
+  --ctp-macchiato-overlay0: #6c728d;
+  --ctp-macchiato-overlay0-rgb: rgb(108, 114, 141);
+  --ctp-macchiato-overlay0-hsl: hsl(229, 13%, 49%);
+  
+  --ctp-mocha-overlay0: #696d86;
+  --ctp-mocha-overlay0-rgb: rgb(105, 109, 134);
+  --ctp-mocha-overlay0-hsl: hsl(232, 12%, 47%);
+  
+  /**
+   * Surface #2
+   */
+  
+  --ctp-latte-surface2: #acb0be;
+  --ctp-latte-surface2-rgb: rgb(172, 176, 190);
+  --ctp-latte-surface2-hsl: hsl(227, 12%, 71%);
+  
+  --ctp-frappe-surface2: #62677e;
+  --ctp-frappe-surface2-rgb: rgb(98, 103, 126);
+  --ctp-frappe-surface2-hsl: hsl(229, 13%, 44%);
+  
+  --ctp-macchiato-surface2: #5a5f78;
+  --ctp-macchiato-surface2-rgb: rgb(90, 95, 120);
+  --ctp-macchiato-surface2-hsl: hsl(230, 14%, 41%);
+  
+  --ctp-mocha-surface2: #565970;
+  --ctp-mocha-surface2-rgb: rgb(86, 89, 112);
+  --ctp-mocha-surface2-hsl: hsl(233, 13%, 39%);
+  
+  /**
+   * Surface #1
+   */
+  
+  --ctp-latte-surface1: #bcc0cc;
+  --ctp-latte-surface1-rgb: rgb(188, 192, 204);
+  --ctp-latte-surface1-hsl: hsl(225, 14%, 77%);
+  
+  --ctp-frappe-surface1: #51566c;
+  --ctp-frappe-surface1-rgb: rgb(81, 86, 108);
+  --ctp-frappe-surface1-hsl: hsl(229, 14%, 37%);
+  
+  --ctp-macchiato-surface1: #484c64;
+  --ctp-macchiato-surface1-rgb: rgb(72, 76, 100);
+  --ctp-macchiato-surface1-hsl: hsl(231, 16%, 34%);
+  
+  --ctp-mocha-surface1: #43465a;
+  --ctp-mocha-surface1-rgb: rgb(67, 70, 90);
+  --ctp-mocha-surface1-hsl: hsl(232, 15%, 31%);
+  
+  /**
+   * Surface #0
+   */
+  
+  --ctp-latte-surface0: #ccd0da;
+  --ctp-latte-surface0-rgb: rgb(204, 208, 218);
+  --ctp-latte-surface0-hsl: hsl(223, 16%, 83%);
+  
+  --ctp-frappe-surface0: #414559;
+  --ctp-frappe-surface0-rgb: rgb(65, 69, 89);
+  --ctp-frappe-surface0-hsl: hsl(230, 16%, 30%);
+  
+  --ctp-macchiato-surface0: #363a4f;
+  --ctp-macchiato-surface0-rgb: rgb(54, 58, 79);
+  --ctp-macchiato-surface0-hsl: hsl(230, 19%, 26%);
+  
+  --ctp-mocha-surface0: #313244;
+  --ctp-mocha-surface0-rgb: rgb(49, 50, 68);
+  --ctp-mocha-surface0-hsl: hsl(237, 16%, 23%);
+  
+  /**
+   * Base
+   */
+  
+  --ctp-latte-base: #eff1f5;
+  --ctp-latte-base-rgb: rgb(239, 241, 245);
+  --ctp-latte-base-hsl: hsl(220, 23%, 95%);
+  
+  --ctp-frappe-base: #303446;
+  --ctp-frappe-base-rgb: rgb(48, 52, 70);
+  --ctp-frappe-base-hsl: hsl(229, 19%, 23%);
+  
+  --ctp-macchiato-base: #24273a;
+  --ctp-macchiato-base-rgb: rgb(36, 39, 58);
+  --ctp-macchiato-base-hsl: hsl(232, 23%, 18%);
+  
+  --ctp-mocha-base: #1e1e2e;
+  --ctp-mocha-base-rgb: rgb(30, 30, 46);
+  --ctp-mocha-base-hsl: hsl(240, 21%, 15%);
+  
+  /**
+   * Mantle
+   */
+  
+  --ctp-latte-mantle: #e6e9ef;
+  --ctp-latte-mantle-rgb: rgb(230, 233, 239);
+  --ctp-latte-mantle-hsl: hsl(220, 22%, 92%);
+  
+  --ctp-frappe-mantle: #292c3c;
+  --ctp-frappe-mantle-rgb: rgb(41, 44, 60);
+  --ctp-frappe-mantle-hsl: hsl(231, 19%, 20%);
+  
+  --ctp-macchiato-mantle: #1e2030;
+  --ctp-macchiato-mantle-rgb: rgb(30, 32, 48);
+  --ctp-macchiato-mantle-hsl: hsl(233, 23%, 15%);
+  
+  --ctp-mocha-mantle: #181825;
+  --ctp-mocha-mantle-rgb: rgb(24, 24, 37);
+  --ctp-mocha-mantle-hsl: hsl(240, 21%, 12%);
+  
+  /**
+   * Crust
+   */
+  
+  --ctp-latte-crust: #dce0e8;
+  --ctp-latte-crust-rgb: rgb(220, 224, 232);
+  --ctp-latte-crust-hsl: hsl(220, 21%, 89%);
+  
+  --ctp-frappe-crust: #232634;
+  --ctp-frappe-crust-rgb: rgb(35, 38, 52);
+  --ctp-frappe-crust-hsl: hsl(229, 20%, 17%);
+  
+  --ctp-macchiato-crust: #181926;
+  --ctp-macchiato-crust-rgb: rgb(24, 25, 38);
+  --ctp-macchiato-crust-hsl: hsl(236, 23%, 12%);
+  
+  --ctp-mocha-crust: #11111b;
+  --ctp-mocha-crust-rgb: rgb(17, 17, 27);
+  --ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
+}
+
+.CodeMirror {
+  font-family: "PragmataPro Mono Liga", monospace !important;
+  line-height: 1.4 !important;
+  font-size: 0.875rem !important;
+}
+
+.cm-s-default.CodeMirror {
+  background: var(--ctp-mocha-base) !important;
+  color: var(--ctp-mocha-text) !important;
+}
+
+.cm-s-default div.CodeMirror-selected {
+  background: var(--ctp-mocha-surface0) !important;
+}
+
+.cm-s-default .CodeMirror-line::selection,
+.cm-s-default .CodeMirror-line>span::selection,
+.cm-s-default .CodeMirror-line>span>span::selection {
+  background: var(--ctp-mocha-surface1) !important;
+}
+
+.cm-s-default .CodeMirror-gutters {
+  background: var(--ctp-mocha-base) !important;
+  border-right: none !important;
+}
+
+.cm-s-default .CodeMirror-guttermarker {
+  color: var(--ctp-latte-text) !important;
+}
+
+.cm-s-default .CodeMirror-guttermarker-subtle {
+  color: var(--ctp-latte-text) !important;
+}
+
+.cm-s-default .CodeMirror-linenumber {
+  color: var(--ctp-latte-text) !important;
+}
+
+.cm-s-default .CodeMirror-cursor {
+  border-left: none !important;
+}
+
+.cm-s-default span.cm-comment {
+  color: var(--ctp-latte-text) !important;
+}
+
+.cm-s-default span.cm-atom {
+  color: var(--ctp-mocha-lavender) !important;
+}
+
+.cm-s-default span.cm-number {
+  color: var(--ctp-mocha-peach) !important;
+}
+
+.cm-s-default span.cm-comment.cm-attribute {
+  color: var(--ctp-mocha-blue) !important;
+}
+
+.cm-s-default span.cm-comment.cm-def {
+  color: var(--ctp-mocha-sky) !important;
+}
+
+.cm-s-default span.cm-comment.cm-tag {
+  color: var(--ctp-mocha-blue) !important;
+}
+
+.cm-s-default span.cm-comment.cm-type {
+  color: var(--ctp-mocha-teal) !important;
+}
+
+.cm-s-default span.cm-property,
+.cm-s-default span.cm-attribute {
+  color: var(--ctp-mocha-yellow) !important;
+}
+
+.cm-s-default span.cm-keyword {
+  color: var(--ctp-mocha-peach) !important;
+}
+
+.cm-s-defaultk span.cm-builtin {
+  color: var(--ctp-mocha-yellow) !important;
+}
+
+.cm-s-default span.cm-string {
+  color: var(--ctp-mocha-yellow) !important;
+}
+
+.cm-s-default span.cm-variable {
+  color: var(--ctp-mocha-text) !important;
+}
+
+.cm-s-default span.cm-variable-2 {
+  color: var(--ctp-mocha-maroon) !important;
+}
+
+.cm-s-default span.cm-variable-3 {
+  color: var(--ctp-mocha-blue) !important;
+}
+
+.cm-s-default span.cm-type {
+  color: var(--ctp-mocha-peach) !important;
+}
+
+.cm-s-default span.cm-def {
+  color: var(--ctp-mocha-green) !important;
+}
+
+.cm-s-default span.cm-bracket {
+  color: var(--ctp-latte-text) !important;
+}
+
+.cm-s-default span.cm-tag {
+  color: cvar(--ctp-mocha-sky) !important;
+}
+
+.cm-s-default span.cm-header {
+  color: var(--ctp-mocha-yellow) !important;
+}
+
+.cm-s-default span.cm-link {
+  color: var(--ctp-mocha-blue) !important;
+}
+
+.cm-s-default span.cm-error {
+  color: var(--ctp-mocha-red) !important;
+}
+
+.cm-s-default .CodeMirror-activeline-background {
+  background: var(--ctp-macchiato-base) !important;
+  border-radius: 4px !important;
+  margin: -2px 0 !important;
+}
+
+.cm-s-default .CodeMirror-matchingbracket {
+  text-decoration: none !important;
+  color: var(--ctp-mocha-rosewater) !important;
+  font-weight: 700 !important;
+  display: inline-block !important;
+  transform: scale(1.175) !important;
+}
+
+/**
+ * FIREMONKEY
+ */
+
+/**
+ * General
+ */
+
+body {
+  font-family: "Input Sans Compressed", sans-serif;
+  font-size: 14px;
+  transition-duration: 0.15s !important; /* Speed up all transitions */
+}
+
+:root,
+body.dark,
+body.light {
+  --hover: transparent;
+  --shadow: transparent; /* Remove button shadows */
+  --nav-menu-width: 16rem; /* Increase sidebar width */
+  --nav-height: 2.55rem; /* Increase top bar height */
+}
+
+/**
+ * Dark colors
+ */
+
+@media screen and (prefers-color-scheme: dark) {
+  :root,
+  body.dark {
+    --color: var(--ctp-mocha-text);
+    --bg: var(--ctp-mocha-base);
+    --hover: transparent;
+    --btn-bg: var(--ctp-mocha-surface2);
+    --btn-hover: var(--ctp-mocha-surface1);
+    --border: var(--ctp-mocha-crust);
+    --option-bg: var(--ctp-mocha-surface0);
+    --link: var(--ctp-mocha-blue);
+    --fieldset-color: var(--ctp-mocha-text);
+    --selected-bg: var(--ctp-mocha-crust);
+    --img-filter: invert(1); /* Don't grayscale top bar icons */
+    --custom-sidebar-hover: var(--ctp-mocha-rosewater);
+    --custom-indicator-save: var(--ctp-mocha-blue);
+    --custom-indicator-import: var(--ctp-mocha-green);
+    --custom-indicator-export: var(--ctp-mocha-red);
+  }
+}
+
+/**
+ * Light colors
+ */
+
+@media screen and (prefers-color-scheme: light) {
+  :root,
+  body.dark {
+    --color: var(--ctp-latte-text);
+    --bg: var(--ctp-latte-base);
+    --btn-bg: var(--ctp-latte-surface2);
+    --btn-hover: var(--ctp-latte-surface1);
+    --border: var(--ctp-latte-crust);
+    --option-bg: var(--ctp-latte-surface0);
+    --link: var(--ctp-latte-blue);
+    --fieldset-color: var(--ctp-latte-text);
+    --selected-bg: var(--ctp-latte-crust);
+    --img-filter: invert(0); /* Don't grayscale top bar icons */
+    --custom-sidebar-hover: var(--ctp-latte-rosewater);
+    --custom-indicator-save: var(--ctp-latte-blue);
+    --custom-indicator-import: var(--ctp-latte-green);
+    --custom-indicator-export: var(--ctp-latte-red);
+  }
+}
+
+/**
+ * Areas
+ */
+
+fieldset,
+legend {
+  border-radius: 4px; /* Less rounded corners */
+}
+
+/**
+ * Inputs
+ */
+
+select,
+textarea,
+input[type="number"],
+input[type="text"] {
+  border-radius: 3px; /* Less rounded corners */
+    padding: 0.3rem;
+}
+
+button {
+  font-family: inherit; /* Wse same font as everything else */
+}
+
+/**
+ * Top navigation
+ */
+
+nav {
+  font-size: 0.875rem;
+  height: var(--nav-height); /* Increase nav bar spacing */
+  align-items: center;
+  padding: 0 0.3rem; /* Correct alignment */
+}
+
+nav > label {
+  opacity: 1; /* Don't fade, change color on hover instead */
+    transition: 0.15s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.4rem 0.6rem;
+}
+
+nav > label a {
+  display: flex; /* Align icons */
+}
+
+nav > label span {
+  margin-left: 0.5rem;
+}
+
+nav > label:hover {
+  color: var(--custom-sidebar-hover);
+}
+
+.menu,
+.menu summary {
+  height: 3em; /* Increase spacing */
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+}
+
+.menu label {
+  font-size: inherit;
+}
+
+.menu summary {
+  margin-top: 0.4rem; /* Correct alignment */
+}
+
+.menu > button {
+  font-family: "Input Sans Compressed", sans-serif;
+  font-size: 0.813rem;
+  height: 3rem; /* Increase spacing */
+    padding: 0 0.6em;
+}
+
+button.bin img,
+.menu > button[data-i18n^="beautify"] img {
+  width: 1.3em;
+}
+
+/**
+ * Sidebar
+ */
+
+.list {
+  padding: 0.7rem 1rem; /* Increase spacing of header */
+}
+
+.list label img {
+  width: 1.15rem; /* Increase icon size in header */
+}
+
+aside li {
+  padding: 0.05rem 1rem; /* Increase spacing between styles/scripts */
+    font-size: 0.813rem;
+}
+
+aside li:hover {
+  color: var(--ctp-mocha-rosewater);
+}
+
+/**
+ * Options
+ */
+
+/* Sections */
+
+.options label ~ label,
+.options summary ~ label {
+  margin-top: 0.8rem; /* Add section spacing (skips top label) */
+}
+
+.options .description {
+  margin-top: 0.3rem;
+  padding-left: 0.8rem;
+}
+
+.options details .description {
+  padding-left: 1.1rem;
+}
+
+.options fieldset label img {
+  width: 1.2rem; /* Increase icon size which also improves alignment */
+}
+
+/* Textareas */
+
+.options textarea {
+  display: block; /* Make sure next section title is below textarea */
+    width: 90%; /* Leave room for scrolling the page */
+      min-width: 20rem;
+      max-width: 45rem;
+      height: 15rem;
+      scrollbar-color: var(--ctp-mocha-peach) var(--ctp-macchiato-base); /* Colorize sidebar */
+}
+
+.options textarea:focus {
+  height: 45rem; /* Expand textareas on focus */
+}
+
+/* Import and export buttons */
+
+.flat {
+  border-radius: 4px;
+  font-weight: 700;
+  transition: 0.15s;
+}
+
+label[data-i18n^="import"] {
+  border-top-color: var(--custom-indicator-import);
+}
+
+button[data-i18n^="export"] {
+  border-top-color: var(--custom-indicator-export);
+}
+
+/* Save button */
+
+button[type="submit"] {
+  color: inherit;
+  font-weight: 700;
+  padding: 0.7rem 4rem;
+  background: var(--btn-bg);
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--custom-indicator-save);
+  text-shadow: none;
+  margin: 1rem auto 5rem;
+  box-shadow: none; /* Make it look like other buttons */
+    font-size: 0.813rem;
+}
+
+button[type="submit"]:hover {
+  background: var(--btn-hover);
+}

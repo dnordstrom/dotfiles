@@ -5,28 +5,53 @@
  * weight of tab text.
  **/
 
-/* Disable tab corner radius */
+/**
+ * VARIABLES
+ */
 
-#tabbrowser-tabs {
-  --user-tab-rounding: 0px;
+:root {
+  --tab-border-radius: 3px !important;
+  --inline-tab-padding: 8px 1px 14px !important;
+  --urlbar-icon-padding: 4px !important;
+  --urlbar-min-height: 26px !important;
 }
+
+hbox#urlbar {
+  --urlbar-height: 26px !important;
+  --urlbar-toolbar-height: 38px !important;
+}
+
+toolbaritem#urlbar-container {
+  --urlbar-container-height: 33px !important;
+}
+
+
+
+/**
+ * TAB BAR
+ */
 
 .tab-background {
-  border-radius: var(--user-tab-rounding) !important;
+  box-shadow: none !important;
 }
 
-/* Use solid background for selected tab */
-
-.tab-text[selected="true"] {
-  color: var(--lwt-accent-color) !important;
+.close-icon:hover {
+  background: none !important;
+  opacity: 0.75;
 }
 
-.tab-background[selected="true"] {
-  background: var(--lwt-tab-line-color, var(--lwt-tabs-border-color, currentColor)) !important;
+.tab-close-button {
+  -moz-context-properties: fill, fill-opacity;
+  margin-inline-end: calc(var(--inline-tab-padding) / -2);
+  width: 24px;
+  height: 24px;
+  padding: 7px;
+  border-radius: var(--tab-border-radius);
 }
 
-.close-icon[selected="true"] {
-  fill: var(--lwt-accent-color) !important;
+.close-icon {
+  fill: var(--lwt-tab-line-color, var(--lwt-tabs-border-color, currentColor)) !important;
+  opacity: 0.25;
 }
 
 /* Move container color bar to bottom of tab */
@@ -35,9 +60,116 @@
   margin-top: calc(var(--tab-min-height) - 2px) !important;
 }
 
-/* Medium font weight for tabs */
+/* Tweak font properties for tabs */
 
 .tabbrowser-tab {
-  font-weight: 500 !important;
+  font-size: 0.813em;
+  font-weight: 400;
+  line-height: 3;
 }
 
+/* Outline thickness for active tab and toolbar menus */
+
+#TabsToolbar #firefox-view-button[open] > .toolbarbutton-icon:-moz-lwtheme,
+.tab-background[selected]:-moz-lwtheme {
+  outline: 1px solid var(--lwt-tab-line-color, var(--lwt-tabs-border-color, currentColor)) !important;
+  outline-offset: -1px !important;
+}
+
+/**
+ * Disabled
+ */
+
+/* Use solid background for selected tab */
+
+/*
+  .tab-text[selected="true"] {
+    color: var(--lwt-accent-color, #000000) !important;
+  }
+
+  .tab-background[selected="true"] {
+    background: var(--lwt-tab-line-color, var(--lwt-tabs-border-color, currentColor)) !important;
+  }
+*/
+
+
+
+/**
+ * BOOKMARKS TOOLBAR
+ */
+
+/* Tweak spacing and use Nerd Font for icons */
+
+#PlacesToolbarItems {
+  -moz-box-pack: center;
+  margin-block: -0.25em 0.15em;
+  margin-inline: -0.7em 0.25em;
+  font-family: "Iosevka Nerd Font";
+}
+
+/* Hide folder icons in bookmarks toolbar items */
+
+toolbarbutton.bookmark-item:not(.subviewbutton) .toolbarbutton-icon {
+  display: none;
+}
+
+/* Bigger and fatter unicode labels in boookmarks toolbar items */
+
+toolbarbutton.bookmark-item:not(.subviewbutton)  {
+  font-size: 1.5em;
+  width: 2em;
+}
+
+/* Add left spacing to first unicode label in boookmarks toolbar items */
+
+toolbarbutton.bookmark-item:not(.subviewbutton):first-of-type  {
+  margin-left: -0.7em !important;
+}
+
+/* Correct width of unicode labels in boookmarks toolbar items */
+
+toolbarbutton.bookmark-item:not(.subviewbutton):first-of-type .toolbarbutton-text {
+  width: 2.6em;
+}
+
+/* Remove hover background from all toolbar items */
+
+toolbarbutton:hover,
+toolbarbutton[open] {
+  background: none !important;
+}
+
+/* Remove hover color (use for background in nav bar) from toolbar items except bookmarks */
+
+toolbarbutton:hover:not(.bookmark-item) {
+  color: transparent !important;
+}
+
+/* Align URL bar with toolbar icons */
+
+#nav-bar toolbarbutton {
+  margin: 3px 0 0 !important;
+  padding: 0 3px !important;
+}
+
+
+
+/**
+ * NAV BAR
+ */
+
+#nav-bar {
+  padding-block: 2px 6px !important;
+  -moz-box-align: center !important;
+}
+
+/* Reduce size of URL bar icons */
+
+.sharing-icon,
+#identity-icon,
+#permissions-granted-icon,
+#tracking-protection-icon,
+#blocked-permissions-container > .blocked-permission-icon {
+  width: 12px !important;
+  height: 12px !important;
+}

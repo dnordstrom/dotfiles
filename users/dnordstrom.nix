@@ -67,7 +67,8 @@ in {
   # ENVIRONMENT
   #
 
-  home.stateVersion = "22.05";
+  home.stateVersion = "22.11";
+
   home.sessionVariables = {
     EDITOR = editor;
     BROWSER = browser;
@@ -100,6 +101,19 @@ in {
         icon = "httpie";
         categories = [ "Utility" "Development" ];
         mimeType = [ "x-scheme-handler/pie" ];
+        startupNotify = false;
+      };
+      ferdium = {
+        name = "Ferdium";
+        type = "Application";
+        genericName =
+          "Messaging app for WhatsApp, Slack, Telegram, Gmail, Hangouts and many many more.";
+        exec =
+          "appimage-run /home/dnordstrom/Applications/ferdium/ferdium.appimage";
+        terminal = false;
+        icon = "ferdium";
+        categories = [ "Network" "InstantMessaging" ];
+        mimeType = [ ];
         startupNotify = false;
       };
       neovim-alacritty = {
@@ -210,7 +224,6 @@ in {
     #
 
     nordpkgs.convox # Not in nixpkgs
-    nordpkgs.hqplayer-desktop # Outdated in nixpkgs
 
     #
     # Networking
@@ -238,7 +251,6 @@ in {
     dolphin
     pavucontrol
     qbittorrent
-    woeusb-ng
     zathura
 
     #
@@ -246,11 +258,12 @@ in {
     #
 
     element-desktop
-    ferdi
     fractal
+    gotktrix
     signal-desktop
     slack
     slack-term
+    weechat
 
     #
     # Command line
@@ -261,10 +274,7 @@ in {
     bottom
     fd
     gh
-    glow
-    gotktrix
     libnotify
-    matrixcli
     onefetch # Git summary
     neofetch # System summary
     parallel
@@ -274,7 +284,6 @@ in {
     unzip
     usbutils
     vifm-full
-    weechat
     xclip
     xdotool
     xsel
@@ -355,7 +364,7 @@ in {
     # Email
     #
 
-    electron-mail
+    liferea
     thunderbird
 
     #
@@ -365,7 +374,9 @@ in {
     bitwarden
     go-2fa
     pinentry-gtk2
+    protonmail-bridge
     protonvpn-cli
+    protonvpn-gui
     qtpass
 
     #
@@ -376,7 +387,6 @@ in {
     alsa-tools
     alsa-utils
     audacious
-    carla
     cava
     celluloid # GTK frontend for MPV
     deadbeef-with-plugins
@@ -407,7 +417,7 @@ in {
     #
 
     # General
-    cloudflared # Cloudflare Tunnel daemon for giving remote access to localhost
+    cloudflared # Cloudflare Tunnel daemon for remote access to localhost
     gcc
 
     # Editors
@@ -424,6 +434,7 @@ in {
 
     # Writing
     proselint
+    glow
 
     # Git
     bfg-repo-cleaner
@@ -512,7 +523,6 @@ in {
     swayr
     quaternion
     neochat
-    gomuks
     gotktrix
     fluffychat
     nheko
@@ -521,7 +531,6 @@ in {
     etcher
     mdcat
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
-    corgi # CLI workflow manager
     navi # CLI cheatsheet tool
     tealdeer # TLDR in Rust
     tmpmail # CLI temporary email generator
@@ -537,11 +546,9 @@ in {
     yubikey-manager-qt
     yubikey-touch-detector
     otpclient
-    krusader
     git-crypt
     jetbrains.datagrip
     wezterm
-    bottles
     pro-office-calculator
 
     #
@@ -598,7 +605,7 @@ in {
     enable = true;
     font = {
       name = "Input Sans Condensed";
-      size = 8;
+      size = 9;
     };
     theme.name = "Catppuccin-yellow";
     iconTheme.name = "Vimix-dark";

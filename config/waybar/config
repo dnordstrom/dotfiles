@@ -93,9 +93,9 @@
   "custom/files": {
     "format": "<span font='16'></span>",
     "tooltip": false,
-    "on-click": "nautilus",
+    "on-click": "dolphin",
     "on-click-middle": "kitty --title popupterm -e vifm",
-    "on-click-right": "dolphin"
+    "on-click-right": "nautilus"
   },
   "custom/editor": {
     "format": "<span font='16'></span>",

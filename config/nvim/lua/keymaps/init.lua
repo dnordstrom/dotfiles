@@ -20,6 +20,7 @@ local opt_global = vim.opt_global
 local nvim_exec = vim.api.nvim_exec
 local nvim_set_keymap = vim.api.nvim_set_keymap
 local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
+local keymap = vim.keymap
 local opts = {
 	-- "Regular"
 	re = { noremap = false },
@@ -385,6 +386,9 @@ nvim_set_keymap("n", "<Leader>dN", "<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>"
 
 -- ...display
 nvim_set_keymap("n", "<Leader>dl", "<Cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>", opts.nore)
+
+-- ...generate documentation comment (e.g. JSDoc)
+keymap.set("n", "<Leader>dg", require("neogen").generate, { desc = "Generate documentation comment" })
 
 --
 -- Go to/do with word or line...

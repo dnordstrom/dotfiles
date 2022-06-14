@@ -12,6 +12,7 @@
   openvpn3 = pkgs.callPackage ./openvpn3 {
     inherit (pkgs.python3Packages) docutils jinja2;
   };
+  esperanso = pkgs.callPackage ./esperanso { };
   proton-client = pkgs.callPackage ./proton-client { };
   protoncheck = pkgs.callPackage ./protoncheck { };
   protonvpn-cli = pkgs.callPackage ./protonvpn-cli { };

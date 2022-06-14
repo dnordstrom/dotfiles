@@ -28,12 +28,12 @@ set history=100
 
 " Automatically resolve symbolic links on l or Enter.
 
-set nofollowlinks
+set followlinks
 
 " With this option turned on you can run partially entered commands with
 " unambiguous beginning using :! (e.g. :!Te instead of :!Terminal or :!Te<tab>).
 
-" set fastrun
+set fastrun
 
 " Natural sort of (version) numbers within text.
 
@@ -55,13 +55,13 @@ set norunexec
 
 " List of color schemes to try (picks the first one supported by the terminal)
 
-colorscheme catppuccin palenight Default-256 Default
+colorscheme catppuccin
 
 " Format for displaying time in file list. For example:
 " TIME_STAMP_FORMAT=%m/%d-%H:%M
 " See man date or man strftime for details.
 
-set timefmt=%m/%d\ %H:%M
+set timefmt=%Y-%m-%d\ %H:%M
 
 " Show list of matches on tab completion in command-line mode
 
@@ -87,7 +87,7 @@ set scrolloff=4
 
 " Set custom status line look
 
-set statusline="  Hint: %z%= %A %10u:%-7g %15s %20d  "
+set statusline=" Tip: %z%= %A %10u:%-7g %15s %20d "
 
 " :com[mand][!] command_name action
 " The following macros can be used in a command
@@ -105,10 +105,11 @@ command! diff vim -d %f %F
 command! zip zip -r %f.zip %f
 command! run !! ./%f
 command! make !!make %a
-command! mkcd :mkdir %a | cd %a
+command! mkcd :mkdir -p %a | cd %a
 command! vgrep vim "+grep %a"
 command! reload :write | restart full
 command! vimiv %c
+command! appimage !!appimage-run %c
 
 filetype * xdg-open
 

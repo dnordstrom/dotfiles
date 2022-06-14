@@ -37,6 +37,12 @@ setopt chaselinks
 
 export KEYTIMEOUT=1000
 
+# Shell
+
+export EDITOR="nvim"
+export BROWSER="firefox"
+export TERMINAL="kitty"
+
 # ANSI color code helpers
 
 export ANSI_STYLE_MD=$(tput bold; tput setaf 6)

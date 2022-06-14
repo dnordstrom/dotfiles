@@ -13,10 +13,10 @@
 set $schema-gnome-interface org.gnome.desktop.interface
 set $schema-gnome-wm-preferences org.gnome.desktop.wm.preferences
 
-set $font "Input Sans Compressed 8"
+set $font "Input Sans Condensed 8"
 set $colors "catppuccin"
 set $theme "Catppuccin-yellow"
-set $cursor-theme "Quintom_Snow"
+set $cursor-theme "Catppuccin-Teal-Cursors"
 set $icon-theme "Vimix-dark"
 
 set $termweatherwidth 920
@@ -165,8 +165,8 @@ hide_edge_borders smart_no_gaps
 # Show next if attempting to focus outside current
 focus_wrapping workspace
 
-# Show previous if repeating Mod+Number
-workspace_auto_back_and_forth yes
+# Repeating Mod+Number switches back to previous workspace
+workspace_auto_back_and_forth no
 
 # Assign to outputs
 workspace $workspace1 output DP-1
@@ -183,18 +183,24 @@ workspace $workspace10 output DVI-D-1
 #
 # OUTPUTS
 #
-
-# All monitors
-output "*" bg ~/Pictures/Wallpapers/active3.jpg fill
+# Notes:
+#   - Output identifiers (AOC G2460 0x00000B35) are useful for:
+#     - Most monitors so that this config can apply to multiple hosts with identical output names.
+#     - Monitors that use identical output names but need different settings, e.g. office vs home.
+#   - Names (DP-1) are useful for:         
+#     - Monitors more or less always staying connected to the same output, such as laptop screens.
+#
 
 # Primary monitor
-output "DP-1" {
+output "AOC G2460 0x00000B35" {
+  bg ~/Pictures/Wallpapers/active3.jpg fill
   mode 1920x1080@144.001007Hz
   position 1920,0
 }
 
 # Secondary monitor
-output "DVI-D-1" {
+output "AOC 2470W F53G7BA002500" {
+  bg ~/Pictures/Wallpapers/active3.jpg fill
   mode 1920x1080@60Hz
   position 0,0
 }
@@ -203,7 +209,7 @@ output "DVI-D-1" {
 # INPUTS
 # 
 # Notes:
-#   - Using IDs instead of "*" can prevent Firefox from crashing on configuration reload.
+#   - Using names or identifiers instead of "*" can mitigate Firefox crashes during Sway reload.
 #
 
 seat seat0 hide_cursor when-typing disable
@@ -297,7 +303,7 @@ bindsym {
   $mod+Shift+$up move up
   $mod+Shift+$right move right
 
-  # Focus workspace: Number keys
+  # Focus workspace: Mod+Number keys
   $mod+1 workspace number 1
   $mod+2 workspace number 2
   $mod+3 workspace number 3
@@ -308,6 +314,18 @@ bindsym {
   $mod+8 workspace number 8
   $mod+9 workspace number 9
   $mod+0 workspace number 10
+
+  # Focus workspace: Mod+Alt+Number keys (secondary monitor)
+  $mod+Alt+1 workspace number 6
+  $mod+Alt+2 workspace number 7
+  $mod+Alt+3 workspace number 8
+  $mod+Alt+4 workspace number 9
+  $mod+Alt+5 workspace number 10
+  $mod+Alt+6 workspace number 1
+  $mod+Alt+7 workspace number 2
+  $mod+Alt+8 workspace number 3
+  $mod+Alt+9 workspace number 4
+  $mod+Alt+0 workspace number 5
 
   # Focus workspace: Mod+Tab switches, Alt+Tab cycles
   $mod+Tab workspace back_and_forth
@@ -344,10 +362,10 @@ bindsym {
   $mod+Space focus mode_toggle
   $mod+Shift+Space floating toggle, resize set $floatdefaultwidth $floatdefaultheight
 
+  # Layouts
   $mod+s layout stacking
   $mod+w layout tabbed
   $mod+e layout toggle split
-
   $mod+a focus parent
   $mod+f fullscreen
 
@@ -664,6 +682,7 @@ exec_always {
   gsettings set $schema-gnome-interface icon-theme $icon-theme
   gsettings set $schema-gnome-interface cursor-theme $cursor-theme
   gsettings set $schema-gnome-interface font-name $font
+  gsettings set $schema-gnome-interface document-font-name $font
 
   doas flatpak override --filesystem=$HOME/.themes
   doas flatpak override --env=GTK_THEME=$gtk-theme

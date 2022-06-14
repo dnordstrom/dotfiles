@@ -1,12 +1,6 @@
 {
     "output": {
         "blocklist": [],
-        "crossfeed": {
-            "fcut": 650,
-            "feed": 9.499999999999998,
-            "input-gain": 0.0,
-            "output-gain": 0.0
-        },
         "equalizer": {
             "input-gain": -5.2,
             "left": {
@@ -199,8 +193,7 @@
             "split-channels": false
         },
         "plugins_order": [
-            "equalizer",
-            "crossfeed"
+            "equalizer"
         ]
     }
 }
