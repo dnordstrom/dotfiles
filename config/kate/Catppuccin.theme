@@ -1,0 +1,206 @@
+{
+    "_comments": [
+        "Last update: Jul 28, 2021 (revision 4)",
+        "This file has been converted from: https://github.com/dempfi/ayu",
+        "Also see: https://github.com/ayu-theme"
+    ],
+    "custom-styles": {
+        "XML": {
+            "Attribute": {
+                "selected-text-color": "#ffd580",
+                "text-color": "#ffd580"
+            },
+            "Element": {
+                "bold": false,
+                "selected-text-color": "#5ccfe6",
+                "text-color": "#5ccfe6"
+            },
+            "Element Symbols": {
+                "selected-text-color": "#4788a2",
+                "text-color": "#3d7a8b"
+            },
+            "EntityRef": {
+                "selected-text-color": "#95e6cb",
+                "text-color": "#95e6cb"
+            },
+            "PEntityRef": {
+                "selected-text-color": "#95e6cb",
+                "text-color": "#95e6cb"
+            }
+        }
+    },
+    "editor-colors": {
+        "BackgroundColor": "#1e1e2e",
+        "BracketMatching": "#fab387",
+        "CodeFolding": "#252c3e",
+        "CurrentLine": "#313244",
+        "CurrentLineNumber": "#b4befe",
+        "IconBorder": "#1e1e2e",
+        "IndentationLine": "#45475a",
+        "LineNumbers": "#45475a",
+        "MarkBookmark": "#73d0ff",
+        "MarkBreakpointActive": "#f28779",
+        "MarkBreakpointDisabled": "#d4bfff",
+        "MarkBreakpointReached": "#ffe6b3",
+        "MarkError": "#f38ba8",
+        "MarkExecution": "#95e6cb",
+        "MarkWarning": "#f9e2af",
+        "ModifiedLines": "#f9e2af",
+        "ReplaceHighlight": "#45475a",
+        "SavedLines": "#a6e3a1",
+        "SearchHighlight": "#45475a",
+        "Separator": "#00000000",
+        "SpellChecking": "#f38ba8",
+        "TabMarker": "#585b70",
+        "TemplateBackground": "#1e1e2e",
+        "TemplateFocusedPlaceholder": "#45475a",
+        "TemplatePlaceholder": "#313244",
+        "TemplateReadOnlyPlaceholder": "#181825",
+        "TextSelection": "#313244",
+        "WordWrapMarker": "#303642"
+    },
+    "metadata": {
+        "name": "Catppuccin",
+        "revision": 1
+    },
+    "text-styles": {
+        "Alert": {
+            "background-color": "#332430",
+            "bold": true,
+            "selected-text-color": "#f38ba8",
+            "text-color": "#f38ba8"
+        },
+        "Annotation": {
+            "bold": true,
+            "selected-text-color": "#fab387",
+            "text-color": "#fab387"
+        },
+        "Attribute": {
+            "selected-text-color": "#f2cdcd",
+            "text-color": "#f2cdcd"
+        },
+        "BaseN": {
+            "selected-text-color": "#fab387",
+            "text-color": "#fab387"
+        },
+        "BuiltIn": {
+            "selected-text-color": "#f5c2e7",
+            "text-color": "#f5c2e7"
+        },
+        "Char": {
+            "selected-text-color": "#95e6cb",
+            "text-color": "#94e2d5"
+        },
+        "Comment": {
+            "italic": true,
+            "selected-text-color": "#585b70",
+            "text-color": "#585b70"
+        },
+        "CommentVar": {
+            "bold": true,
+            "selected-text-color": "#f5c2e7",
+            "text-color": "#f5c2e7"
+        },
+        "Constant": {
+            "selected-text-color": "#fab387",
+            "text-color": "#fab387"
+        },
+        "ControlFlow": {
+            "bold": true,
+            "selected-text-color": "#f38ba8",
+            "text-color": "#f38ba8"
+        },
+        "DataType": {
+            "selected-text-color": "#f9e2af",
+            "text-color": "#f9e2af"
+        },
+        "DecVal": {
+            "selected-text-color": "#fab387",
+            "text-color": "#fab387"
+        },
+        "Documentation": {
+            "selected-text-color": "#6c7086",
+            "text-color": "#6c7086"
+        },
+        "Error": {
+            "bold": true,
+            "italic": true,
+            "selected-text-color": "#f38ba8",
+            "text-color": "#f38ba8"
+        },
+        "Extension": {
+            "bold": true,
+            "selected-text-color": "#89b4fa",
+            "text-color": "#89b4fa"
+        },
+        "Float": {
+            "selected-text-color": "#fab387",
+            "text-color": "#fab387"
+        },
+        "Function": {
+            "selected-text-color": "#89b4fa",
+            "text-color": "#89b4fa"
+        },
+        "Import": {
+            "selected-text-color": "#f5c2e7",
+            "text-color": "#f5c2e7"
+        },
+        "Information": {
+            "bold": true,
+            "selected-text-color": "#ffcc66",
+            "text-color": "#ffcc66"
+        },
+        "Keyword": {
+            "bold": true,
+            "selected-text-color": "#f5c2e7",
+            "text-color": "#f5c2e7"
+        },
+        "Normal": {
+            "selected-text-color": "#cdd6f4",
+            "text-color": "#cdd6f4"
+        },
+        "Operator": {
+            "selected-text-color": "#89dceb",
+            "text-color": "#89dceb"
+        },
+        "Others": {
+            "selected-text-color": "#5ccfe6",
+            "text-color": "#5ccfe6"
+        },
+        "Preprocessor": {
+            "selected-text-color": "#f5c2e7",
+            "text-color": "#f5c2e7"
+        },
+        "RegionMarker": {
+            "background-color": "#2a4254",
+            "bold": true,
+            "selected-text-color": "#73d0ff",
+            "text-color": "#73d0ff"
+        },
+        "SpecialChar": {
+            "selected-text-color": "#ffffff",
+            "text-color": "#ffffff"
+        },
+        "SpecialString": {
+            "selected-text-color": "#a6e3a1",
+            "text-color": "#a6e3a1"
+        },
+        "String": {
+            "selected-text-color": "#a6e3a1",
+            "text-color": "#a6e3a1"
+        },
+        "Variable": {
+            "selected-text-color": "#f2cdcd",
+            "text-color": "#f2cdcd"
+        },
+        "VerbatimString": {
+            "selected-text-color": "#a6e3a1",
+            "text-color": "#a6e3a1"
+        },
+        "Warning": {
+            "bold": true,
+            "selected-text-color": "#f9e2af",
+            "text-color": "#f9e2af"
+        }
+    }
+}

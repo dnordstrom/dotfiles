@@ -76,8 +76,9 @@ in {
   };
 
   #
-  # Desktop entries
+  # DESKTOP ENTRIES
   #
+
   xdg = {
     enable = true;
     mimeApps = {
@@ -86,36 +87,130 @@ in {
       defaultApplications = mimeAassociations;
     };
 
-    #
-    # Terminal applications
-    #
-
     desktopEntries = {
+      #
+      # GUI applications
+      #
+
+      slack-wayland = {
+        name = "Slack (Wayland)";
+        comment = "Slack Desktop";
+        type = "Application";
+        genericName = "Slack Client for Linux";
+        exec =
+          "slack --enable-features=UseOzonePlatform,WebRTCPipeWireCapturer --ozone-platform=wayland -s %U";
+        terminal = false;
+        icon = "slack";
+        categories = [ "GNOME" "GTK" "Network" "InstantMessaging" ];
+        mimeType = [ "x-scheme-handler/slack" ];
+        startupNotify = true;
+      };
+
       httpie = {
         name = "HTTPie";
         type = "Application";
         genericName = "Modern HTTP client for the API era";
         exec =
-          "appimage-run /home/dnordstrom/Applications/httpie/HTTPie-2022.7.0.AppImage %F";
+          "appimage-run /home/dnordstrom/.local/bin/httpie/httpie.appimage %F";
         terminal = false;
         icon = "httpie";
         categories = [ "Utility" "Development" ];
         mimeType = [ "x-scheme-handler/pie" ];
         startupNotify = false;
       };
+
       ferdium = {
         name = "Ferdium";
         type = "Application";
         genericName =
           "Messaging app for WhatsApp, Slack, Telegram, Gmail, Hangouts and many many more.";
         exec =
-          "appimage-run /home/dnordstrom/Applications/ferdium/ferdium.appimage";
+          "appimage-run /home/dnordstrom/.local/bin/ferdium/ferdium.appimage";
         terminal = false;
         icon = "ferdium";
         categories = [ "Network" "InstantMessaging" ];
         mimeType = [ ];
         startupNotify = false;
       };
+
+      session = {
+        name = "Session";
+        type = "Application";
+        genericName = "Private messaging from your desktop";
+        exec =
+          "appimage-run /home/dnordstrom/.local/bin/session/session.appimage";
+        terminal = false;
+        icon = "session-desktop";
+        categories = [ "Network" ];
+        mimeType = [ ];
+        startupNotify = false;
+        settings = { StartupWMClass = "session"; };
+      };
+
+      station = {
+        name = "Station";
+        type = "Application";
+        genericName = "Web service manager";
+        exec =
+          "appimage-run /home/dnordstrom/.local/bin/station/station.appimage";
+        terminal = false;
+        icon = "station-desktop-app";
+        categories = [ "Network" ];
+        mimeType = [ "x-scheme-handler/station" ];
+        startupNotify = false;
+        settings = { StartupWMClass = "Station"; };
+      };
+
+      mymonero = {
+        name = "MyMonero";
+        type = "Application";
+        genericName = "Monero Wallet";
+        exec =
+          "GDK_BACKEND=x11 appimage-run /home/dnordstrom/.local/bin/mymonero/mymonero.appimage";
+        terminal = false;
+        icon = "mymonero";
+        categories = [ "Office" "Finance" ];
+        mimeType = [ "x-scheme-handler/monero" ];
+        startupNotify = false;
+        settings = { StartupWMClass = "MyMonero"; };
+      };
+
+      singlebox = {
+        name = "Singlebox";
+        type = "Application";
+        genericName = "All-in-One Messenger";
+        exec =
+          "appimage-run /home/dnordstrom/.local/bin/singlebox/singlebox.appimage";
+        terminal = false;
+        icon = "singlebox";
+        categories = [ "Utility" ];
+        mimeType = [
+          "x-scheme-handler/https"
+          "x-scheme-handler/http"
+          "x-scheme-handler/mailto"
+          "x-scheme-handler/webcal"
+        ];
+        startupNotify = false;
+      };
+
+      bitwarden = {
+        name = "Bitwarden (AppImage)";
+        type = "Application";
+        genericName = "Password Manager";
+        exec =
+          "appimage-run /home/dnordstrom/.local/bin/bitwarden/bitwarden.appimage";
+        terminal = false;
+        icon = "ferdium";
+        categories = [ "Utility" ];
+        mimeType = [ "x-scheme-handler/bitwarden" ];
+        startupNotify = false;
+        settings = { StartupWMClass = "Bitwarden"; };
+      };
+
+      #
+      # Terminal applications
+      #
+
       neovim-alacritty = {
         name = "Neovim (Alacritty)";
         type = "Application";
@@ -127,6 +222,7 @@ in {
         mimeType = [ "text/plain" "inode/directory" ];
         startupNotify = false;
       };
+
       neovim-kitty = {
         name = "Neovim (kitty)";
         type = "Application";
@@ -138,6 +234,7 @@ in {
         mimeType = [ "text/plain" "inode/directory" ];
         startupNotify = false;
       };
+
       vifm-kitty = {
         name = "Vifm (kitty)";
         type = "Application";
@@ -149,6 +246,7 @@ in {
         mimeType = [ "text/plain" "inode/directory" ];
         startupNotify = false;
       };
+
       vifm-alacritty = {
         name = "Vifm (Alacritty)";
         type = "Application";
@@ -160,6 +258,7 @@ in {
         mimeType = [ "text/plain" "inode/directory" ];
         startupNotify = false;
       };
+
       glow-kitty = {
         name = "Glow (kitty)";
         type = "Application";
@@ -173,7 +272,7 @@ in {
       };
 
       #
-      # Development sessions
+      # Sessions
       #
 
       kitty-session-cloud = {
@@ -191,23 +290,71 @@ in {
       };
 
       #
-      # Other applications
+      # Browser profiles
       #
 
-      slack-wayland = {
-        name = "Slack (Wayland)";
-        comment = "Slack Desktop";
+      firefoxPrivate = {
+        name = "Firefox Nightly (Private)";
         type = "Application";
-        genericName = "Slack Client for Linux";
-        exec =
-          "slack --enable-features=UseOzonePlatform,WebRTCPipeWireCapturer --ozone-platform=wayland -s %U";
+        genericName = "Web Browser";
+        exec = "firefox -P Private %U";
         terminal = false;
-        icon = "slack";
-        categories = [ "GNOME" "GTK" "Network" "InstantMessaging" ];
-        mimeType = [ "x-scheme-handler/slack" ];
-        startupNotify = true;
+        icon = "firefox";
+        categories = [ "Network" "WebBrowser" ];
+        mimeType = [
+          "text/html"
+          "text/xml"
+          "application/xhtml+xml"
+          "application/vnd.mozilla.xul+xml"
+          "x-scheme-handler/http"
+          "x-scheme-handler/https"
+          "x-scheme-handler/ftp"
+        ];
+        startupNotify = false;
+        settings = { StartupWMClass = "firefox-nightly-private"; };
       };
 
+      firefoxTesting = {
+        name = "Firefox Nightly (Testing)";
+        type = "Application";
+        genericName = "Web Browser";
+        exec = "firefox -P Testing %U";
+        terminal = false;
+        icon = "firefox";
+        categories = [ "Network" "WebBrowser" ];
+        mimeType = [
+          "text/html"
+          "text/xml"
+          "application/xhtml+xml"
+          "application/vnd.mozilla.xul+xml"
+          "x-scheme-handler/http"
+          "x-scheme-handler/https"
+          "x-scheme-handler/ftp"
+        ];
+        startupNotify = false;
+        settings = { StartupWMClass = "firefox-nightly-testing"; };
+      };
+
+      firefoxMusic = {
+        name = "Firefox Nightly (Music)";
+        type = "Application";
+        genericName = "Web Browser";
+        exec = "firefox -P music %U";
+        terminal = false;
+        icon = "firefox";
+        categories = [ "Network" "WebBrowser" ];
+        mimeType = [
+          "text/html"
+          "text/xml"
+          "application/xhtml+xml"
+          "application/vnd.mozilla.xul+xml"
+          "x-scheme-handler/http"
+          "x-scheme-handler/https"
+          "x-scheme-handler/ftp"
+        ];
+        startupNotify = false;
+        settings = { StartupWMClass = "firefox-nightly-music"; };
+      };
     };
   };
 
@@ -287,6 +434,7 @@ in {
     xclip
     xdotool
     xsel
+    zip
 
     #
     # Zsh plugins

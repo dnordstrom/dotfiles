@@ -94,17 +94,19 @@
   # FONTS
   #
 
-  fonts.fonts = with pkgs; [
-    cascadia-code
-    noto-fonts
-    noto-fonts-emoji
-    fira-code
-    fira-code-symbols
+  fonts = {
+    fonts = with pkgs; [
+      cascadia-code
+      noto-fonts
+      noto-fonts-emoji
+      fira-code
+      fira-code-symbols
 
-    (nerdfonts.override {
-      fonts = [ "Iosevka" "FiraCode" "CascadiaCode" "Hack" ];
-    })
-  ];
+      (nerdfonts.override {
+        fonts = [ "Iosevka" "FiraCode" "CascadiaCode" "Hack" ];
+      })
+    ];
+  };
 
   #
   # SERVICES
