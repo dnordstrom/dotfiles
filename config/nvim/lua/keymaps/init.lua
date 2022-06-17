@@ -67,7 +67,7 @@ nvim_set_keymap("n", "<Leader><Leader>", "<C-^>", opts.nore)
 nvim_set_keymap("v", "<Tab>", ">gv", opts.nore)
 nvim_set_keymap("v", "<S-Tab>", "<gv", opts.nore)
 
--- ...highlight toggle (one press optimal but annoys incurable key spammers, can personally confirm)
+-- ...highlight toggle
 nvim_set_keymap("n", "<Esc><Esc>", "<Cmd>set hlsearch!<CR>", opts.nore)
 
 -- ...find
@@ -148,9 +148,6 @@ nvim_set_keymap("n", "<M-h>", "<Plug>(cokeline-focus-prev)", opts.re)
 nvim_set_keymap("n", "<M-l>", "<Plug>(cokeline-focus-next)", opts.re)
 nvim_set_keymap("n", "<M-H>", "<Plug>(cokeline-switch-prev)", opts.re)
 nvim_set_keymap("n", "<M-L>", "<Plug>(cokeline-switch-next)", opts.re)
-
--- ...search/jump using lightspeed.nvim
-nvim_set_keymap("n", "<Leader>s", "<Plug>Lightspeed_omni_s", opts.nore)
 
 --
 -- Change...

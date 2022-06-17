@@ -212,7 +212,7 @@ output "AOC 2470W F53G7BA002500" {
 #   - Using names or identifiers instead of "*" can mitigate Firefox crashes during Sway reload.
 #
 
-seat seat0 hide_cursor when-typing disable
+seat seat0 hide_cursor when-typing enable
 seat seat0 xcursor_theme "Catppuccin-Teal-Cursors" 24
 seat seat0 idle_wake keyboard pointer
 

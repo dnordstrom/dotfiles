@@ -75,7 +75,7 @@
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.device = "nodev";
   boot.loader.grub.configurationLimit = 50;
-  boot.loader.grub.useOSProber = true;
+  boot.loader.grub.useOSProber = false;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot";
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -121,6 +121,11 @@
           EVENTS:
             EV_KEY: [KEY_CAPSLOCK, KEY_ESC]
     '';
+  };
+
+  services.pcscd = {
+    enable = true;
+    plugins = [ pkgs.ccid ];
   };
 
   services.openssh.enable = true;

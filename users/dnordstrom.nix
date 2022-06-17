@@ -5,54 +5,74 @@
 #  
 { pkgs, nixpkgs, lib, config, ... }:
 
-#  
-# APPLICATIONS
-#  
 let
-  editor = "nvim";
+  #
+  # APPLICATIONS
+  #
+
+  #
+  # General
+  #
+
   browser = "firefox";
+  editor = "nvim";
   terminal = "kitty";
-  xdgEditor = [ "neovim-kitty.desktop" ];
-  xdgMarkdown = [ "neovim-kitty.desktop" ];
+
+  #
+  # Desktop entries
+  #
+
   xdgBrowser = [ "firefox.desktop" ];
-  xdgPdfViewer = [ "org.pwmt.zathura.desktop" ];
+  xdgEditor = [ "neovim-kitty.desktop" ];
   xdgFileBrowser = [ "org.kde.dolphin.desktop" ];
+  xdgHttpie = [ "httpie-appimage.desktop" ];
   xdgImageViewer = [ "vimiv.desktop" ];
+  xdgMailClient = [ "firefox.desktop" ];
+  xdgMarkdown = [ "neovim-kitty.desktop" ];
   xdgMediaPlayer = [ "org.kde.haruna.desktop" ];
-  xdgHttpie = [ "httpie.desktop" ];
+  xdgMoneroWallet = [ "mymonero-appimage.desktop" ];
+  xdgPasswordManager = [ "bitwarden-appimage.desktop" ];
+  xdgPdfViewer = [ "org.pwmt.zathura.desktop" ];
 
   # 
-  # MIME-TYPE ASSOCIATIONS 
+  # MIME-TYPES
   # 
+
   mimeAassociations = {
-    "audio/*" = xdgMediaPlayer;
-    "video/*" = xdgMediaPlayer;
-    "image/*" = xdgImageViewer;
-    "inode/directory" = xdgFileBrowser;
-    "text/html" = xdgBrowser;
-    "text/plain" = xdgEditor;
-    "text/markdown" = xdgEditor;
-    "text/calendar" = xdgBrowser;
-    "x-scheme-handler/http" = xdgBrowser;
-    "x-scheme-handler/https" = xdgBrowser;
-    "x-scheme-handler/ftp" = xdgBrowser;
-    "x-scheme-handler/chrome" = xdgBrowser;
-    "x-scheme-handler/about" = xdgBrowser;
-    "x-scheme-handler/unknown" = xdgBrowser;
-    "x-scheme-handler/pie" = xdgHttpie;
-    "application/pdf" = xdgPdfViewer;
     "application/json" = xdgEditor;
-    "application/zip" = xdgFileBrowser;
+    "application/pdf" = xdgPdfViewer;
     "application/x-compressed-tar" = xdgFileBrowser;
-    "application/xhtml+xml" = xdgBrowser;
     "application/x-extension-htm" = xdgBrowser;
     "application/x-extension-html" = xdgBrowser;
     "application/x-extension-shtml" = xdgBrowser;
-    "application/x-extension-xhtml" = xdgBrowser;
     "application/x-extension-xht" = xdgBrowser;
+    "application/x-extension-xhtml" = xdgBrowser;
+    "application/xhtml+xml" = xdgBrowser;
+    "application/zip" = xdgFileBrowser;
+    "audio/*" = xdgMediaPlayer;
+    "image/*" = xdgImageViewer;
+    "inode/directory" = xdgFileBrowser;
+    "text/calendar" = xdgBrowser;
+    "text/html" = xdgBrowser;
+    "text/markdown" = xdgEditor;
+    "text/plain" = xdgEditor;
+    "video/*" = xdgMediaPlayer;
+    "x-scheme-handler/about" = xdgBrowser;
+    "x-scheme-handler/bitwarden" = xdgPasswordManager;
+    "x-scheme-handler/chrome" = xdgBrowser;
+    "x-scheme-handler/ftp" = xdgBrowser;
+    "x-scheme-handler/http" = xdgBrowser;
+    "x-scheme-handler/https" = xdgBrowser;
+    "x-scheme-handler/mailto" = xdgMailClient;
+    "x-scheme-handler/monero" = xdgMoneroWallet;
+    "x-scheme-handler/pie" = xdgHttpie;
+    "x-scheme-handler/unknown" = xdgBrowser;
   };
 
-  # Dependencies for some Python applications
+  #
+  # GLOBAL PYTHON PACKAGES
+  #
+
   python-packages = ps: with ps; [ i3ipc requests ];
   python-with-packages = pkgs.python3.withPackages python-packages;
 
@@ -61,7 +81,8 @@ in {
   # MODULES
   #
 
-  imports = [ ../modules/vscode.nix ];
+  # For VSCodium package, settings and extensions:
+  # imports = [ ../modules/vscode.nix ];
 
   #
   # ENVIRONMENT
@@ -76,7 +97,7 @@ in {
   };
 
   #
-  # DESKTOP ENTRIES
+  # XDG ENTRIES AND ASSOCIATIONS
   #
 
   xdg = {
@@ -89,7 +110,7 @@ in {
 
     desktopEntries = {
       #
-      # GUI applications
+      # Desktop applications
       #
 
       slack-wayland = {
@@ -106,7 +127,7 @@ in {
         startupNotify = true;
       };
 
-      httpie = {
+      httpie-appimage = {
         name = "HTTPie";
         type = "Application";
         genericName = "Modern HTTP client for the API era";
@@ -119,7 +140,7 @@ in {
         startupNotify = false;
       };
 
-      ferdium = {
+      ferdium-appimage = {
         name = "Ferdium";
         type = "Application";
         genericName =
@@ -133,7 +154,7 @@ in {
         startupNotify = false;
       };
 
-      session = {
+      session-appimage = {
         name = "Session";
         type = "Application";
         genericName = "Private messaging from your desktop";
@@ -147,12 +168,12 @@ in {
         settings = { StartupWMClass = "session"; };
       };
 
-      station = {
+      station-appimage = {
         name = "Station";
         type = "Application";
         genericName = "Web service manager";
         exec =
-          "appimage-run /home/dnordstrom/.local/bin/station/station.appimage";
+          "GDK_BACKEND=x11 appimage-run /home/dnordstrom/.local/bin/station/station.appimage";
         terminal = false;
         icon = "station-desktop-app";
         categories = [ "Network" ];
@@ -161,12 +182,12 @@ in {
         settings = { StartupWMClass = "Station"; };
       };
 
-      mymonero = {
+      mymonero-appimage = {
         name = "MyMonero";
         type = "Application";
         genericName = "Monero Wallet";
         exec =
-          "GDK_BACKEND=x11 appimage-run /home/dnordstrom/.local/bin/mymonero/mymonero.appimage";
+          "GDK_BACKEND=x11 appimage-run /home/dnordstrom/.local/bin/mymonero/mymonero.appimage -- %U";
         terminal = false;
         icon = "mymonero";
         categories = [ "Office" "Finance" ];
@@ -175,12 +196,12 @@ in {
         settings = { StartupWMClass = "MyMonero"; };
       };
 
-      singlebox = {
+      singlebox-appimage = {
         name = "Singlebox";
         type = "Application";
         genericName = "All-in-One Messenger";
         exec =
-          "appimage-run /home/dnordstrom/.local/bin/singlebox/singlebox.appimage";
+          "appimage-run /home/dnordstrom/.local/bin/singlebox/singlebox.appimage -- %U";
         terminal = false;
         icon = "singlebox";
         categories = [ "Utility" ];
@@ -193,12 +214,12 @@ in {
         startupNotify = false;
       };
 
-      bitwarden = {
+      bitwarden-appimage = {
         name = "Bitwarden (AppImage)";
         type = "Application";
         genericName = "Password Manager";
         exec =
-          "appimage-run /home/dnordstrom/.local/bin/bitwarden/bitwarden.appimage";
+          "appimage-run /home/dnordstrom/.local/bin/bitwarden/bitwarden.appimage %U";
         terminal = false;
         icon = "ferdium";
         categories = [ "Utility" ];
@@ -208,7 +229,7 @@ in {
       };
 
       #
-      # Terminal applications
+      # Command line applications
       #
 
       neovim-alacritty = {
@@ -272,7 +293,7 @@ in {
       };
 
       #
-      # Sessions
+      # Startup sessions
       #
 
       kitty-session-cloud = {
@@ -646,6 +667,7 @@ in {
 
     # Qt libs/apps
     libsForQt5.ark
+    libsForQt5.qt5.qtgraphicaleffects # Needed by Quaternion Matrix client
     libsForQt5.qtstyleplugin-kvantum
     libsForQt5.qtstyleplugins
 

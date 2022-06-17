@@ -35,13 +35,23 @@ setopt chaselinks
 
 # zsh
 
-export KEYTIMEOUT=1000
+export KEYTIMEOUT=1
 
 # Shell
 
-export EDITOR="nvim"
+export EDITOR="vim"
 export BROWSER="firefox"
 export TERMINAL="kitty"
+
+# Zsh vi mode plugin
+
+# Configuration function called when sourcing plugin
+zvm_config() {
+  ZVM_VI_INSERT_ESCAPE_BINDKEY=jk
+  ZVM_LINE_INIT_MODE=$ZVM_MODE_INSERT
+  ZVM_KEYTIMEOUT=0.4
+  ZVM_KEYTIMEOUT_ESC=0.1 # Lower wait time for Escape key
+}
 
 # ANSI color code helpers
 
@@ -106,11 +116,10 @@ alias cat="bat"
 alias cdn="cd /etc/nixos"
 
 # Edit and build NixOS
-alias nb="$HOME/.nix-prebuild; doas nixos-rebuild switch --flake /etc/nixos --upgrade"
-alias nbi="$HOME/.nix-prebuild; doas nixos-rebuild switch --flake /etc/nixos --impure --upgrade"
+alias nb="$HOME/.nix-prebuild; doas nixos-rebuild switch --flake /etc/nixos"
+alias nbi="$HOME/.nix-prebuild; doas nixos-rebuild switch --flake /etc/nixos --impure"
 alias ne="nix-with nvim"
-alias nkate="nix-with kate"
-alias ncode="nix-with codium"
+alias nek="nix-with kate"
 
 # Shell environments
 alias n12="nix-shell /etc/nixos/shell/node12.nix"
@@ -340,7 +349,7 @@ nix-with() {
 }
 
 # Open NixOS configuration in Neovim
-configure-nixos() {
+edit-nixos() {
   in-dir "/etc/nixos" "nvim"
 }
 
@@ -351,7 +360,7 @@ build-nixos() {
 }
 
 # Run fg command if buffer line is empty, otherwise save input to stack
-fancy-ctrl-z() {
+magic-ctrl-z() {
   if [ $#BUFFER -eq 0 ]; then
     BUFFER="fg"
     zle accept-line
@@ -374,8 +383,8 @@ zle -N insert-date
 zle -N insert-timestamp
 zle -N prepend-date
 zle -N prepend-timestamp
-zle -N fancy-ctrl-z
-zle -N configure-nixos
+zle -N magic-ctrl-z
+zle -N edit-nixos
 zle -N build-nixos
 zle -N view-notes
 zle -N prepend-note
@@ -388,41 +397,43 @@ zle -N auto-correct
 # Binds
 #
 
-# Fixes
-bindkey "^[[3~" delete-char # Fixes delete key outputting tilde character
-# bindkey -M emacs "^[^[" doas-command-line
-# bindkey -M vicmd "^[^[" doas-command-line
-# bindkey -M viins "^[^[" doas-command-line
+# Zsh vi mode binds
+zvm_after_lazy_keybindings() {
+  # Ctrl-N and Ctrl-P for next and previous based on current buffer content
+  zvm_bindkey vicmd "^N" history-beginning-search-forward
+  zvm_bindkey vicmd "^P" history-beginning-search-backward
+  zvm_bindkey viins "^N" history-beginning-search-forward
+  zvm_bindkey viins "^P" history-beginning-search-backward
+}
 
-# Rebinds
-bindkey -s "^[l" "l\n" # Alt-L uses l instead of ls
+# Fix delete key outputting tilde character
+bindkey "^[[3~" delete-char
+
+# Alt-L uses l instead of ls
+bindkey -s "^[l" "l\n"
 
 # Space for history
 bindkey " " magic-space # Until auto-correct spell-word has been fixed to keep quotation marks
 
 # Ctrl-Z for fg
-bindkey "^Z" fancy-ctrl-z
+bindkey "^Z" magic-ctrl-z
 
-# Paste: Alt-A then specifier
+# Paste: Alt-P then specifier
 bindkey "^[pt" insert-timestamp
 bindkey "^[pd" insert-date
 
-# Prepend: Shift-Alt-A then specifier
+# Prepend paste: Shift-Alt-P then specifier
 bindkey "^[Pd" prepend-date
 bindkey "^[Pt" prepend-timestamp
-
-# Configuration: Alt-C then specifier
-bindkey "^[cb" build-nixos
-bindkey "^[ce" configure-nixos
 
 # Notes: Alt-N then specifier
 bindkey "^[ne" edit-notes
 bindkey "^[na" prepend-note
 bindkey "^[nv" view-notes
 
-# Next and previous (up and down) accounts for history
-bindkey "^P" history-beginning-search-backward
-bindkey "^N" history-beginning-search-forward
+# NixOS: Shift-Alt-N then specifier
+bindkey "^[Nb" build-nixos
+bindkey "^[Ne" edit-nixos
 
 #
 # Path

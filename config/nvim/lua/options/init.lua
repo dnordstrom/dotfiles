@@ -25,6 +25,7 @@ g.mapleader = " "
 
 opt.undofile = true
 opt.laststatus = 3
+opt.cmdheight = 0
 opt.termguicolors = true
 opt.ignorecase = true
 opt.smartcase = true
@@ -33,7 +34,7 @@ opt.relativenumber = true
 opt.completeopt = "noinsert,menuone,noselect"
 opt.mouse = "a"
 opt.clipboard = "unnamedplus" -- Use system clipboard since we only use it for yanks (see key maps)
-opt.scrolloff = 5
+opt.scrolloff = 4
 opt.spell = false -- Enabled for specific file types
 opt.spelllang = { "en_us" }
 opt.updatetime = 250

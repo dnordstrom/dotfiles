@@ -28,6 +28,18 @@ toolbaritem#urlbar-container {
 
 
 /**
+ * SIDEBAR
+ */
+
+#sidebar {
+  max-width: none !important;
+  min-width: 0px !important;
+  width: 350px !important;
+}
+
+
+
+/**
  * TAB BAR
  */
 
