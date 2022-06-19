@@ -28,14 +28,6 @@
     "custom/wttr",
     "pulseaudio"
   ],
-  "sway/window": {
-    "format": "<span>{}</span>",
-    "max-length": 50,
-    "rewrite": {
-      "(.*)Firefox Nightly$": " $1",
-      "(.*)vim$": " $1",
-    }
-  },
   "sway/workspaces": {
     "format": "{icon}",
     "format-icons": {

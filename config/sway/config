@@ -69,13 +69,11 @@ set $workspace10 10
 # Terminals
 set $term kitty --title term --single-instance
 set $termpopup $term --title popupterm
-set $termplain $term --title plainterm
 set $termscratch $term --title scratchterm --session /etc/nixos/config/kitty/scratchpad.session
 
 # Launchers
 set $launchapp /etc/nixos/scripts/launch/launch-application
 set $launchcmd /etc/nixos/scripts/launch/launch-command
-set $launchgui wofi
 
 # Files
 set $filesqt5 dolphin
@@ -255,19 +253,16 @@ bindsym {
 
   $mod+d exec $launchapp
   $mod+Shift+d exec $launchcmd
-  $mod+Shift+Ctrl+d exec $launchgui
   $mod+Shift+period exec wofi-emoji
 
   #
   # Terminal emulators
-  #   Mod+Return -> Plain
-  #   Mod+Shift+Return -> Scratchpad split
-  #   Mod+Shift+Ctrl+Return -> Scratchpad plain
+  #   Mod+Return -> Normal
+  #   Mod+Shift+Return -> Scratchpad
   #
 
   $mod+Return exec $term
   $mod+Shift+Return exec $termscratch
-  $mod+Shift+Ctrl+Return exec $termplain
   
   #
   # File managers
@@ -372,10 +367,10 @@ bindsym {
   # Scratchpad
   #
   
-  $mod+z scratchpad show, [con_mark="fullterm"] fullscreen enable
-  $mod+Shift+z move scratchpad, mark --add newest
-  $mod+Shift+Ctrl+z fullscreen enable, mark --add fullterm
-  $mod+Shift+Ctrl+x fullscreen disable, mark --remove fullterm
+  $mod+z scratchpad show, [con_mark="full"] fullscreen enable, [con_mark="nofull"] resize set $termscratchwidth $termscratchheight
+  $mod+Shift+z move scratchpad
+  $mod+Shift+Ctrl+z fullscreen enable, mark --add full --remove nofull
+  $mod+Shift+Ctrl+x fullscreen disable, mark --remove full --add nofull
 
   #
   # Functional
@@ -594,17 +589,7 @@ for_window {
     move position center
 
   # Scratchpad (fullscreen)
-  [title="scratchterm" con_mark="fullterm"] \
-    fullscreen enable
-
-  # Scratchpad (plain)
-  [title="plainterm"] \
-    move scratchpad, \
-    resize set $termplainwidth $termplainheight, \
-    move position center
-
-  # Scratchpad (plain fullscreen)
-  [title="plainterm" con_mark="fullterm"] \
+  [title="scratchterm" con_mark="full"] \
     fullscreen enable
 
   # Popups (e.g. btm and wttr.in)
