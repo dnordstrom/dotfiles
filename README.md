@@ -1,5 +1,7 @@
 # NORD's dotfiles
 
+[![built with nix](https://builtwithnix.org/badge.svg)](https://builtwithnix.org)
+
 Flake based NixOS configuration used on work laptop and home desktop for consistent, declarative, and reproducible environments for development and leisure. See the links below for further information on Nix and NixOS.
 
 ## Features

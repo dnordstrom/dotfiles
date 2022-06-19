@@ -56,14 +56,14 @@
 /* Outer */
 
 #waybar {
-  background: transparent;
+  background: none;
   color: @black2;
 }
 
 /* Inner */
 
 #waybar:first-child > box {
-  background: transparent;
+  background: none;
   margin: 10px 10px 0 10px;
 }
 
@@ -85,7 +85,7 @@ box > box > widget > box,
 box > box > widget > label {
   background: @black2;
   color: @white;
-  padding: 0px 14px 1px;
+  padding: 2px 14px;
 }
 
 /**
@@ -93,52 +93,32 @@ box > box > widget > label {
  */
 
 #workspaces {
-  background: @black2;
-  margin: 0;
+  background: none;
   padding: 0;
 }
 
 #workspaces button {
-  margin: 0;
+  background: @black2;
   padding: 0 16px;
   box-shadow: none;
-  color: @gray2;
-  border-top: 4px solid @black2;
-  border-bottom: 3px solid @black2;
-  border-right: none;
-  border-left: none;
+  color: @gray1;
   border-radius: 0;
   min-width: 0;
 }
 
 #workspaces button:hover,
 #workspaces button.urgent:hover {
-  border-bottom: 3px solid @peach;
-  border-top-color: @black3;
   color: @peach;
-  transition: none;
 }
 
-#workspaces button:first-child {
-  border-radius: 0;
-}
-
-#workspaces button.focused {
-  background: @black3;
-  border-bottom: 3px solid @blue;
-  border-top-color: @black3;
+#workspaces button.focused,
+#workspaces button.focused:hover {
   color: @blue;
 }
 
 #workspaces button.urgent {
   background: @red;
-  border-bottom: 3px solid @red;
   color: @black2;
-}
-
-#window {
-  background: @black3;
-  color: @gray2;
 }
 
 #waybar:not(.empty) #window {
@@ -166,6 +146,7 @@ box > box > widget > label {
   color: @black3;
   background: @maroon;
   border-left: 1px solid @gray1;
+  margin-left: -8px;
 }
 
 /**
@@ -229,5 +210,31 @@ box > box > widget > label {
 #custom-pipewire {
   background: @peach;
   color: @black2;
+}
+
+/**
+ * CORNERS
+ */
+
+.modules-left,
+.modules-center,
+.modules-right {
+  border-radius: 12px;
+}
+
+#clock,
+#custom-clock {
+  border-radius: 12px;
+}
+
+#workspaces button:first-child,
+#tray {
+  border-radius: 12px 0 0 12px;
+}
+
+#mode,
+#custom-terminal,
+#pulseaudio {
+  border-radius: 0 12px 12px 0;
 }
 

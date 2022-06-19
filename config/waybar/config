@@ -206,7 +206,7 @@
   "cpu": {
     "on-click": "kitty --title popupterm btm",
     "tooltip": false,
-    "format": "<span font='16' rise='-1500'>﬙ </span><span rise='500'>{usage}%</span>",
+    "format": "<span font='16' rise='-1850'>﬙ </span><span rise='1675'>{usage}%</span>",
     "interval": 10
   },
   "network": {

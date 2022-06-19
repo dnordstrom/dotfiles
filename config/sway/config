@@ -212,9 +212,8 @@ output "AOC 2470W F53G7BA002500" {
 #   - Using names or identifiers instead of "*" can mitigate Firefox crashes during Sway reload.
 #
 
-seat seat0 hide_cursor when-typing enable
+seat seat0 hide_cursor when-typing disable
 seat seat0 xcursor_theme "Catppuccin-Teal-Cursors" 24
-seat seat0 idle_wake keyboard pointer
 
 input "12851:25345:Ducky_Ducky_One2_Mini_RGB" {
   repeat_delay 250
@@ -567,8 +566,8 @@ for_window {
   [app_id="pinentry-qt"] floating enable
   [app_id="pinentry-gtk2"] floating enable
 
-  # About (excludes About Profiles in Firefox)
-  [title="^About (?!Profiles).*$"] floating enable
+  # About
+  [name="^About\sFirefox\sNightly$"] floating enable
 
   #
   # Launchers

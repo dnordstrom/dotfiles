@@ -360,7 +360,7 @@ in {
         name = "Firefox Nightly (Music)";
         type = "Application";
         genericName = "Web Browser";
-        exec = "firefox -P music %U";
+        exec = "firefox -P Music %U";
         terminal = false;
         icon = "firefox";
         categories = [ "Network" "WebBrowser" ];
@@ -565,6 +565,7 @@ in {
     jamesdsp
     pulseaudio
     pulsemixer
+    strawberry
 
     #
     # Audio plugins
@@ -667,6 +668,7 @@ in {
 
     # Qt libs/apps
     libsForQt5.ark
+    libsForQt5.kdegraphics-thumbnailers
     libsForQt5.qt5.qtgraphicaleffects # Needed by Quaternion Matrix client
     libsForQt5.qtstyleplugin-kvantum
     libsForQt5.qtstyleplugins
@@ -805,7 +807,8 @@ in {
 
   # Wallpapers
 
-  home.file."Pictures/Wallpapers".source = ../wallpapers;
+  home.file."Pictures/Wallpapers".source =
+    config.lib.file.mkOutOfStoreSymlink /etx/nixos/wallpapers;
 
   # EasyEffects
   #
@@ -827,9 +830,12 @@ in {
 
   # Sway
 
-  xdg.configFile."sway".source = ../config/sway;
-  xdg.configFile."swaylock/config".source = ../config/swaylock/config;
-  xdg.configFile."swaynag/config".source = ../config/swaynag/config;
+  xdg.configFile."sway".source =
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/sway;
+  xdg.configFile."swaylock/config".source =
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/swaylock/config;
+  xdg.configFile."swaynag/config".source =
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/swaynag/config;
 
   # Swappy 
 
@@ -857,16 +863,20 @@ in {
 
   # Firefox
 
-  xdg.configFile."tridactyl".source = ../config/firefox/tridactyl;
+  xdg.configFile."tridactyl".source =
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/firefox/tridactyl;
 
   home.file.".mozilla/native-messaging-hosts/tridactyl.json".source =
     "${pkgs.tridactyl-native}/lib/mozilla/native-messaging-hosts/tridactyl.json";
 
   # Neovim
 
-  xdg.configFile."nvim/lua".source = ../config/nvim/lua;
-  xdg.configFile."nvim/ftplugin".source = ../config/nvim/ftplugin;
-  xdg.configFile."nvim/luasnippets".source = ../config/nvim/luasnippets;
+  xdg.configFile."nvim/lua".source =
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/nvim/lua;
+  xdg.configFile."nvim/ftplugin".source =
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/nvim/ftplugin;
+  xdg.configFile."nvim/luasnippets".source =
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/nvim/luasnippets;
 
   # Vifm
 
@@ -886,7 +896,8 @@ in {
 
   # Waybar
 
-  xdg.configFile."waybar".source = ../config/waybar;
+  xdg.configFile."waybar".source =
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/waybar;
 
   # wlogout
 
