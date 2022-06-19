@@ -450,9 +450,6 @@ in {
     unzip
     usbutils
     vifm-full
-    xclip
-    xdotool
-    xsel
     zip
 
     #
@@ -478,6 +475,7 @@ in {
     # Sway
     swayidle # TODO: Use systemd service option instead.
     swaylock-effects
+    swayr
     swaywsr
 
     # Screenshots
@@ -540,12 +538,24 @@ in {
 
     bitwarden
     bitwarden-cli
+    git-crypt
     go-2fa
+    otpclient
     pinentry-gtk2
     protonmail-bridge
     protonvpn-cli
     protonvpn-gui
     qtpass
+    tmpmail # CLI temporary email generator
+    yubico-pam
+    yubico-piv-tool
+    yubikey-agent
+    yubikey-manager
+    yubikey-manager-qt
+    yubikey-personalization
+    yubikey-personalization-gui
+    yubikey-touch-detector
+    yubioath-desktop
 
     #
     # Multimedia
@@ -693,23 +703,10 @@ in {
     # Interesting prospects
     #
 
-    swayr
     mdcat
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
     navi # CLI cheatsheet tool
     tealdeer # TLDR in Rust
-    tmpmail # CLI temporary email generator
-    yubikey-personalization-gui
-    yubikey-personalization
-    yubico-pam
-    yubikey-agent
-    yubikey-manager
-    yubico-piv-tool
-    yubioath-desktop
-    yubikey-manager-qt
-    yubikey-touch-detector
-    otpclient
-    git-crypt
     jetbrains.datagrip
 
     #
