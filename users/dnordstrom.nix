@@ -422,7 +422,6 @@ in {
     fractal
     gotktrix
     mirage-im
-    neochat
     nheko
     quaternion
     schildichat-desktop-wayland
@@ -790,14 +789,16 @@ in {
   # and the files remain useful for those not using NixOS or Home Manager.
   #
 
-  # Scripts
+  # Scripts and shell
 
   home.file.".scripts".source = ../scripts;
+  home.file.".zshinit".source =
+    config.lib.file.mkOutOfStoreSymlink ../config/zsh/zshrc;
 
   # Wallpapers
 
   home.file."Pictures/Wallpapers".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/wallpapers;
+    config.lib.file.mkOutOfStoreSymlink ../wallpapers;
 
   # EasyEffects
   #
@@ -808,13 +809,13 @@ in {
   #   Also see `services.easyeffects` for background service.
 
   xdg.configFile."easyeffects/output".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/easyeffects/output;
+    config.lib.file.mkOutOfStoreSymlink ../config/easyeffects/output;
   xdg.configFile."easyeffects/input".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/easyeffects/input;
+    config.lib.file.mkOutOfStoreSymlink ../config/easyeffects/input;
   xdg.configFile."easyeffects/irs".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/easyeffects/irs;
+    config.lib.file.mkOutOfStoreSymlink ../config/easyeffects/irs;
   xdg.configFile."easyeffects/autoload".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/easyeffects/autoload;
+    config.lib.file.mkOutOfStoreSymlink ../config/easyeffects/autoload;
   xdg.configFile."easyeffects/presets".source = ../config/easyeffects/presets;
 
   # Sway
@@ -823,15 +824,14 @@ in {
   #   individual files. For somre reason `xdg.configFile` doesn't work so we use `home.file`.
 
   home.file.".config/sway/config.main".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/sway/config.main;
+    config.lib.file.mkOutOfStoreSymlink ../config/sway/config.main;
   home.file.".config/sway/colors.catppuccin".source =
-    config.lib.file.mkOutOfStoreSymlink
-    /etc/nixos/config/sway/colors.catppuccin;
+    config.lib.file.mkOutOfStoreSymlink ../config/sway/colors.catppuccin;
 
   xdg.configFile."swaylock/config".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/swaylock/config;
+    config.lib.file.mkOutOfStoreSymlink ../config/swaylock/config;
   xdg.configFile."swaynag/config".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/swaynag/config;
+    config.lib.file.mkOutOfStoreSymlink ../config/swaynag/config;
 
   # Swappy 
 
@@ -860,7 +860,7 @@ in {
   # Firefox
 
   xdg.configFile."tridactyl".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/firefox/tridactyl;
+    config.lib.file.mkOutOfStoreSymlink ../config/firefox/tridactyl;
 
   home.file.".mozilla/native-messaging-hosts/tridactyl.json".source =
     "${pkgs.tridactyl-native}/lib/mozilla/native-messaging-hosts/tridactyl.json";
@@ -868,11 +868,11 @@ in {
   # Neovim
 
   xdg.configFile."nvim/lua".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/nvim/lua;
+    config.lib.file.mkOutOfStoreSymlink ../config/nvim/lua;
   xdg.configFile."nvim/ftplugin".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/nvim/ftplugin;
+    config.lib.file.mkOutOfStoreSymlink ../config/nvim/ftplugin;
   xdg.configFile."nvim/luasnippets".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/nvim/luasnippets;
+    config.lib.file.mkOutOfStoreSymlink ../config/nvim/luasnippets;
 
   # Vifm
 
@@ -885,12 +885,12 @@ in {
   # Wofi
 
   xdg.configFile."wofi".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/wofi;
+    config.lib.file.mkOutOfStoreSymlink ../config/wofi;
 
   # Waybar
 
   xdg.configFile."waybar".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/waybar;
+    config.lib.file.mkOutOfStoreSymlink ../config/waybar;
 
   # wlogout
 
@@ -969,12 +969,12 @@ in {
 
   programs.exa = {
     enable = true;
-    enableAliases = false; # Adds ls, ll, la, lt, and lla
+    enableAliases = false;
   };
 
   programs.lsd = {
     enable = true;
-    enableAliases = false; # Adds ls, ll, la, lt, and lla
+    enableAliases = false;
     settings = {
       date = "relative";
       display = "almost-all";
@@ -1131,8 +1131,8 @@ in {
         file = "doas.plugin.zsh";
       }
     ];
-
-    initExtra = builtins.readFile ../config/zsh/zshrc;
+    initExtra =
+      ''source "$HOME/.zshinit"''; # Symlinked to `/etc/nixos/config/zsh/zshrc`
   };
 
   programs.zoxide = {
