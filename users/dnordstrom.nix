@@ -412,7 +412,6 @@ in {
 
     appimage-run
     dolphin
-    dmg2img
 
     #
     # Communication
