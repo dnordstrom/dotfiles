@@ -238,28 +238,27 @@ input "1452:613:Apple_Inc._Magic_Trackpad_2" {
 #
 
 # Floating windows
+#
 #   Drag windows by holding down $mod.
 #   Resize windows with right mouse button and $mod (use `inverse` for left mouse button)
 floating_modifier $mod normal
 
 bindsym {
-  #
   # Launchers
+  #
   #   Mod+Return -> FZF applications
   #   Mod+Shift+Return -> FZF commands
   #   Mod+Shift+Ctrl+Return -> GUI launcher
   #   Mod+Shift+Period -> GUI emoji picker
-  #
 
   $mod+d exec $launchapp
   $mod+Shift+d exec $launchcmd
   $mod+Shift+period exec wofi-emoji
 
-  #
   # Terminal emulators
+  #
   #   Mod+Return -> Normal
   #   Mod+Shift+Return -> Scratchpad
-  #
 
   $mod+Return exec $term
   $mod+Shift+Return exec $termscratch
@@ -326,23 +325,35 @@ bindsym {
   Alt+Tab workspace next_on_output
   Alt+Shift+Tab workspace prev_on_output
 
-  # Focus workspace: HJKL
+  # Focus workspace: Mod+Alt+HJLK navigates
   $mod+Alt+$left workspace prev_on_output
   $mod+Alt+$down workspace next_on_output
   $mod+Alt+$up workspace prev_on_output
   $mod+Alt+$right workspace next_on_output
 
+  # Move window to workspace
+  $mod+Shift+1 move container to workspace number 1
+  $mod+Shift+2 move container to workspace number 2
+  $mod+Shift+3 move container to workspace number 3
+  $mod+Shift+4 move container to workspace number 4
+  $mod+Shift+5 move container to workspace number 5
+  $mod+Shift+6 move container to workspace number 6
+  $mod+Shift+7 move container to workspace number 7
+  $mod+Shift+8 move container to workspace number 8
+  $mod+Shift+9 move container to workspace number 9
+  $mod+Shift+0 move container to workspace number 10
+
   # Move window to workspace and focus
-  $mod+Shift+1 move container to workspace number 1, workspace number 1
-  $mod+Shift+2 move container to workspace number 2, workspace number 2
-  $mod+Shift+3 move container to workspace number 3, workspace number 3
-  $mod+Shift+4 move container to workspace number 4, workspace number 4
-  $mod+Shift+5 move container to workspace number 5, workspace number 5
-  $mod+Shift+6 move container to workspace number 6, workspace number 6
-  $mod+Shift+7 move container to workspace number 7, workspace number 7
-  $mod+Shift+8 move container to workspace number 8, workspace number 8
-  $mod+Shift+9 move container to workspace number 9, workspace number 9
-  $mod+Shift+0 move container to workspace number 10, workspace number 10
+  $mod+Shift+Ctrl+1 move container to workspace number 1, workspace number 1
+  $mod+Shift+Ctrl+2 move container to workspace number 2, workspace number 2
+  $mod+Shift+Ctrl+3 move container to workspace number 3, workspace number 3
+  $mod+Shift+Ctrl+4 move container to workspace number 4, workspace number 4
+  $mod+Shift+Ctrl+5 move container to workspace number 5, workspace number 5
+  $mod+Shift+Ctrl+6 move container to workspace number 6, workspace number 6
+  $mod+Shift+Ctrl+7 move container to workspace number 7, workspace number 7
+  $mod+Shift+Ctrl+8 move container to workspace number 8, workspace number 8
+  $mod+Shift+Ctrl+9 move container to workspace number 9, workspace number 9
+  $mod+Shift+Ctrl+0 move container to workspace number 10, workspace number 10
 
   #
   # Layout 
@@ -562,7 +573,7 @@ for_window {
   [app_id="pinentry-gtk2"] floating enable
 
   # About
-  [name="^About\sFirefox\sNightly$"] floating enable
+  [title="^About\sFirefox\sNightly$"] floating enable
 
   #
   # Launchers
@@ -649,7 +660,7 @@ exec {
   # Scratchpad terminal
   $termscratch
 
-  # Monitor idle
+  # Idle daemon
   swayidle -w \
     timeout 900 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
     timeout 1800 '$lock' resume 'swaymsg "output * dpms on"' \

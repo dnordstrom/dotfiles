@@ -1,8 +1,10 @@
+# #
 # USER MODULE: DNORDSTROM
 #
 # Author: Daniel Nordstrom <d@mrnordstrom.com>
 # Repository: https://github.com/dnordstrom/dotfiles
-#  
+# #  
+
 { pkgs, nixpkgs, lib, config, ... }:
 
 let
@@ -15,7 +17,7 @@ let
   #
 
   browser = "firefox";
-  editor = "nvim";
+  editor = "vim";
   terminal = "kitty";
 
   #
@@ -77,13 +79,6 @@ let
   python-with-packages = pkgs.python3.withPackages python-packages;
 
 in {
-  #
-  # MODULES
-  #
-
-  # For VSCodium package, settings and extensions:
-  # imports = [ ../modules/vscode.nix ];
-
   #
   # ENVIRONMENT
   #
@@ -401,6 +396,7 @@ in {
     haskellPackages.network-manager-tui
     libgnome-keyring
     openvpn
+    qbittorrent
 
     #
     # Nix
@@ -411,23 +407,26 @@ in {
     nix-prefetch
 
     #
-    # General
+    # Programs, packages, and files
     #
 
     appimage-run
-    dmg2img
     dolphin
-    pavucontrol
-    qbittorrent
-    zathura
+    dmg2img
 
     #
     # Communication
     #
 
     element-desktop
+    fluffychat
     fractal
     gotktrix
+    mirage-im
+    neochat
+    nheko
+    quaternion
+    schildichat-desktop-wayland
     signal-desktop
     slack
     slack-term
@@ -438,7 +437,6 @@ in {
     #
 
     awscli2
-    bitwarden-cli
     bottom
     fd
     gh
@@ -478,8 +476,7 @@ in {
     #
 
     # Sway
-    swayidle
-    swaykbdd
+    swayidle # TODO: Use systemd service option instead.
     swaylock-effects
     swaywsr
 
@@ -521,6 +518,7 @@ in {
     #
 
     libreoffice-fresh
+    zathura
 
     #
     # Web browsing
@@ -541,6 +539,7 @@ in {
     #
 
     bitwarden
+    bitwarden-cli
     go-2fa
     pinentry-gtk2
     protonmail-bridge
@@ -563,6 +562,7 @@ in {
     handbrake
     haruna # QT frontend for MPV
     jamesdsp
+    pavucontrol
     pulseaudio
     pulsemixer
     strawberry
@@ -653,6 +653,8 @@ in {
 
     # APIs and testing 
     insomnia
+    curlie
+    httpie
 
     #
     # Appearance
@@ -682,7 +684,6 @@ in {
     gtk-engine-murrine
     gtk_engines
     icoutils
-    lxappearance
 
     # Themes
     vimix-icon-theme
@@ -693,21 +694,11 @@ in {
     #
 
     swayr
-    quaternion
-    neochat
-    gotktrix
-    fluffychat
-    nheko
-    schildichat-desktop-wayland
-    mirage-im
-    etcher
     mdcat
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
     navi # CLI cheatsheet tool
     tealdeer # TLDR in Rust
     tmpmail # CLI temporary email generator
-    httpie # HTTP client, simpler alternative to cURL
-    curlie # HTTP client, simpler alternative to cURL
     yubikey-personalization-gui
     yubikey-personalization
     yubico-pam
@@ -720,8 +711,6 @@ in {
     otpclient
     git-crypt
     jetbrains.datagrip
-    wezterm
-    pro-office-calculator
 
     #
     # Dependencies
@@ -737,7 +726,8 @@ in {
 
   wayland.windowManager.sway = {
     enable = true;
-    config = null;
+    config = { };
+    extraConfig = "include config.main";
     extraSessionCommands = ''
       # Firefox
       export MOZ_ENABLE_WAYLAND=1
@@ -808,7 +798,7 @@ in {
   # Wallpapers
 
   home.file."Pictures/Wallpapers".source =
-    config.lib.file.mkOutOfStoreSymlink /etx/nixos/wallpapers;
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/wallpapers;
 
   # EasyEffects
   #
@@ -829,9 +819,16 @@ in {
   xdg.configFile."easyeffects/presets".source = ../config/easyeffects/presets;
 
   # Sway
+  #
+  #   We can't symlink the `~/.config/sway` directory when using home manager, we have to symlink
+  #   individual files.
 
-  xdg.configFile."sway".source =
-    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/sway;
+  xdg.configFile."sway/config.main".source =
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/sway/config.main;
+  xdg.configFile."sway/colors.catppuccin".source =
+    config.lib.file.mkOutOfStoreSymlink
+    /etc/nixos/config/sway/colors.catppuccin;
+
   xdg.configFile."swaylock/config".source =
     config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/swaylock/config;
   xdg.configFile."swaynag/config".source =
@@ -886,13 +883,10 @@ in {
 
   xdg.configFile."glow".source = ../config/glow;
 
-  # Xorg
-
-  home.file.".xinitrc".source = ../config/xorg/xinitrc.sh;
-
   # Wofi
 
-  xdg.configFile."wofi".source = ../config/wofi;
+  xdg.configFile."wofi".source =
+    config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/wofi;
 
   # Waybar
 
@@ -926,14 +920,14 @@ in {
     server.enable = true;
   };
 
-  programs.qutebrowser.enable = true;
-  programs.nnn.enable = true;
-  programs.feh.enable = true;
+  programs.qutebrowser.enable = false;
+  programs.nnn.enable = false;
+  programs.feh.enable = false;
   programs.java.enable = true;
   programs.jq.enable = true;
   programs.mpv.enable = true;
-  programs.afew.enable = true;
-  programs.mbsync.enable = true;
+  programs.afew.enable = false;
+  programs.mbsync.enable = false;
 
   programs.waybar = {
     enable = true;
@@ -946,7 +940,7 @@ in {
   };
 
   programs.password-store = {
-    enable = true;
+    enable = false;
     package = pkgs.pass.withExtensions (exts: [ exts.pass-otp ]);
   };
 
@@ -956,7 +950,7 @@ in {
   };
 
   programs.nushell = {
-    enable = true;
+    enable = false;
     settings = {
       startup = [
         # Shortcuts
@@ -1050,21 +1044,19 @@ in {
     };
   };
 
-  programs.alacritty = { enable = true; };
+  programs.kitty.enable = true;
 
-  programs.kitty = { enable = true; };
+  programs.alacritty.enable = true;
 
   programs.git = {
     enable = true;
     userName = "dnordstrom";
     userEmail = "d@mrnordstrom.com";
     aliases = {
-      co = "checkout";
-      c = "commit";
-      a = "commit -am";
+      c = "commit -am";
       s = "status";
       b = "branch";
-      pu = "pull";
+      f = "fetch";
       p = "push";
     };
   };
@@ -1147,7 +1139,6 @@ in {
   programs.zoxide = {
     enable = true;
     enableZshIntegration = true; # Adds eval "$(zoxide init zsh)" to .zshrc
-    # To disable alias creation on init: options = [ "--no-aliases" ];
   };
 
   programs.tmux = { enable = true; };
@@ -1195,16 +1186,6 @@ in {
     padding = "12,24";
     textColor = "#1E1E28";
     width = 325;
-  };
-
-  programs.neomutt = {
-    enable = true;
-    vimKeys = true;
-  };
-
-  programs.notmuch = {
-    enable = true;
-    hooks = { preNew = "mbsync --all"; };
   };
 
   programs.newsboat = {
@@ -1319,7 +1300,8 @@ in {
 
   programs.rbw = {
     enable = true;
-    # Settings are currently not working so we manage the config manually, see GH issue
+
+    # Settings are currently not working so we manage the config manually, see GH issue.
     #
     # settings = {
     #   email = "d@mrnordstrom.com";
@@ -1332,20 +1314,21 @@ in {
   #
 
   manual = {
-    html.enable = true;
-    json.enable = true;
+    html.enable = true; # Installs `home-manager-help` tool
+    json.enable =
+      true; # Installs to `<profile>/share/doc/home-manager/options.json`.
   };
 
   #
   # SERVICES
   #
 
+  services.gnome-keyring.enable = true;
+
   services.gpg-agent = {
     enable = true;
     pinentryFlavor = "qt";
   };
-
-  services.gnome-keyring.enable = true;
 
   services.gammastep = {
     enable = true;
@@ -1358,14 +1341,13 @@ in {
     longitude = 17.3;
   };
 
-  # If tis is false, remember to use the easyeffects package instead
-  services.easyeffects.enable = false;
+  services.easyeffects.enable = false; # If false, use easyeffects package.
 
   #
   # Systemd
   #
 
-  # ProtonMail Bridge user service allowing email clients to send and receive email
+  # Proton email bridge
 
   systemd.user.services.protonmail-bridge = {
     Unit = {
@@ -1378,63 +1360,6 @@ in {
         "${pkgs.protonmail-bridge}/bin/protonmail-bridge --cli --noninteractive";
     };
     Install = { WantedBy = [ "default.target" ]; };
-  };
-
-  #
-  # ACCOUNTS
-  #
-
-  accounts.email.accounts.mrnordstrom = {
-    primary = true;
-    neomutt.enable = true;
-    lieer.enable = true;
-    notmuch.enable = true;
-    mbsync.enable = true;
-    mbsync.create = "both";
-
-    realName = "Daniel Nordstrom";
-    userName = "d@mrnordstrom.com";
-    address = "d@mrnordstrom.com";
-
-    imap.host = "mail.mrnordstrom.com";
-    smtp.host = "mail.mrnordstrom.com";
-
-    signature = {
-      text = ''
-        Daniel Nordstrom
-        d@mrnordstrom.com
-      '';
-      showSignature = "append";
-    };
-
-    passwordCommand = "${pkgs.pass}/bin/pass home/email/d@mrnordstrom.com";
-  };
-
-  accounts.email.accounts.leeroy = {
-    neomutt.enable = true;
-    lieer.enable = true;
-    notmuch.enable = true;
-    mbsync.enable = true;
-    mbsync.create = "both";
-
-    realName = "Daniel Nordstrom";
-    userName = "daniel.nordstrom@leeroy.se";
-    address = "daniel.nordstrom@leeroy.se";
-
-    imap.host = "mail.leeroy.se";
-    smtp.host = "mail.leeroy.se";
-
-    signature = {
-      text = ''
-        Daniel Nordstrom
-        Developer
-        Leeroy Group
-      '';
-      showSignature = "append";
-    };
-
-    passwordCommand =
-      "${pkgs.pass}/bin/pass work/email/daniel.nordstrom@leeroy.se";
   };
 
   #
