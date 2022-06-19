@@ -723,10 +723,13 @@ in {
   #
   # SWAY
   #
+  #   Creates an empty config from which we load our own. We use Home Manager for its `systemd`
+  #   integration, not the configuration.
+  #
 
   wayland.windowManager.sway = {
     enable = true;
-    config = { };
+    config = null;
     extraConfig = "include config.main";
     extraSessionCommands = ''
       # Firefox
@@ -821,11 +824,11 @@ in {
   # Sway
   #
   #   We can't symlink the `~/.config/sway` directory when using home manager, we have to symlink
-  #   individual files.
+  #   individual files. For somre reason `xdg.configFile` doesn't work so we use `home.file`.
 
-  xdg.configFile."sway/config.main".source =
+  home.file.".config/sway/config.main".source =
     config.lib.file.mkOutOfStoreSymlink /etc/nixos/config/sway/config.main;
-  xdg.configFile."sway/colors.catppuccin".source =
+  home.file.".config/sway/colors.catppuccin".source =
     config.lib.file.mkOutOfStoreSymlink
     /etc/nixos/config/sway/colors.catppuccin;
 
