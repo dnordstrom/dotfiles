@@ -816,8 +816,6 @@ in {
   # Scripts and shell
 
   home.file.".scripts".source = ../scripts;
-  home.file.".livescripts".source =
-    config.lib.file.mkOutOfStoreSymlink (configPath "scripts");
   home.file.".zshinit".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/zsh/zshrc";
 
