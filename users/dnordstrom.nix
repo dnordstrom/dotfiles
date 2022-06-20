@@ -17,7 +17,9 @@ let
   # editing it we don't need to run `nixos-rebuild switch` each time to check the result:
   # 
   # `config.lib.file.mkOutOfStoreSymlink ${configDir}/config/sway/config.main`
-  configDir = /etc/nixos;
+  #
+  # The `/. +` part coerces the type from string to path.
+  configDir = /. + "/etc/nixos";
 
   #
   # APPLICATIONS
@@ -1114,7 +1116,11 @@ in {
     enableSyntaxHighlighting = true;
     enableVteIntegration = true;
 
-    cdpath = [ "$HOME" "$HOME/Code" configDir ];
+    cdpath = [
+      "${config.home.homeDirectory}"
+      "${config.home.homeDirectory}/Code"
+      "${configDir}"
+    ];
 
     plugins = [
       {
@@ -1156,7 +1162,7 @@ in {
       }
     ];
     initExtra = ''
-      source "$HOME/.zshinit"''; # Symlinked to `${configDir}/config/zsh/zshrc`
+      source "${config.home.homeDirectory}/.zshinit"''; # Symlinked to `${configDir}/config/zsh/zshrc`
   };
 
   programs.zoxide = {
