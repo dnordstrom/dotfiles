@@ -9,6 +9,17 @@
 
 let
   #
+  # SETUP
+  #
+
+  # Path used for out of store symlinks to make certain files editable without a rebuild. For
+  # example the Sway WM configuration entry point links directly to this directory so that when
+  # editing it we don't need to run `nixos-rebuild switch` each time to check the result:
+  # 
+  # `config.lib.file.mkOutOfStoreSymlink ${configDir}/config/sway/config.main`
+  configDir = /etc/nixos;
+
+  #
   # APPLICATIONS
   #
 
@@ -296,8 +307,8 @@ in {
         comment = "Cloud development (kitty)";
         type = "Application";
         genericName = "Text Editor";
-        exec =
-          "kitty --session /etc/nixos/config/kitty/dev-cloud.session --single-instance --instance-group dev";
+        exec = ''
+          kitty --session "${configDir}/config/kitty/dev-cloud.session --single-instance --instance-group dev"'';
         terminal = false;
         icon = "kitty";
         categories = [ "Utility" "TextEditor" "Development" "IDE" ];
@@ -792,13 +803,15 @@ in {
   # Scripts and shell
 
   home.file.".scripts".source = ../scripts;
+  home.file.".livescripts".source =
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/scripts";
   home.file.".zshinit".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/zsh/zshrc;
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/zsh/zshrc";
 
   # Wallpapers
 
   home.file."Pictures/Wallpapers".source =
-    config.lib.file.mkOutOfStoreSymlink ../wallpapers;
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/wallpapers";
 
   # EasyEffects
   #
@@ -809,13 +822,15 @@ in {
   #   Also see `services.easyeffects` for background service.
 
   xdg.configFile."easyeffects/output".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/easyeffects/output;
+    config.lib.file.mkOutOfStoreSymlink
+    "${configDir}/config/easyeffects/output";
   xdg.configFile."easyeffects/input".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/easyeffects/input;
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/easyeffects/input";
   xdg.configFile."easyeffects/irs".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/easyeffects/irs;
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/easyeffects/irs";
   xdg.configFile."easyeffects/autoload".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/easyeffects/autoload;
+    config.lib.file.mkOutOfStoreSymlink
+    "${configDir}/config/easyeffects/autoload";
   xdg.configFile."easyeffects/presets".source = ../config/easyeffects/presets;
 
   # Sway
@@ -824,14 +839,15 @@ in {
   #   individual files. For somre reason `xdg.configFile` doesn't work so we use `home.file`.
 
   home.file.".config/sway/config.main".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/sway/config.main;
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/sway/config.main";
   home.file.".config/sway/colors.catppuccin".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/sway/colors.catppuccin;
+    config.lib.file.mkOutOfStoreSymlink
+    "${configDir}/config/sway/colors.catppuccin";
 
   xdg.configFile."swaylock/config".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/swaylock/config;
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/swaylock/config";
   xdg.configFile."swaynag/config".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/swaynag/config;
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/swaynag/config";
 
   # Swappy 
 
@@ -860,7 +876,7 @@ in {
   # Firefox
 
   xdg.configFile."tridactyl".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/firefox/tridactyl;
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/firefox/tridactyl";
 
   home.file.".mozilla/native-messaging-hosts/tridactyl.json".source =
     "${pkgs.tridactyl-native}/lib/mozilla/native-messaging-hosts/tridactyl.json";
@@ -868,11 +884,11 @@ in {
   # Neovim
 
   xdg.configFile."nvim/lua".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/nvim/lua;
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/nvim/lua";
   xdg.configFile."nvim/ftplugin".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/nvim/ftplugin;
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/nvim/ftplugin";
   xdg.configFile."nvim/luasnippets".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/nvim/luasnippets;
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/nvim/luasnippets";
 
   # Vifm
 
@@ -885,12 +901,12 @@ in {
   # Wofi
 
   xdg.configFile."wofi".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/wofi;
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/wofi";
 
   # Waybar
 
   xdg.configFile."waybar".source =
-    config.lib.file.mkOutOfStoreSymlink ../config/waybar;
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/waybar";
 
   # wlogout
 
@@ -988,11 +1004,19 @@ in {
 
   programs.pet = {
     enable = true;
-    snippets = [{
-      description = "Set GTK theme";
-      command = "gsettings set org.gnome.desktop.interface gtk-theme";
-      tag = [ "gtk" "gnome" "theme" "configuration" ];
-    }];
+    snippets = [
+      {
+        description = "Set GTK theme";
+        command = "gsettings set org.gnome.desktop.interface gtk-theme";
+        tag = [ "gtk" "gnome" "theme" "configuration" ];
+      }
+      {
+        description = "Copy Firefox password";
+        command =
+          "bw get item Firefox | jq -r '.login.password // empty' | wl-copy";
+        tag = [ "password" "copy" "clipboard" "json" ];
+      }
+    ];
   };
 
   programs.firefox = let
@@ -1090,7 +1114,7 @@ in {
     enableSyntaxHighlighting = true;
     enableVteIntegration = true;
 
-    cdpath = [ "$HOME" "$HOME/Code" "/etc/nixos" ];
+    cdpath = [ "$HOME" "$HOME/Code" configDir ];
 
     plugins = [
       {
@@ -1131,8 +1155,8 @@ in {
         file = "doas.plugin.zsh";
       }
     ];
-    initExtra =
-      ''source "$HOME/.zshinit"''; # Symlinked to `/etc/nixos/config/zsh/zshrc`
+    initExtra = ''
+      source "$HOME/.zshinit"''; # Symlinked to `${configDir}/config/zsh/zshrc`
   };
 
   programs.zoxide = {

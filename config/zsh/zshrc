@@ -117,16 +117,46 @@ alias cdn="cd /etc/nixos"
 
 # Edit and build NixOS
 alias nb="$HOME/.nix-prebuild; doas nixos-rebuild switch --flake /etc/nixos"
-alias nbi="$HOME/.nix-prebuild; doas nixos-rebuild switch --flake /etc/nixos --impure"
+alias nbd="nb --stack-trace"
+alias nbi="nb --impure"
+alias nbid="nbd --impure"
 alias ne="nix-with nvim"
 alias nek="nix-with kate"
 
 # Shell environments
 alias n12="nix-shell /etc/nixos/shell/node12.nix"
 
+# Development
+alias g="git"
+alias gc="git commit -am"
+alias gf="git fetch && git pull"
+alias gp="git push"
+alias gs="git switch"
+alias gm="git merge"
+
+alias commit="git commit -am"
+alias pull="git fetch && git pull"
+alias push="git push"
+alias switch="git switch"
+alias merge="git merge"
+alias clone="git clone"
+
 #
 # Functions
 #
+
+# Git commit and push with given commit message. Fails if no message is provided.
+#
+# Arguments:
+#   Commit message
+gg() {
+  if ! [ $# -eq 0 ]; then
+    git commit -am "$*"
+    git push
+  else
+    printf "%s\n" "Please provide a commit message."
+  fi
+}
 
 insert-date() {
   LBUFFER="$LBUFFER$(date +'%Y%m%d')"
@@ -356,7 +386,7 @@ edit-nixos() {
 # Build and switch NixOS configuration
 build-nixos() {
   $HOME/.nix-prebuild
-  doas nixos-rebuild switch --flake /etc/nixos --upgrade-all
+  doas nixos-rebuild switch --flake /etc/nixos --impure
 }
 
 # Run fg command if buffer line is empty, otherwise save input to stack
