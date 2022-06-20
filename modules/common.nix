@@ -17,30 +17,33 @@
   # Set correct time-zone
   time.timeZone = "Europe/Stockholm";
 
-  # Use unstable `nix`
-  nix.package = pkgs.nixUnstable;
+  nix = {
+    # Use unstable `nix`
+    package = pkgs.nixUnstable;
 
-  # Users with elevated `nix` command privileges
-  nix.settings.trusted-users = [ "root" "dnordstrom" ];
+    # Users with elevated `nix` command privileges
+    settings = {
+      trusted-users = [ "root" "dnordstrom" ];
 
-  # Max concurrent derivation builds
-  nix.settings.max-jobs = 1;
+      # Max concurrent derivation builds
+      max-jobs = 1;
 
-  # Max cores per derivation build
-  nix.settings.cores = 8;
+      # Max cores per derivation build
+      cores = 8;
 
-  #
-  # Optimization
-  #
+      # Automatically symlink identical files
+      auto-optimise-store = true;
+    };
 
-  # Automatically symlink identical files
-  nix.settings.auto-optimise-store = true;
+    # Automatically remove unused packages
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
 
-  # Automatically remove unused packages
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 30d";
+    # Disable annoying warning about dirty Git tree
+    extraOptions = "warn-dirty = false";
   };
 
   #
@@ -59,36 +62,44 @@
       "hqplayer-desktop"
     ];
 
-  # TODO: Keep an eye on this outdated crap
-  nixpkgs.config.permittedInsecurePackages =
-    [ "electron-9.4.4" "electron-12.2.3" ];
-  nixpkgs.config.input-fonts.acceptLicense = true;
-  nixpkgs.config.firefox.enableTridactylNative = true;
+  nixpkgs.config = {
+    permittedInsecurePackages = [ "electron-9.4.4" "electron-12.2.3" ];
+    input-fonts.acceptLicense = true;
+    firefox.enableTridactylNative = true;
+  };
 
   #
   # BOOTING
   #
 
-  boot.loader.systemd-boot.enable = false;
-  boot.loader.grub.enable = true;
-  boot.loader.grub.version = 2;
-  boot.loader.grub.efiSupport = true;
-  boot.loader.grub.device = "nodev";
-  boot.loader.grub.configurationLimit = 50;
-  boot.loader.grub.useOSProber = false;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.efi.efiSysMountPoint = "/boot";
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot = {
+    kernelPackages = pkgs.linuxPackages_latest;
+
+    loader = {
+      systemd-boot.enable = false;
+
+      grub.enable = true;
+      grub.version = 2;
+      grub.efiSupport = true;
+      grub.device = "nodev";
+      grub.configurationLimit = 50;
+      grub.useOSProber = false;
+
+      efi.canTouchEfiVariables = true;
+      efi.efiSysMountPoint = "/boot";
+    };
+  };
 
   #
   # NETWORKING
   #
 
-  networking.hostName = "nordix";
-  networking.wireless.enable = false;
-  networking.networkmanager.enable = true;
-  networking.firewall.enable = false;
-  networking.useDHCP = false;
+  networking = {
+    hostName = "nordix";
+    wireless.enable = false;
+    networkmanager.enable = true;
+    useDHCP = false;
+  };
 
   #
   # FONTS
@@ -112,287 +123,292 @@
   # SERVICES
   #
 
-  services.interception-tools = {
-    enable = true;
-    plugins = [ pkgs.interception-tools-plugins.dual-function-keys ];
-    udevmonConfig = ''
-      - JOB: "${pkgs.interception-tools}/bin/intercept -g $DEVNODE | ${pkgs.interception-tools-plugins.dual-function-keys}/bin/dual-function-keys -c /etc/nixos/config/intercept/keyboard.yaml | ${pkgs.interception-tools}/bin/uinput -d $DEVNODE"
-        DEVICE:
-          EVENTS:
-            EV_KEY: [KEY_CAPSLOCK, KEY_ESC]
-    '';
-  };
-
-  services.pcscd = {
-    enable = true;
-    plugins = [ pkgs.ccid ];
-  };
-
-  services.openssh.enable = true;
-
-  services.blueman.enable = true;
-
-  services.udev.packages = [ pkgs.nordpkgs.udev-rules ];
-
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    pulse.enable = true;
-    jack.enable = true;
-    wireplumber.enable = true;
-
-    config.pipewire = {
-      "context.properties" = {
-        "link.max-buffers" = 16;
-        "default.clock.rate" = 44100;
-        "default.clock.allowed-rates" =
-          [ 44100 48000 88200 96000 176400 192000 384000 ];
-        "core.daemon" = true;
-        "core.name" = "pipewire-0";
-      };
-
-      "context.spa-libs" = {
-        "audio.convert.*" = "audioconvert/libspa-audioconvert";
-        "support.*" = "support/libspa-support";
-        "api.v4l2.*" = "v4l2/libspa-v4l2";
-        "api.libcamera.*" = "libcamera/libspa-libcamera";
-        "api.bluez5.*" = "bluez5/libspa-bluez5";
-        "api.vulkan.*" = "vulkan/libspa-vulkan";
-      };
-
-      "context.modules" = [
-        { name = "libpipewire-module-protocol-native"; }
-        { name = "libpipewire-module-profiler"; }
-        { name = "libpipewire-module-metadata"; }
-        { name = "libpipewire-module-spa-device-factory"; }
-        { name = "libpipewire-module-spa-node-factory"; }
-        { name = "libpipewire-module-client-node"; }
-        { name = "libpipewire-module-client-device"; }
-        {
-          name = "libpipewire-module-portal";
-          flags = [ "ifexists" "nofail" ];
-        }
-        {
-          name = "libpipewire-module-access";
-          args = { };
-        }
-        { name = "libpipewire-module-adapter"; }
-        { name = "libpipewire-module-link-factory"; }
-        {
-          name = "libpipewire-module-session-manager";
-        }
-        # {
-        #   "name" = "libpipewire-module-filter-chain";
-        #   "args" = {
-        #     "node.name" = "rnnoise_source";
-        #     "node.description" = "Noise Canceling Source";
-        #     "media.name" = "Noise Canceling Source";
-        #     "filter.graph" = {
-        #       nodes = [{
-        #         type = "ladspa";
-        #         name = "rnnoise";
-        #         plugin =
-        #           "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
-        #         label = "noise_suppressor_stereo";
-        #         channels = 2;
-        #         control = { "VAD Threshold (%)" = 95.0; };
-        #       }];
-        #     };
-        #     "capture.props" = { "node.passive" = true; };
-        #     "playback.props" = { "media.class" = "Audio/Source"; };
-        #   };
-        # }
-      ];
-
-      "context.objects" = [
-        {
-          # A default dummy driver. This handles nodes marked with the "node.always-driver"
-          # properyty when no other driver is currently active. JACK clients need this.
-          factory = "spa-node-factory";
-          args = {
-            "factory.name" = "support.node.driver";
-            "node.name" = "Dummy-Driver";
-            "priority.driver" = 8000;
-          };
-        }
-        {
-          factory = "adapter";
-          args = {
-            "factory.name" = "support.null-audio-sink";
-            "node.name" = "Microphone-Proxy";
-            "node.description" = "Microphone";
-            "media.class" = "Audio/Source/Virtual";
-            "audio.position" = "MONO";
-          };
-        }
-        {
-          factory = "adapter";
-          args = {
-            "factory.name" = "support.null-audio-sink";
-            "node.name" = "Main-Output-Proxy";
-            "node.description" = "Main Output";
-            "media.class" = "Audio/Sink";
-            "audio.position" = "FL,FR";
-          };
-        }
-      ];
+  services = {
+    interception-tools = {
+      enable = true;
+      plugins = [ pkgs.interception-tools-plugins.dual-function-keys ];
+      udevmonConfig = ''
+        - JOB: "${pkgs.interception-tools}/bin/intercept -g $DEVNODE | ${pkgs.interception-tools-plugins.dual-function-keys}/bin/dual-function-keys -c /etc/nixos/config/intercept/keyboard.yaml | ${pkgs.interception-tools}/bin/uinput -d $DEVNODE"
+          DEVICE:
+            EVENTS:
+              EV_KEY: [KEY_CAPSLOCK, KEY_ESC]
+      '';
     };
 
-    config.pipewire-pulse = {
-      "stream.properties" = { "resample.quality" = 10; };
+    pcscd = {
+      enable = true;
+      plugins = [ pkgs.ccid ];
     };
 
-    config.client = { "stream.properties" = { "resample.quality" = 10; }; };
+    openssh.enable = true;
 
-    media-session.config.alsa-monitor.rules = [
-      # USB digital output
-      {
-        matches = [{
-          "node.name" =
-            "alsa_output.usb-Focusrite_Scarlett_Solo_USB_Y7WND901607934-00.iec958-stereo";
-        }];
-        actions = {
-          update-props = {
-            "audio.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
-            "audio.format" = "S32_LE";
-            "audio.rate" = 44100;
-            "resample.quality" = 10;
-          };
-        };
-      }
-      # USB digital input
-      {
-        matches = [{
-          "node.name" =
-            "alsa_input.usb-Focusrite_Scarlett_Solo_USB_Y7WND901607934-00.iec958-stereo";
-        }];
-        actions = {
-          update-props = {
-            "audio.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
-            "audio.format" = "S16_LE";
-            "audio.rate" = 44100;
-          };
-        };
-      }
-      # Onboard analog output
-      {
-        matches =
-          [{ "node.name" = "alsa_output.pci-0000_0b_00.3.analog-stereo"; }];
-        actions = {
-          update-props = {
-            "audio.allowed-rates" = [ 44100 48000 ];
-            "audio.format" = "S24_LE";
-            "audio.rate" = 44100;
-            "resample.quality" = 10;
-          };
-        };
-      }
-      # Onboard digital output
-      {
-        matches =
-          [{ "node.name" = "alsa_output.pci-0000_0b_00.3.iec958-stereo"; }];
-        actions = {
-          update-props = {
-            "audio.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
-            "audio.format" = "S32_LE";
-            "audio.rate" = 44100;
-            "resample.quality" = 10;
-          };
-        };
-      }
-      # Onboard analog input
-      {
-        matches =
-          [{ "node.name" = "alsa_input.pci-0000_0b_00.3.analog-stereo"; }];
-        actions = {
-          update-props = {
-            "audio.allowed-rates" = [ 44100 ];
-            "audio.format" = "S16_LE";
-            "audio.rate" = 44100;
-          };
-        };
-      }
-    ];
+    blueman.enable = true;
 
-    # Bluetooth audio
-    media-session.config.bluez-monitor.rules = [
-      {
-        matches = [{ "device.name" = "~bluez_card.*"; }];
-        actions = {
-          "update-props" = {
-            "bluez5.reconnect-profiles" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
-            "bluez5.msbc-support" = true;
-            "bluez5.sbc-xq-support" = true;
-          };
+    udev.packages = [ pkgs.nordpkgs.udev-rules ];
+
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      pulse.enable = true;
+      jack.enable = true;
+      wireplumber.enable = true;
+
+      config.pipewire = {
+        "context.properties" = {
+          "link.max-buffers" = 16;
+          "default.clock.rate" = 44100;
+          "default.clock.allowed-rates" =
+            [ 44100 48000 88200 96000 176400 192000 384000 ];
+          "core.daemon" = true;
+          "core.name" = "pipewire-0";
         };
-      }
-      {
-        matches = [
-          { "node.name" = "~bluez_input.*"; }
-          { "node.name" = "~bluez_output.*"; }
+
+        "context.spa-libs" = {
+          "audio.convert.*" = "audioconvert/libspa-audioconvert";
+          "support.*" = "support/libspa-support";
+          "api.v4l2.*" = "v4l2/libspa-v4l2";
+          "api.libcamera.*" = "libcamera/libspa-libcamera";
+          "api.bluez5.*" = "bluez5/libspa-bluez5";
+          "api.vulkan.*" = "vulkan/libspa-vulkan";
+        };
+
+        "context.modules" = [
+          { name = "libpipewire-module-protocol-native"; }
+          { name = "libpipewire-module-profiler"; }
+          { name = "libpipewire-module-metadata"; }
+          { name = "libpipewire-module-spa-device-factory"; }
+          { name = "libpipewire-module-spa-node-factory"; }
+          { name = "libpipewire-module-client-node"; }
+          { name = "libpipewire-module-client-device"; }
+          {
+            name = "libpipewire-module-portal";
+            flags = [ "ifexists" "nofail" ];
+          }
+          {
+            name = "libpipewire-module-access";
+            args = { };
+          }
+          { name = "libpipewire-module-adapter"; }
+          { name = "libpipewire-module-link-factory"; }
+          {
+            name = "libpipewire-module-session-manager";
+          }
+          # {
+          #   "name" = "libpipewire-module-filter-chain";
+          #   "args" = {
+          #     "node.name" = "rnnoise_source";
+          #     "node.description" = "Noise Canceling Source";
+          #     "media.name" = "Noise Canceling Source";
+          #     "filter.graph" = {
+          #       nodes = [{
+          #         type = "ladspa";
+          #         name = "rnnoise";
+          #         plugin =
+          #           "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
+          #         label = "noise_suppressor_stereo";
+          #         channels = 2;
+          #         control = { "VAD Threshold (%)" = 95.0; };
+          #       }];
+          #     };
+          #     "capture.props" = { "node.passive" = true; };
+          #     "playback.props" = { "media.class" = "Audio/Source"; };
+          #   };
+          # }
         ];
-        actions = { "node.pause-on-idle" = false; };
-      }
-    ];
+
+        "context.objects" = [
+          {
+            # A default dummy driver. This handles nodes marked with the "node.always-driver"
+            # properyty when no other driver is currently active. JACK clients need this.
+            factory = "spa-node-factory";
+            args = {
+              "factory.name" = "support.node.driver";
+              "node.name" = "Dummy-Driver";
+              "priority.driver" = 8000;
+            };
+          }
+          {
+            factory = "adapter";
+            args = {
+              "factory.name" = "support.null-audio-sink";
+              "node.name" = "Microphone-Proxy";
+              "node.description" = "Microphone";
+              "media.class" = "Audio/Source/Virtual";
+              "audio.position" = "MONO";
+            };
+          }
+          {
+            factory = "adapter";
+            args = {
+              "factory.name" = "support.null-audio-sink";
+              "node.name" = "Main-Output-Proxy";
+              "node.description" = "Main Output";
+              "media.class" = "Audio/Sink";
+              "audio.position" = "FL,FR";
+            };
+          }
+        ];
+      };
+
+      config.pipewire-pulse = {
+        "stream.properties" = { "resample.quality" = 10; };
+      };
+
+      config.client = { "stream.properties" = { "resample.quality" = 10; }; };
+
+      media-session.config.alsa-monitor.rules = [
+        # USB digital output
+        {
+          matches = [{
+            "node.name" =
+              "alsa_output.usb-Focusrite_Scarlett_Solo_USB_Y7WND901607934-00.iec958-stereo";
+          }];
+          actions = {
+            update-props = {
+              "audio.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
+              "audio.format" = "S32_LE";
+              "audio.rate" = 44100;
+              "resample.quality" = 10;
+            };
+          };
+        }
+        # USB digital input
+        {
+          matches = [{
+            "node.name" =
+              "alsa_input.usb-Focusrite_Scarlett_Solo_USB_Y7WND901607934-00.iec958-stereo";
+          }];
+          actions = {
+            update-props = {
+              "audio.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
+              "audio.format" = "S16_LE";
+              "audio.rate" = 44100;
+            };
+          };
+        }
+        # Onboard analog output
+        {
+          matches =
+            [{ "node.name" = "alsa_output.pci-0000_0b_00.3.analog-stereo"; }];
+          actions = {
+            update-props = {
+              "audio.allowed-rates" = [ 44100 48000 ];
+              "audio.format" = "S24_LE";
+              "audio.rate" = 44100;
+              "resample.quality" = 10;
+            };
+          };
+        }
+        # Onboard digital output
+        {
+          matches =
+            [{ "node.name" = "alsa_output.pci-0000_0b_00.3.iec958-stereo"; }];
+          actions = {
+            update-props = {
+              "audio.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
+              "audio.format" = "S32_LE";
+              "audio.rate" = 44100;
+              "resample.quality" = 10;
+            };
+          };
+        }
+        # Onboard analog input
+        {
+          matches =
+            [{ "node.name" = "alsa_input.pci-0000_0b_00.3.analog-stereo"; }];
+          actions = {
+            update-props = {
+              "audio.allowed-rates" = [ 44100 ];
+              "audio.format" = "S16_LE";
+              "audio.rate" = 44100;
+            };
+          };
+        }
+      ];
+
+      # Bluetooth audio
+      media-session.config.bluez-monitor.rules = [
+        {
+          matches = [{ "device.name" = "~bluez_card.*"; }];
+          actions = {
+            "update-props" = {
+              "bluez5.reconnect-profiles" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
+              "bluez5.msbc-support" = true;
+              "bluez5.sbc-xq-support" = true;
+            };
+          };
+        }
+        {
+          matches = [
+            { "node.name" = "~bluez_input.*"; }
+            { "node.name" = "~bluez_output.*"; }
+          ];
+          actions = { "node.pause-on-idle" = false; };
+        }
+      ];
+    };
+
+    roon-server = {
+      enable = true;
+      openFirewall = true;
+    };
+
+    dbus = {
+      enable = true;
+      packages = [ pkgs.nordpkgs.openvpn3 ];
+    };
+
+    flatpak.enable = true;
+
+    yubikey-agent.enable = true;
+
+    gnome.gnome-keyring.enable = true;
   };
-
-  services.roon-server = {
-    enable = true;
-    openFirewall = true;
-  };
-
-  services.dbus = {
-    enable = true;
-    packages = [ pkgs.nordpkgs.openvpn3 ];
-  };
-
-  services.flatpak.enable = true;
-
-  services.yubikey-agent.enable = true;
-
-  services.gnome.gnome-keyring.enable = true;
 
   #
   # Systemd
   #
 
-  systemd.services.systemd-udev-settle.enable = false;
-
-  systemd.services.NetworkManager-wait-online.enable = false;
+  systemd = {
+    services.systemd-udev-settle.enable = false;
+    services.NetworkManager-wait-online.enable = false;
+  };
 
   #
   # SECURITY
   #
 
-  # Yubikey authentication, reads tokens from `~/.yubico/authorized_yubikeys`
-  security.pam.yubico = {
-    mode = "client";
-    id = "70449";
-    enable = true;
-    control = "sufficient";
-  };
+  security = {
+    # Yubikey authentication, reads tokens from `~/.yubico/authorized_yubikeys`
+    pam.yubico = {
+      mode = "client";
+      id = "70449";
+      enable = true;
+      control = "sufficient";
+    };
 
-  # Disable `sudo`
-  security.sudo.enable = false;
+    # Disable `sudo`
+    sudo.enable = false;
 
-  # Enable `doas`
-  security.doas = {
-    enable = true;
-    wheelNeedsPassword = false;
-  };
+    # Enable `doas`
+    doas = {
+      enable = true;
+      wheelNeedsPassword = false;
+    };
 
-  # For Pipewire (recommended in Nix wiki)
-  security.rtkit.enable = true;
+    # For Pipewire (recommended in Nix wiki)
+    rtkit.enable = true;
 
-  # Privilege escalation
-  security.polkit.enable = true;
+    # Privilege escalation
+    polkit.enable = true;
 
-  # Make swaylock accept correct password.
-  # See: https://github.com/mortie/swaylock-effects/blob/master/pam/swaylock
-  security.pam.services.swaylock = {
-    text = ''
-      auth include login
-    '';
+    # Make swaylock accept correct password.
+    # See: https://github.com/mortie/swaylock-effects/blob/master/pam/swaylock
+    pam.services.swaylock = {
+      text = ''
+        auth include login
+      '';
+    };
   };
 
   #
@@ -493,81 +509,90 @@
   # PROGRAMS
   #
 
-  programs.qt5ct.enable = true;
+  programs = {
+    qt5ct.enable = true;
 
-  programs.dconf.enable = true;
+    dconf.enable = true;
 
-  programs.ssh.askPassword =
-    pkgs.lib.mkForce "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
+    ssh.askPassword =
+      pkgs.lib.mkForce "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
+  };
 
   #
   # USERS
   #
 
   users = {
-    users.dnordstrom = {
-      isNormalUser = true;
-      extraGroups = [
-        "audio"
-        "input"
-        "kvm"
-        "libvirtd"
-        "qemu-libvirtd"
-        "vboxusers"
-        "wheel"
-      ];
-      shell = pkgs.zsh;
+    users = {
+      dnordstrom = {
+        isNormalUser = true;
+        extraGroups = [
+          "audio"
+          "input"
+          "kvm"
+          "libvirtd"
+          "qemu-libvirtd"
+          "vboxusers"
+          "wheel"
+        ];
+        shell = pkgs.zsh;
+
+      };
+
+      openvpn = {
+        isSystemUser = true;
+        group = "openvpn";
+      };
     };
-    users.openvpn = {
-      isSystemUser = true;
-      group = "openvpn";
-    };
-    groups = { openvpn = { }; };
+
+    groups.openvpn = { };
   };
 
   #
   # SYSTEM ENVIRONMENT
   #
 
-  environment.variables = {
-    VST_PATH =
-      "/nix/var/nix/profiles/system/lib/vst:/var/run/current-system/sw/lib/vst:~/.vst";
-    LXVST_PATH =
-      "/nix/var/nix/profiles/system/lib/lxvst:/var/run/current-system/sw/lib/lxvst:~/.lxvst";
-    LADSPA_PATH =
-      "/nix/var/nix/profiles/system/lib/ladspa:/var/run/current-system/sw/lib/ladspa:~/.ladspa";
-    LV2_PATH =
-      "/nix/var/nix/profiles/system/lib/lv2:/var/run/current-system/sw/lib/lv2:~/.lv2";
-    DSSI_PATH =
-      "/nix/var/nix/profiles/system/lib/dssi:/var/run/current-system/sw/lib/dssi:~/.dssi";
-    LIBVIRT_DEFAULT_URI = "qemu:///system";
+  environment = {
+    variables = {
+      VST_PATH =
+        "/nix/var/nix/profiles/system/lib/vst:/var/run/current-system/sw/lib/vst:~/.vst";
+      LXVST_PATH =
+        "/nix/var/nix/profiles/system/lib/lxvst:/var/run/current-system/sw/lib/lxvst:~/.lxvst";
+      LADSPA_PATH =
+        "/nix/var/nix/profiles/system/lib/ladspa:/var/run/current-system/sw/lib/ladspa:~/.ladspa";
+      LV2_PATH =
+        "/nix/var/nix/profiles/system/lib/lv2:/var/run/current-system/sw/lib/lv2:~/.lv2";
+      DSSI_PATH =
+        "/nix/var/nix/profiles/system/lib/dssi:/var/run/current-system/sw/lib/dssi:~/.dssi";
+      LIBVIRT_DEFAULT_URI = "qemu:///system";
+    };
+
+    systemPackages = with pkgs; [
+      git
+      nodejs
+      nordpkgs.openvpn3
+      ntfs3g
+      polkit_gnome
+      refind
+      roon-server
+      steam-run # Runs binaries compiled for other distributions
+      virt-manager
+      virt-manager-qt
+      virt-viewer
+      wget
+      win-qemu
+      win-virtio
+      xdg-desktop-portal
+      yarn
+    ];
+
+    pathsToLink = [ "/share/zsh" "/libexec" ];
+
+    loginShellInit = ''
+      if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
+        # Home manager wrapper should make the following use dbus-run-session
+        exec sway
+      fi
+    '';
   };
-
-  environment.systemPackages = with pkgs; [
-    git
-    nodejs
-    nordpkgs.openvpn3
-    ntfs3g
-    polkit_gnome
-    refind
-    roon-server
-    steam-run # Runs binaries compiled for other distributions
-    virt-manager
-    virt-manager-qt
-    virt-viewer
-    wget
-    win-qemu
-    win-virtio
-    xdg-desktop-portal
-    yarn
-  ];
-
-  environment.pathsToLink = [ "/share/zsh" "/libexec" ];
-
-  environment.loginShellInit = ''
-    if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-      # Home manager wrapper should make the following use dbus-run-session
-      exec sway
-    fi
-  '';
 }
