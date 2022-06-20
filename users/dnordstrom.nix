@@ -1,11 +1,11 @@
 # #
-# USER MODULE: DNORDSTROM
+# DNORDSTROM USER CONFIGURATION
 #
-# Author: Daniel Nordstrom <d@mrnordstrom.com>
-# Repository: https://github.com/dnordstrom/dotfiles
+# Author:       Daniel Nordstrom <d@mrnordstrom.com>
+# Repository:   https://github.com/dnordstrom/dotfiles
 # #  
 
-{ pkgs, nixpkgs, lib, config, ... }:
+{ pkgs, lib, config, ... }:
 
 let
   #
@@ -14,12 +14,23 @@ let
 
   # Path used for out of store symlinks to make certain files editable without a rebuild. For
   # example the Sway WM configuration entry point links directly to this directory so that when
-  # editing it we don't need to run `nixos-rebuild switch` each time to check the result:
-  # 
-  # `config.lib.file.mkOutOfStoreSymlink ${configDir}/config/sway/config.main`
+  # editing it we don't need to run `nixos-rebuild switch` each time to check the result.
   #
+  # Example:
+  #
+  # ```nix
+  # config.lib.file.mkOutOfStoreSymlink "${configDir}/config/sway/config.main"
+  # # or
+  # home.file.myUserFile.source = configDir config/sway/config.main;
+  # ```
+  configDir = "/etc/nixos";
+
+  # Convenience method for getting absolute paths based on `configDir`. Leading slash not needed.
   # The `/. +` part coerces the type from string to path.
-  configDir = /. + "/etc/nixos";
+  #
+  # @param {string|path} path - Relative path
+  # @returns {path} Absolute path
+  configPath = path: /. + "/etc/nixos/${path}";
 
   #
   # APPLICATIONS
@@ -806,7 +817,7 @@ in {
 
   home.file.".scripts".source = ../scripts;
   home.file.".livescripts".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/scripts";
+    config.lib.file.mkOutOfStoreSymlink (configPath "scripts");
   home.file.".zshinit".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/zsh/zshrc";
 
