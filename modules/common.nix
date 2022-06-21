@@ -26,10 +26,10 @@
       trusted-users = [ "root" "dnordstrom" ];
 
       # Max concurrent derivation builds
-      max-jobs = 1;
+      max-jobs = 2;
 
       # Max cores per derivation build
-      cores = 8;
+      cores = 3;
 
       # Automatically symlink identical files
       auto-optimise-store = true;
@@ -78,15 +78,20 @@
     loader = {
       systemd-boot.enable = false;
 
-      grub.enable = true;
-      grub.version = 2;
-      grub.efiSupport = true;
-      grub.device = "nodev";
-      grub.configurationLimit = 50;
-      grub.useOSProber = false;
+      grub = {
+        backgroundColor = "#D9DCD3";
+        configurationLimit = 50;
+        device = "nodev";
+        efiSupport = true;
+        enable = true;
+        useOSProber = false;
+        version = 2;
+      };
 
-      efi.canTouchEfiVariables = true;
-      efi.efiSysMountPoint = "/boot";
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot";
+      };
     };
   };
 
@@ -190,63 +195,7 @@
           }
           { name = "libpipewire-module-adapter"; }
           { name = "libpipewire-module-link-factory"; }
-          {
-            name = "libpipewire-module-session-manager";
-          }
-          # {
-          #   "name" = "libpipewire-module-filter-chain";
-          #   "args" = {
-          #     "node.name" = "rnnoise_source";
-          #     "node.description" = "Noise Canceling Source";
-          #     "media.name" = "Noise Canceling Source";
-          #     "filter.graph" = {
-          #       nodes = [{
-          #         type = "ladspa";
-          #         name = "rnnoise";
-          #         plugin =
-          #           "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
-          #         label = "noise_suppressor_stereo";
-          #         channels = 2;
-          #         control = { "VAD Threshold (%)" = 95.0; };
-          #       }];
-          #     };
-          #     "capture.props" = { "node.passive" = true; };
-          #     "playback.props" = { "media.class" = "Audio/Source"; };
-          #   };
-          # }
-        ];
-
-        "context.objects" = [
-          {
-            # A default dummy driver. This handles nodes marked with the "node.always-driver"
-            # properyty when no other driver is currently active. JACK clients need this.
-            factory = "spa-node-factory";
-            args = {
-              "factory.name" = "support.node.driver";
-              "node.name" = "Dummy-Driver";
-              "priority.driver" = 8000;
-            };
-          }
-          {
-            factory = "adapter";
-            args = {
-              "factory.name" = "support.null-audio-sink";
-              "node.name" = "Microphone-Proxy";
-              "node.description" = "Microphone";
-              "media.class" = "Audio/Source/Virtual";
-              "audio.position" = "MONO";
-            };
-          }
-          {
-            factory = "adapter";
-            args = {
-              "factory.name" = "support.null-audio-sink";
-              "node.name" = "Main-Output-Proxy";
-              "node.description" = "Main Output";
-              "media.class" = "Audio/Sink";
-              "audio.position" = "FL,FR";
-            };
-          }
+          { name = "libpipewire-module-session-manager"; }
         ];
       };
 
@@ -468,8 +417,6 @@
     };
   };
 
-  environment.sessionVariables.LIBVIRT_DEFAULT_URI = [ "qemu:///system" ];
-
   #
   # XDG
   #
@@ -575,7 +522,7 @@
       polkit_gnome
       refind
       roon-server
-      steam-run # Runs binaries compiled for other distributions
+      steam-run
       virt-manager
       virt-manager-qt
       virt-viewer
@@ -589,10 +536,7 @@
     pathsToLink = [ "/share/zsh" "/libexec" ];
 
     loginShellInit = ''
-      if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-        # Home manager wrapper should make the following use dbus-run-session
-        exec sway
-      fi
+      [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ] && exec sway
     '';
   };
 }

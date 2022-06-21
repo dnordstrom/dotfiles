@@ -116,12 +116,12 @@ alias cat="bat"
 alias cdn="cd /etc/nixos"
 
 # Edit and build NixOS
-alias nb="$HOME/.nix-prebuild; doas nixos-rebuild switch --flake /etc/nixos"
-alias nbd="nb --stack-trace"
-alias nbi="nb --impure"
-alias nbid="nbd --impure"
-alias ne="nix-with nvim"
-alias nek="nix-with kate"
+alias nix-update="nix flake lock --update-input nixpkgs --update-input nixpkgs-master --update-input nixpkgs-wayland --update-input firefox-nightly --update-input neovim-nightly-overlay --update-input home-manager --update-input utils --update-input agenix"
+alias nixos-build="doas nixos-rebuild switch --flake /etc/nixos"
+alias nixos-build-debug="nix-build --stack-trace"
+alias nixos-build-impure="nb --impure"
+alias nixos-build-debug-impure="nbd --impure"
+alias nixos-edit="nix-with $EDITOR"
 
 # Shell environments
 alias n12="nix-shell /etc/nixos/shell/node12.nix"

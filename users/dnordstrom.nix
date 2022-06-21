@@ -321,7 +321,8 @@ in {
         type = "Application";
         genericName = "Text Editor";
         exec = ''
-          kitty --session "${configDir}/config/kitty/dev-cloud.session --single-instance --instance-group dev"'';
+          kitty --session "${configDir}/config/kitty/dev-cloud.session" --single-instance --instance-group dev
+        '';
         terminal = false;
         icon = "kitty";
         categories = [ "Utility" "TextEditor" "Development" "IDE" ];

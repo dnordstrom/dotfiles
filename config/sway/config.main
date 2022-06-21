@@ -6,134 +6,136 @@
 # VARIABLES
 #
 
-#
-# Appearance
-#
+set {
+  #
+  # Appearance
+  #
 
-set $schema-gnome-interface org.gnome.desktop.interface
-set $schema-gnome-wm-preferences org.gnome.desktop.wm.preferences
+  $schema-gnome-interface org.gnome.desktop.interface
+  $schema-gnome-wm-preferences org.gnome.desktop.wm.preferences
 
-set $font "Input Sans Condensed 8"
-set $colors "catppuccin"
-set $theme "Catppuccin-yellow"
-set $cursor-theme "Catppuccin-Teal-Cursors"
-set $icon-theme "Vimix-dark"
+  $font "Input Sans Condensed 8"
+  $colors "catppuccin"
+  $theme "Catppuccin-yellow"
+  $cursor-theme "Catppuccin-Teal-Cursors"
+  $icon-theme "Vimix-dark"
 
-set $termweatherwidth 920
-set $termweatherheight 920
+  $termweatherwidth 920
+  $termweatherheight 920
 
-set $termpopupwidth 1200
-set $termpopupheight 900
+  $termpopupwidth 1200
+  $termpopupheight 900
 
-set $termplainwidth 920
-set $termplainheight 920
+  $termplainwidth 920
+  $termplainheight 920
 
-set $termscratchwidth 1800
-set $termscratchheight 950
+  $termscratchwidth 1800
+  $termscratchheight 950
 
-set $fuzzytermwidth 600
-set $fuzzytermheight 350
+  $fuzzytermwidth 600
+  $fuzzytermheight 350
 
-set $floatdefaultwidth 1280
-set $floatdefaultheight 820
+  $floatdefaultwidth 1280
+  $floatdefaultheight 820
 
-#
-# Keys
-#
+  #
+  # Keys
+  #
 
-set $mod Mod4
-set $left h
-set $down j
-set $up k
-set $right l
+  $mod Mod4
+  $left h
+  $down j
+  $up k
+  $right l
 
-#
-# Workspaces
-#
+  #
+  # Workspaces
+  #
 
-set $workspace1 1
-set $workspace2 2
-set $workspace3 3
-set $workspace4 4
-set $workspace5 5
-set $workspace6 6
-set $workspace7 7
-set $workspace8 8
-set $workspace9 9
-set $workspace10 10
+  $workspace1 1
+  $workspace2 2
+  $workspace3 3
+  $workspace4 4
+  $workspace5 5
+  $workspace6 6
+  $workspace7 7
+  $workspace8 8
+  $workspace9 9
+  $workspace10 10
 
-#
-# Commands
-#
+  #
+  # Commands
+  #
 
-# Terminals
-set $term kitty --title term --single-instance
-set $termpopup $term --title popupterm
-set $termscratch $term --title scratchterm --session /etc/nixos/config/kitty/scratchpad.session
+  # Terminals
+  $term kitty --title term --single-instance
+  $termpopup $term --title popupterm
+  $termscratch $term --title scratchterm --session /etc/nixos/config/kitty/scratchpad.session
 
-# Launchers
-set $launchapp /etc/nixos/scripts/launch/launch-application
-set $launchcmd /etc/nixos/scripts/launch/launch-command
+  # Launchers
+  $launchapp /etc/nixos/scripts/launch/launch-application
+  $launchcmd /etc/nixos/scripts/launch/launch-command
 
-# Files
-set $filesqt5 dolphin
-set $filesgtk nautilus
-set $filestui $termpopup -e vifm
+  # Files
+  $filesqt5 dolphin
+  $filesgtk nautilus
+  $filestui $termpopup -e vifm
 
-# Screenshots
-set $snaparea grim -g "$(slurp)" - | swappy -f - -o "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png"
-set $snapfull grim -g "$(slurp -o)" - | swappy -f - -o "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png"
+  # Screenshots
+  $snaparea grim -g "$(slurp)" - | swappy -f - -o "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png"
+  $snapfull grim -g "$(slurp -o)" - | swappy -f - -o "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_screen.png"
 
-# Window properties
-set $swaypropsattrs \
-  name, \
-  type, \
-  title, \
-  app_id, \
-  con_mark, \
-  con_type, \
-  marks, \
-  sticky, \
-  pid, \
-  nodes, \
-  fullscreen_mode, \
-  urgent, \
-  orientation, \
-  layout, \
-  focused, \
-  border, \
-  rect
-set $swayprops sh -c "swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true) | { $swaypropsattrs }' > /tmp/sway-props.json && $termpopup -e -- bat --paging=always --style=plain --theme=Dracula /tmp/sway-props.json"
-set $swaypropsall sh -c "swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true)' > /tmp/sway-props.json && $termpopup -e -- bat --paging=always --style=plain --theme=Dracula /tmp/sway-props.json"
+  # Window properties
+  $swaypropsattrs \
+    name, \
+    type, \
+    title, \
+    app_id, \
+    con_mark, \
+    con_type, \
+    marks, \
+    sticky, \
+    pid, \
+    nodes, \
+    fullscreen_mode, \
+    urgent, \
+    orientation, \
+    layout, \
+    focused, \
+    border, \
+    rect
+  $swayprops sh -c "swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true) | { $swaypropsattrs }' > /tmp/sway-props.json && $termpopup -e -- bat --paging=always --style=plain --theme=Dracula /tmp/sway-props.json"
+  $swaypropsall sh -c "swaymsg -t get_tree | jq '.. | select(.type?) | select(.focused==true)' > /tmp/sway-props.json && $termpopup -e -- bat --paging=always --style=plain --theme=Dracula /tmp/sway-props.json"
 
-# Lockscreen
-set $lock swaylock \
-  --font "Input Sans Compressed" \
-  --font-size 12 \
-  --scaling fill \
-  --ignore-empty-password \
-  --indicator-radius 150 \
-  --indicator-thickness 10 \
-  --inside-color "#2e3440" \
-  --inside-ver-color "#2e3440" \
-  --key-hl-color "#88c0d0" \
-  --ring-color "#2e3440" \
-  --ring-ver-color "#2e3440" \
-  --separator-color "#2e3440" \
-  --line-uses-inside \
-  --layout-bg-color "#00000000" \
-  --layout-border-color "#00000000" \
-  --layout-text-color "#eceff4" \
-  --clock \
-  --screenshots \
-  --indicator-idle-visible \
-  --datestr "%H:%M" \
-  --timestr "%A" \
-  --grace 1 \
-  --fade-in 1 \
-  --effect-greyscale \
-  --effect-blur 6x8 \
-  --effect-vignette 0.6:0.8
+  # Lockscreen
+  $lock swaylock \
+    --font "Input Sans Compressed" \
+    --font-size 12 \
+    --scaling fill \
+    --ignore-empty-password \
+    --indicator-radius 150 \
+    --indicator-thickness 10 \
+    --inside-color "#2e3440" \
+    --inside-ver-color "#2e3440" \
+    --key-hl-color "#88c0d0" \
+    --ring-color "#2e3440" \
+    --ring-ver-color "#2e3440" \
+    --separator-color "#2e3440" \
+    --line-uses-inside \
+    --layout-bg-color "#00000000" \
+    --layout-border-color "#00000000" \
+    --layout-text-color "#eceff4" \
+    --clock \
+    --screenshots \
+    --indicator-idle-visible \
+    --datestr "%H:%M" \
+    --timestr "%A" \
+    --grace 1 \
+    --fade-in 1 \
+    --effect-greyscale \
+    --effect-blur 6x8 \
+    --effect-vignette 0.6:0.8
+}
 
 #
 # SETTINGS
