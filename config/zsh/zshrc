@@ -20,6 +20,9 @@ setopt histignorespace
 setopt correct
 setopt nocorrectall
 
+# Case-insensitive autocomplete
+setopt nocaseglob
+
 # Expand aliases
 setopt aliases
 
@@ -82,8 +85,8 @@ export NOTES_VIEWER="glow -p"
 
 # bat
 
-export BAT_STYLE="changes"
-export BAT_THEME="Nord"
+export BAT_STYLE="header-filename,header-filesize,rule,numbers,changes"
+export BAT_THEME="ansi"
 
 # fzf
 
@@ -101,30 +104,57 @@ export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS"
 # Utilities
 alias icat="kitty +kitten icat"
 
-# List files
-alias l="ls -lAh --hyperlink=auto"
-alias lx="exa --icons --all --group-directories-first --git --long"
-alias lxg="exa --long --git --sort=modified --all --icons"
-alias lxt="exa --icons --all --group-directories-first --tree --level 2"
-alias ld="lsd --long --group-dirs first --almost-all"
-alias ldt="lsd --tree --depth 2 --group-dirs first"
-
-# Show contents
+# `cat` with line numbers and syntax highlighting
 alias cat="bat"
+
+# Default Markdown viewer
+alias md="glow"
+alias mdless="glow"
+
+# Default list command
+alias l="lt"
+
+# Default `ls`
+alias ls="printf '\n'; ls -l --almost-all --hyperlink=auto"
+
+# Default `lsd`
+alias lsd="printf '\n'; lsd --date=\"+%_d %b %R\" --depth=1 --long --tree --hyperlink=auto --config-file=\"/home/dnordstrom/.config/lsd/custom.yaml\""
+
+# Default `exa`
+alias exa="printf '\n'; exa --icons --all --group-directories-first --group --header --git --long --no-permissions --octal-permissions"
+
+# List with links
+alias ll="printf '\n'; lsd"
+
+# List by last modified
+alias lm="printf '\n'; exa --sort=modified"
+alias lmd="printf '\n'; lsd --sort=time"
+
+# List by last accessed
+alias la="printf '\n'; exa --accessed --sort=accessed"
+
+# List as tree
+alias lt="printf '\n'; list-tree-exa"
+alias ltd="printf '\n'; list-tree-lsd"
 
 # Navigate
 alias cdn="cd /etc/nixos"
 
-# Edit and build NixOS
-alias nix-update="nix flake lock --update-input nixpkgs --update-input nixpkgs-master --update-input nixpkgs-wayland --update-input firefox-nightly --update-input neovim-nightly-overlay --update-input home-manager --update-input utils --update-input agenix"
+# NixOS
+alias nixos-update="nix flake lock --update-input nixpkgs --update-input nixpkgs-master --update-input nixpkgs-wayland --update-input firefox-nightly --update-input neovim-nightly-overlay --update-input home-manager --update-input utils --update-input agenix"
 alias nixos-build="doas nixos-rebuild switch --flake /etc/nixos"
+alias nixos-build-impure="nix-build --impure"
 alias nixos-build-debug="nix-build --stack-trace"
-alias nixos-build-impure="nb --impure"
-alias nixos-build-debug-impure="nbd --impure"
+alias nixos-build-debug-impure="nix-build-debug --impure"
 alias nixos-edit="nix-with $EDITOR"
 
-# Shell environments
-alias n12="nix-shell /etc/nixos/shell/node12.nix"
+alias ne="nixos-edit"
+alias nb="nixos-build"
+alias nbi="nixos-build-impure"
+
+# Development shells
+alias nix-shell-node12="nix-shell /etc/nixos/shell/node12.nix"
+alias nix-shell-hugo="nix-shell /etc/nixos/shell/hugo.nix"
 
 # Development
 alias g="git"
@@ -156,6 +186,44 @@ gg() {
   else
     printf "%s\n" "Please provide a commit message."
   fi
+}
+
+list-tree-exa() {
+  local levels="1"
+  local paths="."
+
+  if [ $# -gt 0 ]; then
+    if ! [ -e "$1" ]; then
+      levels="$1"
+      shift
+    fi
+  fi
+
+  if [ $# -gt 0 ]; then
+    paths="$@"
+  fi
+
+  printf "\n"
+  exa --icons --all --group-directories-first --group --header --git --long --no-permissions --octal-permissions --tree --level="$levels" "$paths"
+}
+
+list-tree-lsd() {
+  local levels="1"
+  local paths="."
+
+  if [ $# -gt 0 ]; then
+    if ! [ -e "$1" ]; then
+      levels="$1"
+      shift
+    fi
+  fi
+
+  if [ $# -gt 0 ]; then
+    paths="$@"
+  fi
+
+  printf "\n"
+  lsd --date="+%_d %b %R" --depth=1 --long --tree --hyperlink=auto --config-file="/home/dnordstrom/.config/lsd/custom.yaml" --depth="$levels" "$paths"
 }
 
 insert-date() {
@@ -400,11 +468,6 @@ magic-ctrl-z() {
   fi
 }
 
-auto-correct() {
-  zle spell-word
-  zle self-insert
-}
-
 #
 # Widgets
 #
@@ -421,7 +484,6 @@ zle -N prepend-note
 zle -N edit-notes
 zle -N backup-notes
 zle -N clear-backup-notes
-zle -N auto-correct
 
 #
 # Binds
@@ -430,8 +492,10 @@ zle -N auto-correct
 # Zsh vi mode binds
 zvm_after_lazy_keybindings() {
   # Ctrl-N and Ctrl-P for next and previous based on current buffer content
+  zvm_bindkey vicmd "^Z" magic-ctrl-z
   zvm_bindkey vicmd "^N" history-beginning-search-forward
   zvm_bindkey vicmd "^P" history-beginning-search-backward
+  zvm_bindkey viins "^Z" magic-ctrl-z
   zvm_bindkey viins "^N" history-beginning-search-forward
   zvm_bindkey viins "^P" history-beginning-search-backward
 }
@@ -441,9 +505,6 @@ bindkey "^[[3~" delete-char
 
 # Alt-L uses l instead of ls
 bindkey -s "^[l" "l\n"
-
-# Space for history
-bindkey " " magic-space # Until auto-correct spell-word has been fixed to keep quotation marks
 
 # Ctrl-Z for fg
 bindkey "^Z" magic-ctrl-z

@@ -908,7 +908,8 @@ in {
 
   # Glow
 
-  xdg.configFile."glow".source = ../config/glow;
+  xdg.configFile."glow".source =
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/glow";
 
   # Wofi
 
@@ -995,24 +996,9 @@ in {
     };
   };
 
-  programs.exa = {
-    enable = true;
-    enableAliases = false;
-  };
+  programs.exa.enable = true;
 
-  programs.lsd = {
-    enable = true;
-    enableAliases = false;
-    settings = {
-      date = "relative";
-      display = "almost-all";
-      layout = "tree";
-      sorting = {
-        column = "name";
-        dir-grouping = "first";
-      };
-    };
-  };
+  programs.lsd.enable = true;
 
   programs.pet = {
     enable = true;

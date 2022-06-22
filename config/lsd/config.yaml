@@ -1,0 +1,20 @@
+date: +%_d %b %R
+display: almost-all
+layout: tree
+header: true
+hyperlink: auto
+sorting:
+  column: name
+  dir-grouping: first
+color:
+  when: auto
+  theme: catppuccin
+blocks:
+  - permission
+  - size
+  - user
+  - group
+  - date
+  - name
+recursion:
+  depth: 1
