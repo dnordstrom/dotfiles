@@ -143,10 +143,10 @@ alias cdn="cd /etc/nixos"
 # NixOS
 alias nixos-update="nix flake lock --update-input nixpkgs --update-input nixpkgs-master --update-input nixpkgs-wayland --update-input firefox-nightly --update-input neovim-nightly-overlay --update-input home-manager --update-input utils --update-input agenix"
 alias nixos-build="doas nixos-rebuild switch --flake /etc/nixos"
-alias nixos-build-impure="nix-build --impure"
-alias nixos-build-debug="nix-build --stack-trace"
-alias nixos-build-debug-impure="nix-build-debug --impure"
-alias nixos-edit="nix-with $EDITOR"
+alias nixos-build-impure="nixos-build --impure"
+alias nixos-build-debug="nixos-build --stack-trace"
+alias nixos-build-debug-impure="nixos-build-debug --impure"
+alias nixos-edit="nixos-with $EDITOR"
 
 alias ne="nixos-edit"
 alias nb="nixos-build"
@@ -437,7 +437,7 @@ in-dir() {
 #   0 on success, 1 on invalid argument count
 # Dependencies:
 #   in-dir()
-nix-with() {
+edit-nixos-with() {
   if ! [ $# -eq 1 ]; then
     echo "Expected 1 argument, got $#."
     return 1
@@ -448,7 +448,7 @@ nix-with() {
 
 # Open NixOS configuration in Neovim
 edit-nixos() {
-  in-dir "/etc/nixos" "nvim"
+  edit-nixos-with "nvim"
 }
 
 # Build and switch NixOS configuration
