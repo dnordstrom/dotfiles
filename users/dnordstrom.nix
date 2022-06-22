@@ -911,6 +911,11 @@ in {
   xdg.configFile."glow".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/glow";
 
+  # LSD
+
+  xdg.configFile."lsd".source =
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/lsd";
+
   # Wofi
 
   xdg.configFile."wofi".source =
