@@ -142,10 +142,10 @@ alias l="lt"
 alias ls="printf '\n'; ls -l --almost-all --hyperlink=auto"
 
 # Default `lsd`
-alias lsd="printf '\n'; lsd --date=\"+%_d %b %R\" --long --hyperlink=auto --permission=octal --header --config-file=\"/home/dnordstrom/.config/lsd/config.yaml\""
+alias lsd="printf '\n'; command lsd --date=\"+%_d %b %R\" --long --hyperlink=auto --permission=octal --header --config-file=\"/home/dnordstrom/.config/lsd/config.yaml\""
 
 # Default `exa`
-alias exa="printf '\n'; exa --all --icons --group-directories-first --group --header --git --long --no-permissions --octal-permissions"
+alias exa="printf '\n'; command exa --all --icons --group-directories-first --group --header --git --long --no-permissions --octal-permissions"
 
 # List with links
 alias ll="printf '\n'; lsd"
@@ -228,7 +228,7 @@ list-tree-exa() {
   fi
 
   printf "\n"
-  exa --icons --group-directories-first --group --header --git --long --no-permissions --octal-permissions --tree --level="$levels" "$paths"
+  command exa --icons --group-directories-first --group --header --git --long --no-permissions --octal-permissions --tree --level="$levels" "$paths"
 }
 
 list-tree-lsd() {
@@ -247,7 +247,7 @@ list-tree-lsd() {
   fi
 
   printf "\n"
-  lsd --date="+%_d %b %R" --long --tree --hyperlink=auto --config-file="/home/dnordstrom/.config/lsd/config.yaml" --depth="$levels" "$paths"
+  command lsd --date="+%_d %b %R" --permission=octal --header --long --tree --hyperlink=auto --config-file="/home/dnordstrom/.config/lsd/config.yaml" --depth="$levels" "$paths"
 }
 
 insert-date() {
