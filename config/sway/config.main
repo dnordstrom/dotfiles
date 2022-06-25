@@ -73,7 +73,7 @@ set {
   $termscratch $term --title scratchterm --session /etc/nixos/config/kitty/scratchpad.session
 
   # Launchers
-  $launchapp /etc/nixos/scripts/launch/launch-application
+  $launchapp /etc/nixos/scripts/launch/launch-app
   $launchcmd /etc/nixos/scripts/launch/launch-command
 
   # Files

@@ -109,7 +109,7 @@ alias cat="bat"
 
 # Default Markdown viewer
 alias md="glow"
-alias mdless="glow"
+alias mdless="glow -p"
 
 # Default list command
 alias l="lt"
@@ -118,10 +118,10 @@ alias l="lt"
 alias ls="printf '\n'; ls -l --almost-all --hyperlink=auto"
 
 # Default `lsd`
-alias lsd="printf '\n'; lsd --date=\"+%_d %b %R\" --depth=1 --long --tree --hyperlink=auto --config-file=\"/home/dnordstrom/.config/lsd/custom.yaml\""
+alias lsd="printf '\n'; lsd --date=\"+%_d %b %R\" --long --hyperlink=auto --permission=octal --header --config-file=\"/home/dnordstrom/.config/lsd/custom.yaml\""
 
 # Default `exa`
-alias exa="printf '\n'; exa --icons --all --group-directories-first --group --header --git --long --no-permissions --octal-permissions"
+alias exa="printf '\n'; exa --all --icons --group-directories-first --group --header --git --long --no-permissions --octal-permissions"
 
 # List with links
 alias ll="printf '\n'; lsd"
@@ -204,7 +204,7 @@ list-tree-exa() {
   fi
 
   printf "\n"
-  exa --icons --all --group-directories-first --group --header --git --long --no-permissions --octal-permissions --tree --level="$levels" "$paths"
+  exa --icons --group-directories-first --group --header --git --long --no-permissions --octal-permissions --tree --level="$levels" "$paths"
 }
 
 list-tree-lsd() {

@@ -1,18 +1,46 @@
 #!/usr/bin/env sh
+#
+# DESCRIPTION
+#   Application launcher menu. Re-launches in a new terminal window to make it easy to invoke via
+#   key binds. Custom window title and class specified under options makes styling and setup simple.
+#
+#   The script finds and parses .desktop files and displays the results in a `fzf` menu for
+#   selection. If an application is selected, the associated `Exec` command is executed. Uses
+#   `swaymsg` if available and otherwise good old background execution.
+#
+# CREDIT
+#   Based on ldelossa's `sway-fzfify`, edited for NixOS, POSIX, ANSI coloring, and shfmt formatting.
+#   See: https://github.com/ldelossa/sway-fzfify
+#
+# AUTHOR
+#   Daniel Nordstrom <d@mrnordstrom.com>
+#
+# VERSION
+#   0.1.0
+#
+# LICENSE
+#   MIT License
+#
+#   Copyright (c) 2022 Daniel Nordstrom
+#
+#   Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+#   and associated documentation files (the "Software"), to deal in the Software without
+#   restriction, including without limitation the rights to use, copy, modify, merge, publish,
+#   distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
+#   Software is furnished to do so, subject to the following conditions:
+#
+#   The above copyright notice and this permission notice shall be included in all copies or
+#   substantial portions of the Software.
+#
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+#   BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+#   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+#   DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
 
-# FZF APPLICATION LAUNCHER
 #
-# Opens new terminal window listing applications with fzf, and launches selected application with
-# swaymsg exec (or other available alternatives for bash and sh).
-#
-# Based on fzf-startify by ldelossa. Rewritten for NixOS support, POSIX and shfmt compliance, ANSI
-# colored output, and improved readability.
-#
-# See: https://github.com/ldelossa/sway-fzfify
-#
-
-#
-# GENERAL
+# HELPERS
 #
 
 script="$0"
@@ -26,15 +54,20 @@ normal="\e[0m"
 # OPTIONS
 #
 
+# Behavior
+cacheEnabled=true                            # Enable caching (Ctrl-C to clear)
+cacheMenuFile="$HOME/.cache/launch-app-menu" # Where to cache menu entries
+cacheMetaFile="$HOME/.cache/launch-app-meta" # Where to cache commands mapped to menu entries
+
 # Terminal
 terminal="kitty"
 class="fuzzyterm"
 title="fuzzyterm"
 
 # Styles
-namestyle="$bold$blue"
-descstyle="$italic$black"
-typestyle="$black"
+namestyle="$bold$blue"    # Name
+descstyle="$italic$black" # Generic name
+typestyle="$black"        # Type, i.e. nixpkgs or Flatpak
 
 #
 # LAUNCHER
@@ -49,9 +82,9 @@ if [ -n "$LAUNCHER_FIFO" ]; then
   paths="$(printf "%s" "$XDG_DATA_DIRS" | tr ':' '\n' | xargs -- fd . -e desktop -tx -tl 2>/dev/null)"
 
   # Find cache
-  if [ -f "$HOME/.cache/launch-application-entries" ] && [ -f "$HOME/.cache/launch-application-choices" ]; then
-    entries="$(cat "$HOME/.cache/launch-application-entries")"
-    choices="$(cat "$HOME/.cache/launch-application-choices")"
+  if [ "$cacheEnabled" = "true" ] && [ -f "$cacheMetaFile" ] && [ -f "$cacheMenuFile" ]; then
+    entries="$(cat "$cacheMetaFile")"
+    choices="$(cat "$cacheMenuFile")"
   else
     # Find desktop files
     oldifs=$IFS
@@ -99,15 +132,16 @@ if [ -n "$LAUNCHER_FIFO" ]; then
       entries="$name:$cmd\n$entries"
       choices="$label\t$cmd\n$choices"
 
-      # printf "%b" "$entries" >"$HOME/.cache/launch-application-entries"
-      # printf "%b" "$choices" >"$HOME/.cache/launch-application-choices"
+      # Cache items and command mappings for instant startup
+      printf "%b" "$entries" >"$cacheMetaFile"
+      printf "%b" "$choices" >"$cacheMenuFile"
     done
 
     IFS=$oldifs
   fi
 
   # Show menu and get selected command after removing %U, @@, and similar markers
-  cmd="$(printf "%b" "$choices" | fzf --color="bg+:-1" --delimiter='\t' --with-nth=1 --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down,ctrl-c:execute-silent(rm $HOME/.cache/launch-application-entries $HOME/.cache/launch-application-choices),ctrl-y:execute-silent(wl-copy {2})+abort" | cut -f 2 | sed 's,%.,,g' | sed 's,^"\(.*\)"$,\1,g' | sed 's,@@.*@@,,g')"
+  cmd="$(printf "%b" "$choices" | fzf --color="bg+:-1" --delimiter='\t' --with-nth=1 --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down,ctrl-c:execute-silent(rm $cacheMetaFile $cacheMenuFile)+abort,ctrl-y:execute-silent(wl-copy {2})+abort" | cut -f 2 | sed 's,%.,,g' | sed 's,^"\(.*\)"$,\1,g' | sed 's,@@.*@@,,g')"
 
   # If selection is not empty, launch mapped command
   if [ -n "$cmd" ]; then

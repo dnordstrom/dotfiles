@@ -11,24 +11,7 @@ new_tab Editors
 enabled_layouts horizontal
 
 cd ~/Code/ticker
-launch --title "Frontend editor"
-launch zsh -c "sleep 1 && kitty @ send-text --match title:'^Frontend editor$' 'nvim'"
-
-#
-# SERVERS
-#
-
-new_tab Servers
-
-enabled_layouts horizontal
-
-cd ~/Code/ticker
-launch --title "Frontend server"
-launch zsh -c "sleep 1 && kitty @ send-text --match title:'^Frontend server$' 'yarn && yarn dev'"
-
-cd ~/Code/ticker-backend
-launch --title "Backend server" -- nix-shell /etc/nixos/shell/node12.nix --command zsh
-launch zsh -c "sleep 1 && kitty @ send-text --match title:'^Backend server$' 'yarn && yarn dev'"
+launch --title "Frontend editor" -- zsh -c "nvim; exec zsh"
 
 #
 # SHELLS
@@ -42,7 +25,23 @@ cd ~/Code/ticker
 launch --title "Frontend shell"
 
 cd ~/Code/ticker-backend
-launch --title "Backend shell" -- nix-shell /etc/nixos/shell/node12.nix --command zsh
+launch --title "Backend shell"
+
+#
+# SERVERS
+#
+
+new_tab Servers
+
+enabled_layouts horizontal
+
+cd ~/Code/ticker
+launch --title "Frontend server"
+launch zsh -c "sleep 1 && kitty @ send-text --match title:'^Frontend\sserver$' 'yarn && yarn dev'"
+
+cd ~/Code/ticker-backend
+launch --title "Backend server"
+launch zsh -c "sleep 1 && kitty @ send-text --match title:'^Backend\sserver$' 'yarn && yarn dev'"
 
 #
 # PROXIES

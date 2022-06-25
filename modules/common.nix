@@ -26,10 +26,10 @@
       trusted-users = [ "root" "dnordstrom" ];
 
       # Max concurrent derivation builds
-      max-jobs = 2;
+      max-jobs = 4;
 
       # Max cores per derivation build
-      cores = 3;
+      cores = 4;
 
       # Automatically symlink identical files
       auto-optimise-store = true;
@@ -167,36 +167,6 @@
           "core.daemon" = true;
           "core.name" = "pipewire-0";
         };
-
-        "context.spa-libs" = {
-          "audio.convert.*" = "audioconvert/libspa-audioconvert";
-          "support.*" = "support/libspa-support";
-          "api.v4l2.*" = "v4l2/libspa-v4l2";
-          "api.libcamera.*" = "libcamera/libspa-libcamera";
-          "api.bluez5.*" = "bluez5/libspa-bluez5";
-          "api.vulkan.*" = "vulkan/libspa-vulkan";
-        };
-
-        "context.modules" = [
-          { name = "libpipewire-module-protocol-native"; }
-          { name = "libpipewire-module-profiler"; }
-          { name = "libpipewire-module-metadata"; }
-          { name = "libpipewire-module-spa-device-factory"; }
-          { name = "libpipewire-module-spa-node-factory"; }
-          { name = "libpipewire-module-client-node"; }
-          { name = "libpipewire-module-client-device"; }
-          {
-            name = "libpipewire-module-portal";
-            flags = [ "ifexists" "nofail" ];
-          }
-          {
-            name = "libpipewire-module-access";
-            args = { };
-          }
-          { name = "libpipewire-module-adapter"; }
-          { name = "libpipewire-module-link-factory"; }
-          { name = "libpipewire-module-session-manager"; }
-        ];
       };
 
       config.pipewire-pulse = {

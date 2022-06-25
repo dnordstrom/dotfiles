@@ -430,6 +430,7 @@ in {
     agenix
     cachix
     nix-prefetch
+    nixos-option
 
     #
     # Programs, packages, and files
@@ -459,15 +460,15 @@ in {
     # Command line
     #
 
-    awscli2
+    masterPackages.awscli2
     bottom
     fd
     gh
     libnotify
-    onefetch # Git summary
-    neofetch # System summary
+    onefetch
+    neofetch
     parallel
-    rdrview # URL article viewer based on Firefox's Readability
+    rdrview
     ripgrep
     tree
     unzip
@@ -476,7 +477,7 @@ in {
     zip
 
     #
-    # Zsh plugins
+    # Zsh
     #
 
     zsh-autopair
@@ -495,43 +496,30 @@ in {
     # Wayland
     #
 
-    # Sway
-    swayidle # TODO: Use systemd service option instead.
-    swaylock-effects
-    swayr
-    swaywsr
-
-    # Screenshots
     flameshot
     grim
     imagemagick
-    slurp
-    swappy
-
-    # Images
-    vimiv-qt
-
-    # Recording and wl-clipboard
-    wf-recorder
-    wl-clipboard
-
-    # Monitor
-    wdisplays
-
-    # Launchers
-    wofi
+    j4-dmenu-desktop
+    libinput
     rofi-calc
     rofi-emoji
     rofi-systemd
     rofi-wayland
-    j4-dmenu-desktop
-    wofi-emoji
-    xdg_utils # For xdg-open
-
-    # Input
-    libinput
+    slurp
+    swappy
+    swayidle # TODO: Use systemd service option instead.
+    swaylock-effects
+    swayr
+    swaywsr
+    vimiv-qt
+    wdisplays
     wev
+    wf-recorder
+    wl-clipboard
+    wofi
+    wofi-emoji
     wtype
+    xdg_utils # For `xdg-open`
     ydotool
 
     #
@@ -542,14 +530,14 @@ in {
     zathura
 
     #
-    # Web browsing
+    # Web
     #
 
     tor-browser-bundle-bin
     tridactyl-native # Firefox native messaging host
 
     #
-    # Email
+    # Mail
     #
 
     liferea
@@ -569,7 +557,7 @@ in {
     protonvpn-cli
     protonvpn-gui
     qtpass
-    tmpmail # CLI temporary email generator
+    tmpmail
     yubico-pam
     yubico-piv-tool
     yubikey-agent
@@ -589,11 +577,11 @@ in {
     alsa-utils
     audacious
     cava
-    celluloid # GTK frontend for MPV
+    celluloid
     deadbeef-with-plugins
     easyeffects # To run as service, use `services.easyeffects` instead (messes with JamesDSP)
     handbrake
-    haruna # QT frontend for MPV
+    haruna
     jamesdsp
     pavucontrol
     pulseaudio
@@ -620,19 +608,19 @@ in {
     #
 
     # General
-    cloudflared # Cloudflare Tunnel daemon for remote access to localhost
+    cloudflared
     gcc
 
     # Editors
     kate
 
     # LSP and syntax
-    nodePackages.vscode-langservers-extracted # HTML, CSS, and JSON
+    nodePackages.vscode-langservers-extracted
     nodePackages.typescript-language-server
     nodePackages.diagnostic-languageserver
     nodePackages.yaml-language-server
     nodePackages.bash-language-server
-    rnix-lsp # Uses nixpkgs-fmt
+    rnix-lsp # Uses `nixpkgs-fmt`
     tree-sitter
 
     # Writing
@@ -643,9 +631,8 @@ in {
     bfg-repo-cleaner
 
     # Nix
-    nixfmt # Opinionated formatter, used by null-ls
-    nixos-option # Finds option values and where they're declared
-    statix # Static analysis, used by null-ls
+    nixfmt # Opinionated formatter, used by `null-ls`
+    statix # Static analysis, used by `null-ls`
 
     # Rust
     rust-bin.stable.latest.default
@@ -904,7 +891,8 @@ in {
 
   # Vifm
 
-  xdg.configFile."vifm".source = ../config/vifm;
+  xdg.configFile."vifm".source =
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/vifm";
 
   # Glow
 
@@ -982,24 +970,7 @@ in {
     enableZshIntegration = true;
   };
 
-  programs.nushell = {
-    enable = false;
-    settings = {
-      startup = [
-        # Shortcuts
-        "alias l = ls -a"
-        "alias e = echo"
-
-        # Initialize Starship prompt
-        "mkdir ~/.cache/starship"
-        "starship init nu | save ~/.cache/starship/init.nu"
-        "source ~/.cache/starship/init.nu"
-      ];
-
-      # Use Starship prompt
-      prompt = "starship_prompt";
-    };
-  };
+  programs.nushell.enable = false;
 
   programs.exa.enable = true;
 
@@ -1171,13 +1142,13 @@ in {
     enableZshIntegration = true; # Adds eval "$(zoxide init zsh)" to .zshrc
   };
 
-  programs.tmux = { enable = true; };
+  programs.tmux.enable = false;
 
   programs.bat = {
     enable = true;
     config = {
-      theme = "base16-256"; # Uses terminal colors
-      style = "numbers,changes"; # Shows line numbers and Git changes
+      theme = "ansi";
+      style = "header-filename,header-filesize,rule,numbers,changes";
     };
   };
 
