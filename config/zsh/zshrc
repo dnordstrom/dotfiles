@@ -5,7 +5,7 @@
 #
 
 #
-# Options
+# ZSH OPTIONS
 #
 
 # Use vi mode (recommened instead of `setopt vi`)
@@ -33,7 +33,7 @@ setopt interactivecomments
 setopt chaselinks
 
 #
-# Variables
+# OPTION VARIABLES
 #
 
 # zsh
@@ -96,9 +96,33 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_CTRL_T_OPTS="$FZF_DEFAULT_OPTS"
 export FZF_ALT_C_OPTS="$FZF_DEFAULT_OPTS"
 export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS"
+export FZF_COMPLETION_OPTS="$FZF_DEFAULT_OPTS"
+
+# Use `rg` for path completion with `fzf`.
+_fzf_compgen_path() {
+  rg --files --hidden --glob "!.git/*" --glob "!node_modules/*"
+}
+
+# Use `fd` for directory completion with `fzf`.
+_fzf_compgen_dir() {
+  fd --type d --hidden --follow --exclude ".git" . "$1"
+}
+
+# Use `fzf` with command-specific previews.
+_fzf_comprun() {
+  command=$1
+  shift
+
+  case "$command" in
+    cd)                 fzf "$@" --preview 'tree -C {} | head -200' ;;
+    export|unset|env)   fzf "$@" --preview "eval 'echo \$'{}" ;;
+    ssh)                fzf "$@" --preview 'dig {}' ;;
+    *)                  fzf "$@" ;;
+  esac
+}
 
 #
-# Aliases
+# ALIASES
 #
 
 # Utilities
@@ -118,7 +142,7 @@ alias l="lt"
 alias ls="printf '\n'; ls -l --almost-all --hyperlink=auto"
 
 # Default `lsd`
-alias lsd="printf '\n'; lsd --date=\"+%_d %b %R\" --long --hyperlink=auto --permission=octal --header --config-file=\"/home/dnordstrom/.config/lsd/custom.yaml\""
+alias lsd="printf '\n'; lsd --date=\"+%_d %b %R\" --long --hyperlink=auto --permission=octal --header --config-file=\"/home/dnordstrom/.config/lsd/config.yaml\""
 
 # Default `exa`
 alias exa="printf '\n'; exa --all --icons --group-directories-first --group --header --git --long --no-permissions --octal-permissions"
@@ -212,7 +236,7 @@ list-tree-lsd() {
   local paths="."
 
   if [ $# -gt 0 ]; then
-    if ! [ -e "$1" ]; then
+    if [ -n "$1" ]; then
       levels="$1"
       shift
     fi
@@ -223,7 +247,7 @@ list-tree-lsd() {
   fi
 
   printf "\n"
-  lsd --date="+%_d %b %R" --depth=1 --long --tree --hyperlink=auto --config-file="/home/dnordstrom/.config/lsd/custom.yaml" --depth="$levels" "$paths"
+  lsd --date="+%_d %b %R" --long --tree --hyperlink=auto --config-file="/home/dnordstrom/.config/lsd/config.yaml" --depth="$levels" "$paths"
 }
 
 insert-date() {

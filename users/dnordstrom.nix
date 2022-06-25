@@ -460,16 +460,18 @@ in {
     # Command line
     #
 
-    masterPackages.awscli2
     bottom
     fd
     gh
     libnotify
-    onefetch
+    masterPackages.awscli2
+    mdcat
     neofetch
+    onefetch
     parallel
     rdrview
     ripgrep
+    silver-searcher
     tree
     unzip
     usbutils
@@ -713,11 +715,11 @@ in {
     # Interesting prospects
     #
 
-    mdcat
+    input-remapper
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
+    jetbrains.datagrip
     navi # CLI cheatsheet tool
     tealdeer # TLDR in Rust
-    jetbrains.datagrip
 
     #
     # Dependencies

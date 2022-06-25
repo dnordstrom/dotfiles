@@ -32,8 +32,8 @@ set {
   $termscratchwidth 1800
   $termscratchheight 950
 
-  $fuzzytermwidth 600
-  $fuzzytermheight 350
+  $fuzzytermwidth 680
+  $fuzzytermheight 380
 
   $floatdefaultwidth 1280
   $floatdefaultheight 820
