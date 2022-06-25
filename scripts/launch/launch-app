@@ -64,6 +64,20 @@ terminal="kitty"
 class="fuzzyterm"
 title="fuzzyterm"
 
+# Opens new terminal window. Options overrides or other custom initialization can be done here. can
+# be done here. This script calls this function with the command to run as only argument, to make
+# sure it always runs in a new, customizable window.
+#
+# Arguments:
+#   Command to run to launch menu, e.g. `LAUNCHER_FIFO=[fifo] [script path]`.
+init() {
+  "$terminal" --title "$title" --class "$class" \
+    --override "adjust_line_height=200%" \
+    --override "font_size=14" \
+    --override "cursor_shape=underline" \
+    -e sh -c "$1"
+}
+
 # Styles
 namestyle="$bold$blue"    # Name
 descstyle="$italic$black" # Generic name
@@ -172,9 +186,4 @@ fifo="$(mktemp -d)/results"
 mkfifo -m 600 "$fifo"
 
 # Rerun in new terminal window
-"$terminal" \
-  --title "$title" \
-  --class "$class" \
-  --override "adjust_line_height=200%" \
-  -e \
-  sh -c "LAUNCHER_FIFO=$fifo $script"
+init "LAUNCHER_FIFO=$fifo $script"
