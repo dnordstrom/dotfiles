@@ -208,8 +208,11 @@ nvim_set_keymap("c", "<C-a>", "<Home>", opts.re)
 nvim_set_keymap("c", "<C-e>", "<End>", opts.re)
 nvim_set_keymap("c", "<C-f>", "<Right>", opts.re)
 nvim_set_keymap("c", "<C-b>", "<Left>", opts.re)
-nvim_set_keymap("c", "<C-u>", "<End><C-u>", opts.nore) -- Kill whole line instead of left hand side
-nvim_set_keymap("c", "<C-k>", "repeat('<Del>', strchars(getcmdline()[getcmdpos() - 1:]))", opts.expr) -- Kill from cursor
+nvim_set_keymap("c", "<C-u>", "<End><C-u>", opts.nore) -- Kill line
+nvim_set_keymap("c", "<C-h>", "<Left>", opts.re)
+nvim_set_keymap("c", "<C-j>", "<C-u>", opts.re) -- Kill to beginning
+nvim_set_keymap("c", "<C-k>", "repeat('<Del>', strchars(getcmdline()[getcmdpos() - 1:]))", opts.expr) -- Kill to end
+nvim_set_keymap("c", "<C-l>", "<Right>", opts.re)
 
 -- Modify
 nvim_set_keymap("c", "<M-i>", "<Home><Right><Right><Right><Right>NORDUtils.inspect(<End>)<Left>", opts.nore) -- Inspect
@@ -224,7 +227,7 @@ nvim_set_keymap("n", "<Leader>;l", ":lua ", opts.re) -- Lua
 nvim_set_keymap("n", "<Leader>;h", ":help ", opts.re) -- Help
 nvim_set_keymap("n", "<Leader>;H", 'feedkeys(":help " . expand("<cword>"))', opts.expr) -- Help
 nvim_set_keymap("n", "<Leader>;s", ":w <M-f>", opts.re) -- Write with file path
-nvim_set_keymap("n", "<Leader>;S", ":w !sudo tee > /dev/null %", opts.re) -- Sudo write
+nvim_set_keymap("n", "<Leader>;S", ":cp --no-preserve=mode,ownership % $(mktmp)", opts.re) -- Sudo write
 nvim_set_keymap("n", "<Leader>;r", ":<C-r>:", opts.re) -- Last command
 
 --
@@ -255,6 +258,10 @@ nvim_set_keymap("", "<Leader>tc", '<Cmd>execute "set colorcolumn=" . (&colorcolu
 -- ...file manager
 nvim_set_keymap("n", "<Leader>tf", "<Cmd>Vifm<CR>", opts.nore)
 
+-- ...command bar height
+nvim_set_keymap("n", "<Leader>tc", "<Cmd>set cmdheight=0<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>tC", "<Cmd>set cmdheight=2<CR>", opts.nore)
+
 -- ...Git information
 nvim_set_keymap("n", "<Leader>tgg", "<Space>tgs<Space>tgb<Space>tgn<Space>tgr", opts.re)
 nvim_set_keymap("n", "<Leader>tgs", "<Cmd>lua require('gitsigns.actions').toggle_signs()<CR>", opts.re)
@@ -274,9 +281,6 @@ nvim_set_keymap("n", "<Leader>ts", "<Cmd>set spell!<CR>", opts.nore)
 --
 -- Find...
 --
-
--- ...by shift tap: anything (shows menu)
-nvim_set_keymap("n", "<Leader>F", "<Cmd>FzfLua<CR>", opts.nore)
 
 -- ...by double tap: files
 nvim_set_keymap("n", "<Leader>ff", "<Cmd>FzfLua files<CR>", opts.nore)
@@ -333,6 +337,30 @@ nvim_set_keymap("n", "<Space>bd", "<Cmd>Bwipeout<CR>", opts.nore)
 -- ...delete despite changes (default is hide)
 nvim_set_keymap("n", "<Space>bD", "<Cmd>Bwipeout!<CR>", opts.nore)
 
+-- ...delete file (recoverable in Vifm trash directory)
+nvim_set_keymap(
+	"n",
+	"<Leader>bD",
+	":!mv --backup=numbered %:p ~/.local/share/vifm/Trash/%<CR>:Bwipeout<CR>",
+	opts.silent
+)
+
+-- ...temporary file (e.g. when readonly, copies path to clipboard and opens in new buffer)
+nvim_set_keymap(
+	"n",
+	"<Leader>bt",
+	':!file=$(mktemp); cp --no-preserve=mode,ownership %:p $file; wl-copy "$file"<CR>:e <C-r>+<CR>',
+	opts.silent
+)
+
+-- ...temporary file (e.g. when readonly, copies path to clipboard and opens in new terminal window)
+nvim_set_keymap(
+	"n",
+	"<Leader>bT",
+	":!file=$(mktemp); cp --no-preserve=mode,ownership %:p $file; nohup kitty --title popupterm -e nvim $file &<CR>",
+	opts.silent
+)
+
 --
 -- Put/paste...
 --
@@ -350,9 +378,12 @@ abbreviate("date", "strftime('%b %d, %Y')", { expr = true })
 --
 
 -- Search and replace
-nvim_set_keymap("i", "<C-f>", "<Esc>:%s/<C-r><C-w>//g<Left><Left>", opts.nore)
-nvim_set_keymap("n", "<C-f>", ":%s/<C-r><C-w>//g<Left><Left>", opts.nore)
-nvim_set_keymap("v", "<C-f>", '"ay:%s/<C-r>a//g<Left><Left>', opts.nore)
+nvim_set_keymap("i", "<C-f>", "<Esc>:set cmdheight=2<CR>:%s/<C-r><C-w>//g<Left><Left>", opts.nore)
+nvim_set_keymap("n", "<C-f>", "<Esc>:set cmdheight=2<CR>:%s/<C-r><C-w>//g<Left><Left>", opts.nore)
+nvim_set_keymap("v", "<C-f>", '"ty:set cmdheight=2<CR>:%s/<C-r>t//g<Left><Left>', opts.nore)
+nvim_set_keymap("i", "<C-S-f>", "<Esc>:set cmdheight=2<CR>:%s/<C-r><C-w>/<C-r><C-w>/g<Left><Left>", opts.nore)
+nvim_set_keymap("n", "<C-S-f>", "<Esc>:set cmdheight=2<CR>:%s/<C-r><C-w>/<C-r><C-w>/g<Left><Left>", opts.nore)
+nvim_set_keymap("v", "<C-S-f>", '"ty:set cmdheight=2<CR>:%s/<C-r>t/<C-r>t/g<Left><Left>', opts.nore)
 
 --
 -- Language diagnostic...

@@ -624,12 +624,24 @@ for directory in ~/.scripts/*; do
 done
 
 #
-# SOURCE
+# OTHER INIT
 #
 
+# Uncomment to:
+#   Init kitty terminal shell integration
+#
+# if [ -n "$KITTY_INSTALLATION_DIR" ]; then
+#   export KITTY_SHELL_INTEGRATION="enabled"
+#   autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
+#   kitty-integration
+#   unfunction kitty-integration
+# fi
+
+# Init home/mutable/out-of-store environment
 if [ -f "$HOME/.env" ]; then
   source "$HOME/.env"
 fi
 
+# Init direnv
 eval "$(direnv hook zsh)"
 
