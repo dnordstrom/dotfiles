@@ -54,7 +54,11 @@ return require("packer").startup(function(use)
 	--
 
 	use({ "folke/which-key.nvim" })
-	use({ "knubie/vim-kitty-navigator", branch = "master" })
+	use({
+		"knubie/vim-kitty-navigator",
+		branch = "master",
+		run = "sed -i 's/neighboring_window\\.py/\\.\\/kittens\\/neighboring_window\\.py/g' ./plugin/kitty_navigator.vim",
+	})
 
 	--
 	-- Language and syntax

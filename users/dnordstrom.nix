@@ -321,7 +321,7 @@ in {
         type = "Application";
         genericName = "Text Editor";
         exec = ''
-          kitty --session "${configDir}/config/kitty/dev-cloud.session" --single-instance --instance-group dev
+          kitty --session "${configDir}/config/kitty/sessions/dev-cloud.session" --single-instance --instance-group dev
         '';
         terminal = false;
         icon = "kitty";
@@ -720,6 +720,7 @@ in {
     jetbrains.datagrip
     navi # CLI cheatsheet tool
     tealdeer # TLDR in Rust
+    ytfzf # Fzf utility for YouTube
 
     #
     # Dependencies
@@ -822,14 +823,14 @@ in {
   #
   #   Also see `services.easyeffects` for background service.
 
-  xdg.configFile."easyeffects/output".source =
+  home.file.".config/easyeffects/output".source =
     config.lib.file.mkOutOfStoreSymlink
     "${configDir}/config/easyeffects/output";
-  xdg.configFile."easyeffects/input".source =
+  home.file.".config/easyeffects/input".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/easyeffects/input";
-  xdg.configFile."easyeffects/irs".source =
+  home.file.".config/easyeffects/irs".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/easyeffects/irs";
-  xdg.configFile."easyeffects/autoload".source =
+  home.file.".config/easyeffects/autoload".source =
     config.lib.file.mkOutOfStoreSymlink
     "${configDir}/config/easyeffects/autoload";
   xdg.configFile."easyeffects/presets".source = ../config/easyeffects/presets;
@@ -845,9 +846,9 @@ in {
     config.lib.file.mkOutOfStoreSymlink
     "${configDir}/config/sway/colors.catppuccin";
 
-  xdg.configFile."swaylock/config".source =
+  home.file.".config/swaylock/config".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/swaylock/config";
-  xdg.configFile."swaynag/config".source =
+  home.file.".config/swaynag/config".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/swaynag/config";
 
   # Swappy 
@@ -856,15 +857,17 @@ in {
 
   # Kitty
 
-  xdg.configFile."kitty".source = ../config/kitty;
-
-  # Wezterm
-
-  xdg.configFile."wezterm".source = ../config/wezterm;
-
-  # tmux
-
-  xdg.configFile."tmux".source = ../config/tmux;
+  home.file.".config/kitty/config.conf".source =
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/kitty/config.conf";
+  home.file.".config/kitty/open-actions.conf".source =
+    config.lib.file.mkOutOfStoreSymlink
+    "${configDir}/config/kitty/open-actions.conf";
+  home.file.".config/kitty/themes".source =
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/kitty/themes";
+  home.file.".config/kitty/sessions".source =
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/kitty/sessions";
+  home.file.".config/kitty/kittens".source =
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/kitty/kittens";
 
   # Starship
 
@@ -876,7 +879,7 @@ in {
 
   # Firefox
 
-  xdg.configFile."tridactyl".source =
+  home.file.".config/tridactyl".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/firefox/tridactyl";
 
   home.file.".mozilla/native-messaging-hosts/tridactyl.json".source =
@@ -884,36 +887,36 @@ in {
 
   # Neovim
 
-  xdg.configFile."nvim/lua".source =
+  home.file.".config/nvim/lua".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/nvim/lua";
-  xdg.configFile."nvim/ftplugin".source =
+  home.file.".config/nvim/ftplugin".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/nvim/ftplugin";
-  xdg.configFile."nvim/luasnippets".source =
+  home.file.".config/nvim/luasnippets".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/nvim/luasnippets";
 
   # Vifm
 
-  xdg.configFile."vifm".source =
+  home.file.".config/vifm".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/vifm";
 
   # Glow
 
-  xdg.configFile."glow".source =
+  home.file.".config/glow".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/glow";
 
-  # LSD
+  # lsd
 
-  xdg.configFile."lsd".source =
+  home.file.".config/lsd".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/lsd";
 
   # Wofi
 
-  xdg.configFile."wofi".source =
+  home.file.".config/wofi".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/wofi";
 
   # Waybar
 
-  xdg.configFile."waybar".source =
+  home.file.".config/waybar".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/waybar";
 
   # wlogout
@@ -1043,7 +1046,12 @@ in {
     };
   };
 
-  programs.kitty.enable = true;
+  programs.kitty = {
+    enable = true;
+    extraConfig = ''
+      include ./config.conf
+    '';
+  };
 
   programs.alacritty.enable = true;
 
@@ -1141,7 +1149,7 @@ in {
 
   programs.zoxide = {
     enable = true;
-    enableZshIntegration = true; # Adds eval "$(zoxide init zsh)" to .zshrc
+    enableZshIntegration = true;
   };
 
   programs.tmux.enable = false;

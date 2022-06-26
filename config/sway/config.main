@@ -70,7 +70,7 @@ set {
   # Terminals
   $term kitty --title term --single-instance
   $termpopup $term --title popupterm
-  $termscratch $term --title scratchterm --session /etc/nixos/config/kitty/scratchpad.session
+  $termscratch $term --title scratchterm --session /etc/nixos/config/kitty/sessions/scratchpad.session
 
   # Launchers
   $launchapp /etc/nixos/scripts/launch/launch-app

@@ -36,17 +36,24 @@ setopt chaselinks
 # OPTION VARIABLES
 #
 
+#
 # zsh
+#
 
 export KEYTIMEOUT=1
 
+#
 # Shell
+#
 
 export EDITOR="vim"
 export BROWSER="firefox"
 export TERMINAL="kitty"
+export PAGER="less"
 
+#
 # Zsh vi mode plugin
+#
 
 # Configuration function called when sourcing plugin
 zvm_config() {
@@ -56,39 +63,39 @@ zvm_config() {
   ZVM_KEYTIMEOUT_ESC=0.1 # Lower wait time for Escape key
 }
 
+#
 # ANSI color code helpers
+#
 
-export ANSI_STYLE_MD=$(tput bold; tput setaf 6)
-export ANSI_STYLE_ME=$(tput sgr0)
-export ANSI_STYLE_SO=$(tput bold; tput setaf 3; tput setab 4)
-export ANSI_STYLE_SE=$(tput rmso; tput sgr0)
-export ANSI_STYLE_US=$(tput smul; tput bold; tput setaf 7)
-export ANSI_STYLE_UE=$(tput rmul; tput sgr0)
-export ANSI_STYLE_MR=$(tput rev)
-export ANSI_STYLE_MH=$(tput dim)
-export ANSI_STYLE_STATUS=$(tput bold; tput setaf 0; tput setab 3)
-export ANSI_STYLE_STATUS_END=$(tput sgr0)
+export ANSI_STYLE_MD="$(tput bold; tput setaf 6)"
+export ANSI_STYLE_ME="$(tput sgr0)"
+export ANSI_STYLE_SO="$(tput bold; tput setaf 0; tput setab 3)"
+export ANSI_STYLE_SE="$(tput rmso; tput sgr0)"
+export ANSI_STYLE_US="$(tput smul; tput bold; tput setaf 7)"
+export ANSI_STYLE_UE="$(tput rmul; tput sgr0)"
+export ANSI_STYLE_MR="$(tput rev)"
+export ANSI_STYLE_MH="$(tput dim)"
 
-# less
+#
+# Less
+#
 
-local statusline=$ANSI_STYLE_STATUS"\ ?f\ %f:藍\ STDIN"$ANSI_STYLE_STATUS_END
+lessline=$ANSI_STYLE_SO"\ ?f\ %f:藍\ STDIN"$ANSI_STYLE_SE
 
-export LESS="-iR -Pm$statusline\$ -Ps$statusline\$"
+export LESS="-iR -Pm$lessline\$ -Ps$lessline\$"
 export LESSEDIT="%E ?lm+%lm. %g"
-export PAGER="less"
 
+#
 # Notes
+#
 
 export NOTES_FILE="$HOME/.notes.md"
 export NOTES_EDITOR="$EDITOR"
 export NOTES_VIEWER="glow -p"
 
-# bat
-
-export BAT_STYLE="header-filename,header-filesize,rule,numbers,changes"
-export BAT_THEME="ansi"
-
-# fzf
+#
+# Fzf
+#
 
 export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*" --glob "!node_modules/*"'
 export FZF_DEFAULT_OPTS="--ansi --color='bg+:-1' --cycle --no-info --prompt '› ' --pointer '➔ ' --marker '» ' --bind 'alt-p:toggle-preview,tab:down,btab:up,ctrl-y:execute-silent(wl-copy {}),ctrl-o:execute-silent(xdg-open {}),ctrl-u:half-page-up,ctrl-d:half-page-down' --preview-window ':hidden' --preview '([[ -f {} ]] && (bat --style=changes --color=always {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'"
@@ -127,6 +134,7 @@ _fzf_comprun() {
 
 # Utilities
 alias icat="kitty +kitten icat"
+alias themes="kitty +kitten themes"
 
 # `cat` with line numbers and syntax highlighting
 alias cat="bat"
@@ -139,7 +147,7 @@ alias mdless="glow -p"
 alias l="lt"
 
 # Default `ls`
-alias ls="printf '\n'; ls -l --almost-all --hyperlink=auto"
+alias ls="printf '\n'; ls -l --almost-all --hyperlink=auto --color=auto"
 
 # Default `lsd`
 alias lsd="printf '\n'; command lsd --date=\"+%_d %b %R\" --long --hyperlink=auto --permission=octal --header --config-file=\"/home/dnordstrom/.config/lsd/config.yaml\""
@@ -180,7 +188,7 @@ alias nbi="nixos-build-impure"
 alias nix-shell-node12="nix-shell /etc/nixos/shell/node12.nix"
 alias nix-shell-hugo="nix-shell /etc/nixos/shell/hugo.nix"
 
-# Development
+# Development helpers
 alias g="git"
 alias gc="git commit -am"
 alias gf="git fetch && git pull"
@@ -196,31 +204,36 @@ alias merge="git merge"
 alias clone="git clone"
 
 #
-# Functions
+# FUNCTIONS
 #
 
-# Git commit and push with given commit message. Fails if no message is provided.
+# Does a Git commit and push with given commit message. Fails if no message is provided.
 #
 # Arguments:
-#   Commit message
+#   $1 - Commit message.
 gg() {
   if ! [ $# -eq 0 ]; then
     git commit -am "$*"
     git push
   else
-    printf "%s\n" "Please provide a commit message."
+    printf "\n%s\n" "Please provide a commit message."
   fi
 }
 
+# Displays a directory tree. Two optional arguments specify depth and path. If the first argument is
+# a valid directory and not a number then it is displayed with a depth of 1, and otherwise the first
+# argument specifies the depth and the second the directory.
+#
+# Arguments:
+#   $1 - Depth of tree view. Optional. Defaults to 1.
+#   $2 - Directory to view. Optional. Defaults to working directory.
 list-tree-exa() {
   local levels="1"
   local paths="."
 
-  if [ $# -gt 0 ]; then
-    if ! [ -e "$1" ]; then
-      levels="$1"
-      shift
-    fi
+  if [ $# -gt 0 ] && ! [ -d "$1" ] && [ "$1" -eq "$1" ] 2>/dev/null; then
+    levels="$1"
+    shift
   fi
 
   if [ $# -gt 0 ]; then
@@ -231,15 +244,20 @@ list-tree-exa() {
   command exa --icons --group-directories-first --group --header --git --long --no-permissions --octal-permissions --tree --level="$levels" "$paths"
 }
 
+# Displays a directory tree. Two optional arguments specify depth and path. If the first argument is
+# a valid directory and not a number then it is displayed with a depth of 1, and otherwise the first
+# argument specifies the depth and the second the directory.
+#
+# Arguments:
+#   $1 - Depth of tree view. Optional. Defaults to 1.
+#   $2 - Directory to view. Optional. Defaults to working directory.
 list-tree-lsd() {
-  local levels="1"
-  local paths="."
+  levels="1"
+  paths="."
 
-  if [ $# -gt 0 ]; then
-    if [ -n "$1" ]; then
-      levels="$1"
-      shift
-    fi
+  if [ $# -gt 0 ] && ! [ -d "$1" ] && [ "$1" -eq "$1" ] 2>/dev/null; then
+    levels="$1"
+    shift
   fi
 
   if [ $# -gt 0 ]; then
@@ -293,8 +311,11 @@ edit-notes() {
   eval "${NOTES_EDITOR:-$EDITOR} $NOTES_FILE"
 }
 
-# Prepend a list item to the notes file.
+# Prepend a list item to the notes file. Uses argument if provided, otherwise defaults to the
+# current buffer/line input.
 #
+# Arguments:
+#   $1 - Note text
 # Globals:
 #   NOTES_FILE
 prepend-note() {
@@ -327,27 +348,28 @@ clear-backup-notes() {
 # 1 or 2 depending on result.
 #
 # Arguments:
-#   Command
+#   $1 - Command
 # Returns:
-#   1 if command exists, 0 otherwise
+#   1 - Command found
+#   0 - Command not found
 is-command() {
   # Check for builtins differently depending on shell
   if [ -n "$ZSH_VERSION" ]; then
-    builtin whence -p "$1" &> /dev/null
+    builtin whence -p "$1" >/dev/null 2>&1
   else
-    builtin type -P "$1" &> /dev/null
+    builtin type -P "$1" >/dev/null 2>&1
   fi
 
-  if [ $? -ne 0 ]; then
+  if [ "$?" -eq 0 ]; then
     printf "%s\n" "Command $1 exists."
-    return 1
+    return 0
   else
     printf "%s\n" "Command $1 does not exist."
-    return 0
+    return 1
   fi
 
   # Allow use in both standalone and scripts, as scripts receive script name as $0
-  if [ $# -gt 1 ]; then
+  if [ "$#" -gt 1 ]; then
     shift
     is-command "$@"
   fi
@@ -427,61 +449,101 @@ to-uppercase() {
   printf "%s" "$(printf "%s" "$*" | tr '[:lower:]' '[:upper:]')"
 }
 
-# Run command in specified directory then return (use with care).
+# Runs command in a specific directory. Takes relative or absolute path, and neither argument require
+# quoting unless the directory path contains spaces. More than one command may be specified, since
+# it will be executed by `eval` (take care).
 #
+# Usage:
+#   `in-dir [directory] [command]`
 # Arguments:
-#   Directory to run command in
-#   Command to run
+#   $1 - Directory
+#   $2 - Command
 # Returns:
-#   0 on success, 1 on invalid argument count
+#   0 - Success
+#   1 - Invalid arguments
 in-dir() {
-  if ! [ $# -eq 2 ]; then
-    echo "Expected 2 arguments, got $#."
-    echo
-    echo "Usage: $0 \"~/my_dir\" \"echo someting\""
-    echo
-    echo "Note that both arguments are quoted."
+  tabs -4
+  printf "\n"
+
+  description="Runs a command in a specific directory."
+  standout="$(tput bold; tput setaf 0; tput setab 3)"
+  standoutend="$(tput sgr0)"
+  usage="
+Usage:
+	$0 <directory> <command>...
+
+Example:
+	$0 /etc/nixos vim modules/common.nix
+"
+
+  # Make sure we have both a directory and a command
+  if [ $# -lt 2 ]; then
+    if [ $# -eq 0 ]; then
+      printf "%s\n%s" "$description" "$usage"
+    else
+      printf "$standout ERROR $standoutend Expected 2 or more arguments, got %s.\n%s" "$#" "$usage"
+    fi
     return 1
   fi
 
-  local prev_dir=$(pwd)
-  local dir="$(realpath $1)"; shift
-  local cmd="$*"
+  absoluteDirectory="$(realpath "$1" --canonicalize-missing 2>/dev/null)"; shift
+  cmd="$@"
 
-  cd "$dir"
+  # Make sure the directory exists
+  if ! [ -d "$absoluteDirectory" ]; then
+    printf "$standout ERROR $standoutend Could not find directory: %s\n%s" \
+      "$absoluteDirectory" \
+      "$usage"
+    return 1
+  fi
+
+  cd "$absoluteDirectory"
   eval "$cmd"
-  cd "$prev_dir"
+  cd "$OLDPWD"
+
+  return 0
 }
 
-# Open /etc/nixos directory with specified program.
+# Changes working directory to NixOS configuration and opens it in the specified program. If no
+# program is passed as argument, it will default to `$EDITOR`.
 #
 # Arguments:
-#   Command or program to open directory with
+#   Optional command or program to open configuration directory with.
 # Returns:
-#   0 on success, 1 on invalid argument count
+#   0 on success, 1 on invalid argument count.
 # Dependencies:
 #   in-dir()
-edit-nixos-with() {
-  if ! [ $# -eq 1 ]; then
+edit-nixos() {
+  editor="$EDITOR"
+
+  if [ $# -gt 1 ]; then
     echo "Expected 1 argument, got $#."
     return 1
+  elif [ $# -eq 1 ]; then
+    editor="$1"
   fi
 
-  in-dir "/etc/nixos" "$1"
+  in-dir "/etc/nixos" "$editor"
 }
 
-# Open NixOS configuration in Neovim
-edit-nixos() {
-  edit-nixos-with "nvim"
-}
-
-# Build and switch NixOS configuration
+# Builds and switchs to NixOS configuration. If a `.nix-prebuild` file exists in the user's home
+# directory and is executable, it will be executed first (without sudo/doas---if that's needed, it
+# can be added in the script itself).
+#
+# Notes:
+#   - Uses `--impure` for out of store symlinks.
 build-nixos() {
-  $HOME/.nix-prebuild
+  preBuildFile="$HOME/.nix-prebuild"
+
+  if [ -x "$preBuildFile" ]; then
+    printf "\n%s\n" "Found pre-build file at: $preBuildFile"
+    $preBuildFile
+  fi
+
   doas nixos-rebuild switch --flake /etc/nixos --impure
 }
 
-# Run fg command if buffer line is empty, otherwise save input to stack
+# Runs `fg` command if buffer line is empty, otherwise saves current line buffer to stack.
 magic-ctrl-z() {
   if [ $#BUFFER -eq 0 ]; then
     BUFFER="fg"
@@ -493,7 +555,7 @@ magic-ctrl-z() {
 }
 
 #
-# Widgets
+# WIDGETS
 #
 
 zle -N insert-date
@@ -510,18 +572,20 @@ zle -N backup-notes
 zle -N clear-backup-notes
 
 #
-# Binds
+# KEY BINDS
 #
 
-# Zsh vi mode binds
+# Zsh vi mode binds, loaded after other binds.
 zvm_after_lazy_keybindings() {
   # Ctrl-N and Ctrl-P for next and previous based on current buffer content
-  zvm_bindkey vicmd "^Z" magic-ctrl-z
   zvm_bindkey vicmd "^N" history-beginning-search-forward
-  zvm_bindkey vicmd "^P" history-beginning-search-backward
-  zvm_bindkey viins "^Z" magic-ctrl-z
   zvm_bindkey viins "^N" history-beginning-search-forward
+  zvm_bindkey vicmd "^P" history-beginning-search-backward
   zvm_bindkey viins "^P" history-beginning-search-backward
+
+  # Ctrl-Z to suspend or unsuspend a program to/from backgrond
+  zvm_bindkey viins "^Z" magic-ctrl-z
+  zvm_bindkey vicmd "^Z" magic-ctrl-z
 }
 
 # Fix delete key outputting tilde character
@@ -551,14 +615,16 @@ bindkey "^[Nb" build-nixos
 bindkey "^[Ne" edit-nixos
 
 #
-# Path
+# PATH
 #
 
-# Add all custom scripts to PATH
-for directory in ~/.scripts/*; export PATH="$PATH:$directory"
+# Script paths organized and prefixed by category: `nix/nix-preview`, `launch/launch-app`, etc.
+for directory in ~/.scripts/*; do
+  export PATH="$PATH:$directory"
+done
 
 #
-# Source secrets, etc.
+# SOURCE
 #
 
 if [ -f "$HOME/.env" ]; then
