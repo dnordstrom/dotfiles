@@ -318,6 +318,9 @@ nvim_set_keymap("n", "<Leader>fS", "<Cmd>FzfLua lsp_workspace_symbols<CR>", opts
 -- ...recent files
 nvim_set_keymap("n", "<Leader>fr", "<Cmd>FzfLua oldfiles<CR>", opts.nore)
 
+-- ..."undo" last query (resume)
+nvim_set_keymap("n", "<Leader>fu", "<Cmd>FzfLua resume<CR>", opts.nore)
+
 --
 -- Buffer...
 --
@@ -397,12 +400,12 @@ nvim_set_keymap("n", "<Leader>df", "<Cmd>lua vim.lsp.buf.format()<CR>", opts.sil
 nvim_set_keymap("n", "<Leader>dF", "<Cmd>lua vim.lsp.buf.range_format()<CR>", opts.silent)
 
 -- ...refactoring
+nvim_set_keymap("n", "<Leader>dr", ":lua require('refactoring').select_refactor()<CR>", opts.nore)
+nvim_set_keymap("i", "<M-Leader>dr", ":lua require('refactoring').select_refactor()<CR>", opts.nore)
+nvim_set_keymap("i", "<C-r>", ":lua require('refactoring').select_refactor()<CR>", opts.nore)
 nvim_set_keymap("n", "<F2>", '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.nore)
 nvim_set_keymap("i", "<F2>", '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.nore)
-nvim_set_keymap("n", "<Leader>dr", '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.nore)
-nvim_set_keymap("n", "<Leader>dR", ":TSLspRenameFile<CR>", opts.nore)
-nvim_set_keymap("n", "<Leader>do", ":TSLspOrganize<CR>", opts.nore)
-nvim_set_keymap("n", "<Leader>di", ":TSLspImportAll<CR>", opts.nore)
+nvim_set_keymap("n", "<Leader>dc", '<Cmd>lua require("renamer").rename({empty = false})<CR>', opts.nore)
 
 -- ...navigation
 nvim_set_keymap("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", opts.nore)

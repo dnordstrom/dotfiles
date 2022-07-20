@@ -21,15 +21,9 @@
     # Use unstable `nix`
     package = pkgs.nixUnstable;
 
-    # Users with elevated `nix` command privileges
     settings = {
+      # Users with elevated `nix` command privileges
       trusted-users = [ "root" "dnordstrom" ];
-
-      # Max concurrent derivation builds
-      max-jobs = 4;
-
-      # Max cores per derivation build
-      cores = 4;
 
       # Automatically symlink identical files
       auto-optimise-store = true;
@@ -270,6 +264,8 @@
     roon-server = {
       enable = true;
       openFirewall = true;
+      user = "audio";
+      group = "audio";
     };
 
     dbus = {
@@ -427,8 +423,6 @@
   #
 
   programs = {
-    qt5ct.enable = true;
-
     dconf.enable = true;
 
     ssh.askPassword =
@@ -437,6 +431,12 @@
 
   #
   # USERS
+  #   
+  #   `isNormalUser = true;` creates a home directory while `isSystemUser = true;` doesn't. For
+  #   appropriate access, users need to be in the right groups, such as "input" for libinput, or
+  #   "audio" for the Roon Server user.
+  #
+  #   Remember to add any groups not created by Nix modules, like "openvpn" below.
   #
 
   users = {
@@ -444,30 +444,73 @@
       dnordstrom = {
         isNormalUser = true;
         extraGroups = [
+          "wheel"
           "audio"
           "input"
           "kvm"
           "libvirtd"
           "qemu-libvirtd"
           "vboxusers"
-          "wheel"
         ];
         shell = pkgs.zsh;
+      };
 
+      # This is done automatically if the default "roon-server" username and group are used, but we
+      # prefer to be explicit and have a nice overview of the system users.
+      #
+      # Module source:
+      #   https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/audio/roon-server.nix
+      roon = {
+        isSystemUser = true;
+        description = "Roon Server user";
+        group = "roon";
+        extraGroups = [ "audio" ];
       };
 
       openvpn = {
         isSystemUser = true;
+        description = "OpenVPN 3 user";
         group = "openvpn";
       };
     };
 
     groups.openvpn = { };
+    groups.roon = { };
   };
 
   #
   # SYSTEM ENVIRONMENT
   #
+
+  # Global Qt styling. Automatically installs the necessary packages depending on settings used.
+  # For example, `platformTheme = "qt5ct"` will install `pkgs.libsForQt5.qt5ct`. The `style` option
+  # may specify a package to use as style, such as adwaita-qt. Simply setting it to "adwaita-dark"
+  # will install it automatically. We set it in Sway's session init instead as we use `qt5ct`.
+  qt5 = {
+    # QT_QPA_PLATFORMTHEME
+    #   "gnome" -> If you use Gnome       -> Uses as many Gnome settings as possible to style
+    #   "kde"   -> If you use KDE         -> Uses KDE's Qt settings to style
+    #   "lxqt"  -> If you use LXDE        -> Uses LXDE's Qt settings to style
+    #   "gtk2"  -> If you use mostly GTK  -> Uses GTK theme to style
+    #   "qt5ct" -> If you use a computer  -> Uses `qt5ct` app to specify styles, icons, and cursors
+    platformTheme = "qt5ct";
+
+    # QT_STYLE_OVERRIDE
+    #   "adwaita"
+    #   "adwaita-dark"
+    #   "cleanlooks"
+    #   "gtk2"
+    #   "motif"
+    #   "plastique"
+    #
+    # We skip style since we'll use `qt5ct` which is not a valid option. Instead we set the variable
+    # to "kvantum-dark" in the Sway `extraSessionCommands` since we use `qt5ct` with Kvantum.
+    # Kvantum is an more modern, SVG based engine with fancier effects we don't give a shit about.
+    #
+    # style = "kvantum-dark";
+    #
+    # TODO: Make a module for this aforementioned shit to support `qt5ct` to centralize the config.
+  };
 
   environment = {
     variables = {
@@ -487,15 +530,11 @@
     systemPackages = with pkgs; [
       git
       nodejs
-      nordpkgs.openvpn3
       ntfs3g
       polkit_gnome
-      refind
       roon-server
       steam-run
-      virt-manager
       virt-manager-qt
-      virt-viewer
       wget
       win-qemu
       win-virtio
@@ -505,8 +544,10 @@
 
     pathsToLink = [ "/share/zsh" "/libexec" ];
 
+    # Auto-launch Sway WM if logging in via tty1 annd River WM if via tty2
     loginShellInit = ''
       [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ] && exec sway
+      [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty2" ] && exec river
     '';
   };
 }

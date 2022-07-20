@@ -33,7 +33,7 @@ dSideGainY:0<0,100,1>Filter 2 Side gain
 //("Unknown Type IV",           ({800 ,6200,80,140,0 ,0 }))
 
 @init
-dBassGain = 100;
+dBassGain = 67;
 dX1 = 140;
 dX2 = 6200;
 dSideGainX = 10;

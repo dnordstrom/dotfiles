@@ -38,7 +38,7 @@ local autocommands = [[
 
   augroup line_diagnostics
     autocmd!
-    autocmd CursorHold * silent! lua vim.diagnostic.open_float()
+    autocmd CursorHold,CursorHoldI * silent! lua vim.diagnostic.open_float()
   augroup end
 
   "

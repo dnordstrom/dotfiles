@@ -1,5 +1,5 @@
 ##
-# LAUNCH LOCAL DEVELOPMENT ENVIRONMENT
+# CLOUD DEVELOPMENT ENVIRONMENT
 ##
 
 #
@@ -10,8 +10,8 @@ new_tab Editors
 
 enabled_layouts horizontal
 
-cd ~/Code/ticker
-launch --title "Frontend editor" -- zsh -c "nvim; exec zsh"
+launch --cwd ~/Code/ticker --title "Frontend editor" -- zsh -c "nvim; exec zsh"
+launch --cwd ~/Code/ticker --title "Frontend editor shell"
 
 #
 # SHELLS
@@ -21,11 +21,8 @@ new_tab Shells
 
 enabled_layouts horizontal
 
-cd ~/Code/ticker
-launch --title "Frontend shell"
-
-cd ~/Code/ticker-backend
-launch --title "Backend shell"
+launch --cwd ~/Code/ticker --title "Frontend shell"
+launch --cwd ~/Code/ticker-backend --title "Backend shell"
 
 #
 # SERVERS
@@ -35,12 +32,10 @@ new_tab Servers
 
 enabled_layouts horizontal
 
-cd ~/Code/ticker
-launch --title "Frontend server"
-launch zsh -c "sleep 1 && kitty @ send-text --match title:'^Frontend\sserver$' 'yarn && yarn dev'"
+launch --cwd ~/Code/ticker --title "Frontend server"
+launch --cwd ~/Code/ticker-backend --title "Backend server"
 
-cd ~/Code/ticker-backend
-launch --title "Backend server"
+launch zsh -c "sleep 1 && kitty @ send-text --match title:'^Frontend\sserver$' 'yarn && yarn dev'"
 launch zsh -c "sleep 1 && kitty @ send-text --match title:'^Backend\sserver$' 'yarn && yarn dev'"
 
 #

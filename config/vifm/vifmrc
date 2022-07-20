@@ -108,8 +108,9 @@ command! make !!make %a
 command! mkcd :mkdir -p %a | cd %a
 command! vgrep vim "+grep %a"
 command! reload :write | restart full
-command! vimiv %c
-command! appimage !!appimage-run %c
+command! img !!vimiv %c >/dev/null 2>&1 &
+command! gui !!dolphin %d >/dev/null 2>&1 &
+command! appimage !!appimage-run %c >/dev/null 2>&1 &
 
 filetype * xdg-open
 
@@ -133,8 +134,11 @@ vnoremap w :view<cr>gv
 " Edit file
 nnoremap e :edit<cr>
 
-" Open file in the background using its default program
-nnoremap gb :file &<cr>l
+" Navigate to home directory
+nnoremap gh :goto ~<CR>l
+
+" Navigate to NixOS configuration directory
+nnoremap gc :goto /etc/nixos<CR>l
 
 " Yank current directory path into the clipboard
 nnoremap yd :!wl-copy %d<cr>
@@ -171,6 +175,6 @@ nnoremap <a-o> :sync %c<cr>
 nnoremap <c-u> <c-w>x
 
 " Open image
-nnoremap <a-p> :vimiv<cr>
+nnoremap <a-p> :img<cr>
 
 source ~/.config/vifm/favicons.vifm

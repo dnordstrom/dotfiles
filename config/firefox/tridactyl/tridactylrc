@@ -39,17 +39,35 @@ colorscheme catppuccin
 "
 
 set newtab about:blank
-set allowautofocus false
-set editorcmd kitty --class popupterm -e nvim %f "+normal!%lGzv%c|"
-set hintchars fdsqjklmrezauiopwxcvghtybn
-set hintuppercase false
-set minincsearchlen 2
 set searchengine ddg
-set smoothscroll true
+set editorcmd kitty --class popupterm -e nvim %f "+normal!%lGzv%c|"
+set rsscmd rsssave %u
+set viewsource tridactyl
+set allowautofocus false
+
+"
+" Behavior
+"
+
+set smoothscroll false
 set tabopencontaineraware true
 set visualenterauto true
-set viewsource tridactyl
-set rsscmd rsssave %u
+
+"
+" Modes
+"   Hide mode indicator in normal mode
+"
+
+set modeindicatormodes { "ignore": "false" }
+
+"
+" Hints
+"   Numeric hints that update as you type part of the target.
+"
+
+set hintfiltermode vimperator-reflow
+set hintuppercase false
+set hintnames numeric
 
 "
 " Site-specific
@@ -179,11 +197,11 @@ command rsssave jsb -p (async () => { await tri.excmds.tabopen(`https://feedly.c
 " ALIASES
 ""
 
-" Notification method to use by default
-alias notify notifyos
-
 alias so source
 alias rss rssexec
+
+" Notification method to use
+alias notify notifyos
 
 ""
 " KEY MAPS
@@ -193,17 +211,17 @@ alias rss rssexec
 " General
 "
 
-" Restore Ctrl+F (native search, `/` and `?` for Tridactyl search)
-unbind --mode=normal <C-f>
+" Restore Ctrl+F for native search
+unbind <C-f>
 
-" Restore Ctrl+B (sidebar, <C-b> for back makes no sense without <C-f> for forward)
-unbind --mode=normal <C-b>
+" Restore Ctrl+B for sidebar
+unbind <C-b>
 
 " Hide search highlights on after entering normal mode via Escape
 bind <Escape> composite hidecmdline ; mode normal ; nohlsearch
 
-" View Tridactyl configuration in built-in JSON viewer
-bind <C-.> viewconfig
+" View user modifications to config
+bind <C-.> viewconfig --user
 
 " Exit Firefox
 bind ZQ exclaim_quiet pkill firefox-bin
@@ -254,6 +272,9 @@ bind gd tabdetach
 " Detach tab duplicate
 bind gD composite tabduplicate ; tabdetach
 
+" Jump to heading
+bind gj fillcmdline goto
+
 "
 " Search
 "
@@ -267,9 +288,12 @@ bind N findnext -1
 " Yank
 "
 
+" Yank Markdown link
+bind Y fillcmdline clipboard
+
 " Jira issue key or URL
-bind yj yankjiraissue
-bind yJ yankjiraurl
+bindurl .*\.atlassian.net/jira/software/c/projects yj yankjiraissue
+bindurl .*\.atlassian.net/jira/software/c/projects yJ yankjiraurl
 
 "
 " Write/save
@@ -350,35 +374,21 @@ bind --mode=ex <A-p> exclaim_quiet wtype -k up
 "
 
 " Vim style
-bind --mode=insert <C-h> exclaim_quiet wtype -k left
-bind --mode=insert <C-j> exclaim_quiet wtype -k down
-bind --mode=insert <C-k> exclaim_quiet wtype -k up
-bind --mode=insert <C-l> exclaim_quiet wtype -k right
-
-bind --mode=input <C-h> exclaim_quiet wtype -k left
-bind --mode=input <C-j> exclaim_quiet wtype -k down
-bind --mode=input <C-k> exclaim_quiet wtype -k up
-bind --mode=input <C-l> exclaim_quiet wtype -k right
+bind --mode=insert,input <C-h> exclaim_quiet wtype -k left
+bind --mode=insert,input <C-j> exclaim_quiet wtype -k down
+bind --mode=insert,input <C-k> exclaim_quiet wtype -k up
+bind --mode=insert,input <C-l> exclaim_quiet wtype -k right
 
 " Emacs stylinsert
-bind --mode=insert <C-a> exclaim_quiet wtype -k home
-bind --mode=insert <C-e> exclaim_quiet wtype -k end
-bind --mode=insert <A-f> exclaim_quiet wtype -M ctrl -k right
-bind --mode=insert <A-b> exclaim_quiet wtype -M ctrl -k left
-bind --mode=insert <A-d> exclaim_quiet wtype -M ctrl -k delete
-
-bind --mode=input <C-a> exclaim_quiet wtype -k home
-bind --mode=input <C-e> exclaim_quiet wtype -k end
-bind --mode=input <A-f> exclaim_quiet wtype -M ctrl -k right
-bind --mode=input <A-b> exclaim_quiet wtype -M ctrl -k left
-bind --mode=input <A-d> exclaim_quiet wtype -M ctrl -k delete
+bind --mode=insert,input <C-a> exclaim_quiet wtype -k home
+bind --mode=insert,input <C-e> exclaim_quiet wtype -k end
+bind --mode=insert,input <A-f> exclaim_quiet wtype -M ctrl -k right
+bind --mode=insert,input <A-b> exclaim_quiet wtype -M ctrl -k left
+bind --mode=insert,input <A-d> exclaim_quiet wtype -M ctrl -k delete
 
 " Open in editor (<C-i> doesn't always work)
-bind --mode=insert <A-i> editor
-bind --mode=insert <C-.> editor
-
-bind --mode=input <A-i> editor
-bind --mode=input <C-.> editor
+bind --mode=insert,input <A-i> editor
+bind --mode=insert,input <C-.> editor
 
 ""
 " MARKS
@@ -411,21 +421,34 @@ quickmark P https://leeroy-group.atlassian.net/wiki/spaces/BI/overview
 quickmark V https://meet.google.com/landing?authuser=1
 
 "
-" Marks on ' and ` like Vim
+" Marks on ' and ` like Vim (Tridactyl's built-in backtick doesn't seem to work)
 "
 
 bindreplaceprefix go '
 bindreplaceprefix go `
 
 ""
-" BLACKLIST
+" MISCELLANEOUS
 ""
 
-blacklistadd localhost
-blacklistadd mail.google.com
-blacklistadd calendar.google.com
-blacklistadd whimsical.com
-blacklistadd figma.com
+" Equivalent to `set csp clobber` before it was removed. This weakens your defences against
+" cross-site-scripting attacks and other types of code-injection by reducing the strictness of
+" Content Security Policy on every site in a couple of ways.
+"
+" You may not wish to run this. Mozilla strongly feels that you shouldn't.
+"
+" It allows Tridactyl to function on more pages, e.g. raw GitHub pages.
+"
+" We remove the sandbox directive
+" https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/sandbox which
+" allows our iframe to run (and anyone else's) on any website.
+"
+" We weaken the style-src directive
+" https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src to
+" allow us to theme our elements. This exposes you to 'cross site styling' attacks.
+"
+" Read https://wiki.mozilla.org/Security/CSP#Goals for more information.
+jsb browser.webRequest.onHeadersReceived.addListener(tri.request.clobberCSP,{urls:["<all_urls>"],types:["main_frame"]},["blocking","responseHeaders"])
 
 ""
 " AUTO COMMANDS

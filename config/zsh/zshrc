@@ -8,7 +8,7 @@
 # ZSH OPTIONS
 #
 
-# Use vi mode (recommened instead of `setopt vi`)
+# Use vi mode (recommended instead of `setopt vi`)
 bindkey -v
 
 # Show duplicates in history but ignore duplicates and space prefixed commands in reverse search
@@ -37,7 +37,7 @@ setopt chaselinks
 #
 
 #
-# zsh
+# Zsh
 #
 
 export KEYTIMEOUT=1
@@ -46,7 +46,7 @@ export KEYTIMEOUT=1
 # Shell
 #
 
-export EDITOR="vim"
+export EDITOR="nvim"
 export BROWSER="firefox"
 export TERMINAL="kitty"
 export PAGER="less"
@@ -57,22 +57,39 @@ export PAGER="less"
 
 # Configuration function called when sourcing plugin
 zvm_config() {
-  ZVM_VI_INSERT_ESCAPE_BINDKEY=jk
-  ZVM_LINE_INIT_MODE=$ZVM_MODE_INSERT
-  ZVM_KEYTIMEOUT=0.4
-  ZVM_KEYTIMEOUT_ESC=0.1 # Lower wait time for Escape key
+  export ZVM_VI_INSERT_ESCAPE_BINDKEY=jk
+  export ZVM_LINE_INIT_MODE=$ZVM_MODE_INSERT
+  export ZVM_KEYTIMEOUT=0.4
+  export ZVM_KEYTIMEOUT_ESC=0.1 # Lower wait time for Escape key
 }
 
 #
 # ANSI color code helpers
 #
 
-export ANSI_STYLE_MD="$(tput bold; tput setaf 6)"
+export ANSI_STYLE_MD="$(
+  tput bold
+  tput setaf 6
+)"
 export ANSI_STYLE_ME="$(tput sgr0)"
-export ANSI_STYLE_SO="$(tput bold; tput setaf 0; tput setab 3)"
-export ANSI_STYLE_SE="$(tput rmso; tput sgr0)"
-export ANSI_STYLE_US="$(tput smul; tput bold; tput setaf 7)"
-export ANSI_STYLE_UE="$(tput rmul; tput sgr0)"
+export ANSI_STYLE_SO="$(
+  tput bold
+  tput setaf 0
+  tput setab 3
+)"
+export ANSI_STYLE_SE="$(
+  tput rmso
+  tput sgr0
+)"
+export ANSI_STYLE_US="$(
+  tput smul
+  tput bold
+  tput setaf 7
+)"
+export ANSI_STYLE_UE="$(
+  tput rmul
+  tput sgr0
+)"
 export ANSI_STYLE_MR="$(tput rev)"
 export ANSI_STYLE_MH="$(tput dim)"
 
@@ -121,10 +138,10 @@ _fzf_comprun() {
   shift
 
   case "$command" in
-    cd)                 fzf "$@" --preview 'tree -C {} | head -200' ;;
-    export|unset|env)   fzf "$@" --preview "eval 'echo \$'{}" ;;
-    ssh)                fzf "$@" --preview 'dig {}' ;;
-    *)                  fzf "$@" ;;
+  cd) fzf "$@" --preview 'tree -C {} | head -200' ;;
+  export | unset | env) fzf "$@" --preview "eval 'echo \$'{}" ;;
+  ssh) fzf "$@" --preview 'dig {}' ;;
+  *) fzf "$@" ;;
   esac
 }
 
@@ -207,10 +224,14 @@ alias clone="git clone"
 # FUNCTIONS
 #
 
+py-serve() {
+  python3 -m http.server "${1:-8000}" --bind 127.0.0.1
+}
+
 # Does a Git commit and push with given commit message. Fails if no message is provided.
 #
 # Arguments:
-#   $1 - Commit message.
+#   $1 - Commit message
 gg() {
   if ! [ $# -eq 0 ]; then
     git commit -am "$*"
@@ -225,8 +246,8 @@ gg() {
 # argument specifies the depth and the second the directory.
 #
 # Arguments:
-#   $1 - Depth of tree view. Optional. Defaults to 1.
-#   $2 - Directory to view. Optional. Defaults to working directory.
+#   $1 - Depth of tree view. Optional. Defaults to 1
+#   $2 - Directory to view. Optional. Defaults to working directory
 list-tree-exa() {
   local levels="1"
   local paths="."
@@ -323,8 +344,8 @@ prepend-note() {
 
   if ! [ -z "$note" ]; then
     backup-notes
-    printf "- $note\n$(cat "$NOTES_FILE")" > "$NOTES_FILE"
-    [ $# -eq 0 ] && zle kill-whole-line > /dev/null 2>&1
+    printf "- $note\n$(cat "$NOTES_FILE")" >"$NOTES_FILE"
+    [ $# -eq 0 ] && zle kill-whole-line >/dev/null 2>&1
   fi
 }
 
@@ -344,14 +365,15 @@ clear-backup-notes() {
   rm $NOTES_FILE.*.*
 }
 
-# Checks if the given argument is a valid command or shell builtin, outputs the result, and returns
-# 1 or 2 depending on result.
+# Checks if the given argument is a valid command or shell builtin.
+#
+# TODO: Suppess output if not running interactively.
 #
 # Arguments:
 #   $1 - Command
 # Returns:
-#   1 - Command found
-#   0 - Command not found
+#   0 - Command found
+#   1 - Command not found
 is-command() {
   # Check for builtins differently depending on shell
   if [ -n "$ZSH_VERSION" ]; then
@@ -360,7 +382,7 @@ is-command() {
     builtin type -P "$1" >/dev/null 2>&1
   fi
 
-  if [ "$?" -eq 0 ]; then
+  if [ $? -eq 0 ]; then
     printf "%s\n" "Command $1 exists."
     return 0
   else
@@ -378,42 +400,39 @@ is-command() {
 # Inserts arbitrary string to command history without executing it.
 #
 # Arguments:
-#   String to append
+#   $1 - String to append
 append-to-history() {
-  fc -R =(printf "%s\n" "$@")
+  string=(printf "%s\n", "$@")
+  fc -R "$string"
 }
 
 # Print a message and wait single key input, for use in command substitution.
 #
 # Arguments:
-#   Prompt message
+#   $1 - Prompt message
 await-any-key() {
-  printf "%s" "${*:-Press any key to continue...}"
+  printf "%s" "${@:-Press any key to continue...}"
   read -ks
+  printf "\n"
 }
 
-# Print a message and wait for y or n response, for use in command substitution. Outputs
-# true or false depending on response.
+# Print a message and wait for y or n response, for use in command substitution.
 #
 # Arguments:
-#   Prompt message
+#   $1 - Prompt message
+# Returns:
+#   0 - Yes
+#   1 - No
 await-confirm() {
-  local prompt="${*:-Would you like to continue?} [Y/n] "
-  local output="false"
-  local code=1
-
-  read -qs "key?$prompt"
-  code=$?
-  [ $code -eq 0 ] && output="true"
-
-  printf "%s" "$output"
-  return $code
+  message="${*:-Would you like to continue?} [Y/n] "
+  read -qs "key?$message"
+  return $?
 }
 
 # Print a message and wait for enter key, for use in command substitution.
 #
 # Arguments:
-#   Prompt message
+#   $1 - Prompt message
 await-enter-key() {
   printf "%s" "${*:-Press ENTER to continue...}"
 
@@ -426,11 +445,13 @@ await-enter-key() {
 # Print a message and wait for user input then output it, for use in command substitution.
 #
 # Arguments:
-#   Prompt message
+#   $1 - Prompt message
+# Returns:
+#   Input string
 await-string-input() {
   printf "%s " "${*:->}"
   read input
-  printf "%s" "$input"
+  return "$input"
 }
 
 # Convert text to lowercase.
@@ -444,7 +465,7 @@ to-lowercase() {
 # Convert text to uppercase.
 #
 # Arguments:
-#   Text to convert
+#   $1 - Text to convert
 to-uppercase() {
   printf "%s" "$(printf "%s" "$*" | tr '[:lower:]' '[:upper:]')"
 }
@@ -466,7 +487,11 @@ in-dir() {
   printf "\n"
 
   description="Runs a command in a specific directory."
-  standout="$(tput bold; tput setaf 0; tput setab 3)"
+  standout="$(
+    tput bold
+    tput setaf 0
+    tput setab 3
+  )"
   standoutend="$(tput sgr0)"
   usage="
 Usage:
@@ -486,7 +511,8 @@ Example:
     return 1
   fi
 
-  absoluteDirectory="$(realpath "$1" --canonicalize-missing 2>/dev/null)"; shift
+  absoluteDirectory="$(realpath "$1" --canonicalize-missing 2>/dev/null)"
+  shift
   cmd="$@"
 
   # Make sure the directory exists
@@ -508,9 +534,10 @@ Example:
 # program is passed as argument, it will default to `$EDITOR`.
 #
 # Arguments:
-#   Optional command or program to open configuration directory with.
+#   $1 - Optional command or program (defaults to `$EDITOR`)
 # Returns:
-#   0 on success, 1 on invalid argument count.
+#   0 - Success
+#   1 - Invalid argument count
 # Dependencies:
 #   in-dir()
 edit-nixos() {
@@ -526,7 +553,7 @@ edit-nixos() {
   in-dir "/etc/nixos" "$editor"
 }
 
-# Builds and switchs to NixOS configuration. If a `.nix-prebuild` file exists in the user's home
+# Builds and switch to NixOS configuration. If a `.nix-prebuild` file exists in the user's home
 # directory and is executable, it will be executed first (without sudo/doas---if that's needed, it
 # can be added in the script itself).
 #
@@ -630,18 +657,17 @@ done
 # Uncomment to:
 #   Init kitty terminal shell integration
 #
-# if [ -n "$KITTY_INSTALLATION_DIR" ]; then
-#   export KITTY_SHELL_INTEGRATION="enabled"
-#   autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
-#   kitty-integration
-#   unfunction kitty-integration
-# fi
+#   if [ -n "$KITTY_INSTALLATION_DIR" ]; then
+#     export KITTY_SHELL_INTEGRATION="enabled"
+#     autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
+#     kitty-integration
+#     unfunction kitty-integration
+#   fi
 
-# Init home/mutable/out-of-store environment
+# Init secrets, tokens, etc.
 if [ -f "$HOME/.env" ]; then
   source "$HOME/.env"
 fi
 
 # Init direnv
 eval "$(direnv hook zsh)"
-

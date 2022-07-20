@@ -1,18 +1,12 @@
 {
     "output": {
         "blocklist": [],
-        "crossfeed": {
-            "fcut": 650,
-            "feed": 9.0,
-            "input-gain": 0.0,
-            "output-gain": 0.0
-        },
         "equalizer": {
             "input-gain": -5.2,
             "left": {
                 "band0": {
                     "frequency": 80.0,
-                    "gain": 0.0,
+                    "gain": 1.2,
                     "mode": "APO (DR)",
                     "mute": false,
                     "q": 0.4000000059604645,
@@ -107,7 +101,7 @@
             "right": {
                 "band0": {
                     "frequency": 80.0,
-                    "gain": 0.0,
+                    "gain": 1.2,
                     "mode": "APO (DR)",
                     "mute": false,
                     "q": 0.4000000059604645,
@@ -199,8 +193,7 @@
             "split-channels": false
         },
         "plugins_order": [
-            "equalizer",
-            "crossfeed"
+            "equalizer"
         ]
     }
 }

@@ -5,20 +5,14 @@
             "PipeWire ALSA [signal-desktop]"
         ],
         "convolver": {
-            "input-gain": -6.8,
+            "autogain": false,
+            "input-gain": -11.8,
             "ir-width": 100,
-            "kernel-path": "/home/dnordstrom/.config/easyeffects/irs/Dolby Headphone Studio.irs",
-            "output-gain": 0.0
-        },
-        "crossfeed": {
-            "fcut": 650,
-            "feed": 9.499999999999998,
-            "input-gain": 0.0,
+            "kernel-path": "/home/dnordstrom/.config/easyeffects/irs/Dolby Headphone Room.irs",
             "output-gain": 0.0
         },
         "plugins_order": [
-            "convolver",
-            "crossfeed"
+            "convolver"
         ]
     }
 }

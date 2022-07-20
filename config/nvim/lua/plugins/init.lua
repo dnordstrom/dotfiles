@@ -3,29 +3,30 @@
 ----
 
 --
--- Packer setup
+-- Bootstrap
 --
 
 require("plugins.setup")
 
 --
--- Plugins setup
+-- Configure
 --
 
-require("plugins.indent-blankline")
 require("plugins.cokeline")
-require("plugins.fzf-lua")
-require("plugins.mini")
-require("plugins.feline")
-require("plugins.nvim-tree")
-require("plugins.nvim-cmp")
-require("plugins.nvim-autopairs")
-require("plugins.luasnip")
-require("plugins.comment")
-require("plugins.treesitter")
-require("plugins.which-key")
-require("plugins.todo-comments")
-require("plugins.trouble")
-require("plugins.renamer")
 require("plugins.colorizer")
+require("plugins.comment")
+require("plugins.feline")
+require("plugins.fzf-lua")
 require("plugins.gitsigns")
+require("plugins.indent-blankline")
+require("plugins.luasnip")
+require("plugins.mini")
+require("plugins.nvim-autopairs")
+require("plugins.nvim-cmp")
+require("plugins.nvim-tree")
+require("plugins.refactoring")
+require("plugins.renamer")
+require("plugins.todo-comments")
+require("plugins.treesitter")
+require("plugins.trouble")
+require("plugins.which-key")

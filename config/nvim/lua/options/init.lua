@@ -24,6 +24,7 @@ g.mapleader = " "
 --
 
 opt.undofile = true
+opt.spellfile = "$HOME/.config/nvim/spell/en.utf-8.add"
 opt.laststatus = 3
 opt.cmdheight = 0
 opt.termguicolors = true
@@ -90,11 +91,11 @@ require("catppuccin").setup({
 	transparent_background = true,
 	term_colors = true,
 	styles = {
-		comments = "italic",
-		functions = "italic",
+		functions = "bold",
+		variables = "bold",
 		keywords = "italic",
 		strings = "NONE",
-		variables = "NONE",
+		comments = "italic",
 	},
 	integrations = {
 		treesitter = true,
@@ -119,7 +120,7 @@ require("catppuccin").setup({
 		gitsigns = true,
 		telescope = false,
 		nvimtree = {
-			enabled = true,
+			enabled = false,
 			show_root = false,
 		},
 		which_key = true,

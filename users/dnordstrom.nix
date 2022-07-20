@@ -411,7 +411,7 @@ in {
     # package derivations not available in the repository.
     #
 
-    nordpkgs.convox # Not in nixpkgs
+    nordpkgs.convox
 
     #
     # Networking
@@ -580,15 +580,17 @@ in {
     audacious
     cava
     celluloid
+    clementine
     deadbeef-with-plugins
     easyeffects # To run as service, use `services.easyeffects` instead (messes with JamesDSP)
     handbrake
     haruna
     jamesdsp
     pavucontrol
+    playerctl
     pulseaudio
     pulsemixer
-    strawberry
+    strawberry # Clementine fork with Qobuz support
 
     #
     # Audio plugins
@@ -617,20 +619,28 @@ in {
     kate
 
     # LSP and syntax
-    nodePackages.vscode-langservers-extracted
-    nodePackages.typescript-language-server
-    nodePackages.diagnostic-languageserver
-    nodePackages.yaml-language-server
     nodePackages.bash-language-server
+    nodePackages.diagnostic-languageserver
+    nodePackages.typescript-language-server
+    nodePackages.vscode-langservers-extracted
+    nodePackages.yaml-language-server
     rnix-lsp # Uses `nixpkgs-fmt`
     tree-sitter
 
+    # Spelling
+    nodePackages.cspell
+    codespell
+
     # Writing
+    nodePackages.alex
     proselint
     glow
 
     # Git
     bfg-repo-cleaner
+
+    # Workflows
+    actionlint
 
     # Nix
     nixfmt # Opinionated formatter, used by `null-ls`
@@ -748,6 +758,7 @@ in {
       export MOZ_USE_XINPUT2=1
 
       # Wayland
+      export GTK_USE_PORTAL=1 # `xdg.portal.gtkUsePortal` is deprecated
       export QT_QPA_PLATFORM=wayland
       export QT_STYLE_OVERRIDE=qt5ct-style
       export QT_WAYLAND_DISABLE_WINDOWDECORATION=1

@@ -6,9 +6,7 @@ local nvim_create_augroup = vim.api.nvim_create_augroup
 local nvim_create_autocmd = vim.api.nvim_create_autocmd
 local nvim_clear_autocmds = vim.api.nvim_clear_autocmds
 local nvim_buf_get_option = vim.api.nvim_buf_get_option
-local format = vim.lsp.buf.format
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-local augroup_autoformat = vim.api.nvim_create_augroup("autoformat", {})
 local null_ls = require("null-ls")
 local lspconfig = require("lspconfig")
 local cmp_nvim_lsp = require("cmp_nvim_lsp")
@@ -34,13 +32,15 @@ local disable_formatting = function(client)
 end
 
 local enable_formatting = function(client, bufnr)
-	if client.server_capabilities.documentFormattingProvider then
-    nvim_clear_autocmds({ group = augroup_autoformat, buffer = bufnr })
+	if client.supports_method("textDocument/formatting") then
+		local augroup_autoformat = nvim_create_augroup("autoformat", { clear = true })
+
 		nvim_create_autocmd("BufWritePre", {
-      group = augroup_autoformat,
-      buffer = bufnr,
+			group = augroup_autoformat,
+			bufnr = bufnr,
+			pattern = "*",
 			callback = function()
-				format()
+				vim.lsp.buf.format({ async = false })
 			end,
 		})
 	end
@@ -62,6 +62,7 @@ vim.diagnostic.config({
 })
 
 for hl, icon in pairs(signs) do
+	local test = "adsad"
 	vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
 
@@ -74,6 +75,7 @@ capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 null_ls.setup({
 	sources = {
+		null_ls.builtins.completion.luasnip,
 		null_ls.builtins.formatting.eslint_d,
 		null_ls.builtins.formatting.stylua,
 		null_ls.builtins.formatting.fixjson,
@@ -88,10 +90,14 @@ null_ls.setup({
 			end,
 		}),
 		null_ls.builtins.formatting.stylelint,
+		null_ls.builtins.diagnostics.actionlint,
+		null_ls.builtins.diagnostics.alex,
+		null_ls.builtins.diagnostics.codespell,
 		null_ls.builtins.diagnostics.eslint_d,
 		null_ls.builtins.diagnostics.shellcheck,
 		null_ls.builtins.code_actions.eslint_d,
 		null_ls.builtins.code_actions.gitsigns,
+		null_ls.builtins.code_actions.proselint,
 		null_ls.builtins.code_actions.refactoring,
 		null_ls.builtins.code_actions.shellcheck,
 		null_ls.builtins.code_actions.statix,

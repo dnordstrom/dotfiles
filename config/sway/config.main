@@ -235,6 +235,10 @@ input "1452:613:Apple_Inc._Magic_Trackpad_2" {
   click_method clickfinger
 }
 
+input "1133:49288:Logitech_G_Pro_Wireless_Gaming_Mouse" {
+  pointer_accel 0
+}
+
 #
 # KEY MAPS
 #
@@ -274,9 +278,24 @@ bindsym {
   $mod+Shift+Ctrl+g exec $filesgtk
 
   #
+  # Web browsers
+  #
+
+  $mod+w exec firefox -P Default
+  $mod+Shift+w exec firefox -P Music
+  $mod+Shift+Ctrl+w exec firefox -P Private
+  Mod4+Shift+Ctrl+Alt+w exec firefox -P Testing
+
+  #
   # Window manager
   #
 
+  # Mouse
+  #   Button8 -> Forward
+  #   Button9 -> Backward
+  --whole-window button9 kill
+
+  # Keyboard
   $mod+q kill
   $mod+Shift+p exec $swayprops
   $mod+Shift+Ctrl+p exec $swaypropsall
@@ -374,16 +393,15 @@ bindsym {
   $mod+w layout tabbed
   $mod+e layout toggle split
   $mod+a focus parent
-  $mod+f fullscreen
+  $mod+f mark --add fullscreen
 
   #
   # Scratchpad
+  #   TODO: Make fullscreen scratchpad windows persist.
   #
   
-  $mod+z scratchpad show, [con_mark="full"] fullscreen enable, [con_mark="nofull"] resize set $termscratchwidth $termscratchheight
+  $mod+z scratchpad show, resize set $termscratchwidth $termscratchheight, move position center
   $mod+Shift+z move scratchpad
-  $mod+Shift+Ctrl+z fullscreen enable, mark --add full --remove nofull
-  $mod+Shift+Ctrl+x fullscreen disable, mark --remove full --add nofull
 
   #
   # Functional
@@ -393,6 +411,9 @@ bindsym {
   XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
   XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
   XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+  XF86AudioPlay exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+  XF86AudioNext exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+  XF86AudioPrev exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 }
 
 #
