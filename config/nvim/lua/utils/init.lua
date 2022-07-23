@@ -15,17 +15,36 @@ local nvim_buf_get_mark = vim.api.nvim_buf_get_mark
 local nvim_buf_get_lines = vim.api.nvim_buf_get_lines
 local nvim_replace_termcodes = vim.api.nvim_replace_termcodes
 
--- Replace Vim termcodes in string
+-- Replaces Vim termcodes in string.
 local t = function(str)
 	return nvim_replace_termcodes(str, true, true, true)
 end
 
--- Replace termcodes in string and feed as keys
+-- Replaces Vim termcodes in string, and feeds it as key presses.
 local feedkeys = function(str)
 	nvim_feedkeys(t(str), "m", true)
 end
 
--- Get Neovim version in `vX.X.X-dev` format
+--- Merges two tables, the second taking precedence when both contain the same key.
+---
+--- @param a First table
+--- @param b Second table
+--- @returns Resulting table
+local merge_tables = function(first, second)
+	local result = {}
+
+	for k, v in pairs(first) do
+		result[k] = v
+	end
+
+	for k, v in pairs(second) do
+		result[k] = v
+	end
+
+	return result
+end
+
+-- Gets Neovim version in `vX.X.X-dev` format.
 local get_version = function()
 	return nvim_exec(
 		[[
@@ -292,21 +311,22 @@ local get_hex = function(hlgroup_name, attr)
 end
 
 return {
-	color = color,
-	t = t,
-	feedkeys = feedkeys,
-	get_version = get_version,
-	date = date,
-	inspect = inspect,
-	echo = echo,
-	cword = cword,
-	copy = copy,
 	browsersearch = browsersearch,
-	insert_line_and_toggle_comment = insert_line_and_toggle_comment,
-	update_utils_return = update_utils_return,
+	color = color,
+	copy = copy,
 	create_scratch_window = create_scratch_window,
-	save_session = save_session,
-	load_session = load_session,
-	toggle_word = toggle_word,
+	cword = cword,
+	date = date,
+	echo = echo,
+	feedkeys = feedkeys,
 	get_hex = get_hex,
+	get_version = get_version,
+	insert_line_and_toggle_comment = insert_line_and_toggle_comment,
+	inspect = inspect,
+	load_session = load_session,
+	merge_tables = merge_tables,
+	save_session = save_session,
+	t = t,
+	toggle_word = toggle_word,
+	update_utils_return = update_utils_return,
 }

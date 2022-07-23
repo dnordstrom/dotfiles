@@ -16,15 +16,14 @@ local nvim_exec = vim.api.nvim_exec
 local nvim_set_keymap = vim.api.nvim_set_keymap
 local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
 
--- Space key as leader
-g.mapleader = " "
-
 --
 -- GENERAL
 --
 
+g.mapleader = " "
+
 opt.undofile = true
-opt.spellfile = "$HOME/.config/nvim/spell/en.utf-8.add"
+opt.spellfile = "$HOME/.config/nvim/spell/en.nord.add"
 opt.laststatus = 3
 opt.cmdheight = 0
 opt.termguicolors = true
@@ -36,7 +35,7 @@ opt.completeopt = "noinsert,menuone,noselect"
 opt.mouse = "a"
 opt.clipboard = "unnamedplus" -- Use system clipboard since we only use it for yanks (see key maps)
 opt.scrolloff = 4
-opt.spell = false -- Enabled for specific file types
+opt.spell = false
 opt.spelllang = { "en_us" }
 opt.updatetime = 250
 opt.ttimeoutlen = 50
@@ -87,57 +86,74 @@ opt.formatoptions = "cjroql"
 -- COLOR SCHEME
 --
 
+-- Setup
+--
+--   Documentation: https://github.com/catppuccin/nvim#configuration
+
+g.catppuccin_flavour = "mocha"
+
 require("catppuccin").setup({
+	dim_inactive = {
+		enabled = false,
+		shade = "dark",
+		percentage = 0.15,
+	},
 	transparent_background = true,
-	term_colors = true,
+	term_colors = false,
+	compile = {
+		enabled = false,
+		path = fn.stdpath("cache") .. "/catppuccin",
+	},
 	styles = {
-		functions = "bold",
-		variables = "bold",
-		keywords = "italic",
-		strings = "NONE",
-		comments = "italic",
+		comments = { "italic" },
+		conditionals = { "italic" },
+		loops = {},
+		functions = { "bold" },
+		keywords = { "italic" },
+		strings = {},
+		variables = {},
+		numbers = {},
+		booleans = {},
+		properties = {},
+		types = {},
+		operators = {},
 	},
 	integrations = {
 		treesitter = true,
 		native_lsp = {
 			enabled = true,
 			virtual_text = {
-				errors = "italic",
-				hints = "italic",
-				warnings = "italic",
-				information = "italic",
+				errors = { "italic" },
+				hints = { "italic" },
+				warnings = { "italic" },
+				information = { "italic" },
 			},
 			underlines = {
-				errors = "underline",
-				hints = "underline",
-				warnings = "underline",
-				information = "underline",
+				errors = { "underline" },
+				hints = { "underline" },
+				warnings = { "underline" },
+				information = { "underline" },
 			},
 		},
 		lsp_trouble = true,
+		cmp = true,
 		lsp_saga = true,
 		gitgutter = true,
-		gitsigns = true,
 		telescope = false,
 		nvimtree = {
 			enabled = false,
-			show_root = false,
 		},
 		which_key = true,
 		indent_blankline = {
-			enabled = false,
-			colored_indent_levels = false,
+			colored_indent_levels = true,
 		},
 		dashboard = false,
-		neogit = false,
-		vim_sneak = false,
-		fern = false,
-		barbar = false,
 		bufferline = false,
 		markdown = true,
-		lightspeed = false,
-		ts_rainbow = false,
-		hop = false,
+		symbols_outline = true,
+		mini = true,
+		vimwiki = false,
+		beacon = false,
 	},
 })
 

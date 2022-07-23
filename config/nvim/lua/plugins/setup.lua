@@ -44,7 +44,6 @@ return require("packer").startup(function(use)
 	-- Files and buffers
 
 	use({ "famiu/bufdelete.nvim" })
-	use({ "kyazdani42/nvim-tree.lua", requires = devicons })
 	use({ "vijaymarupudi/nvim-fzf" })
 	use({ "ibhagwan/fzf-lua" })
 	use({ "vifm/vifm.vim" })
@@ -132,6 +131,12 @@ return require("packer").startup(function(use)
 
 	-- Visuals
 
+	use({
+		"lukas-reineke/headlines.nvim",
+		config = function()
+			require("headlines").setup()
+		end,
+	})
 	use({ "norcalli/nvim-colorizer.lua" })
 	use({ "folke/todo-comments.nvim", requires = plenary })
 	use({ "lewis6991/gitsigns.nvim", requires = plenary, tag = "release" })

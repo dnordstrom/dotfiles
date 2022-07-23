@@ -8,7 +8,7 @@ local get_hex = require("utils").get_hex
 
 require("indent_blankline").setup({
 	char = " ",
-	context_char = "▕", 
+	context_char = "▕",
 	space_char_blankline = " ",
 	show_end_of_line = false,
 	show_current_context = true,

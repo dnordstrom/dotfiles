@@ -26,7 +26,6 @@ local darken = utils.color.darken
 local blend = utils.color.blend
 
 -- Symbols
-local separator = ""
 local icon_modified = ""
 local modified = ""
 local unmodified = ""
@@ -128,7 +127,7 @@ end
 
 -- Corner background
 local corner_bg = function(buffer)
-	return "none"
+	return "NONE"
 end
 
 -- Modification icon
@@ -163,37 +162,25 @@ local tab_prefix_style = function(buffer)
 end
 
 --
--- SETUP
+-- COMPONENTS
 --
 
--- Tabline background
-vim.cmd("hi TabLineFill guibg=none gui=none")
-
--- Tabline settings
-require("cokeline").setup({
-	buffers = {
-		new_buffers_position = "next",
-	},
-	mappings = {
-		cycle_prev_next = true,
-	},
-	default_hl = {
-		fg = tab_fg,
-		bg = tab_bg,
-	},
-	components = {
-		-- Separator
-		{
-			text = separator,
+local components =
+	{
+		-- Padding
+		padding = {
+			text = " ",
 			hl = { fg = "NONE", bg = "NONE" },
 		},
-		-- Corner
-		{
+
+		-- Left corners
+		corner_left = {
 			text = corner_left,
 			hl = { fg = corner_fg, bg = corner_bg },
 		},
-		-- Icon
-		{
+
+		-- Filetype icon
+		filetype_icon_or_modified_indicator = {
 			text = function(buffer)
 				if buffer.is_modified then
 					return " " .. icon_modified .. " "
@@ -203,8 +190,9 @@ require("cokeline").setup({
 			end,
 			hl = { fg = tab_icon, bg = tab_bg },
 		},
-		-- Directory
-		{
+
+		-- Directory prefix if needed
+		dirname_as_unique_prefix = {
 			text = function(buffer)
 				return buffer.unique_prefix
 			end,
@@ -214,15 +202,17 @@ require("cokeline").setup({
 				style = tab_prefix_style,
 			},
 		},
+
 		-- Filename
-		{
+		filename = {
 			text = function(buffer)
 				return buffer.filename .. " "
 			end,
 			hl = { style = tab_style, fg = tab_fg, bg = tab_bg },
 		},
+
 		-- Modified indicator
-		{
+		modified_indicator = {
 			text = function(buffer)
 				local output = ""
 
@@ -240,10 +230,42 @@ require("cokeline").setup({
 			end,
 			hl = { fg = tab_suffix, bg = tab_bg },
 		},
-		-- Corner
-		{
+
+		-- Right corners
+		corner_right = {
 			text = corner_right,
 			hl = { fg = corner_fg, bg = corner_bg },
 		},
+	},
+	
+	--
+	-- SETUP
+	--
+
+	-- Tabline background
+vim.cmd("hi TabLineFill guibg=none gui=none")
+
+-- Tabline settings
+require("cokeline").setup({
+	show_if_buffers_are_at_least = 2,
+
+	buffers = {
+		new_buffers_position = "next",
+	},
+	mappings = {
+		cycle_prev_next = true,
+	},
+	default_hl = {
+		fg = tab_fg,
+		bg = tab_bg,
+	},
+	components = {
+		components.corner_left,
+		components.padding,
+		components.filetype_icon_or_modified_indicator,
+		components.filename,
+		components.modified_indicator,
+		components.padding,
+		components.corner_right,
 	},
 })

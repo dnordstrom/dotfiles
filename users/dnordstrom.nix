@@ -446,6 +446,7 @@ in {
     element-desktop
     fluffychat
     fractal
+    gomuks
     gotktrix
     mirage-im
     nheko

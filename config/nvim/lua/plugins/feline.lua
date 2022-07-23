@@ -17,11 +17,13 @@
 ----
 
 --
--- VARIABLES 
+-- VARIABLES
 --
 
 -- Utils
+local feline = require("feline")
 local utils = require("utils")
+local ctp_feline = require("catppuccin.groups.integrations.feline")
 local get_hex = utils.get_hex
 local lighten = utils.color.lighten
 local darken = utils.color.darken
@@ -48,6 +50,11 @@ local fill_separator = {
 		bg = status_bg,
 	},
 }
+
+-- Use Catppuccin color scheme
+ctp_feline.setup({})
+
+feline.setup({ components = ctp_feline.get() })
 
 --
 -- Active left
@@ -274,4 +281,3 @@ components.inactive[1] = {
 require("feline").setup({
 	components = components,
 })
-

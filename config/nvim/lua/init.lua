@@ -4,7 +4,6 @@
 
 -- Load global utils
 NORDUtils = require("utils")
-_N = NORDUtils -- Extra shortcut
 
 -- Load configs
 require("options")

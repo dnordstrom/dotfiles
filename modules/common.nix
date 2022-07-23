@@ -261,11 +261,10 @@
       ];
     };
 
+    # Roon Server will get installed automatically as a systemd service
     roon-server = {
       enable = true;
       openFirewall = true;
-      user = "audio";
-      group = "audio";
     };
 
     dbus = {
@@ -367,18 +366,18 @@
   #
 
   virtualisation = {
-    docker.enable = true;
-    virtualbox.host.enable = true;
+    docker.enable = false;
+    virtualbox.host.enable = false;
 
     libvirtd = {
-      enable = true;
+      enable = false;
       qemu = {
         package = pkgs.qemu_kvm;
         ovmf = {
-          enable = true;
+          enable = false;
           packages = [ pkgs.OVMFFull ];
         };
-        swtpm.enable = true;
+        swtpm.enable = false;
       };
     };
   };
@@ -455,18 +454,6 @@
         shell = pkgs.zsh;
       };
 
-      # This is done automatically if the default "roon-server" username and group are used, but we
-      # prefer to be explicit and have a nice overview of the system users.
-      #
-      # Module source:
-      #   https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/audio/roon-server.nix
-      roon = {
-        isSystemUser = true;
-        description = "Roon Server user";
-        group = "roon";
-        extraGroups = [ "audio" ];
-      };
-
       openvpn = {
         isSystemUser = true;
         description = "OpenVPN 3 user";
@@ -475,7 +462,6 @@
     };
 
     groups.openvpn = { };
-    groups.roon = { };
   };
 
   #

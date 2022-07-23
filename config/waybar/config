@@ -102,10 +102,10 @@
     "on-click-right": "kitty --class transterm"
   },
   "custom/keyboard": {
-    "exec": "/etc/nixos/scripts/waybar/waybar-keyboard",
+    "exec": "waybar-keyboard",
     "format": "<span font='16' rise='-1500'> </span><span rise='2000'>{}</span>",
     "interval": 30,
-    "on-click": "/etc/nixos/scripts/waybar/waybar-keyboard switch",
+    "on-click": "waybar-keyboard switch",
     "return-type": "json"
   },
   "disk": {

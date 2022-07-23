@@ -149,6 +149,10 @@ _fzf_comprun() {
 # ALIASES
 #
 
+# Programs
+alias e="nvim"
+alias v="nvim"
+
 # Utilities
 alias icat="kitty +kitten icat"
 alias themes="kitty +kitten themes"
@@ -313,7 +317,7 @@ set-keyboard-variant() {
   swaymsg "input type:keyboard xkb_variant '${@:-","}'"
 }
 
-# Open the notes file for viewing.
+# Opens the notes file for viewing.
 #
 # Globals:
 #   NOTES_FILE
@@ -322,7 +326,7 @@ view-notes() {
   eval "${NOTES_VIEWER:-cat} $NOTES_FILE"
 }
 
-# Open the notes file for editing.
+# Opens the notes file for editing.
 #
 # Globals:
 #   EDITOR
@@ -332,14 +336,16 @@ edit-notes() {
   eval "${NOTES_EDITOR:-$EDITOR} $NOTES_FILE"
 }
 
-# Prepend a list item to the notes file. Uses argument if provided, otherwise defaults to the
-# current buffer/line input.
+# Prepends argument as a list item in the notes file, defaulting to current Zsh buffer/line. This
+# means we can use it both as a command (e.g. `add-note Pet cat.`) and as a widget called via key
+# bind. At the time of writing, Alt+n>a (`<M-n>a` in Vimspeak). Because "Note -> Add."
 #
 # Arguments:
 #   $1 - Note text
+#
 # Globals:
 #   NOTES_FILE
-prepend-note() {
+add-note() {
   local note="${@:-$BUFFER}"
 
   if ! [ -z "$note" ]; then
@@ -357,7 +363,7 @@ backup-notes() {
   cp --backup=numbered "$NOTES_FILE" "$NOTES_FILE.$(date +%Y%m%d)"
 }
 
-# Removes all note backup files except the most recent.
+# Removes all note backup files except the most recent one.
 #
 # Globals:
 #   NOTES_FILE
@@ -371,6 +377,7 @@ clear-backup-notes() {
 #
 # Arguments:
 #   $1 - Command
+#
 # Returns:
 #   0 - Command found
 #   1 - Command not found
@@ -406,7 +413,7 @@ append-to-history() {
   fc -R "$string"
 }
 
-# Print a message and wait single key input, for use in command substitution.
+# Prints a message and wait single key input, for use in command substitution.
 #
 # Arguments:
 #   $1 - Prompt message
@@ -416,10 +423,11 @@ await-any-key() {
   printf "\n"
 }
 
-# Print a message and wait for y or n response, for use in command substitution.
+# Prints a message and wait for y or n response, for use in command substitution.
 #
 # Arguments:
 #   $1 - Prompt message
+#
 # Returns:
 #   0 - Yes
 #   1 - No
@@ -429,7 +437,7 @@ await-confirm() {
   return $?
 }
 
-# Print a message and wait for enter key, for use in command substitution.
+# Prints a message and wait for enter key, for use in command substitution.
 #
 # Arguments:
 #   $1 - Prompt message
@@ -442,10 +450,11 @@ await-enter-key() {
   done
 }
 
-# Print a message and wait for user input then output it, for use in command substitution.
+# Prints a message and wait for user input then output it, for use in command substitution.
 #
 # Arguments:
 #   $1 - Prompt message
+#
 # Returns:
 #   Input string
 await-string-input() {
@@ -454,7 +463,7 @@ await-string-input() {
   return "$input"
 }
 
-# Convert text to lowercase.
+# Converts text to lowercase.
 #
 # Arguments:
 #   Text to convert
@@ -462,7 +471,7 @@ to-lowercase() {
   printf "%s" "$(printf "%s" "$*" | tr '[:upper:]' '[:lower:]')"
 }
 
-# Convert text to uppercase.
+# Converts text to uppercase.
 #
 # Arguments:
 #   $1 - Text to convert

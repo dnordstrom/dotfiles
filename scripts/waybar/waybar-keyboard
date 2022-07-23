@@ -1,6 +1,27 @@
 #!/usr/bin/env sh
+#
+# WAYBAR KEYBOARD MODULE
+#
+# Main command outputs active layout. `switch` subcommand cycles layout. For simple personal use.
+#
+# @usage
+#   ```json
+#     "custom/keyboard": {
+#       "exec": "waybar-keyboard",
+#       "format": "<span font='16' rise='-1500'> </span><span rise='2000'>{}</span>",
+#       "interval": 30,
+#       "on-click": "waybar-keyboard switch",
+#       "return-type": "json"
+#     }
+#   ```
+# @author   Daniel Nordstrom <d@mrnordstrom.com>
+# @version  2022-07-23
+# @license  MIT
+#
 
-id="12851:25345:Ducky_Ducky_One2_Mini_RGB"
+# TODO: Get available IDs from swaymsg; use arguments as IDs; just use first/last element, etc.
+
+id="9456:322:Metadot_-_Das_Keyboard_D4269"
 input=$(swaymsg -t get_inputs | jq "first(.[] | select(.identifier==\"$id\"))")
 index=$(printf "%s" "$input" | jq ".xkb_active_layout_index")
 count=$(printf "%s" "$input" | jq ".xkb_layout_names | length")

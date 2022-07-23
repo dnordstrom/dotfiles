@@ -62,7 +62,6 @@ vim.diagnostic.config({
 })
 
 for hl, icon in pairs(signs) do
-	local test = "adsad"
 	vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
 

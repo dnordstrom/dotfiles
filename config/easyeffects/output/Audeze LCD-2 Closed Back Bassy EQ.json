@@ -6,7 +6,7 @@
             "left": {
                 "band0": {
                     "frequency": 80.0,
-                    "gain": 1.2,
+                    "gain": 1.4,
                     "mode": "APO (DR)",
                     "mute": false,
                     "q": 0.4000000059604645,
@@ -101,7 +101,7 @@
             "right": {
                 "band0": {
                     "frequency": 80.0,
-                    "gain": 1.2,
+                    "gain": 1.4,
                     "mode": "APO (DR)",
                     "mute": false,
                     "q": 0.4000000059604645,

@@ -1,9 +1,27 @@
+##
+# SCRATCHPAD INIT
 #
-# Startup commands for the scratchpad terminal window
-#
+# Two-pane setup for scratchpad terminal windows, opening the home directory and the NixOS
+# configuration directory, and adding a tab for potential long-running tasks.
+##
 
 enabled_layouts tall,horizontal
 
+#
+# Main tab
+#
+
+new_tab Onesies
+
+launch
 launch --cwd /etc/nixos
+
+#
+# Background tab
+#
+
+new_tab Twosies
+
+launch
 launch --cwd /etc/nixos
 

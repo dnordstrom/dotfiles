@@ -14,7 +14,10 @@ set {
   $schema-gnome-interface org.gnome.desktop.interface
   $schema-gnome-wm-preferences org.gnome.desktop.wm.preferences
 
-  $font "Input Sans Condensed 8"
+  $fontsize 8
+  $fontname "Input Sans Condensed $fontsize"
+  $fontpango "pango:Input Sans Condensed $fontsize"
+
   $colors "catppuccin"
   $theme "Catppuccin-yellow"
   $cursor-theme "Catppuccin-Teal-Cursors"
@@ -109,8 +112,8 @@ set {
 
   # Lockscreen
   $lock swaylock \
-    --font "Input Sans Compressed" \
-    --font-size 12 \
+    --font $fontname \
+    --font-size $fontsize \
     --scaling fill \
     --ignore-empty-password \
     --indicator-radius 150 \
@@ -146,7 +149,7 @@ set {
 #
 
 # Font
-font pango:$font
+font $fontpango
 
 # Gaps
 gaps inner 12
@@ -214,6 +217,21 @@ output "AOC 2470W F53G7BA002500" {
 
 seat seat0 hide_cursor when-typing disable
 seat seat0 xcursor_theme "Catppuccin-Teal-Cursors" 24
+
+input "9456:322:Metadot_-_Das_Keyboard_D4269" {
+  repeat_delay 250
+  repeat_rate 35
+
+  xkb_layout us,se
+
+  # CapsLock -> Escape (via interception-tools, not here)
+  #
+  # LShift+RShift -> CapsLock
+  # LCtrl+RCtrl -> Switch layout
+  # RAlt -> AltGr
+  # Shift+RAlt -> Compose
+  xkb_options shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey
+}
 
 input "12851:25345:Ducky_Ducky_One2_Mini_RGB" {
   repeat_delay 250
@@ -283,8 +301,8 @@ bindsym {
 
   $mod+w exec firefox -P Default
   $mod+Shift+w exec firefox -P Music
-  $mod+Shift+Ctrl+w exec firefox -P Private
-  Mod4+Shift+Ctrl+Alt+w exec firefox -P Testing
+  $mod+Shift+Ctrl+w exec firefox -P Testing
+  Mod4+Shift+Ctrl+Alt+w exec firefox -P Private
 
   #
   # Window manager
@@ -294,9 +312,11 @@ bindsym {
   #   Button8 -> Forward
   #   Button9 -> Backward
   --whole-window button9 kill
+  --whole-window button8 workspace back_and_forth
 
   # Keyboard
   $mod+q kill
+  $mod+shift+q kill # TODO: Add command to force quit process of focused application
   $mod+Shift+p exec $swayprops
   $mod+Shift+Ctrl+p exec $swaypropsall
   $mod+Shift+c reload
@@ -389,31 +409,33 @@ bindsym {
   $mod+Shift+Space floating toggle, resize set $floatdefaultwidth $floatdefaultheight
 
   # Layouts
-  $mod+s layout stacking
-  $mod+w layout tabbed
-  $mod+e layout toggle split
   $mod+a focus parent
-  $mod+f mark --add fullscreen
+  $mod+f mark --add fullscreen, fullscreen enable
 
   #
   # Scratchpad
   #   TODO: Make fullscreen scratchpad windows persist.
   #
   
-  $mod+z scratchpad show, resize set $termscratchwidth $termscratchheight, move position center
+  $mod+z \
+    scratchpad show, \
+    resize set $termscratchwidth $termscratchheight, \
+    move position center
   $mod+Shift+z move scratchpad
 
   #
-  # Functional
+  # Media
   #
 
-  # Audio
-  XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
-  XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
-  XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
-  XF86AudioPlay exec pactl set-sink-volume @DEFAULT_SINK@ +5%
-  XF86AudioNext exec pactl set-sink-volume @DEFAULT_SINK@ -5%
-  XF86AudioPrev exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+  # Volume
+  XF86AudioMute         exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+  XF86AudioRaiseVolume  exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+  XF86AudioLowerVolume  exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+
+  # Playback
+  XF86AudioPlay exec playerctl play
+  XF86AudioNext exec playerctl next
+  XF86AudioPrev exec playerctl previous
 }
 
 #
