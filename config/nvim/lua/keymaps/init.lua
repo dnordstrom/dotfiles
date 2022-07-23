@@ -1,14 +1,14 @@
---
+----
 -- KEY MAPS
 --
 -- Notes:
 --
 --   - `nvim_set_keymap("", ...)` maps normal, visual, and operator pending mode
 --   - `nvim_set_keymap("!", ...)` maps command and insert mode
---
+----
 
 --
--- Shortcuts
+-- SHORTCUTS
 --
 
 local g = vim.g
@@ -40,7 +40,7 @@ local abbreviate = function(lhs, rhs, options)
 end
 
 --
--- Convenient...
+-- CONVENIENT...
 --
 
 -- ...command mode
@@ -77,14 +77,14 @@ nvim_set_keymap("n", "<Leader>-", ":split | wincmd j<CR>", _nonrecursive)
 nvim_set_keymap("n", "<Leader>|", ":vsplit | wincmd l<CR>", _nonrecursive)
 
 --
--- Compliment defaults with...
+-- COMPLIMENT DEFAULTS WITH...
 --
 
 -- ...save and keep (ZZ, ZQ)
 nvim_set_keymap("n", "ZA", "<Cmd>w!<CR>", _nonrecursive)
 
 --
--- Modify defaults to...
+-- MODIFY DEFAULTS TO...
 --
 
 -- ...change registers for delete and cut to not overwrite yanked content. Instead use the unnamed
@@ -113,7 +113,7 @@ nvim_set_keymap("n", "<C-w>>", ":vertical resize +20<CR>", use_opts(_silent, _no
 -- nvim_set_keymap("", "N", "v:searchforward ? 'N' : 'n'", use_opts(_expression, _nonrecursive))
 
 --
--- Reload...
+-- RELOAD...
 --
 
 -- ...config
@@ -129,7 +129,7 @@ nvim_set_keymap("n", "<Leader>rf", "<Cmd>source %<CR>", _nonrecursive)
 nvim_set_keymap("n", "<Leader>rp", "<Cmd>PackerSync<CR>", _nonrecursive)
 
 --
--- Navigate or move...
+-- NAVIGATE OR MOVE...
 --
 
 -- ...bufferline
@@ -139,7 +139,7 @@ nvim_set_keymap("n", "<M-H>", "<Plug>(cokeline-switch-prev)", {})
 nvim_set_keymap("n", "<M-L>", "<Plug>(cokeline-switch-next)", {})
 
 --
--- Change...
+-- CHANGE...
 --
 
 -- ...sorting
@@ -147,7 +147,7 @@ nvim_set_keymap("v", "<Leader>cS", ":sort!<CR>", _nonrecursive)
 nvim_set_keymap("v", "<Leader>cs", ":sort<CR>", _nonrecursive)
 
 --
--- Lines
+-- lINES
 --
 
 -- Insert new and toggle commenting (exit or begin comment block)
@@ -171,7 +171,7 @@ nvim_set_keymap("v", "<S-C-k>", ":m'<-2<CR>gv=gv", _nonrecursive)
 nvim_set_keymap("v", "<S-C-j>", ":m'>+<CR>gv=gv", _nonrecursive)
 
 --
--- Insert mode
+-- INSERT MODE
 --
 
 -- Navigate
@@ -180,7 +180,7 @@ nvim_set_keymap("i", "<C-j>", "<Down>", _nonrecursive)
 nvim_set_keymap("i", "<C-k>", "<Up>", _nonrecursive)
 nvim_set_keymap("i", "<C-l>", "<Right>", _nonrecursive)
 
--- Delete
+-- DELETE
 --
 -- Note: Won't work in most terminal emulators since C-H usually emits ^H for historical reasons.
 -- Here it's configured to be more useful.
@@ -189,7 +189,7 @@ nvim_set_keymap("i", "<C-BS>", "<Esc>d^xi", _nonrecursive) -- To beginning of li
 nvim_set_keymap("i", "<S-C-BS>", "<Esc>ddkA", _nonrecursive) -- Whole line
 
 --
--- Command mode
+-- COMMAND MODE
 --
 
 -- Navigate
@@ -220,7 +220,7 @@ nvim_set_keymap("n", "<Leader>;S", ":cp --no-preserve=mode,ownership % $(mktmp)"
 nvim_set_keymap("n", "<Leader>;r", ":<C-r>:", {}) -- Last command
 
 --
--- Toggle...
+-- TOGGLE...
 --
 
 -- ...quick action: word under cursor
@@ -268,7 +268,7 @@ nvim_set_keymap("n", "<Leader>th", "<Cmd>set hlsearch!<CR>", _nonrecursive)
 nvim_set_keymap("n", "<Leader>ts", "<Cmd>set spell!<CR>", _nonrecursive)
 
 --
--- Find...
+-- FIND...
 --
 
 -- ...by double tap: files
@@ -311,7 +311,7 @@ nvim_set_keymap("n", "<Leader>fr", "<Cmd>FzfLua oldfiles<CR>", _nonrecursive)
 nvim_set_keymap("n", "<Leader>fu", "<Cmd>FzfLua resume<CR>", _nonrecursive)
 
 --
--- Buffer...
+-- BUFFER...
 --
 
 -- Quick command: list buffers
@@ -349,7 +349,7 @@ nvim_set_keymap(
 )
 
 --
--- Editor
+-- EDITOR
 --
 
 -- Search and replace
@@ -361,7 +361,7 @@ nvim_set_keymap("n", "<C-S-f>", "<Esc>:set cmdheight=2<CR>:%s/<C-r><C-w>/<C-r><C
 nvim_set_keymap("v", "<C-S-f>", '"ty:set cmdheight=2<CR>:%s/<C-r>t/<C-r>t/g<Left><Left>', _nonrecursive)
 
 --
--- Language diagnostics...
+-- LANGUAGE DIAGNOSTICS...
 --
 
 -- ...quick action: toggle diagnostics window (or uppercase "D" for all diagnostic info)
@@ -399,7 +399,7 @@ nvim_set_keymap("n", "<Leader>dl", ":lua vim.diagnostic.open_float()<CR>:lua vim
 keymap.set("n", "<Leader>dg", require("neogen").generate, { desc = "Generate documentation comment" })
 
 --
--- Go to/do with word or line...
+-- GO TO/DO WITH WORD OR LINE...
 --
 
 -- ...help
@@ -409,14 +409,14 @@ nvim_set_keymap("n", "gh", '<Cmd>call execute("help " . expand("<cword>"))<CR>',
 nvim_set_keymap("n", "gs", "<Cmd>NBrowserSearch<CR>", {})
 
 --
--- Go to/do with text object...
+-- GO TO/DO WITH TEXT OBJECT...
 --
 
 -- ...search web
 nvim_set_keymap("n", "<Leader>gs", "<Cmd>lua NORDUtils.browsersearch()<CR>", {})
 
 --
--- New...
+-- NEW...
 --
 
 -- ...directory
