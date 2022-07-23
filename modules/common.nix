@@ -401,8 +401,6 @@
         xdg-desktop-portal-gnome
       ];
 
-      gtkUsePortal = true;
-
       wlr = {
         enable = true;
         settings = {

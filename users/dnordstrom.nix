@@ -759,11 +759,11 @@ in {
       export MOZ_USE_XINPUT2=1
 
       # Wayland
-      export GTK_USE_PORTAL=1 # `xdg.portal.gtkUsePortal` is deprecated
+      export GDK_BACKEND=wayland
+      export GTK_USE_PORTAL=1
       export QT_QPA_PLATFORM=wayland
       export QT_STYLE_OVERRIDE=qt5ct-style
       export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
-      export GDK_BACKEND=wayland
 
       # Sway
       export XDG_CURRENT_DESKTOP=sway
