@@ -52,18 +52,6 @@ export TERMINAL="kitty"
 export PAGER="less"
 
 #
-# Zsh vi mode plugin
-#
-
-# Configuration function called when sourcing plugin
-zvm_config() {
-  export ZVM_VI_INSERT_ESCAPE_BINDKEY=jk
-  export ZVM_LINE_INIT_MODE=$ZVM_MODE_INSERT
-  export ZVM_KEYTIMEOUT=0.4
-  export ZVM_KEYTIMEOUT_ESC=0.1 # Lower wait time for Escape key
-}
-
-#
 # ANSI color code helpers
 #
 
@@ -590,6 +578,13 @@ magic-ctrl-z() {
   fi
 }
 
+# Clears the screen and returns the Zsh Vi Mode plugin to the last used mode. The `clear-screen`
+# widget switches to command mode each time.
+clear-screen-and-ins() {
+  zle clear-screen
+  ZVM_MODE="$ZVM_MODE_LAST"
+}
+
 #
 # WIDGETS
 #
@@ -606,28 +601,16 @@ zle -N prepend-note
 zle -N edit-notes
 zle -N backup-notes
 zle -N clear-backup-notes
+zle -N clear-screen-and-ins
 
 #
 # KEY BINDS
 #
 
-# Zsh vi mode binds, loaded after other binds.
-zvm_after_lazy_keybindings() {
-  # Ctrl-N and Ctrl-P for next and previous based on current buffer content
-  zvm_bindkey vicmd "^N" history-beginning-search-forward
-  zvm_bindkey viins "^N" history-beginning-search-forward
-  zvm_bindkey vicmd "^P" history-beginning-search-backward
-  zvm_bindkey viins "^P" history-beginning-search-backward
-
-  # Ctrl-Z to suspend or unsuspend a program to/from backgrond
-  zvm_bindkey viins "^Z" magic-ctrl-z
-  zvm_bindkey vicmd "^Z" magic-ctrl-z
-}
-
 # Fix delete key outputting tilde character
 bindkey "^[[3~" delete-char
 
-# Alt-L uses l instead of ls
+# Alt-L uses `l` instead of `ls`
 bindkey -s "^[l" "l\n"
 
 # Ctrl-Z for fg
@@ -649,6 +632,49 @@ bindkey "^[nv" view-notes
 # NixOS: Shift-Alt-N then specifier
 bindkey "^[Nb" build-nixos
 bindkey "^[Ne" edit-nixos
+
+#
+# PLUGINS
+#
+
+#
+# Zsh Vi Mode
+#
+
+# ZVM by default runs this function to set up binds lazily. We'll run it manually here since ZVM has
+# already loaded. Home Manager generates the .zshrc file which loads the plugins and then appends
+# this file to it, meaning ZVM inits before this function exists. So it isn't actually needed, but
+# let's keep it for sentimental value (and less importantly, portability and correctness).
+#
+# We probably don't need to use zvm_bindkey either when we don't care about the mode, unless it does
+# some weird shit bindkey doesn't. Let's use it anyway---for the excitement of uncertainty.
+zvm_after_lazy_keybindings() {
+  # Ctrl-N and Ctrl-P for next and previous based on current buffer content
+  zvm_bindkey vicmd "^N" history-beginning-search-forward
+  zvm_bindkey viins "^N" history-beginning-search-forward
+  zvm_bindkey vicmd "^P" history-beginning-search-backward
+  zvm_bindkey viins "^P" history-beginning-search-backward
+
+  # Ctrl-Z to suspend or unsuspend a program to/from background
+  zvm_bindkey viins "^Z" magic-ctrl-z
+  zvm_bindkey vicmd "^Z" magic-ctrl-z
+
+  # Ctrl-Alt-L returns to insert mode again after clearing screen
+  zvm_bindkey viins "^[^l" clear-screen-and-ins
+}
+
+# zvm_after_lazy_keybindings
+
+# ZVM by default runs this function to set configuration late; see description of
+# `zvm_after_lazy_keybindings` above as for why we run it manually.
+zvm_config() {
+  export ZVM_VI_INSERT_ESCAPE_BINDKEY=jk
+  export ZVM_LINE_INIT_MODE=$ZVM_MODE_INSERT
+  export ZVM_KEYTIMEOUT=0.4
+  export ZVM_KEYTIMEOUT_ESC=0.1
+}
+
+# zvm_config
 
 #
 # PATH

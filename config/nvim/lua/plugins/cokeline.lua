@@ -165,90 +165,87 @@ end
 -- COMPONENTS
 --
 
-local components =
-	{
-		-- Padding
-		padding = {
-			text = " ",
-			hl = { fg = "NONE", bg = "NONE" },
-		},
+local components = {
+	-- Padding
+	padding = {
+		text = " ",
+		hl = { fg = "NONE", bg = "NONE" },
+	},
 
-		-- Left corners
-		corner_left = {
-			text = corner_left,
-			hl = { fg = corner_fg, bg = corner_bg },
-		},
+	-- Left corners
+	corner_left = {
+		text = corner_left,
+		hl = { fg = corner_fg, bg = corner_bg },
+	},
 
-		-- Filetype icon
-		filetype_icon_or_modified_indicator = {
-			text = function(buffer)
-				if buffer.is_modified then
-					return " " .. icon_modified .. " "
-				else
-					return " " .. buffer.devicon.icon
-				end
-			end,
-			hl = { fg = tab_icon, bg = tab_bg },
-		},
+	-- Filetype icon
+	filetype_icon_or_modified_indicator = {
+		text = function(buffer)
+			if buffer.is_modified then
+				return " " .. icon_modified .. " "
+			else
+				return " " .. buffer.devicon.icon
+			end
+		end,
+		hl = { fg = tab_icon, bg = tab_bg },
+	},
 
-		-- Directory prefix if needed
-		dirname_as_unique_prefix = {
-			text = function(buffer)
-				return buffer.unique_prefix
-			end,
-			hl = {
-				bg = tab_bg,
-				fg = tab_prefix,
-				style = tab_prefix_style,
-			},
-		},
-
-		-- Filename
-		filename = {
-			text = function(buffer)
-				return buffer.filename .. " "
-			end,
-			hl = { style = tab_style, fg = tab_fg, bg = tab_bg },
-		},
-
-		-- Modified indicator
-		modified_indicator = {
-			text = function(buffer)
-				local output = ""
-
-				if buffer.is_modified then
-					if modified ~= "" then
-						output = modified .. " "
-					end
-				else
-					if unmodified ~= "" then
-						output = unmodified .. " "
-					end
-				end
-
-				return output
-			end,
-			hl = { fg = tab_suffix, bg = tab_bg },
-		},
-
-		-- Right corners
-		corner_right = {
-			text = corner_right,
-			hl = { fg = corner_fg, bg = corner_bg },
+	-- Directory prefix if needed
+	dirname_as_unique_prefix = {
+		text = function(buffer)
+			return buffer.unique_prefix
+		end,
+		hl = {
+			bg = tab_bg,
+			fg = tab_prefix,
+			style = tab_prefix_style,
 		},
 	},
-	
-	--
-	-- SETUP
-	--
 
-	-- Tabline background
+	-- Filename
+	filename = {
+		text = function(buffer)
+			return buffer.filename .. " "
+		end,
+		hl = { style = tab_style, fg = tab_fg, bg = tab_bg },
+	},
+
+	-- Modified indicator
+	modified_indicator = {
+		text = function(buffer)
+			local output = ""
+
+			if buffer.is_modified then
+				if modified ~= "" then
+					output = modified .. " "
+				end
+			else
+				if unmodified ~= "" then
+					output = unmodified .. " "
+				end
+			end
+
+			return output
+		end,
+		hl = { fg = tab_suffix, bg = tab_bg },
+	},
+
+	-- Right corners
+	corner_right = {
+		text = corner_right,
+		hl = { fg = corner_fg, bg = corner_bg },
+	},
+}
+
+--
+-- SETUP
+--
+
+-- Tabline background
 vim.cmd("hi TabLineFill guibg=none gui=none")
 
 -- Tabline settings
 require("cokeline").setup({
-	show_if_buffers_are_at_least = 2,
-
 	buffers = {
 		new_buffers_position = "next",
 	},
