@@ -23,7 +23,6 @@ local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
 g.mapleader = " "
 
 opt.undofile = true
-opt.spellfile = "$HOME/.config/nvim/spell/en.nord.add"
 opt.laststatus = 3
 opt.cmdheight = 0
 opt.termguicolors = true
