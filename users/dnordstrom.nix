@@ -905,6 +905,8 @@ in {
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/nvim/ftplugin";
   home.file.".config/nvim/luasnippets".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/nvim/luasnippets";
+  home.file.".config/nvim/spell".source =
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/nvim/spell";
 
   # Vifm
 
