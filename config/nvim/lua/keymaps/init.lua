@@ -251,7 +251,7 @@ nvim_set_keymap("n", "<Leader>tF", "<Cmd>!kitty --title popupterm -- sh -c 'vifm
 nvim_set_keymap("n", "<Leader>tc", "<Cmd>set cmdheight=0<CR>", _nonrecursive)
 nvim_set_keymap("n", "<Leader>tC", "<Cmd>set cmdheight=2<CR>", _nonrecursive)
 
--- ...Git information
+-- ...Git signs
 nvim_set_keymap("n", "<Leader>tgg", "<Space>tgs<Space>tgb<Space>tgn<Space>tgr", {})
 nvim_set_keymap("n", "<Leader>tgs", "<Cmd>lua require('gitsigns.actions').toggle_signs()<CR>", {})
 nvim_set_keymap("n", "<Leader>tgn", "<Cmd>lua require('gitsigns.actions').toggle_numhl()<CR>", {})
@@ -399,21 +399,30 @@ nvim_set_keymap("n", "<Leader>dl", ":lua vim.diagnostic.open_float()<CR>:lua vim
 keymap.set("n", "<Leader>dg", require("neogen").generate, { desc = "Generate documentation comment" })
 
 --
--- GO TO/DO WITH WORD OR LINE...
+-- GIT...
+--
+
+-- ...quick action: commit with message
+keymap.set("n", "<Leader>gg", ':Git commit -am ""<Left>', { desc = "Commit with message..." })
+
+-- ...commit with message
+keymap.set("n", "<Leader>gc", ':Git commit -am ""<Left>', { desc = "Commit with message..." })
+
+-- ...push
+keymap.set("n", "<Leader>gp", "<Cmd>Git push<CR>", { desc = "Push" })
+
+-- ...status
+keymap.set("n", "<Leader>gs", "<Cmd>Git status<CR>", { desc = "Status" })
+
+--
+-- GO TO/DO WITH WORD/LINE/TEXT OBJECT...
 --
 
 -- ...help
-nvim_set_keymap("n", "gh", '<Cmd>call execute("help " . expand("<cword>"))<CR>', {})
+keymap.set("n", "gh", '<Cmd>call execute("help " . expand("<cword>"))<CR>', { desc = "Help for current word" })
 
 -- ...search web
-nvim_set_keymap("n", "gs", "<Cmd>NBrowserSearch<CR>", {})
-
---
--- GO TO/DO WITH TEXT OBJECT...
---
-
--- ...search web
-nvim_set_keymap("n", "<Leader>gs", "<Cmd>lua NORDUtils.browsersearch()<CR>", {})
+keymap.set("n", "gs", "<Cmd>lua NORDUtils.browsersearch()<CR>", { desc = "Search web" })
 
 --
 -- NEW...
