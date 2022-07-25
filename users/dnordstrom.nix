@@ -747,49 +747,27 @@ in {
   #
   # SWAY
   #
-  #   Creates an empty config from which we load our own. We use Home Manager for its `systemd`
-  #   integration, not the configuration.
+  #   We use Home Manager for its systemd integration, not for the actual configuration which is
+  #   pretty big and best kept portable in its original format.
+  #
+  #   Home Manager creates a config file to integrate with DBUS and systemd even if we set `config`
+  #   to `null`, so we use `extraConfig` to append a line at the bottom that loads our own.
+  #
+  #   NOTE: It's advised to run the DBUS command at the bottom so we'll see how well this works.
   #
 
   wayland.windowManager.sway = {
     enable = true;
-    config = null;
     extraConfig = "include config.main";
-    extraSessionCommands = ''
-      # Firefox
-      export MOZ_ENABLE_WAYLAND=1
-      export MOZ_DBUS_REMOTE=1
-      export MOZ_USE_XINPUT2=1
-
-      # Wayland
-      export GDK_BACKEND=wayland
-      export GTK_USE_PORTAL=1
-      export QT_QPA_PLATFORM=wayland
-      export QT_STYLE_OVERRIDE=qt5ct-style
-      export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
-
-      # Sway
-      export XDG_CURRENT_DESKTOP=sway
-      export XDG_SESSION_DESKTOP=sway
-      export XDG_SESSION_TYPE=wayland
-
-      # Java
-      export _JAVA_AWT_WM_NONREPARENTING=1
-
-      # Miscellaneous
-      export SDL_VIDEODRIVER=wayland
-    '';
   };
-
-  #
-  # QT
-  #
-
-  qt.enable = true;
 
   #
   # GTK
   #
+
+  gtkConfig = ''
+    gtk-application-prefer-dark-theme = "true"
+  '';
 
   gtk = {
     enable = true;
@@ -797,15 +775,33 @@ in {
       name = "Input Sans Condensed";
       size = 9;
     };
-    theme.name = "Catppuccin-yellow";
-    iconTheme.name = "Vimix-dark";
-    gtk3 = {
-      extraConfig.gtk-application-prefer-dark-theme = "true";
-      extraCss = "";
+    theme = {
+      name = "Catppuccin-yellow";
+      # Manually installed, not packaged
     };
-    gtk2.extraConfig = ''
-      gtk-application-prefer-dark-theme = "true"
-    '';
+    iconTheme = {
+      name = "Vimix-dark";
+      package = pkg.vimix-icon-theme;
+    };
+    cursorTheme = {
+      name = "Quintom_Snow";
+      package = pkgs.quintom-cursor-theme;
+    };
+    gtk2.extraConfig = gtkConfig;
+    gtk3.extraConfig = gtkConfig;
+    gtk4.extraConfig = gtkConfig;
+    gtk3.bookmarks = [
+      "file:///home/dnordstrom/Code"
+      "file:///home/dnordstrom/Backup"
+      "file:///home/dnordstrom/Pictures/Screenshots"
+      "file:///home/dnordstrom/Secrets"
+      "file:///home/dnordstrom/.config .config"
+      "file:///home/dnordstrom/.local/bin .local  bin"
+      "file:///home/dnordstrom/.local/share .local  share"
+      "file:///etc/nixos NixOS"
+      "file:///etc/nixos/config/firefox NixOS  Config  firefox"
+      "file:///etc/nixos/config/nvim NixOS  Config  nvim"
+    ];
   };
 
   #
@@ -830,9 +826,16 @@ in {
   home.file."Pictures/Wallpapers".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/wallpapers";
 
+  #
+  # Dolphin places
+  #
+
+  home.file.".config/dolphin/user-places.xbel".source =
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/dolphin/user-places.xbel";
+
   # EasyEffects
   #
-  #   Settings directories are writable but presets direcotory read-only. This allows EasyEffects
+  #   Settings directories are writable but presets directory read-only. This allows EasyEffects
   #   to modify its settings while the presets are immutable since that's where the important
   #   presets are saved.
   #
@@ -865,6 +868,11 @@ in {
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/swaylock/config";
   home.file.".config/swaynag/config".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/swaynag/config";
+
+  # River
+
+  home.file.".config/river".source =
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/river";
 
   # Swappy 
 

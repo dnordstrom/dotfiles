@@ -1,0 +1,139 @@
+DP-1 DVI-D-1 Height 1920x1080=794
+DP-1 DVI-D-1 Width 1920x1080=1395
+DisplayPort-0 DVI-D-0 Height 1920x1080=362
+DisplayPort-0 DVI-D-0 Width 1920x1080=833
+DisplayPort-0 DVI-D-0 XPosition 1920x1080=100
+DisplayPort-0 DVI-D-0 YPosition 1920x1080=215
+DisplayPort-0 Height 1920x1080=767
+DisplayPort-0 Width 1920x1080=1289
+DisplayPort-0 XPosition 1920x1080=282
+DisplayPort-0 YPosition 1920x1080=219
+
+[CompactMode]
+FontWeight=50
+IconSize=48
+MaximumTextWidthIndex=3
+PreviewSize=32
+
+[ContextMenu]
+ShowCopyMoveMenu=false
+ShowDuplicateHere=false
+ShowOpenInNewTab=false
+ShowOpenInNewWindow=false
+ShowOpenTerminal=false
+ShowSortBy=false
+ShowViewMode=false
+
+[CreateDialog]
+LastMimeType=application/x-bzip-compressed-tar
+
+[Desktop Entry]
+DefaultProfile=Profile 1.profile
+
+[DetailsMode]
+DirectorySizeCount=false
+FontWeight=50
+IconSize=22
+LeadingPadding=0
+PreviewSize=32
+
+[ExtractDialog]
+DP-1 DVI-D-1 Height 1920x1080=812
+DP-1 DVI-D-1 Width 1920x1080=1272
+
+[General]
+AutoExpandFolders=true
+BrowseThroughArchives=true
+CommandBarLastUsedActions=&Accessed,&Size,Toggle Search Bar,&Show Hidden Places,&Show Hidden Places,Toggle Search Bar
+LockPanels=true
+ShowFullPath=true
+ShowFullPathInTitlebar=true
+ShowStatusBar=false
+ShowToolTips=true
+SortingChoice=CaseInsensitiveSorting
+UseTabForSwitchingSplitView=true
+Version=201
+ViewPropsTimestamp=2021,12,19,4,17,35.56
+
+[IconsMode]
+FontWeight=50
+IconSize=48
+MaximumTextLines=2
+PreviewSize=80
+
+[InformationPanel]
+dateFormat=ShortFormat
+previewsAutoPlay=true
+previewsShown=true
+
+[KFileDialog Settings]
+Places Icons Auto-resize=false
+Places Icons Static Size=32
+
+[KPropertiesDialog]
+DP-1 DVI-D-1 Height 1920x1080=812
+DP-1 DVI-D-1 Width 1920x1080=1272
+DisplayPort-0 DVI-D-0 Height 1920x1080=408
+DisplayPort-0 DVI-D-0 Width 1920x1080=386
+
+[MainWindow]
+\sXPosition 3840x1080=0
+\sYPosition 3840x1080=0
+DP-1 DVI-D-1 Height 1920x1080=812
+DP-1 DVI-D-1 Width 1920x1080=1272
+DP-1 DVI-D-1 XPosition 1920x1080=0
+DP-1 DVI-D-1 YPosition 1920x1080=0
+DVI-D-1 DP-1 Height 1920x1080=892
+DVI-D-1 DP-1 Width 1920x1080=1542
+DisplayPort-0 DVI-D-0 Height 1920x1080=776
+DisplayPort-0 DVI-D-0 Width 1920x1080=1067
+DisplayPort-0 DVI-D-0 XPosition 1920x1080=0
+DisplayPort-0 DVI-D-0 YPosition 1920x1080=66
+DisplayPort-0 Height 1920x1080=767
+DisplayPort-0 Width 1920x1080=1289
+DisplayPort-0 XPosition 1920x1080=282
+DisplayPort-0 YPosition 1920x1080=219
+ToolBarsMovable=Disabled
+XWAYLAND0 XWAYLAND1 Window-Maximized 1920x1080=true
+
+[MainWindow][Toolbar mainToolBar]
+IconSize=16
+ToolButtonStyle=TextOnly
+
+[Notification Messages]
+Rename...PropertiesAlt+Return=false
+
+[Open-with settings]
+CompletionMode=1
+History=/home/dnordstrom/.local/bin/launch-appimage/launch-appimage,iv,/home/dnordstrom/.local/bin/launch-appimage/launch-xdg,/home/dnordstrom/.local/bin/ferdium/ferdium-run,vimi
+
+[PlacesPanel]
+IconSize=32
+
+[PreviewSettings]
+Plugins=blenderthumbnail,comicbookthumbnail,djvuthumbnail,ebookthumbnail,exrthumbnail,directorythumbnail,fontthumbnail,imagethumbnail,jpegthumbnail,kraorathumbnail,windowsexethumbnail,windowsimagethumbnail,opendocumentthumbnail,gsthumbnail,rawthumbnail,svgthumbnail,textthumbnail,ffmpegthumbs
+
+[SettingsDialog]
+DP-1 DVI-D-1 Height 1920x1080=505
+DP-1 DVI-D-1 Width 1920x1080=623
+DisplayPort-0 DVI-D-0 Height 1920x1080=419
+DisplayPort-0 DVI-D-0 Width 1920x1080=598
+DisplayPort-0 Height 1920x1080=468
+DisplayPort-0 Width 1920x1080=651
+
+[Shortcut Schemes]
+Current Scheme=Vim
+
+[Toolbar mainToolBar]
+IconSize=16
+ToolButtonStyle=TextOnly
+
+[ViewPropertiesDialog]
+DP-1 DVI-D-1 Height 1920x1080=546
+DP-1 DVI-D-1 Width 1920x1080=361
+
+[kuick-copy]
+Paths[$e]=$HOME/
+
+[kuick-move]
+Paths[$e]=/etc/nixos/secrets/

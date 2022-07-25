@@ -255,7 +255,7 @@ list-tree-exa() {
   fi
 
   printf "\n"
-  command exa --icons --group-directories-first --group --header --git --long --no-permissions --octal-permissions --tree --level="$levels" "$paths"
+  command exa -a --icons --group-directories-first --group --header --git --long --no-permissions --octal-permissions --tree --level="$levels" "$paths"
 }
 
 # Displays a directory tree. Two optional arguments specify depth and path. If the first argument is
@@ -279,7 +279,7 @@ list-tree-lsd() {
   fi
 
   printf "\n"
-  command lsd --date="+%_d %b %R" --permission=octal --header --long --tree --hyperlink=auto --config-file="/home/dnordstrom/.config/lsd/config.yaml" --depth="$levels" "$paths"
+  command lsd --all --date="+%_d %b %R" --permission=octal --header --long --tree --hyperlink=auto --config-file="/home/dnordstrom/.config/lsd/config.yaml" --depth="$levels" "$paths"
 }
 
 insert-date() {

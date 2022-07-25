@@ -1,0 +1,225 @@
+{
+  "name": "catppuccin",
+  "layer": "bottom",
+  "margin": "0 0 -8 0",
+  "modules-left": [],
+    // "custom/files",
+    // "custom/browser",
+    // "custom/mail",
+    // "custom/editor",
+    // "custom/terminal"
+  // ],
+  "modules-center": [
+    "clock"
+  ],
+  "modules-right": [],
+  //   "cpu",
+  //   "custom/keyboard",
+  //   "custom/wttr",
+  //   "pulseaudio"
+  // ]
+  // "tray": {
+  //   "icon-size": 14,
+  //   "spacing": 22
+  // },
+  // "clock": {
+  //   "format": "<span font='16' rise='-1500'></span> {:%R}",
+  //   "format-alt": "<span font='16' rise='-1500'></span> {:%A, %B %d}",
+  //   "tooltip": false,
+  //   "on-click-middle": "xdg-open https://calendar.protonmail.com",
+  //   "on-click-right": "xdg-open https://calendar.google.com"
+  // },
+  // "custom/clock": {
+  //   "interval": 1,
+  //   "exec": "/etc/nixos/scripts/waybar/waybar-clock",
+  //   "format": "{}",
+  //   "on-click": "/etc/nixos/scripts/waybar/waybar-clock toggle",
+  //   "on-click-middle": "/etc/nixos/scripts/waybar/waybar-clock time",
+  //   "on-click-right": "/etc/nixos/scripts/waybar/waybar-clock window",
+  //   "return-type": "json"
+  // },
+  // "custom/browser": {
+  //   "format": "<span font='16' rise='-1500'></span>",
+  //   "tooltip": false,
+  //   "on-click": "if pgrep firefox; then riverctl focus; else firefox; fi",
+  //   "on-click-right": "firefox --new-window"
+  // },
+  // "custom/mail": {
+  //   "format": "<span font='16'></span>",
+  //   "tooltip": false,
+  //   "on-click": "xdg-open https://mail.protonmail.com"
+  // },
+  // "custom/files": {
+  //   "format": "<span font='16'></span>",
+  //   "tooltip": false,
+  //   "on-click": "dolphin",
+  //   "on-click-middle": "kitty --title popupterm -e vifm",
+  //   "on-click-right": "nautilus"
+  // },
+  // "custom/editor": {
+  //   "format": "<span font='16'></span>",
+  //   "tooltip": false,
+  //   "on-click": "sh -c \"if swaymsg -t get_tree | grep vimterm; then swaymsg [app_id=\"vimterm\"] focus; else kitty --class=vimterm; fi\"",
+  //   "on-right-click": "if pgrep codium; then swaymsg [instance=\"vscodium\"] focus; else codium; fi"
+  // },
+  // "custom/terminal": {
+  //   "format": "<span font='16'>ﲵ</span>",
+  //   "tooltip": false,
+  //   "on-click": "swaymsg scratchpad show",
+  //   "on-click-right": "kitty --class transterm"
+  // },
+  // "custom/keyboard": {
+  //   "exec": "waybar-keyboard",
+  //   "format": "<span font='16' rise='-1500'> </span><span rise='2000'>{}</span>",
+  //   "interval": 30,
+  //   "on-click": "waybar-keyboard switch",
+  //   "return-type": "json"
+  // },
+  // "disk": {
+  //   "interval": 30,
+  //   "format": " {percentage_used}%",
+  //   "path": "/",
+  //   "on-click": "kitty --title popupterm gotop",
+  //   "tooltip": true,
+  //   "tooltip-format": "{used} / {total}"
+  // },
+  // "custom/diskinfo": {
+  //   "interval": 30,
+  //   "format": "<span font='16' rise='-1500'> </span><span rise='500'>{}</span>",
+  //   "return-type": "json",
+  //   "exec": "/etc/nixos/scripts/waybar/waybar-diskinfo",
+  //   "on-click": "kitty --title popupterm gotop",
+  //   "tooltip": true,
+  //   "tooltip-format": "{used} / {total}"
+  // },
+  // "custom/snap": {
+  //   "format": "<span font='16' rise='-1500'></span>",
+  //   "on-click": "grim -g \"$(slurp)\" \"$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png\"",
+  //   "tooltip": false
+  // },
+  // "custom/protoncheck": {
+  //   "exec": "source /etc/nixos/secrets/env ; cd /tmp ; protoncheck --username $PROTONMAIL_USERNAME --password $PROTONMAIL_PASSWORD",
+  //   "format": "<span font='16' rise='-1500'> </span>{}",
+  //   "interval": 30,
+  //   "on-click": "xdg-open https://mail.protonmail.com/inbox"
+  // },
+  // "custom/tmpmail": {
+  //   "interval": 30,
+  //   "format": "<span font='13' rise='-1500'></span>",
+  //   "exec": "echo \"\"; echo \"$(cat /tmp/tmpmailgen 2>/dev/null || echo -n 'No address available')\"; echo \"tmpmail\"\n",
+  //   "on-click": "generated=$(cat /tmp/tmpmailgen) && swaymsg exec wl-copy $generated",
+  //   "on-click-middle": "rm -f /tmp/tmpmailgen; generated=$(tmpmail -g) && echo -n $generated > /tmp/tmpmailgen && swaymsg exec wl-copy $generated",
+  //   "on-click-right": "kitty --hold --title popupterm tmpmail -r $(cat /tmp/tmpmailgen)",
+  //   "tooltip": true
+  // },
+  // "custom/wttr": {
+  //   "format": "{}",
+  //   "exec": "curl https://wttr.in/Sundsvall,Sweden?format=%c%3Cspan%20rise=%2269%22%3E%t%3C/span%3E",
+  //   "on-click": "kitty --hold --title popupterm curl wttr.in/Sundsvall",
+  //   "interval": 1800,
+  //   "tooltip": false
+  // },
+  // "custom/pipewire": {
+  //   "exec": "pw-volume status",
+  //   "return-type": "json",
+  //   "interval": "once",
+  //   "signal": 8,
+  //   "format": "<span font='13' rise='-1500'>{icon}</span> {percentage}%",
+  //   "format-icons": {
+  //     "mute": "婢",
+  //     "default": [
+  //       "奔",
+  //       "墳"
+  //     ]
+  //   },
+  //   "on-scroll-up": "pw-volume change +1%; pkill -RTMIN+8 waybar",
+  //   "on-scroll-down": "pw-volume change -1%; pkill -RTMIN+8 waybar",
+  //   "on-click": "pw-volume mute toggle; pkill -RTMIN+8 waybar",
+  //   "on-click-right": "swaymsg exec pavucontrol",
+  //   "tooltip": false
+  // },
+  // "idle_inhibitor": {
+  //   "format": "<span font='16' rise='-1500'>{icon}</span>",
+  //   "tooltip": false,
+  //   "format-icons": {
+  //     "activated": "",
+  //     "deactivated": ""
+  //   }
+  // },
+  // "pulseaudio": {
+  //   "format": "<span font='13' rise='-1500'>{icon}</span> {volume}%",
+  //   "format-bluetooth": "<span font='13' rise='-1500'>{icon}</span> ",
+  //   "format-muted": "<span font='13' rise='-1500'>婢</span>",
+  //   "format-icons": {
+  //     "headphones": "",
+  //     "handsfree": "",
+  //     "headset": "",
+  //     "phone": "",
+  //     "portable": "",
+  //     "car": "",
+  //     "default": [
+  //       "奔",
+  //       "墳"
+  //     ]
+  //   },
+  //   "scroll-step": 5,
+  //   "on-click": "amixer -D pipewire sset Master toggle",
+  //   "on-click-right": "pavucontrol",
+  //   "tooltip": false
+  // },
+  // "cpu": {
+  //   "on-click": "kitty --title popupterm btm",
+  //   "tooltip": false,
+  //   "format": "<span font='16' rise='-1850'>﬙ </span><span rise='1675'>{usage}%</span>",
+  //   "interval": 10
+  // },
+  // "network": {
+  //   "format": "<span font='16' rise='-1500'>{icon}</span>",
+  //   "format-icons": {
+  //     "wifi": [
+  //       "直"
+  //     ],
+  //     "ethernet": [
+  //       ""
+  //     ],
+  //     "disconnected": [
+  //       ""
+  //     ]
+  //   },
+  //   "tooltip": true,
+  //   "tooltip-format": "{essid}{ifname}\nIP: {ipaddr}\nRate: {bandwidthUpBits} / {bandwidthDownBits}"
+  // },
+  // "memory": {
+  //   "interval": 30,
+  //   "format": "<span font='16' rise='-1500'> </span><span rise='500'>{used:0.1f}GB</span>",
+  //   "tooltip": true,
+  //   "tooltip-format": "{used:0.1f}GB / {total:0.1f}GB"
+  // },
+  // "battery": {
+  //   "states": {
+  //     "good": 90,
+  //     "warning": 30,
+  //     "critical": 15
+  //   },
+  //   "format": "{icon} {capacity}%",
+  //   "format-charging": " {capacity}%",
+  //   "format-plugged": " {capacity}%",
+  //   "format-alt": "{icon} {time}",
+  //   "format-good": "{icon} {capacity}%",
+  //   "format-full": "{icon} {capacity}%",
+  //   "format-icons": [
+  //     "",
+  //     "",
+  //     "",
+  //     "",
+  //     ""
+  //   ]
+  // },
+  // "temperature": {
+  //   "thermal-zone": 2,
+  //   "hwmon-path": "/sys/class/hwmon/hwmon3/temp1_input",
+  //   "critical-threshold": 80,
+  //   "format": "<span font='16' rise='-1500'>﨎 </span><span rise='500'>{temperatureC}°C</span>",
+  //   "format-critical": "<span font='16' rise='-1500'>﨎 </span><span rise='500'>{temperatureC}°C</span>"
+  // }
+}

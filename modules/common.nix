@@ -470,20 +470,23 @@
   # SYSTEM ENVIRONMENT
   #
 
-  # Global Qt styling. Automatically installs the necessary packages depending on settings used.
-  # For example, `platformTheme = "qt5ct"` will install `pkgs.libsForQt5.qt5ct`. The `style` option
-  # may specify a package to use as style, such as adwaita-qt. Simply setting it to "adwaita-dark"
-  # will install it automatically. We set it in Sway's session init instead as we use `qt5ct`.
+  # Global Qt styling, automatically installs necessary packages depending on settings, e.g.
+  # we use `qt5ct` which installs `pkgs.libsForQt5.qt5ct`, a standalone configuration GUI.
   qt5 = {
     # QT_QPA_PLATFORMTHEME
+    #   The platform theme specifies the icons, fonts, widget style, and more.
+    #
     #   "gnome" -> If you use Gnome       -> Uses as many Gnome settings as possible to style
     #   "kde"   -> If you use KDE         -> Uses KDE's Qt settings to style
     #   "lxqt"  -> If you use LXDE        -> Uses LXDE's Qt settings to style
     #   "gtk2"  -> If you use mostly GTK  -> Uses GTK theme to style
     #   "qt5ct" -> If you use a computer  -> Uses `qt5ct` app to specify styles, icons, and cursors
+
     platformTheme = "qt5ct";
 
     # QT_STYLE_OVERRIDE
+    #    Optionally overrides widget style. We skip this since we use `qt5ct` which sets it for us.
+    #
     #   "adwaita"
     #   "adwaita-dark"
     #   "cleanlooks"
@@ -491,13 +494,7 @@
     #   "motif"
     #   "plastique"
     #
-    # We skip style since we'll use `qt5ct` which is not a valid option. Instead we set the variable
-    # to "kvantum-dark" in the Sway `extraSessionCommands` since we use `qt5ct` with Kvantum.
-    # Kvantum is an more modern, SVG based engine with fancier effects we don't give a shit about.
-    #
-    # style = "kvantum-dark";
-    #
-    # TODO: Make a module for this aforementioned shit to support `qt5ct` to centralize the config.
+    # style = "gtk2";
   };
 
   environment = {
@@ -532,10 +529,10 @@
 
     pathsToLink = [ "/share/zsh" "/libexec" ];
 
-    # Auto-launch Sway WM if logging in via tty1 annd River WM if via tty2
+    # Launch Sway if logging in via tty1 and River if via tty2.
     loginShellInit = ''
-      [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ] && exec sway
-      [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty2" ] && exec river
+      [ "$(tty)" = "/dev/tty1" ] && exec /home/dnordstrom/.config/sway/start
+      [ "$(tty)" = "/dev/tty2" ] && exec /home/dnordstrom/.config/river/start
     '';
   };
 }

@@ -1,0 +1,42 @@
+#!/usr/bin/env sh
+
+##
+# RIVER WM STARTUP
+#
+# Sets up the environment before launching River.
+##
+
+# Script paths organized and prefixed by category: `nix/nix-preview`, `launch/launch-app`, etc.
+for directory in ~/.scripts/*; do
+  export PATH="$PATH:$directory"
+done
+
+# Firefox
+export MOZ_DBUS_REMOTE=1
+export MOZ_USE_XINPUT2=1
+
+# Wayland
+export GDK_BACKEND="wayland"
+export GTK_USE_PORTAL=1
+export QT_QPA_PLATFORM="wayland"
+export QT_STYLE_OVERRIDE="qt5ct"
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+
+# River
+export XDG_CURRENT_DESKTOP="river"
+export XDG_SESSION_DESKTOP="river"
+export XDG_SESSION_TYPE="wayland"
+
+# Java
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+# Miscellaneous
+export SDL_VIDEODRIVER="wayland"
+
+dbus-update-activation-environment --systemd \
+  DISPLAY \
+  SWAYSOCK \
+  WAYLAND_DISPLAY \
+  XDG_CURRENT_DESKTOP
+
+river >"$HOME/.local/share/river.log" 2>&1
