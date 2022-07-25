@@ -465,7 +465,7 @@ in {
     fd
     gh
     libnotify
-    masterPackages.awscli2
+    awscli2
     mdcat
     neofetch
     onefetch

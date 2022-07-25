@@ -2,52 +2,50 @@
   description = "nordix system configuration";
 
   inputs = {
-    agenix = {
-      url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nixpkgs = { url = "github:NixOS/nixpkgs/nixos-unstable"; };
-
-    nixpkgs-master = { url = "github:NixOS/nixpkgs/master"; };
 
     nixpkgs-wayland = {
       url = "github:nix-community/nixpkgs-wayland";
       inputs.nixpkgs.follows = "nixpkgs-wayland";
-      inputs.master.follows = "master";
     };
 
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.master.follows = "master";
     };
 
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    rust-overlay = { url = "github:oxalica/rust-overlay"; };
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     firefox-nightly = {
       url = "github:colemickens/flake-firefox-nightly";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    utils = { url = "github:gytis-ivaskevicius/flake-utils-plus"; };
+    utils = {
+      url = "github:gytis-ivaskevicius/flake-utils-plus";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, agenix, firefox-nightly, nixpkgs, nixpkgs-master
-    , nixpkgs-wayland, home-manager, neovim-nightly-overlay, rust-overlay, utils
-    , ... }:
+  outputs = inputs@{ self, agenix, firefox-nightly, nixpkgs, nixpkgs-wayland
+    , home-manager, neovim-nightly-overlay, rust-overlay, utils, ... }:
     let
       inherit (utils.lib) mkFlake;
 
       system = "x86_64-linux";
-
-      nixpkgs-master-overlay = final: prev: {
-        masterPackages = nixpkgs-master.legacyPackages.${prev.system};
-      };
 
       firefox-nightly-overlay = final: prev: {
         firefox-nightly-bin =
@@ -57,7 +55,6 @@
       input-overlays = [
         agenix.overlay
         firefox-nightly-overlay
-        nixpkgs-master-overlay
         neovim-nightly-overlay.overlay
         rust-overlay.overlay
       ];
