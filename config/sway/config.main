@@ -309,10 +309,10 @@ bindsym {
   #
 
   # Mouse
-  #   Button8 -> Forward
-  #   Button9 -> Backward
+  #   Button8 -> Forward  -> Kill application under mouse pointer
+  #   Button9 -> Backward -> Toggle volume control application
   --whole-window button9 kill
-  --whole-window button8 workspace back_and_forth
+  --whole-window button8 exec 'sh -c "true && pkill pavucontrol || pavucontrol"' 
 
   # Keyboard
   $mod+q kill

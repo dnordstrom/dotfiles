@@ -166,7 +166,7 @@
     "on-scroll-up": "pw-volume change +1%; pkill -RTMIN+8 waybar",
     "on-scroll-down": "pw-volume change -1%; pkill -RTMIN+8 waybar",
     "on-click": "pw-volume mute toggle; pkill -RTMIN+8 waybar",
-    "on-click-right": "pavucontrol",
+    "on-click-right": "swaymsg exec pavucontrol",
     "tooltip": false,
   },
   "idle_inhibitor": {

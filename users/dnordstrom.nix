@@ -504,6 +504,8 @@ in {
     imagemagick
     j4-dmenu-desktop
     libinput
+    river
+    rivercarro
     rofi-calc
     rofi-emoji
     rofi-systemd
@@ -695,11 +697,12 @@ in {
 
     # Fonts
     corefonts
-    jetbrains-mono
-    powerline-fonts
-    victor-mono
     fcft # Font loading library used by foot
     font-manager
+    jetbrains-mono
+    nerd-font-patcher
+    powerline-fonts
+    victor-mono
 
     # Qt libs/apps
     libsForQt5.ark

@@ -4,6 +4,7 @@
 
 [
   (import ./nixos-option.nix)
-  (import ./vscodium.nix)
   (import ./packages.nix)
+  (import ./vscodium.nix)
+  (import ./wlroots.nix)
 ]

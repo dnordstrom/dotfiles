@@ -97,6 +97,7 @@ export LESSEDIT="%E ?lm+%lm. %g"
 export NOTES_FILE="$HOME/.notes.md"
 export NOTES_EDITOR="$EDITOR"
 export NOTES_VIEWER="glow -p"
+export NOTES_SYMBOL="*"
 
 #
 # Fzf
@@ -338,7 +339,7 @@ add-note() {
 
   if ! [ -z "$note" ]; then
     backup-notes
-    printf "- $note\n$(cat "$NOTES_FILE")" >"$NOTES_FILE"
+    printf "$NOTES_SYMBOL $note\n$(cat "$NOTES_FILE")" >"$NOTES_FILE"
     [ $# -eq 0 ] && zle kill-whole-line >/dev/null 2>&1
   fi
 }
@@ -597,7 +598,7 @@ zle -N magic-ctrl-z
 zle -N edit-nixos
 zle -N build-nixos
 zle -N view-notes
-zle -N prepend-note
+zle -N add-note
 zle -N edit-notes
 zle -N backup-notes
 zle -N clear-backup-notes
@@ -616,6 +617,10 @@ bindkey -s "^[l" "l\n"
 # Ctrl-Z for fg
 bindkey "^Z" magic-ctrl-z
 
+# Ctrl-N/P navigates history matching current input
+bindkey "^N" history-beginning-search-forward
+bindkey "^P" history-beginning-search-backward
+
 # Paste: Alt-P then specifier
 bindkey "^[pt" insert-timestamp
 bindkey "^[pd" insert-date
@@ -625,8 +630,8 @@ bindkey "^[Pd" prepend-date
 bindkey "^[Pt" prepend-timestamp
 
 # Notes: Alt-N then specifier
+bindkey "^[na" add-note
 bindkey "^[ne" edit-notes
-bindkey "^[na" prepend-note
 bindkey "^[nv" view-notes
 
 # NixOS: Shift-Alt-N then specifier
@@ -661,6 +666,14 @@ zvm_after_lazy_keybindings() {
 
   # Ctrl-Alt-L returns to insert mode again after clearing screen
   zvm_bindkey viins "^[^l" clear-screen-and-ins
+
+  # Alt-N then action to manage notes
+  zvm_bindkey viins "^[na" add-note
+  zvm_bindkey viins "^[ne" edit-notes
+  zvm_bindkey viins "^[nv" view-notes
+  zvm_bindkey vicmd "^[na" add-note
+  zvm_bindkey vicmd "^[ne" edit-notes
+  zvm_bindkey vicmd "^[nv" view-notes
 }
 
 # zvm_after_lazy_keybindings

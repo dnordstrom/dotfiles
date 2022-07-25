@@ -147,7 +147,7 @@ nvim_set_keymap("v", "<Leader>cS", ":sort!<CR>", _nonrecursive)
 nvim_set_keymap("v", "<Leader>cs", ":sort<CR>", _nonrecursive)
 
 --
--- lINES
+-- LINES
 --
 
 -- Insert new and toggle commenting (exit or begin comment block)
@@ -164,11 +164,17 @@ nvim_set_keymap("n", "<M-CR>", "O<Esc>jo<Esc>", {})
 nvim_set_keymap("i", "<S-CR>", "<Esc>yypA", _nonrecursive) -- Shift-Enter to duplicate in insert mode
 nvim_set_keymap("n", "<S-CR>", "yyp$", _nonrecursive) -- Shift-Enter to duplicate in insert mode
 
+-- Move
+nvim_set_keymap("n", "<S-C-k>", "<Cmd>m-2<CR>", {})
+nvim_set_keymap("n", "<S-C-j>", "<Cmd>m+1<CR>", {})
+nvim_set_keymap("v", "<S-C-k>", ":m'<-2<CR>gv", {})
+nvim_set_keymap("v", "<S-C-j>", ":m'>+1<CR>gv", {})
+
 -- Move and reindent
-nvim_set_keymap("n", "<S-C-k>", "<Cmd>m-2<CR>==", _nonrecursive)
-nvim_set_keymap("n", "<S-C-j>", "<Cmd>m+<CR>==", _nonrecursive)
-nvim_set_keymap("v", "<S-C-k>", ":m'<-2<CR>gv=gv", _nonrecursive)
-nvim_set_keymap("v", "<S-C-j>", ":m'>+<CR>gv=gv", _nonrecursive)
+nvim_set_keymap("n", "<S-C-M-k>", "<Cmd>m-2<CR>==", _nonrecursive)
+nvim_set_keymap("n", "<S-C-M-j>", "<Cmd>m+<CR>==", _nonrecursive)
+nvim_set_keymap("v", "<S-C-M-k>", ":m'<-2<CR>gv=gv", _nonrecursive)
+nvim_set_keymap("v", "<S-C-M-j>", ":m'>+<CR>gv=gv", _nonrecursive)
 
 --
 -- INSERT MODE
@@ -407,6 +413,12 @@ keymap.set("n", "<Leader>gg", ':Git commit -am ""<Left>', { desc = "Commit with 
 
 -- ...commit with message
 keymap.set("n", "<Leader>gc", ':Git commit -am ""<Left>', { desc = "Commit with message..." })
+
+-- ...fetch
+keymap.set("n", "<Leader>gf", "<Cmd>Git fetch<CR>", { desc = "Fetch" })
+
+-- ...pull
+keymap.set("n", "<Leader>gP", "<Cmd>Git pull<CR>", { desc = "Pull" })
 
 -- ...push
 keymap.set("n", "<Leader>gp", "<Cmd>Git push<CR>", { desc = "Push" })

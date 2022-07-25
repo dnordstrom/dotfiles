@@ -199,8 +199,6 @@ toolbarbutton:hover:not(.bookmark-item) {
  */
 
 #context-inspect-a11y,
-#context-bookmarklink,
-#context-searchselect,
 #context-print-selection,
 #context_bookmarkTab {
   display: none !important;
