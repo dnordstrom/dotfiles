@@ -13,7 +13,7 @@
 
     nixpkgs-wayland = {
       url = "github:nix-community/nixpkgs-wayland";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-wayland";
       inputs.master.follows = "master";
     };
 
@@ -58,7 +58,6 @@
         agenix.overlay
         firefox-nightly-overlay
         nixpkgs-master-overlay
-        nixpkgs-wayland.overlay
         neovim-nightly-overlay.overlay
         rust-overlay.overlay
       ];

@@ -319,7 +319,7 @@
         "flake-compat": "flake-compat_2",
         "lib-aggregate": "lib-aggregate",
         "nixpkgs": [
-          "nixpkgs"
+          "nixpkgs-wayland"
         ]
       },
       "locked": {

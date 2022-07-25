@@ -37,7 +37,11 @@
     };
 
     # Disable annoying warning about dirty Git tree
-    extraOptions = "warn-dirty = false";
+    extraOptions = ''
+      keep-derivations = true
+      keep-failed = true
+      warn-dirty = false
+    '';
   };
 
   #
