@@ -102,7 +102,7 @@ let
   python-packages = ps: with ps; [ i3ipc requests ];
   python-with-packages = pkgs.python3.withPackages python-packages;
 
-in {
+in rec {
   #
   # ENVIRONMENT
   #
@@ -438,6 +438,7 @@ in {
 
     appimage-run
     dolphin
+    gnome.nautilus
 
     #
     # Communication
@@ -715,15 +716,10 @@ in {
     gdk-pixbuf
     glib.bin
     gnome.dconf-editor
-    gnome.nautilus
     gsettings-desktop-schemas
     gtk-engine-murrine
     gtk_engines
     icoutils
-
-    # Themes
-    vimix-icon-theme
-    quintom-cursor-theme
 
     #
     # Interesting prospects
@@ -765,32 +761,11 @@ in {
   # GTK
   #
 
-  gtkConfig = ''
-    gtk-application-prefer-dark-theme = "true"
-  '';
-
-  gtk = {
-    enable = true;
-    font = {
-      name = "Input Sans Condensed";
-      size = 9;
-    };
-    theme = {
-      name = "Catppuccin-yellow";
-      # Manually installed, not packaged
-    };
-    iconTheme = {
-      name = "Vimix-dark";
-      package = pkg.vimix-icon-theme;
-    };
-    cursorTheme = {
-      name = "Quintom_Snow";
-      package = pkgs.quintom-cursor-theme;
-    };
-    gtk2.extraConfig = gtkConfig;
-    gtk3.extraConfig = gtkConfig;
-    gtk4.extraConfig = gtkConfig;
-    gtk3.bookmarks = [
+  gtk = let
+    config = { dark = "true"; };
+    gtk3Config = { gtk-application-prefer-dark-theme = "${config.dark}"; };
+    gtk2Config = ''gtk-application-prefer-dark-theme = "${config.dark}";'';
+    bookmarks = [
       "file:///home/dnordstrom/Code"
       "file:///home/dnordstrom/Backup"
       "file:///home/dnordstrom/Pictures/Screenshots"
@@ -802,6 +777,25 @@ in {
       "file:///etc/nixos/config/firefox NixOS  Config  firefox"
       "file:///etc/nixos/config/nvim NixOS  Config  nvim"
     ];
+  in {
+    enable = true;
+    font = {
+      name = "Input Sans Condensed";
+      size = 9;
+    };
+    theme.name = "Catppuccin-yellow"; # No package---manually installed
+    iconTheme = {
+      name = "Vimix-dark";
+      package = pkgs.vimix-icon-theme;
+    };
+    cursorTheme = {
+      name = "Quintom_Snow";
+      package = pkgs.quintom-cursor-theme;
+    };
+    gtk2.extraConfig = gtk2Config;
+    gtk3.extraConfig = gtk3Config;
+    gtk4.extraConfig = gtk3Config;
+    gtk3.bookmarks = bookmarks;
   };
 
   #

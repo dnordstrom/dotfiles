@@ -38,8 +38,6 @@
 
     # Disable annoying warning about dirty Git tree
     extraOptions = ''
-      keep-derivations = true
-      keep-failed = true
       warn-dirty = false
     '';
   };
@@ -54,14 +52,10 @@
       "datagrip"
       "input-fonts"
       "slack"
-      "steam-runtime"
-      "spotify"
-      "spotify-unwrapped"
-      "hqplayer-desktop"
     ];
 
   nixpkgs.config = {
-    permittedInsecurePackages = [ "electron-9.4.4" "electron-12.2.3" ];
+    permittedInsecurePackages = [ ];
     input-fonts.acceptLicense = true;
     firefox.enableTridactylNative = true;
   };
@@ -109,17 +103,8 @@
   #
 
   fonts = {
-    fonts = with pkgs; [
-      cascadia-code
-      noto-fonts
-      noto-fonts-emoji
-      fira-code
-      fira-code-symbols
-
-      (nerdfonts.override {
-        fonts = [ "Iosevka" "FiraCode" "CascadiaCode" "Hack" ];
-      })
-    ];
+    fonts = with pkgs;
+      [ (nerdfonts.override { fonts = [ "Iosevka" "Hack" ]; }) ];
   };
 
   #
@@ -153,7 +138,6 @@
       enable = true;
       alsa.enable = true;
       pulse.enable = true;
-      jack.enable = true;
       wireplumber.enable = true;
 
       config.pipewire = {
@@ -366,27 +350,6 @@
   };
 
   #
-  # Virtualization
-  #
-
-  virtualisation = {
-    docker.enable = false;
-    virtualbox.host.enable = false;
-
-    libvirtd = {
-      enable = false;
-      qemu = {
-        package = pkgs.qemu_kvm;
-        ovmf = {
-          enable = false;
-          packages = [ pkgs.OVMFFull ];
-        };
-        swtpm.enable = false;
-      };
-    };
-  };
-
-  #
   # XDG
   #
 
@@ -473,6 +436,8 @@
   # Global Qt styling, automatically installs necessary packages depending on settings, e.g.
   # we use `qt5ct` which installs `pkgs.libsForQt5.qt5ct`, a standalone configuration GUI.
   qt5 = {
+    enable = true;
+
     # QT_QPA_PLATFORMTHEME
     #   The platform theme specifies the icons, fonts, widget style, and more.
     #
@@ -498,19 +463,19 @@
   };
 
   environment = {
-    variables = {
-      VST_PATH =
-        "/nix/var/nix/profiles/system/lib/vst:/var/run/current-system/sw/lib/vst:~/.vst";
-      LXVST_PATH =
-        "/nix/var/nix/profiles/system/lib/lxvst:/var/run/current-system/sw/lib/lxvst:~/.lxvst";
-      LADSPA_PATH =
-        "/nix/var/nix/profiles/system/lib/ladspa:/var/run/current-system/sw/lib/ladspa:~/.ladspa";
-      LV2_PATH =
-        "/nix/var/nix/profiles/system/lib/lv2:/var/run/current-system/sw/lib/lv2:~/.lv2";
-      DSSI_PATH =
-        "/nix/var/nix/profiles/system/lib/dssi:/var/run/current-system/sw/lib/dssi:~/.dssi";
-      LIBVIRT_DEFAULT_URI = "qemu:///system";
-    };
+    # variables = {
+    #   VST_PATH =
+    #     "/nix/var/nix/profiles/system/lib/vst:/var/run/current-system/sw/lib/vst:~/.vst";
+    #   LXVST_PATH =
+    #     "/nix/var/nix/profiles/system/lib/lxvst:/var/run/current-system/sw/lib/lxvst:~/.lxvst";
+    #   LADSPA_PATH =
+    #     "/nix/var/nix/profiles/system/lib/ladspa:/var/run/current-system/sw/lib/ladspa:~/.ladspa";
+    #   LV2_PATH =
+    #     "/nix/var/nix/profiles/system/lib/lv2:/var/run/current-system/sw/lib/lv2:~/.lv2";
+    #   DSSI_PATH =
+    #     "/nix/var/nix/profiles/system/lib/dssi:/var/run/current-system/sw/lib/dssi:~/.dssi";
+    #   LIBVIRT_DEFAULT_URI = "qemu:///system";
+    # };
 
     systemPackages = with pkgs; [
       git
@@ -519,10 +484,7 @@
       polkit_gnome
       roon-server
       steam-run
-      virt-manager-qt
       wget
-      win-qemu
-      win-virtio
       xdg-desktop-portal
       yarn
     ];
