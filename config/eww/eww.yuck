@@ -1,45 +1,37 @@
+(defpoll volume :interval "1s"
+  "amixer -D pipewire sget Master | grep 'Left:' | awk -F'[][]' '{ print $2 }' | tr -d '%' | head -1")
+
+(defpoll time :interval "10s"
+  "date '+%H:%M'")
+
 (defwidget bar []
   (centerbox :orientation "h"
-    (workspaces)
-    (music)
-    (sidestuff)))
+    (left)
+    (center)
+    (right)))
 
-(defwidget sidestuff []
-  (box :class "sidestuff" :orientation "h" :space-evenly false :halign "end"
-    (metric :label "🔊"
-            :value volume
-            :onchange "amixer -D pulse sset Master {}%")
-    (metric :label ""
+(defwidget left []
+  (box :class "left" :orientation "h" :space-evenly false :halign "start"
+    (workspaces)))
+
+(defwidget center []
+  (box :class "center" :orientation "h" :space-evenly false :halign "center"
+    (time)))
+
+(defwidget right []
+  (box :class "right" :orientation "h" :space-evenly false :halign "end"
+    (metric :label "CPU"
+            :value {round(EWW_CPU.avg, 0)}
+            :onchange "")
+    (metric :label "RAM"
             :value {EWW_RAM.used_mem_perc}
             :onchange "")
-    (metric :label "💾"
+    (metric :label "DISK"
             :value {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}
             :onchange "")
-    time))
-
-(defwidget workspaces []
-  (box :class "workspaces"
-       :orientation "h"
-       :space-evenly true
-       :halign "start"
-       :spacing 10
-    (button :onclick "wmctrl -s 0" 1)
-    (button :onclick "wmctrl -s 1" 2)
-    (button :onclick "wmctrl -s 2" 3)
-    (button :onclick "wmctrl -s 3" 4)
-    (button :onclick "wmctrl -s 4" 5)
-    (button :onclick "wmctrl -s 5" 6)
-    (button :onclick "wmctrl -s 6" 7)
-    (button :onclick "wmctrl -s 7" 8)
-    (button :onclick "wmctrl -s 8" 9)))
-
-(defwidget music []
-  (box :class "music"
-       :orientation "h"
-       :space-evenly false
-       :halign "center"
-    {music != "" ? "🎵${music}" : ""}))
-
+    (metric :label "VOL"
+            :value volume
+            :onchange "amixer -D pipewire sset Master {}%")))
 
 (defwidget metric [label value onchange]
   (box :orientation "h"
@@ -52,24 +44,38 @@
            :value value
            :onchange onchange)))
 
+(defwidget time []
+  (box :class "time"
+       :orientation "h"
+       :space-evenly false
+       :halign "end"
+    time))
 
-
-(deflisten music :initial ""
-  "playerctl --follow metadata --format '{{ artist }} - {{ title }}' || true")
-
-(defpoll volume :interval "1s"
-  "scripts/getvol")
-
-(defpoll time :interval "10s"
-  "date '+%H:%M %b %d, %Y'")
+(defwidget workspaces []
+  (box :class "workspaces"
+       :orientation "h"
+       :space-evenly true
+       :halign "start"
+       :spacing 10
+    (button :onclick "riverctl set-focused-tags 1" "綠")
+    (button :onclick "riverctl set-focused-tags 2" "祿")
+    (button :onclick "riverctl set-focused-tags 4" "祿")
+    (button :onclick "riverctl set-focused-tags 8" "祿")
+    (button :onclick "riverctl set-focused-tags 16" "祿")
+    (button :onclick "riverctl set-focused-tags 32" "祿")
+    (button :onclick "riverctl set-focused-tags 64" "祿")
+    (button :onclick "riverctl set-focused-tags 128" "祿")
+    (button :onclick "riverctl set-focused-tags 256" "祿")))
 
 (defwindow bar
   :monitor 0
   :windowtype "dock"
   :geometry (geometry :x "0%"
                       :y "0%"
-                      :width "90%"
-                      :height "10px"
+                      :width "100%"
+                      :height "34px"
                       :anchor "top center")
-  :reserve (struts :side "top" :distance "4%")
+  :stacking "fg"
+  :exclusive true
+  :focusable false
   (bar))

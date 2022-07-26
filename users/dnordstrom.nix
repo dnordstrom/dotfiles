@@ -513,6 +513,7 @@ in rec {
     rofi-wayland
     slurp
     swappy
+    swaybg
     swayidle # TODO: Use systemd service option instead.
     swaylock-effects
     swayr
