@@ -72,7 +72,7 @@
 
       grub = {
         backgroundColor = "#D9DCD3";
-        configurationLimit = 50;
+        configurationLimit = 100;
         device = "nodev";
         efiSupport = true;
         enable = true;
@@ -141,87 +141,81 @@
       wireplumber.enable = true;
 
       config.pipewire = {
-        "context.properties" = {
-          "link.max-buffers" = 16;
-          "default.clock.rate" = 44100;
-          "default.clock.allowed-rates" =
+        context.properties = {
+          link.max-buffers = 16;
+          default.clock.rate = 44100;
+          default.clock.allowed-rates =
             [ 44100 48000 88200 96000 176400 192000 384000 ];
-          "core.daemon" = true;
-          "core.name" = "pipewire-0";
+          core.daemon = true;
+          core.name = "pipewire-0";
         };
       };
-
-      config.pipewire-pulse = {
-        "stream.properties" = { "resample.quality" = 10; };
-      };
-
-      config.client = { "stream.properties" = { "resample.quality" = 10; }; };
 
       media-session.config.alsa-monitor.rules = [
         # USB digital output
         {
           matches = [{
-            "node.name" =
+            node.name =
               "alsa_output.usb-Focusrite_Scarlett_Solo_USB_Y7WND901607934-00.iec958-stereo";
           }];
           actions = {
             update-props = {
-              "audio.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
-              "audio.format" = "S32_LE";
-              "audio.rate" = 44100;
-              "resample.quality" = 10;
+              asdio.allowed-rates = [ 44100 48000 88200 96000 176400 192000 ];
+              audio.format = "S32_LE";
+              audio.rate = 44100;
+              resample.quality = 10;
             };
           };
         }
         # USB digital input
         {
           matches = [{
-            "node.name" =
+            node.name =
               "alsa_input.usb-Focusrite_Scarlett_Solo_USB_Y7WND901607934-00.iec958-stereo";
           }];
           actions = {
             update-props = {
-              "audio.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
-              "audio.format" = "S16_LE";
-              "audio.rate" = 44100;
+              audio.allowed-rates = [ 44100 48000 88200 96000 176400 192000 ];
+              audio.format = "S16_LE";
+              audio.rate = 44100;
             };
           };
         }
         # Onboard analog output
         {
           matches =
-            [{ "node.name" = "alsa_output.pci-0000_0b_00.3.analog-stereo"; }];
+            [{ node.name = "alsa_output.pci-0000_0b_00.3.analog-stereo"; }];
           actions = {
             update-props = {
-              "audio.allowed-rates" = [ 44100 48000 ];
-              "audio.format" = "S24_LE";
-              "audio.rate" = 44100;
-              "resample.quality" = 10;
+              audio.allowed-rates = [ 44100 48000 ];
+              audio.format = "S24_LE";
+              audio.rate = 44100;
+              resample.quality = 10;
             };
           };
         }
         # Onboard digital output
         {
           matches =
-            [{ "node.name" = "alsa_output.pci-0000_0b_00.3.iec958-stereo"; }];
+            [{ node.name = "alsa_output.pci-0000_0b_00.3.iec958-stereo"; }];
           actions = {
             update-props = {
-              "audio.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 ];
-              "audio.format" = "S32_LE";
-              "audio.rate" = 44100;
-              "resample.quality" = 10;
+              audio.allowed-rates = [ 44100 48000 88200 96000 176400 192000 ];
+              audio.format = "S32_LE";
+              audio.rate = 44100;
+              resample.quality = 10;
             };
           };
         }
         # Onboard analog input
         {
           matches =
-            [{ "node.name" = "alsa_input.pci-0000_0b_00.3.analog-stereo"; }];
+            [{ node.name = "alsa_input.pci-0000_0b_00.3.analog-stereo"; }];
           actions = {
             update-props = {
-              "audio.allowed-rates" = [ 44100 ];
-              "audio.format" = "S16_LE";
-              "audio.rate" = 44100;
+              audio.allowed-rates = [ 44100 ];
+              audio.format = "S16_LE";
+              audio.rate = 44100;
             };
           };
         }
@@ -230,21 +224,21 @@
       # Bluetooth audio
       media-session.config.bluez-monitor.rules = [
         {
-          matches = [{ "device.name" = "~bluez_card.*"; }];
+          matches = [{ device.name = "~bluez_card.*"; }];
           actions = {
-            "update-props" = {
-              "bluez5.reconnect-profiles" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
-              "bluez5.msbc-support" = true;
-              "bluez5.sbc-xq-support" = true;
+            update-props = {
+              bluez5.reconnect-profiles = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
+              bluez5.msbc-support = true;
+              bluez5.sbc-xq-support = true;
             };
           };
         }
         {
           matches = [
-            { "node.name" = "~bluez_input.*"; }
-            { "node.name" = "~bluez_output.*"; }
+            { node.name = "~bluez_input.*"; }
+            { node.name = "~bluez_output.*"; }
           ];
-          actions = { "node.pause-on-idle" = false; };
+          actions = { node.pause-on-idle = false; };
         }
       ];
     };
@@ -361,7 +355,6 @@
       enable = true;
 
       extraPortals = with pkgs; [
-        xdg-desktop-portal
         xdg-desktop-portal-gtk
         xdg-desktop-portal-wlr
         xdg-desktop-portal-kde
@@ -463,19 +456,19 @@
   };
 
   environment = {
-    # variables = {
-    #   VST_PATH =
-    #     "/nix/var/nix/profiles/system/lib/vst:/var/run/current-system/sw/lib/vst:~/.vst";
-    #   LXVST_PATH =
-    #     "/nix/var/nix/profiles/system/lib/lxvst:/var/run/current-system/sw/lib/lxvst:~/.lxvst";
-    #   LADSPA_PATH =
-    #     "/nix/var/nix/profiles/system/lib/ladspa:/var/run/current-system/sw/lib/ladspa:~/.ladspa";
-    #   LV2_PATH =
-    #     "/nix/var/nix/profiles/system/lib/lv2:/var/run/current-system/sw/lib/lv2:~/.lv2";
-    #   DSSI_PATH =
-    #     "/nix/var/nix/profiles/system/lib/dssi:/var/run/current-system/sw/lib/dssi:~/.dssi";
-    #   LIBVIRT_DEFAULT_URI = "qemu:///system";
-    # };
+    variables = {
+      VST_PATH =
+        "/nix/var/nix/profiles/system/lib/vst:/var/run/current-system/sw/lib/vst:~/.vst";
+      LXVST_PATH =
+        "/nix/var/nix/profiles/system/lib/lxvst:/var/run/current-system/sw/lib/lxvst:~/.lxvst";
+      LADSPA_PATH =
+        "/nix/var/nix/profiles/system/lib/ladspa:/var/run/current-system/sw/lib/ladspa:~/.ladspa";
+      LV2_PATH =
+        "/nix/var/nix/profiles/system/lib/lv2:/var/run/current-system/sw/lib/lv2:~/.lv2";
+      DSSI_PATH =
+        "/nix/var/nix/profiles/system/lib/dssi:/var/run/current-system/sw/lib/dssi:~/.dssi";
+      LIBVIRT_DEFAULT_URI = "qemu:///system";
+    };
 
     systemPackages = with pkgs; [
       git

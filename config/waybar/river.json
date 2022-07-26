@@ -22,13 +22,13 @@
   //   "icon-size": 14,
   //   "spacing": 22
   // },
-  // "clock": {
-  //   "format": "<span font='16' rise='-1500'></span> {:%R}",
-  //   "format-alt": "<span font='16' rise='-1500'></span> {:%A, %B %d}",
-  //   "tooltip": false,
-  //   "on-click-middle": "xdg-open https://calendar.protonmail.com",
-  //   "on-click-right": "xdg-open https://calendar.google.com"
-  // },
+  "clock": {
+    "format": "<span font='16' rise='-1500'></span> {:%R}",
+    "format-alt": "<span font='16' rise='-1500'></span> {:%A, %B %d}",
+    "tooltip": false,
+    "on-click-middle": "xdg-open https://calendar.protonmail.com",
+    "on-click-right": "xdg-open https://calendar.google.com"
+  }
   // "custom/clock": {
   //   "interval": 1,
   //   "exec": "/etc/nixos/scripts/waybar/waybar-clock",

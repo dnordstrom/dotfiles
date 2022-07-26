@@ -2,8 +2,8 @@
 #
 # FZF COMMAND LAUNCHER
 #
-# Opens new terminal window listing commands with fzf, and runs the selected command in yet another
-# terminal window.
+# Opens a terminal and lists available commands using `fzf`. The selected command is executed in a
+# new terminal window according to the settings below.
 #
 # Based on the application launcher, which in turn is based on fzf-startify by ldelossa.
 #
@@ -12,10 +12,10 @@
 # CONSTANTS
 #
 
-SCRIPT="$0"
-BOLD="\e[1m"
-BLUE="\e[34m"
-NORMAL="\e[0m"
+script="$0"
+bold="\e[1m"
+blue="\e[34m"
+normal="\e[0m"
 
 #
 # OPTIONS
@@ -30,14 +30,14 @@ cache="$HOME/.cache/launch-command"
 
 # Terminal
 terminal="kitty"
-shell="zsh"
-title="fuzzyterm"
-runner_title="popupterm"
-opacity="0.9"
+terminal_shell="zsh"
+launcher_title="fuzzyterm"
+terminal_title="popupterm"
+terminal_opacity="0.9"
 clipboard="wl-copy"
 
 # Styles
-namestyle="$BOLD$BLUE"
+name_style="$bold$blue"
 
 #
 # LAUNCHER
@@ -59,7 +59,7 @@ if [ "$LAUNCHER_FIFO" != "" ]; then
     # Read results from pipe
     while read -r path; do
       cmd="$path"
-      name="$namestyle$path$NORMAL"
+      name="$name_style$path$normal"
       entries="$name\n$entries"
     done <"$LAUNCHER_FIFO"
 
@@ -79,14 +79,19 @@ if [ "$LAUNCHER_FIFO" != "" ]; then
 
     # Run in new terminal, otionally keep shell running after process exits
     if [ "$keep_shell" = "true" ]; then
-      cmd="$terminal --title $runner_title -e $shell -c '$(which "$cmd") && $shell'"
+      cmd="$terminal --title $terminal_title -e $terminal_shell -c '$(which "$cmd") && $terminal_shell'"
     else
-      cmd="$terminal --title $runner_title -e $shell -c '$(which "$cmd")'"
+      cmd="$terminal --title $terminal_title -e $terminal_shell -c '$(which "$cmd")'"
     fi
 
-    # Run the command associated with the entry (using `swaymsg exec` if possible)
-    if [ -x "$(command -v swaymsg)" ]; then
-      sway-notify "$cmd"
+    # Use specific exec/spawn command if provided, otherwise check for window manager commands
+    if [ -n "$exec" ] && [ -x "$(command -v "$exec")" ]; then
+      # Found swaymsg: use it to keep process alive after the shell exits
+      eval "$exec $cmd"
+    elif [ "$XDG_CURRENT_DESKTOP" = "river" ] && [ -x "$(command -v riverctl)" ]; then
+      # Found swaymsg: use it to keep process alive after the shell exits
+      riverctl spawn "$cmd"
+    elif [ "$XDG_CURRENT_DESKTOP" = "sway" ] && [ -x "$(command -v swaymsg)" ]; then
       # Found swaymsg: use it to keep process alive after the shell exits
       swaymsg -t command exec "$cmd"
     elif [ -x "$(command -v bash)" ]; then
@@ -108,12 +113,12 @@ fi
 #
 
 # Create named pipe for search results
-LAUNCHER_FIFO="$(mktemp -d)/results"
-mkfifo -m 600 "$LAUNCHER_FIFO"
+fifo="$(mktemp -d)/results"
+mkfifo -m 600 "$fifo"
 
 # Rerun in new terminal window
 "$terminal" \
-  --title "$title" \
-  --override "background_opacity=$opacity" \
+  --title "$launcher_title" \
+  --override "background_opacity=$terminal_opacity" \
   -e \
-  "$shell" -c "LAUNCHER_FIFO=$LAUNCHER_FIFO $SCRIPT"
+  "$terminal_shell" -c "LAUNCHER_FIFO=$fifo $script"

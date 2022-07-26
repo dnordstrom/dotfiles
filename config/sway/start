@@ -19,7 +19,7 @@ export MOZ_USE_XINPUT2=1
 export GDK_BACKEND="wayland"
 export GTK_USE_PORTAL=1
 export QT_QPA_PLATFORM="wayland"
-export QT_STYLE_OVERRIDE="qt5ct"
+export QT_QPA_PLATFORMTHEME="qt5ct"
 export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 
 # River
@@ -33,10 +33,6 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 # Miscellaneous
 export SDL_VIDEODRIVER="wayland"
 
-dbus-update-activation-environment --systemd \
-  DISPLAY \
-  SWAYSOCK \
-  WAYLAND_DISPLAY \
-  XDG_CURRENT_DESKTOP
+dbus-update-activation-environment --systemd --all
 
-sway >"$HOME/.local/share/sway.log" 2>&1
+sway 2>"$HOME/.logs/sway.log"

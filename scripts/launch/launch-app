@@ -6,7 +6,7 @@
 #
 #   The script finds and parses .desktop files and displays the results in a `fzf` menu for
 #   selection. If an application is selected, the associated `Exec` command is executed. Uses
-#   `swaymsg` if available and otherwise good old background execution.
+#   `riverctl` or `swaymsg` if available and otherwise good old background execution.
 #
 # CREDIT
 #   Based on ldelossa's `sway-fzfify`, edited for NixOS, POSIX, ANSI coloring, and shfmt formatting.
@@ -55,9 +55,9 @@ normal="\e[0m"
 #
 
 # Behavior
-cacheEnabled=true                            # Enable caching (Ctrl-C to clear)
-cacheMenuFile="$HOME/.cache/launch-app-menu" # Where to cache menu entries
-cacheMetaFile="$HOME/.cache/launch-app-meta" # Where to cache commands mapped to menu entries
+cache_enabled=true                             # Enable caching (Ctrl-C to clear)
+cache_menu_file="$HOME/.cache/launch-app-menu" # Where to cache menu entries
+cache_meta_file="$HOME/.cache/launch-app-meta" # Where to cache commands mapped to menu entries
 
 # Terminal
 terminal="kitty"
@@ -79,9 +79,9 @@ init() {
 }
 
 # Styles
-namestyle="$bold$blue"    # Name
-descstyle="$italic$black" # Generic name
-typestyle="$black"        # Type, i.e. nixpkgs or Flatpak
+name_style="$bold$blue"    # Name
+desc_style="$italic$black" # Generic name
+type_style="$black"        # Type, i.e. nixpkgs or Flatpak
 
 #
 # LAUNCHER
@@ -96,9 +96,9 @@ if [ -n "$LAUNCHER_FIFO" ]; then
   paths="$(printf "%s" "$XDG_DATA_DIRS" | tr ':' '\n' | xargs -- fd . -e desktop -tx -tl 2>/dev/null)"
 
   # Find cache
-  if [ "$cacheEnabled" = "true" ] && [ -f "$cacheMetaFile" ] && [ -f "$cacheMenuFile" ]; then
-    entries="$(cat "$cacheMetaFile")"
-    choices="$(cat "$cacheMenuFile")"
+  if [ "$cache_enabled" = "true" ] && [ -f "$cache_meta_file" ] && [ -f "$cache_menu_file" ]; then
+    entries="$(cat "$cache_meta_file")"
+    choices="$(cat "$cache_menu_file")"
   else
     # Find desktop files
     oldifs=$IFS
@@ -114,7 +114,7 @@ if [ -n "$LAUNCHER_FIFO" ]; then
 
       cmd="$(grep -Po -m 1 -e "(?<=^Exec=).*" <"$path")"
       name="$(grep -Po -m 1 -e "(?<=^Name=).*" <"$path")"
-      label="$namestyle$name$normal"
+      label="$name_style$name$normal"
       generic="$(grep -Po -m 1 -e "(?<=^GenericName=).*" <"$path")"
 
       # Skip if command is empty (check duplicates with "${entries#*"$path"}" != "$entries")
@@ -124,16 +124,16 @@ if [ -n "$LAUNCHER_FIFO" ]; then
 
       # Add generic name
       if [ "$generic" != "" ]; then
-        label="$label ($descstyle$generic$normal)"
+        label="$label ($desc_style$generic$normal)"
         name="$name ($generic)"
       fi
 
       # Add application type
       if [ "$flatpak" != "" ]; then
-        label="$label$typestyle [Flatpak]$normal"
+        label="$label$type_style [Flatpak]$normal"
         name="$name [Flatpak]"
       else
-        label="$label$typestyle [Nix]$normal"
+        label="$label$type_style [Nix]$normal"
         name="$name [Nix]"
       fi
 
@@ -147,20 +147,26 @@ if [ -n "$LAUNCHER_FIFO" ]; then
       choices="$label\t$cmd\n$choices"
 
       # Cache items and command mappings for instant startup
-      printf "%b" "$entries" >"$cacheMetaFile"
-      printf "%b" "$choices" >"$cacheMenuFile"
+      printf "%b" "$entries" >"$cache_meta_file"
+      printf "%b" "$choices" >"$cache_menu_file"
     done
 
     IFS=$oldifs
   fi
 
   # Show menu and get selected command after removing %U, @@, and similar markers
-  cmd="$(printf "%b" "$choices" | fzf --color="bg+:-1" --delimiter='\t' --with-nth=1 --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down,ctrl-c:execute-silent(rm $cacheMetaFile $cacheMenuFile)+abort,ctrl-y:execute-silent(wl-copy {2})+abort" | cut -f 2 | sed 's,%.,,g' | sed 's,^"\(.*\)"$,\1,g' | sed 's,@@.*@@,,g')"
+  cmd="$(printf "%b" "$choices" | fzf --color="bg+:-1" --delimiter='\t' --with-nth=1 --ansi --cycle --no-info --prompt "› " --pointer "➔ " --marker "» " --bind "tab:down,btab:up,ctrl-u:half-page-up,ctrl-d:half-page-down,ctrl-c:execute-silent(rm $cache_meta_file $cache_menu_file)+abort,ctrl-y:execute-silent(wl-copy {2})+abort" | cut -f 2 | sed 's,%.,,g' | sed 's,^"\(.*\)"$,\1,g' | sed 's,@@.*@@,,g')"
 
   # If selection is not empty, launch mapped command
   if [ -n "$cmd" ]; then
-    # Run the command associated with the entry (using `swaymsg exec` if possible)
-    if [ -x "$(command -v swaymsg)" ]; then
+    # Use specific exec/spawn command if provided, otherwise check for window manager commands.
+    if [ -n "$exec" ] && [ -x "$(command -v "$exec")" ]; then
+      # Found swaymsg: use it to keep process alive after the shell exits
+      eval "$exec $cmd"
+    elif [ "$XDG_CURRENT_DESKTOP" = "river" ] && [ -x "$(command -v riverctl)" ]; then
+      # Found swaymsg: use it to keep process alive after the shell exits
+      riverctl spawn "$cmd"
+    elif [ "$XDG_CURRENT_DESKTOP" = "sway" ] && [ -x "$(command -v swaymsg)" ]; then
       # Found swaymsg: use it to keep process alive after the shell exits
       swaymsg -t command exec "$cmd"
     elif [ -x "$(command -v bash)" ]; then

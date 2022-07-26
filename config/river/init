@@ -12,11 +12,10 @@ spawn_once() {
   pgrep -f "$*" >/dev/null || riverctl spawn "$*"
 }
 
-gnome_schema="org.gnome.desktop.interface"
-
 font_size=8
 font="Input Sans Condensed $font_size"
 
+gnome_schema="org.gnome.desktop.interface"
 gtk_theme="Catppuccin-yellow"
 cursor_theme="Catppuccin-Teal-Cursors"
 icon_theme="Vimix-dark"
@@ -58,9 +57,9 @@ riverctl focus-follows-cursor normal
 # LAUNCHERS
 #
 
-riverctl map normal Super D spawn launch-app
-riverctl map normal Super+Shift D spawn launch-command
-riverctl map normal Super+Shift+Control D spawn wofi
+riverctl map normal Super D spawn "/etc/nixos/scripts/launch/launch-app"
+riverctl map normal Super+Shift D spawn "/etc/nixos/scripts/launch/launch-command"
+riverctl map normal Super+Shift+Control D spawn "wofi"
 
 riverctl map normal Super Return spawn "kitty --title term"
 
@@ -206,7 +205,8 @@ riverctl set-repeat 50 300
 
 # Make certain views start floating
 riverctl float-filter-add app-id float
-riverctl float-filter-add title "popup title with spaces"
+riverctl float-filter-add title popupterm
+riverctl float-filter-add title fuzzyterm
 
 # Set app-ids and titles of views which should use client side decorations
 riverctl csd-filter-add app-id "gedit"
@@ -220,7 +220,9 @@ rivertile -view-padding 6 -outer-padding 6
 # WRAP UP
 #
 
+riverctl spawn "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=river"
+riverctl spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=river"
+
 spawn_once "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
 
-spawn "dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP"
-spawn "systemctl --user start river-session.target"
+spawn "systemctl --user start sway-session.target"

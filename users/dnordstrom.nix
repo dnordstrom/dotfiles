@@ -852,6 +852,8 @@ in rec {
   #   We can't symlink the `~/.config/sway` directory when using home manager, we have to symlink
   #   individual files. For somre reason `xdg.configFile` doesn't work so we use `home.file`.
 
+  home.file.".config/sway/start".source =
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/sway/start";
   home.file.".config/sway/config.main".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/sway/config.main";
   home.file.".config/sway/colors.catppuccin".source =
@@ -938,6 +940,11 @@ in rec {
   home.file.".config/waybar".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/waybar";
 
+  # Eww
+
+  home.file.".config/eww-live".source =
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/eww";
+
   # wlogout
 
   xdg.configFile."wlogout/layout".source = ../config/wlogout/layout;
@@ -977,6 +984,13 @@ in rec {
   programs.waybar = {
     enable = true;
     systemd.target = "sway-session.target";
+  };
+
+  programs.eww = {
+    enable = true;
+    configDir =
+      "${configDir}/config/eww"; # Not "live" so we use mkOutOfStoreSymlink as well
+    package = pkgs.eww-wayland;
   };
 
   programs.nix-index = {
