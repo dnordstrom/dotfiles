@@ -35,5 +35,5 @@ export SDL_VIDEODRIVER="wayland"
 
 # dbus-update-activation-environment --systemd --all
 
-# dbus-launch river 2>"$HOME/.logs/river.log" 2>&1
-river 2>"$HOME/.logs/river.log" 2>&1
+# dbus-launch river 2>"$HOME/.local/share/logs/river.log" 2>&1
+river 2>"$HOME/.local/share/logs/river.log" 2>&1

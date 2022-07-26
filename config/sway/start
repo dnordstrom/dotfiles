@@ -35,4 +35,4 @@ export SDL_VIDEODRIVER="wayland"
 
 dbus-update-activation-environment --systemd --all
 
-sway 2>"$HOME/.logs/sway.log"
+sway 2>"$HOME/.local/share/logs/sway.log"

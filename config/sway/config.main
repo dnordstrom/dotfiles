@@ -563,7 +563,7 @@ bindsym $mod+Backspace mode "$mode_system"
 #
 
 bar {
-  swaybar_command waybar --config "$HOME/.config/waybar/sway.json" 2> "$HOME/.logs/waybar.sway.log"
+  swaybar_command waybar --config "$HOME/.config/waybar/sway.json" 2> "$HOME/.local/share/logs/waybar.sway.log"
 }
 
 #

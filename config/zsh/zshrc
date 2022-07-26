@@ -55,43 +55,25 @@ export PAGER="less"
 # ANSI color code helpers
 #
 
-export ANSI_STYLE_MD="$(
-  tput bold
-  tput setaf 6
-)"
-export ANSI_STYLE_ME="$(tput sgr0)"
-export ANSI_STYLE_SO="$(
-  tput bold
-  tput setaf 0
-  tput setab 3
-)"
-export ANSI_STYLE_SE="$(
-  tput rmso
-  tput sgr0
-)"
-export ANSI_STYLE_US="$(
-  tput smul
-  tput bold
-  tput setaf 7
-)"
-export ANSI_STYLE_UE="$(
-  tput rmul
-  tput sgr0
-)"
-export ANSI_STYLE_MR="$(tput rev)"
-export ANSI_STYLE_MH="$(tput dim)"
-
 #
 # Less
+# 
+# Let's customize the bottom status line and set the command used by the "e" edit bind.
 #
 
-lessline=$ANSI_STYLE_SO"\ ?f\ %f:藍\ STDIN"$ANSI_STYLE_SE
+lessline="$(tput bold; tput setaf 0; tput setab 3)"
+lessline="$lessline\ ?f\ %f:藍\ STDIN"
+lessline="$lessline$(tput rmso; tput sgr0)"
 
 export LESS="-iR -Pm$lessline\$ -Ps$lessline\$"
 export LESSEDIT="%E ?lm+%lm. %g"
 
 #
 # Notes
+#
+# Options for note-taking functions and widgets defined further down. Typing "Awesome note!" and
+# pressing `Alt-n` followed by `a` will run the `add-note` widget and insert a new "* Awesome note!"
+# list item at the top of ~/.notes.md. Running `add-note Awesome note!` directly works too.
 #
 
 export NOTES_FILE="$HOME/.notes.md"
@@ -102,9 +84,62 @@ export NOTES_SYMBOL="*"
 #
 # Fzf
 #
+# Sets default options for `fzf`, for example:
+#
+# * Uses and sets colors.
+# * Uses `bat` to preview.
+# * Uses `rg` to search (faster `grep` written in Rust).
+# * Uses Nerd Font glyphs for prompt, pointer, and markers.
+# * Uses custom binds (e.g. Alt-p to preview, Ctrl-y to copy, and Ctrl-o to open with `xdg-open`).
+#
 
+# Split options for readability, probably just making it worse
+opts="--ansi"   # Enable color sequences
+opts="--color='bg+:-1' $opts"
+opts="--cycle  $opts" # Enable cycling from end to beginning
+opts="--no-info $opts" # Disable item count
+opts="--prompt ' '  $opts"
+opts="--pointer '➔ ' $opts" # Focused item pointer
+opts="--marker '» ' $opts" # Selected item marker
+opts="--preview-window ':hidden' $opts" # Hide preview by default
+
+# Binds (split for readability, single parameter works: `--bind 'tab:down,btab:up`)
+opts="--bind 'tab:down' $opts"
+opts="--bind 'btab:up' $opts"
+
+opts="--bind 'ctrl-y:execute-silent(wl-copy {})' $opts"
+opts="--bind 'ctrl-o:execute-silent(xdg-open {})' $opts"
+
+opts="--bind 'ctrl-u:page-up' $opts"
+opts="--bind 'ctrl-d:page-down' $opts"
+
+opts="--bind 'alt-p:toggle-preview' $opts"
+
+opts="--bind 'alt-h:preview-half-page-up' $opts"
+opts="--bind 'alt-j:preview-down' $opts"
+opts="--bind 'alt-k:preview-up' $opts"
+opts="--bind 'alt-l:preview-half-page-down' $opts"
+
+opts="--bind 'alt-u:preview-page-up' $opts"
+opts="--bind 'alt-d:preview-page-down' $opts"
+
+# Preview shows the first 200 lines of output from:
+#   Files           -> `bat` or `cat`
+#   Directories     -> `tree`
+#   Arbitrary text  -> `echo`
+opts="--preview ' \
+  ([[ -f {} ]] && \
+    (bat --style=changes --color=always {} || cat {}) \
+  ) || \
+  ([[ -d {} ]] && \
+    (tree -C {} | less) \
+  ) || \
+  echo {} 2> /dev/null \
+  | head -200 \
+  ' $opts"
+
+export FZF_DEFAULT_OPTS="$opts"
 export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*" --glob "!node_modules/*"'
-export FZF_DEFAULT_OPTS="--ansi --color='bg+:-1' --cycle --no-info --prompt '› ' --pointer '➔ ' --marker '» ' --bind 'alt-p:toggle-preview,tab:down,btab:up,ctrl-y:execute-silent(wl-copy {}),ctrl-o:execute-silent(xdg-open {}),ctrl-u:half-page-up,ctrl-d:half-page-down' --preview-window ':hidden' --preview '([[ -f {} ]] && (bat --style=changes --color=always {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_CTRL_T_OPTS="$FZF_DEFAULT_OPTS"
 export FZF_ALT_C_OPTS="$FZF_DEFAULT_OPTS"
@@ -675,8 +710,6 @@ zvm_after_lazy_keybindings() {
   zvm_bindkey vicmd "^[ne" edit-notes
   zvm_bindkey vicmd "^[nv" view-notes
 }
-
-# zvm_after_lazy_keybindings
 
 # ZVM by default runs this function to set configuration late; see description of
 # `zvm_after_lazy_keybindings` above as for why we run it manually.
