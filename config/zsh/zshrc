@@ -93,50 +93,65 @@ export NOTES_SYMBOL="*"
 # * Uses custom binds (e.g. Alt-p to preview, Ctrl-y to copy, and Ctrl-o to open with `xdg-open`).
 #
 
-# Split options for readability, probably just making it worse
-opts="--ansi"   # Enable color sequences
-opts="--color='bg+:-1' $opts"
-opts="--cycle  $opts" # Enable cycling from end to beginning
+# Catppuccin theme with disabled background color to make it match the terminal. More variants of
+# this color palette are available on GitHub: https://github.com/catppuccin/fzf
+
+opts="--color=bg:-1,fg:#cdd6f4,hl:#f38ba8" # Background, foreground, and matching text
+opts="--color=bg+:-1,fg+:#cdd6f4,hl+:#f38ba8 $opts" # Same, for highlighted item
+opts="--color=header:#f38ba8,info:#cba6f7,spinner:#f5e0dc $opts" # Header and info
+opts="--color=prompt:#cba6f7,pointer:#f5e0dc:bold,marker:#f5e0dc $opts" # Prompt, pointer, and markers
+
+# General
+
+opts="--cycle $opts" # Enable cycling from end to beginning
 opts="--no-info $opts" # Disable item count
 opts="--prompt ' '  $opts"
 opts="--pointer '➔ ' $opts" # Focused item pointer
 opts="--marker '» ' $opts" # Selected item marker
-opts="--preview-window ':hidden' $opts" # Hide preview by default
+opts="--preview-window hidden $opts" # Hide preview by default
+opts="--ellipsis … $opts" # Use proper ellipsis instead of two(?) periods
 
-# Binds (split for readability, single parameter works: `--bind 'tab:down,btab:up`)
+# Binds (split for readability, `--bind 'tab:down,btab:up,...` works)
+
 opts="--bind 'tab:down' $opts"
 opts="--bind 'btab:up' $opts"
 
-opts="--bind 'ctrl-y:execute-silent(wl-copy {})' $opts"
-opts="--bind 'ctrl-o:execute-silent(xdg-open {})' $opts"
+opts="--bind 'ctrl-space:toggle-down' $opts"
+opts="--bind 'alt-space:toggle-up' $opts"
+
+opts="--bind 'ctrl-y:execute-silent(wl-copy {})+abort' $opts"
+opts="--bind 'ctrl-o:execute-silent(xdg-open {})+abort' $opts"
 
 opts="--bind 'ctrl-u:page-up' $opts"
 opts="--bind 'ctrl-d:page-down' $opts"
 
 opts="--bind 'alt-p:toggle-preview' $opts"
+opts="--bind 'alt-return:toggle-preview' $opts"
+
+opts="--bind 'alt-u:preview-page-up' $opts"
+opts="--bind 'alt-d:preview-page-down' $opts"
 
 opts="--bind 'alt-h:preview-half-page-up' $opts"
 opts="--bind 'alt-j:preview-down' $opts"
 opts="--bind 'alt-k:preview-up' $opts"
 opts="--bind 'alt-l:preview-half-page-down' $opts"
 
-opts="--bind 'alt-u:preview-page-up' $opts"
-opts="--bind 'alt-d:preview-page-down' $opts"
-
-# Preview shows the first 200 lines of output from:
+# Preview shows the first 200 lines of output from the following command:
 #   Files           -> `bat` or `cat`
 #   Directories     -> `tree`
 #   Arbitrary text  -> `echo`
-opts="--preview ' \
-  ([[ -f {} ]] && \
-    (bat --style=changes --color=always {} || cat {}) \
+
+zstyle ':fzf-tab:complete:*:*' fzf-flags --preview-window=default
+zstyle ':fzf-tab:complete:*:*' fzf-preview '\
+  ([ -f $realpath ] && \
+    (bat --style plain --color always $realpath || cat $realpath) \
   ) || \
-  ([[ -d {} ]] && \
-    (tree -C {} | less) \
+  ([ -d $realpath ] && \
+    (command exa -a --icons --group-directories-first --tree --level=2 $realpath) \
   ) || \
-  echo {} 2> /dev/null \
+  echo $realpath 2> /dev/null \
   | head -200 \
-  ' $opts"
+'
 
 export FZF_DEFAULT_OPTS="$opts"
 export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*" --glob "!node_modules/*"'
@@ -148,12 +163,12 @@ export FZF_COMPLETION_OPTS="$FZF_DEFAULT_OPTS"
 
 # Use `rg` for path completion with `fzf`.
 _fzf_compgen_path() {
-  rg --files --hidden --glob "!.git/*" --glob "!node_modules/*"
+  rg --hidden --files --glob "!.git/*" --glob "!node_modules/*"
 }
 
 # Use `fd` for directory completion with `fzf`.
 _fzf_compgen_dir() {
-  fd --type d --hidden --follow --exclude ".git" . "$1"
+	rg --hidden --files --glob "!.git/*" --glob "!node_modules/*" . 2>/dev/null | awk 'function dirname(fn) { if (fn == "") return ".";  if (fn !~ "[^/]") return "/"; sub("/*$", "", fn); if (fn !~ "/") return "."; sub("/[^/]*$", "", fn); if (fn == "") fn = "/"; return fn } {$0 = dirname($0)} !a[$0]++'
 }
 
 # Use `fzf` with command-specific previews.
@@ -162,7 +177,7 @@ _fzf_comprun() {
   shift
 
   case "$command" in
-  cd) fzf "$@" --preview 'tree -C {} | head -200' ;;
+  cd) fzf "$@" --preview 'command exa -a --icons --group-directories-first --tree --level=2 {} | head -200' ;;
   export | unset | env) fzf "$@" --preview "eval 'echo \$'{}" ;;
   ssh) fzf "$@" --preview 'dig {}' ;;
   *) fzf "$@" ;;
@@ -638,6 +653,7 @@ zle -N edit-notes
 zle -N backup-notes
 zle -N clear-backup-notes
 zle -N clear-screen-and-ins
+zle -N fzf_comprun _fzf_comprun
 
 #
 # KEY BINDS

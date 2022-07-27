@@ -380,7 +380,7 @@ nvim_set_keymap("n", "<Leader>dF", "<Cmd>lua vim.lsp.buf.range_format()<CR>", _s
 
 -- ...refactoring
 nvim_set_keymap("n", "<Leader>dr", ":lua require('refactoring').select_refactor()<CR>", _nonrecursive)
-nvim_set_keymap("i", "<M-Leader>dr", ":lua require('refactoring').select_refactor()<CR>", _nonrecursive)
+nvim_set_keymap("i", "<M-Space>dr", ":lua require('refactoring').select_refactor()<CR>", _nonrecursive)
 nvim_set_keymap("i", "<C-r>", ":lua require('refactoring').select_refactor()<CR>", _nonrecursive)
 nvim_set_keymap("n", "<F2>", '<Cmd>lua require("renamer").rename({empty = false})<CR>', _nonrecursive)
 nvim_set_keymap("i", "<F2>", '<Cmd>lua require("renamer").rename({empty = false})<CR>', _nonrecursive)
@@ -389,8 +389,8 @@ nvim_set_keymap("n", "<Leader>dc", '<Cmd>lua require("renamer").rename({empty = 
 -- ...navigation
 nvim_set_keymap("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", _nonrecursive)
 nvim_set_keymap("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", _nonrecursive)
-nvim_set_keymap("n", "F12", "<Cmd>lua vim.lsp.buf.definition()<CR>", _nonrecursive)
-nvim_set_keymap("i", "F12", "<Cmd>lua vim.lsp.buf.definition()<CR>", _nonrecursive)
+nvim_set_keymap("n", "<F12>", "<Cmd>lua vim.lsp.buf.definition()<CR>", _nonrecursive)
+nvim_set_keymap("i", "<F12>", "<Cmd>lua vim.lsp.buf.definition()<CR>", _nonrecursive)
 nvim_set_keymap("n", "<Leader>dn", "<Cmd>lua vim.diagnostic.goto_next()<CR>", _nonrecursive)
 nvim_set_keymap("n", "<Leader>dN", "<Cmd>lua vim.diagnostic.goto_prev()<CR>", _nonrecursive)
 

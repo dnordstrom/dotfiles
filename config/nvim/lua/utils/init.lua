@@ -269,22 +269,44 @@ local toggle_word = function()
 	local cursor = vim.api.nvim_win_get_cursor(window)
 	local word = cword()
 	local substitutions = {
+		["margin"] = "padding",
+		["px"] = "rem",
+
+		["and"] = "or",
+		["&&"] = "||",
+
+		["up"] = "down",
+		["Up"] = "Down",
+		["UP"] = "DOWN",
+
+		["left"] = "right",
+		["Left"] = "Right",
+		["LEFT"] = "RIGHT",
+
 		["enabled"] = "disabled",
 		["enable"] = "disable",
+
 		["true"] = "false",
 		["True"] = "False",
 		["TRUE"] = "FALSE",
-		["left"] = "right",
+
 		["top"] = "bottom",
+		["Top"] = "Bottom",
+		["TOP"] = "BOTTOM",
+
 		["yes"] = "no",
 		["Yes"] = "No",
 		["YES"] = "NO",
+
 		["on"] = "off",
 		["On"] = "Off",
 		["ON"] = "OFF",
+
 		["0"] = "1",
 		["<"] = ">",
 		["+"] = "-",
+		["="] = "!=",
+		["=="] = "!==",
 	}
 
 	vim.tbl_add_reverse_lookup(substitutions)

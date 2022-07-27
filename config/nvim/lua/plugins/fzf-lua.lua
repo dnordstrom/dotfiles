@@ -3,7 +3,7 @@
 ----
 
 local actions = require("fzf-lua.actions")
-local prompt = " › "
+local prompt = "  "
 
 require("fzf-lua").setup({
 	winopts = {
@@ -16,7 +16,9 @@ require("fzf-lua").setup({
 		width = 0.8,
 		row = 0.1,
 		col = 0.1,
+
 		border = "single",
+
 		hl = {
 			normal = "Normal",
 			border = "FloatBorder",
@@ -27,13 +29,13 @@ require("fzf-lua").setup({
 		preview = {
 			default = "builtin",
 			border = "noborder",
-			wrap = "nowrap",
+			wrap = "wrap",
 			hidden = "nohidden",
-			vertical = "down:45%",
-			horizontal = "right:50%",
+			vertical = "down:25%",
+			horizontal = "right:35%",
 			layout = "flex",
 			flip_columns = 120, -- Column to flip layout to horizontal at
-			scrollbar = false,
+			scrollbar = true,
 			winopts = {
 				number = true,
 				relativenumber = false,
@@ -52,30 +54,45 @@ require("fzf-lua").setup({
 	keymap = {
 		builtin = {
 			-- Preview navigation on Alt
-			["<M-f>"] = "toggle-fullscreen",
-			["<M-w>"] = "toggle-preview-wrap",
 			["<M-p>"] = "toggle-preview",
+			["<M-return>"] = "toggle-preview",
+			["<M-w>"] = "toggle-preview-wrap",
+			["<M-z>"] = "toggle-preview-wrap",
+
 			["<M-h>"] = "preview-page-up",
-			["<M-j>"] = "preview-page-down",
-			["<M-k>"] = "preview-page-up",
+			["<M-j>"] = "preview-down",
+			["<M-k>"] = "preview-up",
 			["<M-l>"] = "preview-page-down",
+
 			["<M-u>"] = "preview-page-up",
 			["<M-d>"] = "preview-page-down",
 		},
 		fzf = {
 			-- Fzf navigation on Ctrl
-			["ctrl-space"] = "toggle",
 			["ctrl-z"] = "abort",
-			["ctrl-a"] = "beginning-of-line",
-			["ctrl-e"] = "end-of-line",
-			["ctrl-u"] = "half-page-up",
-			["ctrl-d"] = "half-page-down",
+			["ctrl-space"] = "toggle-down",
+			["alt-space"] = "toggle-up",
 
-			-- Native preview navigation on Alt
+			["ctrl-p"] = "up",
+			["ctrl-n"] = "down",
+
+			["ctrl-u"] = "page-up",
+			["ctrl-d"] = "page-down",
+
+			["ctrl-h"] = "backward-char",
+			["ctrl-j"] = "down",
+			["ctrl-k"] = "up",
+			["ctrl-l"] = "forward-char",
+
+			-- Preview navigation on Alt
 			["alt-p"] = "toggle-preview",
+			["alt-return"] = "toggle-preview",
+			["alt-w"] = "toggle-preview-wrap",
+			["alt-z"] = "toggle-preview-wrap",
+
 			["alt-h"] = "preview-page-up",
-			["alt-j"] = "preview-page-down",
-			["alt-k"] = "preview-page-up",
+			["alt-j"] = "preview-down",
+			["alt-k"] = "preview-up",
 			["alt-l"] = "preview-page-down",
 		},
 	},
@@ -83,14 +100,16 @@ require("fzf-lua").setup({
 	fzf_bin = "fzf",
 	fzf_opts = {
 		["--ansi"] = "",
-		["--no-info"] = "",
+		["--cycle"] = "",
+		["--info"] = "hidden",
 		["--prompt"] = "'" .. prompt .. "'",
 		["--marker"] = "' »'",
 		["--pointer"] = "' ➔'",
+		["--ellipsis"] = "'…'",
 	},
 	files = {
 		prompt = prompt,
-		fd_opts = "-tf -H -E .git -E node_modules",
+		fd_opts = "--type file --hidden --exclude .git --exclude node_modules",
 	},
 	git = {
 		files = {
@@ -114,7 +133,7 @@ require("fzf-lua").setup({
 		prompt = prompt,
 		input_prompt = prompt,
 		rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512",
-		grep_opts = "--binary-files=without-match --line-number --recursive --color=auto --perl-regexp",
+		grep_opts = "--binary-files=without-match --line-number --recursive --color=always --perl-regexp",
 		experimental = true, -- Enable icons for files and Git (decreases performance)
 
 		-- live_grep glob options
@@ -175,7 +194,7 @@ require("fzf-lua").setup({
 		prompt = prompt,
 		async_or_timeout = true,
 		file_icons = true,
-		git_icons = false,
+		git_icons = true,
 		lsp_icons = true,
 		severity = "hint",
 		icons = {
