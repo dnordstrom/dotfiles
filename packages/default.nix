@@ -6,6 +6,7 @@
 { pkgs }: {
   ayu-mirage-theme-gtk = pkgs.callPackage ./ayu-mirage-theme-gtk { };
   convox = pkgs.callPackage ./convox { };
+  lswt = pkgs.callPackage ./lswt { };
   jira-cli = pkgs.callPackage ./jira-cli { };
   openvpn3 = pkgs.callPackage ./openvpn3 {
     inherit (pkgs.python3Packages) docutils jinja2;

@@ -468,8 +468,10 @@ in rec {
     libnotify
     awscli2
     mdcat
+    ncpamixer # TRY: We ready to let Pavucontrol go?
     neofetch
     onefetch
+    pamixer # TRY: ^ See previous question.
     parallel
     rdrview
     ripgrep
@@ -505,6 +507,7 @@ in rec {
     imagemagick
     j4-dmenu-desktop
     libinput
+    light # TRY: See how this works for backlight control. Should supposedly work even in TTY.
     river
     rivercarro
     rofi-calc
@@ -1158,23 +1161,23 @@ in rec {
       }
       {
         name = "zsh-abbrev-alias";
+        file = "abbrev-alias.plugin.zsh";
         src = pkgs.fetchFromGitHub {
           owner = "momo-lab";
           repo = "zsh-abbrev-alias";
           rev = "33fe094da0a70e279e1cc5376a3d7cb7a5343df5";
           sha256 = "sha256-jq5YEpIpvmBa/M7F4NeC77mE9WHSnza3tZwvgMPab7M=";
         };
-        file = "abbrev-alias.plugin.zsh";
       }
       {
         name = "doas";
+        file = "doas.plugin.zsh";
         src = pkgs.fetchFromGitHub {
           owner = "Senderman";
           repo = "doas-zsh-plugin";
           rev = "f5c58a34df2f8e934b52b4b921a618b76aff96ba";
           sha256 = "sha256-136DzYG4v/TuCeJatqS6l7qr7bItEJxENozpUGedJ9o=";
         };
-        file = "doas.plugin.zsh";
       }
     ];
     initExtra = ''
@@ -1191,7 +1194,10 @@ in rec {
   programs.bat = {
     enable = true;
     config = {
-      theme = "ansi";
+      color = "always";
+      italic-text = "always";
+      tabs = 2;
+      theme = "base16-256";
       style = "header-filename,header-filesize,rule,numbers,changes";
     };
   };

@@ -63,7 +63,7 @@ export PAGER="less"
 
 lessline="$(tput bold; tput setaf 0; tput setab 3)"
 lessline="$lessline\ ?f\ %f:藍\ STDIN"
-lessline="$lessline$(tput rmso; tput sgr0)"
+lessline="$lessline$(tput sgr0)"
 
 export LESS="-iR -Pm$lessline\$ -Ps$lessline\$"
 export LESSEDIT="%E ?lm+%lm. %g"
@@ -103,9 +103,10 @@ opts="--color=prompt:#cba6f7,pointer:#f5e0dc:bold,marker:#f5e0dc $opts" # Prompt
 
 # General
 
+opts="--ansi $opts" # Enable ANSI color escape sequences
 opts="--cycle $opts" # Enable cycling from end to beginning
 opts="--no-info $opts" # Disable item count
-opts="--prompt ' '  $opts"
+opts="--prompt ' ' $opts" # Prompt character
 opts="--pointer '➔ ' $opts" # Focused item pointer
 opts="--marker '» ' $opts" # Selected item marker
 opts="--preview-window hidden $opts" # Hide preview by default
@@ -126,7 +127,7 @@ opts="--bind 'ctrl-u:page-up' $opts"
 opts="--bind 'ctrl-d:page-down' $opts"
 
 opts="--bind 'alt-p:toggle-preview' $opts"
-opts="--bind 'alt-return:toggle-preview' $opts"
+opts="--bind 'alt-w:toggle-preview-wrap' $opts"
 
 opts="--bind 'alt-u:preview-page-up' $opts"
 opts="--bind 'alt-d:preview-page-down' $opts"
@@ -136,53 +137,153 @@ opts="--bind 'alt-j:preview-down' $opts"
 opts="--bind 'alt-k:preview-up' $opts"
 opts="--bind 'alt-l:preview-half-page-down' $opts"
 
-# Preview shows the first 200 lines of output from the following command:
+# Generic previewer showing file/directory icon (using `exa`), name, and output of:
 #   Files           -> `bat` or `cat`
-#   Directories     -> `tree`
+#   Directories     -> `exa` in tree view
 #   Arbitrary text  -> `echo`
+opts="--preview='\
+  [ -f {} ] && ( \
+    (command exa --icons --tree --level=1 {} | head -1 && printf "\n") && \
+    (bat --style=plain --color=always {} || cat {})
+  ) || \
+  [ -d {} ] && ( \
+    (command exa -a --icons --group-directories-first --tree --level=2 {})
+  )\
+' $opts"
 
-zstyle ':fzf-tab:complete:*:*' fzf-flags --preview-window=default
-zstyle ':fzf-tab:complete:*:*' fzf-preview '\
-  ([ -f $realpath ] && \
-    (bat --style plain --color always $realpath || cat $realpath) \
+# Same previewer written for Fzf-tab plugin.
+preview='\
+  [ -f "$realpath" ] && ( \
+    (command exa --icons --tree --level=1 "$realpath" | head -1 && printf "\n") && \
+    (bat --style=plain --color=always "$realpath" || cat "$realpath")
   ) || \
-  ([ -d $realpath ] && \
-    (command exa -a --icons --group-directories-first --tree --level=2 $realpath) \
+  [ -d "$realpath" ] && ( \
+    (command exa -a --icons --group-directories-first --tree --level=2 "$realpath")
   ) || \
-  echo $realpath 2> /dev/null \
-  | head -200 \
+  echo "$realpath" 2> /dev/null \
 '
 
 export FZF_DEFAULT_OPTS="$opts"
-export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git/*" --glob "!node_modules/*"'
+export FZF_DEFAULT_COMMAND="rg --files --hidden --glob='!.git/*' --glob='!node_modules/*'"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_CTRL_T_OPTS="$FZF_DEFAULT_OPTS"
 export FZF_ALT_C_OPTS="$FZF_DEFAULT_OPTS"
 export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS"
 export FZF_COMPLETION_OPTS="$FZF_DEFAULT_OPTS"
 
-# Use `rg` for path completion with `fzf`.
+# This function outputs path autocompletion, e.g. on `nvim **<Tab>` or when pressing Ctrl-t. It
+# receives any current input as only argument (`nvim conf**<Tab>` means `$1` is "con"). We're
+# changing it to search using `rg` since it's faster than `find` or `fd` and supposedly more solidly
+# built than `ag` which is another fast alternative.
+#
+# Arguments:
+#   $1 - Current input preceding trigger, for example  "conf" on `nvim conf**<Tab>`.
 _fzf_compgen_path() {
-  rg --hidden --files --glob "!.git/*" --glob "!node_modules/*"
+  rg --hidden --files --glob='!.git/*' --glob='!node_modules/*' . "$1"
 }
 
-# Use `fd` for directory completion with `fzf`.
+# This function outputs directory autocompletion, e.g. on `cd **<Tab>` or when pressing Alt-c. It
+# receives any current input as only argument (`cd Doc**<Tab>` means `$1` is "Doc"). We're changing
+# it to search using `rg` since it's faster than `find` or `fd` and supposedly more solidly built
+# than `ag` which is another fast alternative.
+#
+# The `awk` function does what `dirname` does, but it does it faster. It's needed since `rg` doesn't
+# support searching for directories. More details: https://github.com/junegunn/fzf/issues/1067
+#
+# Arguments:
+#   $1 - Current input preceding trigger, for example  "docu" on `cd docu**<Tab>`.
 _fzf_compgen_dir() {
-	rg --hidden --files --glob "!.git/*" --glob "!node_modules/*" . 2>/dev/null | awk 'function dirname(fn) { if (fn == "") return ".";  if (fn !~ "[^/]") return "/"; sub("/*$", "", fn); if (fn !~ "/") return "."; sub("/[^/]*$", "", fn); if (fn == "") fn = "/"; return fn } {$0 = dirname($0)} !a[$0]++'
+	rg --hidden --files --glob='!.git/*' --glob='!node_modules/*' . "$1" 2>/dev/null | awk 'function dirname(fn) { if (fn == "") return ".";  if (fn !~ "[^/]") return "/"; sub("/*$", "", fn); if (fn !~ "/") return "."; sub("/[^/]*$", "", fn); if (fn == "") fn = "/"; return fn } {$0 = dirname($0)} !a[$0]++'
 }
 
-# Use `fzf` with command-specific previews.
+# This function is called when completion is triggered via `**` and is responsible for launching
+# `fzf`. Overriding this means we can launch it differently depending on context. Useful, since for
+# `export FZF_**` we may want a small preview window at the bottom showing the variable in a
+# `KEY=VALUE` format while `pkill` could use extra binds for sending different signals.
+#
+# Note:
+#   * This is an optional feature so we need to hook it up in the widgets section further down.
+#
+# Arguments:
+#   $* - The command preceding the trigger (which defaults to "**").
 _fzf_comprun() {
-  command=$1
+  command="$1"
   shift
 
   case "$command" in
-  cd) fzf "$@" --preview 'command exa -a --icons --group-directories-first --tree --level=2 {} | head -200' ;;
-  export | unset | env) fzf "$@" --preview "eval 'echo \$'{}" ;;
-  ssh) fzf "$@" --preview 'dig {}' ;;
-  *) fzf "$@" ;;
+  cd) \
+    fzf "$@" --preview-window 'nohidden' ;;
+  which) \
+    fzf "$@" \
+      --preview 'which {} 2>/dev/null' \
+      --preview-window 'nohidden' ;;
+  export | unset) \
+    fzf "$@" \
+      --bind 'ctrl-y:execute-silent(printf "%s=\"%s\"" {} "$(eval echo \${})" | wl-copy)+abort' \
+      --preview 'printf "%s=\"%s\"" {} "$(eval echo \${})" | bat --language=sh --style=plain --color=always' \
+      --preview-window 'nohidden' ;;
+  ssh) \
+    fzf "$@" --preview 'dig {}' ;;
+  *) \
+    fzf "$@" ;;
   esac
 }
+
+# Custom command completion, just messin' around.
+_fzf_complete_i() {
+  printf "%s\n%s\n%s\n" \
+    "Build NixOS" \
+    "Screenshot in 5 seconds..." \
+    "Find with ripgrep (rg)..." \
+    | _fzf_complete --multi --reverse -- "$@"
+}
+
+# Custom command completion post-processing, just messin' around.
+_fzf_complete_i_post() {
+  # Only seem to get the value from within `awk`, not `$*`, idk.
+  input="$(awk '{print $0}')"
+  printf "%s" "$input" | tr '[:lower:]' '[:upper:]'
+}
+
+# Fzf-Tab plugin
+#
+# This plugin is used to replace the default Zsh autocomplete with `fzf` everywhere, so we can use
+# tab rather than an explicit trigger. Using this we can do `cd Docu<Tab>` rather than `cd **<Tab>`.
+# It's configured using `zstyle` and we can set up completion differently for specific commands: for
+# `cd` and any aliases to it we'd use the `:fzf-tab:complete:cd:*` context.
+#
+# Documentation: https://github.com/Aloxaf/fzf-tab/wiki/Configuration
+
+eval "$(dircolors)"
+
+# Set format to enable display of groups, to differentiate local directories vs cdpath
+zstyle ':completion:*:descriptions' format '%d >'
+zstyle ':fzf-tab:*' show-group full
+zstyle ':fzf-tab:*' switch-group '<' '>'
+zstyle ':fzf-tab:*' prefix ''
+
+# Set list colors to enable colorization
+# zstyle ':completion:*' list-colors-extended true
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
+# Generic
+zstyle ':fzf-tab:complete:*:*' fzf-flags --preview-window 'hidden'
+zstyle ':fzf-tab:complete:*:*' fzf-preview $preview
+zstyle ':fzf-tab:complete:*:*' print-query alt-enter
+
+# Ppreview window open on launch
+zstyle ':fzf-tab:complete:(cd|nvim):*' fzf-flags --preview-window 'nohidden'
+
+# `which`
+zstyle ':fzf-tab:complete:which:*' fzf-flags --preview-window 'down,20%,wrap,nohidden'
+zstyle ':fzf-tab:complete:which:*' fzf-preview 'command -v $word && which $word'
+
+# `export`
+zstyle ':fzf-tab:complete:export:*' fzf-flags --preview-window 'down,20%,wrap,nohidden'
+zstyle ':fzf-tab:complete:export:*' fzf-bindings \
+  'ctrl-y:execute-silent({_FTB_INIT_}printf "%s=\"%s\"" "$word" "$(eval echo \$$word)" | wl-copy)+abort'
+zstyle ':fzf-tab:complete:export:*' fzf-preview \
+  'printf "%s=\"%s\"" "$word" "$(eval echo \$$word)" | bat --language sh --style plain --color always'
 
 #
 # ALIASES
@@ -190,7 +291,6 @@ _fzf_comprun() {
 
 # Programs
 alias e="nvim"
-alias v="nvim"
 
 # Utilities
 alias icat="kitty +kitten icat"
@@ -267,8 +367,35 @@ alias clone="git clone"
 # FUNCTIONS
 #
 
+# Prints a super simple eight column table with the 256 eight bit colors for reference.
+#
+#       0-7:  Standard colors (as in ESC [ 30–37 m)
+#      8-15:  High intensity colors (as in ESC [ 90–97 m)
+#    16-231:  6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
+#   232-255:  Grayscale from black to white in 24 steps
+print-ansi-colors() {
+  printf \
+    "\n$(tput bold; tput setaf 0; tput setab 3) ANSI COLORS $(tput sgr0)\n\n%s\n%s\n%s\n%s\n\n" \
+    "    0-7: Standard colors (as in ESC[30–37m)" \
+    "   8-15: High intensity colors (as in ESC[90–97m)" \
+    " 16-231: 6×6×6 cube (216 colors): 16+36×r+6×g+b (0≤r, g, b≤5)" \
+    "232-255: Grayscale from black to white in 24 steps"
+
+  for i in {0..255}; do
+    print -Pn "%K{$i}    %k%F{$i} ${(l:3::0:)i}%f " ${${(M)$((i%8)):#7}:+$'\n'}
+  done
+}
+
+# Starts a simple Python 3 HTTP server listening on the given port (default: 6969). Port may also be
+# specified using the `PORT` environment variable, just in case we get shit mixed uo.
+#
+# Arguments:
+#   $1 = Port the server will listen on.
 py-serve() {
-  python3 -m http.server "${1:-8000}" --bind 127.0.0.1
+  port="${PORT:-6969}"
+  ip="127.0.0.1"
+
+  python3 -m http.server "${1:-$port}" --bind "$ip"
 }
 
 # Does a Git commit and push with given commit message. Fails if no message is provided.
@@ -306,6 +433,22 @@ list-tree-exa() {
 
   printf "\n"
   command exa -a --icons --group-directories-first --group --header --git --long --no-permissions --octal-permissions --tree --level="$levels" "$paths"
+}
+
+# Displays file (or directory) name and icon grabbed from `exa`.
+#
+# Arguments:
+#   $1 - Path of file or directory (default: working directory).
+pretty-file-name() {
+  command exa --icons --tree --level=1 "${*:-$PWD}" | head -1 && printf "\n"
+}
+
+# Displays file (or directory) icon only grabbed from `exa`.
+#
+# Arguments:
+#   $1 - Path of file or directory (default: working directory).
+pretty-file-icon() {
+  command exa --icons --tree --level=1 "${*:-$PWD}" | head -1 | cut -c-3 && printf "\n"
 }
 
 # Displays a directory tree. Two optional arguments specify depth and path. If the first argument is

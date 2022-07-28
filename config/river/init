@@ -81,10 +81,15 @@ rivertile -view-padding 6 -outer-padding 6
 #
 # LAUNCHERS
 #
+# We use our own little shell script launchers instead of some rock-solid, mature crap... In
+# seriousness: we do and they're a little slow, but we cache the results so they're instant.
+# Anywhere we can use `fzf` and our currently favorite terminal, we will---priceless duo.
+#
 
 riverctl map normal Super D spawn "/etc/nixos/scripts/launch/launch-app"
 riverctl map normal Super+Shift D spawn "/etc/nixos/scripts/launch/launch-command"
 riverctl map normal Super+Shift+Control D spawn "wofi"
+# NOTE: `j4-dmenu-desktop` is another alternative. Super fast, runs anything, pairs well with `fzf`.
 
 riverctl map normal Super Return spawn "kitty --title term"
 
@@ -172,15 +177,21 @@ done
 
 # Super+0 to focus all tags
 # Super+Shift+0 to tag focused view with all tags
-all_tags=$(((1 << 32) - 1))
-riverctl map normal Super 0 set-focused-tags $all_tags
-riverctl map normal Super+Shift 0 set-view-tags $all_tags
+all=$(((1 << 32) - 1))
+riverctl map normal Super 0 set-focused-tags $all
+riverctl map normal Super+Shift 0 set-view-tags $all
 
-# Super+Space to toggle float
+# Super+F to toggle fullscreen view
+riverctl map normal Super F toggle-fullscreen
+
+# Super+Shift+F to toggle floating view
 riverctl map normal Super Space toggle-float
 
-# Super+F to toggle fullscreen
+# TRY: Super+F and Super+Shift+F to toggle fullscreen and floating respectively. Let's try this,
+# they're kinda related since tiling, fullscreen, and floating are the only ways we use windows.
+# Also, they mostly start with an `F`, mostly...
 riverctl map normal Super F toggle-fullscreen
+riverctl map normal Super+Shift F toggle-float
 
 # Super+{Up,Right,Down,Left} to change layout orientation
 riverctl map normal Super Up send-layout-cmd rivertile "main-location top"
@@ -192,13 +203,17 @@ riverctl map normal Super Left send-layout-cmd rivertile "main-location left"
 # MODES
 #
 
-riverctl declare-mode status
+riverctl declare-mode system
 
-riverctl map normal Super Space enter-mode status
-riverctl map status Super Space enter-mode normal
-riverctl map status None Escape enter-mode normal
-riverctl map status None Return enter-mode normal
-riverctl map status None T spawn "notify-send Time \"The time is \$(date +'%H:%M').\" ; riverctl enter-mode normal"
+riverctl map normal Super S enter-mode system
+riverctl map system Super S enter-mode normal
+
+riverctl map system None Escape enter-mode normal
+riverctl map system None Return enter-mode normal
+riverctl map system None Space enter-mode normal
+
+riverctl map system None T spawn "notify-send \"\$(date +'%H:%M')\" ; riverctl enter-mode normal"
+riverctl map system None D spawn "notify-send \"\$(date +'%A · %F · Week %V')\" ; riverctl enter-mode normal"
 
 # Declare a passthrough mode. This mode has only a single mapping to return to
 # normal mode. This makes it useful for testing a nested wayland compositor
@@ -238,6 +253,7 @@ done
 riverctl float-filter-add app-id float
 riverctl float-filter-add title popupterm
 riverctl float-filter-add title fuzzyterm
+riverctl float-filter-add app-id pavucontrol
 
 # Client-side decorated windows
 
@@ -247,10 +263,13 @@ riverctl csd-filter-add app-id "nautilus"
 # WRAP UP
 #
 
-riverctl spawn "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=river"
-riverctl spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=river"
+spawn "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=river"
+spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=river"
 
 spawn_once "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
 spawn_once "swaybg --image ~/Pictures/Wallpapers/active3.jpg --mode fill --output '*'"
 
+# We'll piggy-back on the Sway systemd target for now since they'll both use the same tools either
+# way, but River should get its own target eventually, First need to look into how Home Manager
+# manages it and which apps and services we actually use in River.
 spawn "systemctl --user start sway-session.target"
