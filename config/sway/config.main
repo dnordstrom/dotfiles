@@ -227,9 +227,9 @@ input "9456:322:Metadot_-_Das_Keyboard_D4269" {
   # CapsLock -> Escape (via interception-tools, not here)
   #
   # LShift+RShift -> CapsLock
-  # LCtrl+RCtrl -> Switch layout
-  # RAlt -> AltGr
-  # Shift+RAlt -> Compose
+  # LCtrl+RCtrl   -> Switch layout
+  # RAlt          -> AltGr
+  # Shift+RAlt    -> Compose
   xkb_options shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey
 }
 
@@ -242,9 +242,9 @@ input "12851:25345:Ducky_Ducky_One2_Mini_RGB" {
   # CapsLock -> Escape (via interception-tools, not here)
   #
   # LShift+RShift -> CapsLock
-  # LCtrl+RCtrl -> Switch layout
-  # RAlt -> AltGr
-  # Shift+RAlt -> Compose
+  # LCtrl+RCtrl   -> Switch layout
+  # RAlt          -> AltGr
+  # Shift+RAlt    -> Compose
   xkb_options shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey
 }
 
@@ -270,10 +270,10 @@ floating_modifier $mod normal
 bindsym {
   # Launchers
   #
-  #   Mod+Return -> FZF applications
-  #   Mod+Shift+Return -> FZF commands
+  #   Mod+Return            -> FZF applications
+  #   Mod+Shift+Return      -> FZF commands
   #   Mod+Shift+Ctrl+Return -> GUI launcher
-  #   Mod+Shift+Period -> GUI emoji picker
+  #   Mod+Shift+Period      -> GUI emoji picker
 
   $mod+d exec $launchapp
   $mod+Shift+d exec $launchcmd
@@ -281,8 +281,8 @@ bindsym {
 
   # Terminal emulators
   #
-  #   Mod+Return -> Normal
-  #   Mod+Shift+Return -> Scratchpad
+  #   Mod+Return        -> Normal
+  #   Mod+Shift+Return  -> Scratchpad
 
   $mod+Return exec $term
   $mod+Shift+Return exec $termscratch

@@ -1,29 +1,60 @@
-{ stdenv, pkgs, lib, fetchGit }:
+{ stdenv, pkgs, lib, wayland, wayland-scanner }:
+##
+# LSWT
+#
+# Simple command line utility that lists Wayland window titles and IDs. Written by Leon Plickat for
+# River WM but works with any compositor that implements `foreign-toplevel-management-unstable-v1`.
+#
+# NOTE: His <a href="https://git.sr.ht/~leon_plickat">Sourcehut</a> account is a Wayland gold mine.
+##
 
+# We need `rec` to be able to reference the name and version from within the derivation
 stdenv.mkDerivation rec {
-  pname = "lswt";
-  version = "v1.0.4";
-  system = "x86_64-linux";
+  #
+  # VARIABLES
+  #
 
-  src = fetchGit {
+  name = "lswt"; # This shows up when searching packages
+  version = "1.0.4"; # Starting at v1.0.4 to match semantic versioning of `lswt`
+  revision = "2453fc1a09ccfd2aa9ca521ae00dbae2c99e575b";
+
+  #
+  # SOURCE
+  #
+
+  src = builtins.fetchGit {
     url = "https://git.sr.ht/~leon_plickat/lswt";
-    ref = "refs/tags/${version}";
-    sha256 = "sha256-mQb12zs/yQk8tQwhnicoJeNSOUlueJk277o5ZqwO9ek=";
+    ref = "refs/tags/v${version}";
+    rev = revision;
   };
 
-  phases = [ "installPhase" ];
+  #
+  # BUILD
+  #
 
-  installPhase = ''
-    mkdir -p $out/bin
-    cp $src $out/bin/lswt
-    chmod 755 $out/bin/lswt
-  '';
+  # We need some Wayland libraries
+  buildInputs = [ wayland wayland-scanner ];
+
+  # Can't use `autoreconfHook` since there's no `configure.ac` so we set the prefix ourselves
+  installFlags = [ "PREFIX=${placeholder "out"}" ];
+
+  #
+  # META
+  #
 
   meta = with lib; {
     description = "List Wayland toplevels.";
+    license = licenses.gpl3Only;
+    platforms = [ platforms.all ];
+    maintainers = [ maintainers.dnordstrom ];
     homepage = "https://git.sr.ht/~leon_plickat/lswt";
-    license = licenses.gpl3;
-    maintainers = with maintainers; [ dnordstrom ];
-    platforms = platforms.linux;
+    longDescription = ''
+      lswt - list Wayland toplevels
+
+      Requires the Wayland server to implement the foreign-toplevel-management-unstable-v1
+      protocol extension.
+
+      lswt is licensed under the GPLv3.
+    '';
   };
 }

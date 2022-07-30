@@ -21,7 +21,16 @@
     # Use unstable `nix`
     package = pkgs.nixUnstable;
 
+    # CPU scheduling policy for nix daemon: "other" for regular (default), "batch" for
+    # non-interactive, "idle" for low priority. Let's try that. Don't care if it takes longer as
+    # long as the PC isn't completely unresponsive during builds.
+    daemonCPUSchedPolicy = "idle";
+
+    # Build settings
     settings = {
+      # You only get half of our cores
+      cores = 4;
+
       # Users with elevated `nix` command privileges
       trusted-users = [ "root" "dnordstrom" ];
 
@@ -29,7 +38,13 @@
       auto-optimise-store = true;
     };
 
-    # Automatically remove unused packages
+    # Automatically have nix daemon symlink identical files weekly to free storage space
+    optimise = {
+      automatic = true;
+      dates = [ "weekly" ];
+    };
+
+    # Automatically have nix daemon remove unused packages after 30 days
     gc = {
       automatic = true;
       dates = "weekly";
@@ -46,16 +61,15 @@
   # Package configuration
   #
 
-  nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (lib.getName pkg) [
-      "corefonts"
-      "datagrip"
-      "input-fonts"
-      "slack"
-    ];
-
   nixpkgs.config = {
-    permittedInsecurePackages = [ ];
+    allowUnsupportedSystem = true;
+    allowUnfreePredicate = pkg:
+      builtins.elem (lib.getName pkg) [
+        "corefonts"
+        "datagrip"
+        "input-fonts"
+        "slack"
+      ];
     input-fonts.acceptLicense = true;
     firefox.enableTridactylNative = true;
   };
@@ -68,14 +82,14 @@
     kernelPackages = pkgs.linuxPackages_latest;
 
     loader = {
-      systemd-boot.enable = false;
+      systemd-boot.enable = true;
 
       grub = {
         backgroundColor = "#D9DCD3";
         configurationLimit = 100;
         device = "nodev";
         efiSupport = true;
-        enable = true;
+        enable = false;
         useOSProber = false;
         version = 2;
       };

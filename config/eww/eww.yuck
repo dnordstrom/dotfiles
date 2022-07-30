@@ -12,13 +12,14 @@
 ;
 ; * Documentation  
 ;   https://elkowar.github.io/eww  
-;     
 ; * Built-in widgets  
 ;   https://elkowar.github.io/eww/widgets.html
 ;
 ; @author   Daniel Nordstrom <d@mrnordstrom.com>
+; @homepage https://mrnordstrom.com
 ; @license  MIT
-; @updated  2022-07-26
+; @updated  2022-07-29 13:10
+; @version  2022.210
 ;;
 
 (defvar tags "[1, 2, 4, 8, 16, 32, 64, 128, 256]")

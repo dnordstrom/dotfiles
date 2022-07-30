@@ -30,6 +30,13 @@ export XDG_SESSION_TYPE="wayland"
 # Java
 export _JAVA_AWT_WM_NONREPARENTING=1
 
+# Keyboard setup
+export XKB_DEFAULT_OPTIONS="shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey"
+export XKB_DEFAULT_LAYOUT="us"
+# export XKB_DEFAULT_MODEL=""
+# export XKB_DEFAULT_VARIANT=""
+# export XKB_DEFAULT_RULES=""
+
 # Miscellaneous
 export SDL_VIDEODRIVER="wayland"
 

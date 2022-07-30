@@ -339,6 +339,7 @@ alias nixos-build-impure="nixos-build --impure"
 alias nixos-build-debug="nixos-build --stack-trace"
 alias nixos-build-debug-impure="nixos-build-debug --impure"
 alias nixos-edit="nixos-with $EDITOR"
+alias nixos-print-gcroots='find -H /nix/var/nix/gcroots/auto -type l | xargs -- printf "Readlink: %s\nRealpath: %s\n\n" "$(readlink {})" "$(realpath {})"'
 
 alias ne="nixos-edit"
 alias nb="nixos-build"

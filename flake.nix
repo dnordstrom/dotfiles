@@ -24,14 +24,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    firefox-nightly = {
-      url = "github:colemickens/flake-firefox-nightly";
+    nixpkgs-mozilla = {
+      url = "github:mozilla/nixpkgs-mozilla";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     utils = {
       url = "github:gytis-ivaskevicius/flake-utils-plus";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.utils.follows = "utils";
     };
 
     agenix = {
@@ -40,35 +41,29 @@
     };
   };
 
-  outputs = inputs@{ self, agenix, firefox-nightly, nixpkgs, nixpkgs-wayland
+  outputs = inputs@{ self, agenix, nixpkgs-mozilla, nixpkgs, nixpkgs-wayland
     , home-manager, neovim-nightly-overlay, rust-overlay, utils, ... }:
     let
       inherit (utils.lib) mkFlake;
 
-      system = "x86_64-linux";
-
-      firefox-nightly-overlay = final: prev: {
-        firefox-nightly-bin =
-          firefox-nightly.packages.${prev.system}.firefox-nightly-bin;
-      };
-
       input-overlays = [
         agenix.overlay
-        firefox-nightly-overlay
+        nixpkgs-mozilla.overlay
         neovim-nightly-overlay.overlay
         rust-overlay.overlay
       ];
 
       import-overlays = import ./overlays;
+      system = "x86_64-linux";
     in mkFlake {
       inherit self inputs;
 
       supportedSystems = [ system ];
 
       channelsConfig = {
-        allowBroken = false;
+        allowBroken = true;
         allowUnfree = true;
-        allowUnsupportedSystem = false;
+        allowUnsupportedSystem = true;
       };
 
       specialArgs = { inherit inputs; };
@@ -78,17 +73,20 @@
       hostDefaults.modules = [
         ./modules/common.nix
         agenix.nixosModule
-
         home-manager.nixosModules.home-manager
         {
-          home-manager.backupFileExtension = "bak";
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users.dnordstrom = import ./users/dnordstrom.nix;
+          home-manager = {
+            backupFileExtension = "bak";
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            users = { dnordstrom = import ./users/dnordstrom.nix; };
+          };
         }
       ];
 
-      hosts.nordix.modules = [ ./hosts/ryzen.nix ];
-      hosts.nordixlap.modules = [ ./hosts/dell-xps.nix ];
+      hosts = {
+        nordix = { modules = [ ./hosts/ryzen.nix ]; };
+        nordixlap = { modules = [ ./hosts/dell-xps.nix ]; };
+      };
     };
 }

@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+#
+# TAGS FOR STATUS BARS
+#
+# Currently used for Eww widget.
+##
+
+# Get active monitor identifier
+output="$(lswt --json | jq '.[] | select(.activated == true).outputs | first')"
+
+if [ $# -eq 0 ] || [ "$1" = "view" ]; then
+  lswt --json | jq ".[] | select(.activated == true)"
+elif [ "$1" = "views" ]; then
+  lswt --json | jq ".[] | select(.outputs[] == $output)"
+elif [ "$1" = "output" ]; then
+  printf "%s\n" "$output"
+elif [ "$1" = "all-outputs" ]; then
+  lswt --json | jq "[ .[].outputs[] ] | unique"
+elif [ "$1" = "all-views" ]; then
+  lswt --json | jq "group_by(.outputs)"
+fi
+
+exit 0

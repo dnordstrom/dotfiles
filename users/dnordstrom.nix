@@ -408,10 +408,12 @@ in rec {
     # Local
     #
     # Either grabbed from the nixpkgs GitHub repository and patched to use newer versions, or custom
-    # package derivations not available in the repository.
+    # package derivations not available in the repository. Regular packages in the `nordpkgs` list
+    # and flake based packages in the main `pkgs` (i.e. no "nordpkgs" prefix).
     #
 
     nordpkgs.convox
+    nordpkgs.lswt
 
     #
     # Networking
@@ -506,6 +508,7 @@ in rec {
     grim
     imagemagick
     j4-dmenu-desktop
+    kile-wl
     libinput
     light # TRY: See how this works for backlight control. Should supposedly work even in TTY.
     river
@@ -599,6 +602,8 @@ in rec {
     pulseaudio
     pulsemixer
     strawberry # Clementine fork with Qobuz support
+    streamlink
+    vlc
 
     #
     # Audio plugins
@@ -1058,7 +1063,8 @@ in rec {
     };
   in {
     enable = true;
-    package = pkgs.firefox-nightly-bin;
+    package =
+      pkgs.latest.firefox-nightly-bin; # From `nixpkgs-mozilla` flake and overlay
     profiles = {
       default = {
         id = 0;
@@ -1196,7 +1202,7 @@ in rec {
     config = {
       color = "always";
       italic-text = "always";
-      tabs = 2;
+      tabs = "2";
       theme = "base16-256";
       style = "header-filename,header-filesize,rule,numbers,changes";
     };
