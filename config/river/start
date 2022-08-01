@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
-
-##
+#
 # RIVER WM STARTUP
 #
 # Sets up the environment before launching River.
@@ -15,14 +14,18 @@ done
 export MOZ_DBUS_REMOTE=1
 export MOZ_USE_XINPUT2=1
 
-# Wayland
-export GDK_BACKEND="wayland"
+# GTK
+export GTK_THEME="Catppuccin-yellow"
 export GTK_USE_PORTAL=1
+
+# Qt
 export QT_QPA_PLATFORM="wayland"
 export QT_QPA_PLATFORMTHEME="qt5ct"
 export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 
 # River
+export GDK_BACKEND="wayland"
+export SDL_VIDEODRIVER="wayland"
 export XDG_CURRENT_DESKTOP="river"
 export XDG_SESSION_DESKTOP="river"
 export XDG_SESSION_TYPE="wayland"
@@ -30,17 +33,12 @@ export XDG_SESSION_TYPE="wayland"
 # Java
 export _JAVA_AWT_WM_NONREPARENTING=1
 
-# Keyboard setup
+# Keyboard
 export XKB_DEFAULT_OPTIONS="shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey"
 export XKB_DEFAULT_LAYOUT="us"
 # export XKB_DEFAULT_MODEL=""
 # export XKB_DEFAULT_VARIANT=""
 # export XKB_DEFAULT_RULES=""
 
-# Miscellaneous
-export SDL_VIDEODRIVER="wayland"
-
-# dbus-update-activation-environment --systemd --all
-
-# dbus-launch river 2>"$HOME/.local/share/logs/river.log" 2>&1
+# Start
 river 2>"$HOME/.local/share/logs/river.log" 2>&1

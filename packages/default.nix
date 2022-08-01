@@ -8,9 +8,6 @@
   convox = pkgs.callPackage ./convox { };
   lswt = pkgs.callPackage ./lswt { };
   jira-cli = pkgs.callPackage ./jira-cli { };
-  openvpn3 = pkgs.callPackage ./openvpn3 {
-    inherit (pkgs.python3Packages) docutils jinja2;
-  };
   protoncheck = pkgs.callPackage ./protoncheck { };
   udev-rules = pkgs.callPackage ./udev-rules { };
 }

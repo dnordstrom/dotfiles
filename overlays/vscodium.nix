@@ -2,7 +2,8 @@
 # VSCODIUM OVERLAY
 #
 # Modifies desktop files to launch with Chromium Wayland flags
-#
+# #
+
 final: prev: {
   vscodium = prev.vscodium.overrideAttrs (oldAttrs: rec {
     desktopItem = oldAttrs.desktopItem.overrideAttrs (desktopAttrs: {

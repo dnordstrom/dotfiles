@@ -99,7 +99,7 @@ let
   # GLOBAL PYTHON PACKAGES
   #
 
-  python-packages = ps: with ps; [ i3ipc requests ];
+  python-packages = ps: with ps; [ i3ipc requests protonvpn-nm-lib ];
   python-with-packages = pkgs.python3.withPackages python-packages;
 
 in rec {
@@ -146,12 +146,25 @@ in rec {
         startupNotify = true;
       };
 
+      nemo-without-cinnamon = {
+        name = "Nemo (Non-Desktop)";
+        comment = "Nemo without Cinnamon";
+        type = "Application";
+        genericName = "Access and organize files";
+        exec = "nemo %U";
+        terminal = false;
+        icon = "system-file-manager";
+        categories = [ "GNOME" "GTK" "Utility" "Core" ];
+        mimeType = [ "inode/directory" "application/x-gnome-saved-search" ];
+        startupNotify = false;
+      };
+
       httpie-appimage = {
         name = "HTTPie";
         type = "Application";
         genericName = "Modern HTTP client for the API era";
         exec =
-          "appimage-run /home/dnordstrom/.local/bin/httpie/httpie.appimage %F";
+          "appimage-run ${config.home.homeDirectory}/.local/bin/httpie/httpie.appimage %F";
         terminal = false;
         icon = "httpie";
         categories = [ "Utility" "Development" ];
@@ -165,7 +178,7 @@ in rec {
         genericName =
           "Messaging app for WhatsApp, Slack, Telegram, Gmail, Hangouts and many many more.";
         exec =
-          "appimage-run /home/dnordstrom/.local/bin/ferdium/ferdium.appimage";
+          "appimage-run ${config.home.homeDirectory}/.local/bin/ferdium/ferdium.appimage";
         terminal = false;
         icon = "ferdium";
         categories = [ "Network" "InstantMessaging" ];
@@ -178,7 +191,7 @@ in rec {
         type = "Application";
         genericName = "Private messaging from your desktop";
         exec =
-          "appimage-run /home/dnordstrom/.local/bin/session/session.appimage";
+          "appimage-run ${config.home.homeDirectory}/.local/bin/session/session.appimage";
         terminal = false;
         icon = "session-desktop";
         categories = [ "Network" ];
@@ -192,7 +205,7 @@ in rec {
         type = "Application";
         genericName = "Web service manager";
         exec =
-          "GDK_BACKEND=x11 appimage-run /home/dnordstrom/.local/bin/station/station.appimage";
+          "GDK_BACKEND=x11 appimage-run ${config.home.homeDirectory}/.local/bin/station/station.appimage";
         terminal = false;
         icon = "station-desktop-app";
         categories = [ "Network" ];
@@ -206,7 +219,7 @@ in rec {
         type = "Application";
         genericName = "Monero Wallet";
         exec =
-          "GDK_BACKEND=x11 appimage-run /home/dnordstrom/.local/bin/mymonero/mymonero.appimage -- %U";
+          "GDK_BACKEND=x11 appimage-run ${config.home.homeDirectory}/.local/bin/mymonero/mymonero.appimage -- %U";
         terminal = false;
         icon = "mymonero";
         categories = [ "Office" "Finance" ];
@@ -220,7 +233,7 @@ in rec {
         type = "Application";
         genericName = "All-in-One Messenger";
         exec =
-          "appimage-run /home/dnordstrom/.local/bin/singlebox/singlebox.appimage -- %U";
+          "appimage-run ${config.home.homeDirectory}/.local/bin/singlebox/singlebox.appimage -- %U";
         terminal = false;
         icon = "singlebox";
         categories = [ "Utility" ];
@@ -238,7 +251,7 @@ in rec {
         type = "Application";
         genericName = "Password Manager";
         exec =
-          "appimage-run /home/dnordstrom/.local/bin/bitwarden/bitwarden.appimage %U";
+          "appimage-run ${config.home.homeDirectory}/.local/bin/bitwarden/bitwarden.appimage %U";
         terminal = false;
         icon = "ferdium";
         categories = [ "Utility" ];
@@ -250,18 +263,6 @@ in rec {
       #
       # Command line applications
       #
-
-      neovim-alacritty = {
-        name = "Neovim (Alacritty)";
-        type = "Application";
-        genericName = "Text Editor";
-        exec = "alacritty --title popupterm -e nvim %F";
-        terminal = false;
-        icon = "nvim";
-        categories = [ "Utility" "TextEditor" "Development" "IDE" ];
-        mimeType = [ "text/plain" "inode/directory" ];
-        startupNotify = false;
-      };
 
       neovim-kitty = {
         name = "Neovim (kitty)";
@@ -283,18 +284,6 @@ in rec {
         terminal = false;
         icon = "vifm";
         categories = [ "System" "FileManager" ];
-        mimeType = [ "text/plain" "inode/directory" ];
-        startupNotify = false;
-      };
-
-      vifm-alacritty = {
-        name = "Vifm (Alacritty)";
-        type = "Application";
-        genericName = "File Manager";
-        exec = "alacritty --title popupterm -e vifm %F";
-        terminal = false;
-        icon = "vifm";
-        categories = [ "Utility" "TextEditor" "Development" "IDE" ];
         mimeType = [ "text/plain" "inode/directory" ];
         startupNotify = false;
       };
@@ -419,10 +408,12 @@ in rec {
     # Networking
     #
 
-    gnome.gnome-keyring
+    gnome.networkmanager-openvpn
     haskellPackages.network-manager-tui
-    libgnome-keyring
-    openvpn
+    libsForQt5.networkmanager-qt
+    networkmanager-openvpn
+    networkmanagerapplet
+    openvpn3
     qbittorrent
 
     #
@@ -439,6 +430,7 @@ in rec {
     #
 
     appimage-run
+    cinnamon.nemo
     dolphin
     gnome.nautilus
 
@@ -492,13 +484,6 @@ in rec {
     zsh-fzf-tab
     zsh-nix-shell
     zsh-vi-mode
-
-    #
-    # Virtualization
-    #
-
-    winetricks
-    wineWowPackages.waylandFull
 
     #
     # Wayland
@@ -567,8 +552,10 @@ in rec {
     otpclient
     pinentry-gtk2
     protonmail-bridge
-    protonvpn-cli
-    protonvpn-gui
+    protonvpn-cli_2
+    # Using OpenVPN-based community client since official v3 below has dumbass DE/GUI dependencies.
+    # protonvpn-cli
+    # protonvpn-gui
     qtpass
     tmpmail
     yubico-pam
@@ -591,7 +578,6 @@ in rec {
     audacious
     cava
     celluloid
-    clementine
     deadbeef-with-plugins
     easyeffects # To run as service, use `services.easyeffects` instead (messes with JamesDSP)
     handbrake
@@ -599,9 +585,7 @@ in rec {
     jamesdsp
     pavucontrol
     playerctl
-    pulseaudio
     pulsemixer
-    strawberry # Clementine fork with Qobuz support
     streamlink
     vlc
 
@@ -632,12 +616,12 @@ in rec {
     kate
 
     # LSP and syntax
-    nodePackages.bash-language-server
-    nodePackages.diagnostic-languageserver
-    nodePackages.typescript-language-server
-    nodePackages.vscode-langservers-extracted
-    nodePackages.yaml-language-server
-    rnix-lsp # Uses `nixpkgs-fmt`
+    # nodePackages.bash-language-server
+    # nodePackages.diagnostic-languageserver
+    # nodePackages.typescript-language-server
+    # nodePackages.vscode-langservers-extracted
+    # nodePackages.yaml-language-server
+    # rnix-lsp # Uses `nixpkgs-fmt`
     tree-sitter
 
     # Spelling
@@ -645,9 +629,11 @@ in rec {
     codespell
 
     # Writing
-    nodePackages.alex
-    proselint
     glow
+    nodePackages.alex
+    nodePackages.write-good
+    proselint
+    vale
 
     # Git
     bfg-repo-cleaner
@@ -664,9 +650,10 @@ in rec {
 
     # Go
     gofumpt
-    gopls
+    # gopls
 
     # Lua
+    lua53Packages.ldoc
     luajit
     stylua
 
@@ -682,14 +669,14 @@ in rec {
     # JS/TS/JSON
     nodePackages.eslint_d
     nodePackages.fixjson
-    nodePackages.typescript
+    # nodePackages.typescript
 
     # CSS
-    nodePackages.sass
-    nodePackages.stylelint
+    # nodePackages.sass
+    # nodePackages.stylelint
 
     # Vim
-    nodePackages.vim-language-server
+    # nodePackages.vim-language-server
 
     # Build 
     gnumake
@@ -771,7 +758,7 @@ in rec {
   #
 
   gtk = let
-    config = { dark = "true"; };
+    config = { dark = "false"; };
     gtk3Config = { gtk-application-prefer-dark-theme = "${config.dark}"; };
     gtk2Config = ''gtk-application-prefer-dark-theme = "${config.dark}";'';
     bookmarks = [
@@ -949,46 +936,15 @@ in rec {
   home.file.".config/waybar".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/waybar";
 
-  # Eww
-
-  home.file.".config/eww-live".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/eww";
-
-  # wlogout
-
-  xdg.configFile."wlogout/layout".source = ../config/wlogout/layout;
-  xdg.configFile."wlogout/style.css".source = ../config/wlogout/style.css;
-  xdg.configFile."wlogout/lock.png".source = ../config/wlogout/lock.png;
-  xdg.configFile."wlogout/logout.png".source = ../config/wlogout/logout.png;
-  xdg.configFile."wlogout/reboot.png".source = ../config/wlogout/reboot.png;
-  xdg.configFile."wlogout/shutdown.png".source = ../config/wlogout/shutdown.png;
-
-  # Alacritty
-
-  xdg.configFile."alacritty/alacritty.yml".source =
-    ../config/alacritty/alacritty.yml;
-
-  # Foot
-
-  xdg.configFile."foot".source = ../config/foot;
-
   #
   # PROGRAMS
   #
 
-  programs.foot = {
-    enable = true;
-    server.enable = true;
-  };
-
-  programs.qutebrowser.enable = false;
-  programs.nnn.enable = false;
-  programs.feh.enable = false;
+  programs.exa.enable = true;
   programs.java.enable = true;
   programs.jq.enable = true;
+  programs.lsd.enable = true;
   programs.mpv.enable = true;
-  programs.afew.enable = false;
-  programs.mbsync.enable = false;
 
   programs.waybar = {
     enable = true;
@@ -997,8 +953,7 @@ in rec {
 
   programs.eww = {
     enable = true;
-    configDir =
-      "${configDir}/config/eww"; # Not "live" so we use mkOutOfStoreSymlink as well
+    configDir = config.lib.file.mkOutOfStoreSymlink "${configDir}/config/eww";
     package = pkgs.eww-wayland;
   };
 
@@ -1007,21 +962,10 @@ in rec {
     enableZshIntegration = true;
   };
 
-  programs.password-store = {
-    enable = false;
-    package = pkgs.pass.withExtensions (exts: [ exts.pass-otp ]);
-  };
-
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
   };
-
-  programs.nushell.enable = false;
-
-  programs.exa.enable = true;
-
-  programs.lsd.enable = true;
 
   programs.pet = {
     enable = true;
@@ -1091,12 +1035,8 @@ in rec {
 
   programs.kitty = {
     enable = true;
-    extraConfig = ''
-      include ./config.conf
-    '';
+    extraConfig = "include ./config.conf";
   };
-
-  programs.alacritty.enable = true;
 
   programs.git = {
     enable = true;
@@ -1131,7 +1071,7 @@ in rec {
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
-    extraConfig = builtins.readFile ../config/nvim/init.vim;
+    extraConfig = "lua require('init')";
   };
 
   programs.zsh = {
@@ -1186,8 +1126,9 @@ in rec {
         };
       }
     ];
-    initExtra = ''
-      source "${config.home.homeDirectory}/.zshinit"''; # Symlinked to `${configDir}/config/zsh/zshrc`
+
+    # Source our config from `~/.zshinit` which is a symlink to `${configDir}/config/zsh/zshrc`.
+    initExtra = "source ${config.home.homeDirectory}/.zshinit";
   };
 
   programs.zoxide = {
@@ -1195,15 +1136,13 @@ in rec {
     enableZshIntegration = true;
   };
 
-  programs.tmux.enable = false;
-
   programs.bat = {
     enable = true;
     config = {
       color = "always";
       italic-text = "always";
       tabs = "2";
-      theme = "base16-256";
+      theme = "base16";
       style = "header-filename,header-filesize,rule,numbers,changes";
     };
   };
@@ -1219,7 +1158,7 @@ in rec {
 
   programs.go = {
     enable = true;
-    goPath = ".go"; # By default not a hidden directory
+    goPath = "${config.home.homeDirectory}/.local/bin/go"; # Don't use `~/go`...
   };
 
   programs.direnv = {
@@ -1237,7 +1176,7 @@ in rec {
     icons = true;
     maxIconSize = 48;
     iconPath = "/etc/profiles/per-user/dnordstrom/share/icons/Papirus-Dark";
-    font = "Input Sans Compressed 8";
+    font = "Input Sans Condensed 8";
     margin = "12";
     markup = true;
     padding = "12,24";
@@ -1353,27 +1292,18 @@ in rec {
     ];
   };
 
-  programs.gpg = { enable = true; };
-
-  programs.rbw = {
-    enable = true;
-
-    # Settings are currently not working so we manage the config manually, see GH issue.
-    #
-    # settings = {
-    #   email = "d@mrnordstrom.com";
-    #   pinentry = "curses";
-    # };
-  };
+  programs.gpg.enable = true;
 
   #
   # MANUAL
   #
 
   manual = {
-    html.enable = true; # Installs `home-manager-help` tool
-    json.enable =
-      true; # Installs to `<profile>/share/doc/home-manager/options.json`.
+    # Installs `home-manager-help` tool.
+    html.enable = true;
+
+    # Installs to `<profile>/share/doc/home-manager/options.json`.
+    json.enable = true;
   };
 
   #
@@ -1389,16 +1319,17 @@ in rec {
 
   services.gammastep = {
     enable = true;
-    tray = true;
     temperature = {
       day = 6500;
       night = 5000;
     };
+    tray = true;
     latitude = 63.2;
     longitude = 17.3;
   };
 
-  services.easyeffects.enable = false; # If false, use easyeffects package.
+  # We're using the package instead of this service since it messes with JamesDSP.
+  services.easyeffects.enable = false;
 
   #
   # Systemd
@@ -1423,5 +1354,5 @@ in rec {
   # SECURITY
   #
 
-  pam.yubico.authorizedYubiKeys.ids = [ "ccccccurnfle" ];
+  pam.yubico.authorizedYubiKeys.ids = [ "ccccccurnfle" "cccccclkvllh" ];
 }

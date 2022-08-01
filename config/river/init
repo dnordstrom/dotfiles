@@ -23,6 +23,9 @@ spawn_once() {
   pgrep -f "$*" >/dev/null || riverctl spawn "$*"
 }
 
+term="kitty --title term"
+scratchterm="kitty --title scratchterm --session ~/.config/kitty/sessions/scratchpad.session"
+
 font_size=8
 font="Input Sans Condensed $font_size"
 
@@ -74,15 +77,6 @@ riverctl border-color-focused 0x93a1a1
 riverctl border-color-unfocused 0x586e75
 riverctl border-width 2
 
-# Layout generator
-riverctl default-layout rivertile
-rivertile \
-  -view-padding 10 \
-  -outer-padding 10 \
-  -main-ratio 0.6 \
-  -main-count 1 \
-  -main-location left
-
 #
 # LAUNCHERS
 #
@@ -96,7 +90,8 @@ riverctl map normal Super+Shift D spawn "/etc/nixos/scripts/launch/launch-comman
 riverctl map normal Super+Shift+Control D spawn "wofi"
 # NOTE: `j4-dmenu-desktop` is another alternative. Super fast, runs anything, pairs well with `fzf`.
 
-riverctl map normal Super Return spawn "kitty --title term"
+riverctl map normal Super Return spawn "$term"
+riverctl map normal Super+Shift Return spawn "$scratchterm"
 
 #
 # SYSTEM
@@ -107,6 +102,9 @@ riverctl map normal Super Q close
 
 # Super+Shift+E to exit river
 riverctl map normal Super Backspace exit
+
+# Show status bar
+riverctl map normal Super B spawn "eww --config '$HOME/.config/eww-live' close bar || eww --config '$HOME/.config/eww-live' open bar"
 
 #
 # NAVIGATION
@@ -130,23 +128,29 @@ riverctl map normal Super+Shift Period send-to-output next
 riverctl map normal Super+Shift Comma send-to-output previous
 
 # Super+Shift+Return to bump the focused view to the top of the layout stack
-riverctl map normal Super+Shift Return zoom
+riverctl map normal Super+Control F zoom
 
 # Super+H and Super+L to decrease/increase the main ratio of rivertile(1)
-# riverctl map normal Super H send-layout-cmd rivertile "main-ratio -0.05"
-# riverctl map normal Super L send-layout-cmd rivertile "main-ratio +0.05"
-
-# Ratio of display used by main area
-riverctl map -repeat normal Super H send-layout-cmd kile "mod_main_ratio +0.01"
-riverctl map -repeat normal Super L send-layout-cmd kile "mod_main_ratio -0.01"
-
-# Number of views/windows/clients in the main area
-riverctl map normal Super+Shift H send-layout-cmd kile "mod_main_amount +1"
-riverctl map normal Super+Shift L send-layout-cmd kile "mod_main_amount -1"
+riverctl map normal Super H send-layout-cmd rivertile "main-ratio -0.05"
+riverctl map normal Super L send-layout-cmd rivertile "main-ratio +0.05"
 
 # Super+Shift+H and Super+Shift+L to increment/decrement the main count of rivertile(1)
-# riverctl map normal Super+Shift H send-layout-cmd rivertile "main-count +1"
-# riverctl map normal Super+Shift L send-layout-cmd rivertile "main-count -1"
+riverctl map normal Super+Shift H send-layout-cmd rivertile "main-count +1"
+riverctl map normal Super+Shift L send-layout-cmd rivertile "main-count -1"
+
+# Mod+H and Mod+L to decrease/increase the main ratio of rivercarro
+# riverctl map normal Super H send-layout-cmd rivercarro "main-ratio -0.05"
+# riverctl map normal Super L send-layout-cmd rivercarro "main-ratio +0.05"
+
+# Super+Shift+H and MoSuperift+L to increment/decrement the main count of rivercarro
+# riverctl map normal Super+Shift H send-layout-cmd rivercarro "main-count +1"
+# riverctl map normal Super+Shift L send-layout-cmd rivercarro "main-count -1"
+
+# Super+H,J,K,L to change layout orientation
+# riverctl map normal Super+Control H send-layout-cmd rivercarro "main-location left"
+# riverctl map normal Super+Control J send-layout-cmd rivercarro "main-location bottom"
+# riverctl map normal Super+Control K send-layout-cmd rivercarro "main-location top"
+# riverctl map normal Super+Control L send-layout-cmd rivercarro "main-location right"
 
 # Super+Alt+{H,J,K,L} to move views
 riverctl map normal Super+Alt H move left 100
@@ -205,12 +209,30 @@ riverctl map normal Super Space toggle-float
 # Also, they mostly start with an `F`, mostly...
 riverctl map normal Super F toggle-fullscreen
 riverctl map normal Super+Shift F toggle-float
+riverctl map normal Super+Control F zoom
 
 # Super+{Up,Right,Down,Left} to change layout orientation
 riverctl map normal Super Up send-layout-cmd rivertile "main-location top"
 riverctl map normal Super Right send-layout-cmd rivertile "main-location right"
 riverctl map normal Super Down send-layout-cmd rivertile "main-location bottom"
 riverctl map normal Super Left send-layout-cmd rivertile "main-location left"
+
+#
+# SCRATCHPAD
+#
+
+# Set the tag to be used as scratchpad
+scratchtag="$((1 << 20))"
+noscratchtag="$($(((1 << 32) - 1)) ^ scratchtag)"
+
+# Toggle scratchpad
+riverctl map normal Super Z toggle-focused-tags "$scratchtag"
+
+# Send window to scratchpad
+riverctl map normal Super+Shift Z set-view-tags "$scratchtag"
+
+# Ensure new windows don't have the scratchpad tag unless explicitly set
+riverctl spawn-tagmask "$noscratchtag"
 
 #
 # MODES
@@ -262,35 +284,59 @@ done
 #
 
 # Floating windows
-j
-riverctl float-filter-add app-id dolphin
-riverctl float-filter-add app-id float
-riverctl float-filter-add app-id org.kde.Kate
-riverctl float-filter-add app-id pavucontrol
-riverctl float-filter-add app-id qt5ct
-riverctl float-filter-add app-id vimiv
+
+riverctl float-filter-add app-id "float"
+riverctl float-filter-add app-id "nemo"
+riverctl float-filter-add app-id "org.gnome.Nautilus"
+riverctl float-filter-add app-id "org.kde.Kate"
+riverctl float-filter-add app-id "org.kde.dolphin"
+riverctl float-filter-add app-id "pavucontrol"
+riverctl float-filter-add app-id "qt5ct"
+riverctl float-filter-add app-id "vimiv"
 riverctl float-filter-add title "Bitwarden"
 riverctl float-filter-add title "Kvantum Manager"
-riverctl float-filter-add title fuzzyterm
-riverctl float-filter-add title popupterm
-riverctl float-filter-add title transterm
+riverctl float-filter-add title "fuzzyterm"
+riverctl float-filter-add title "popupterm"
+riverctl float-filter-add title "scratchterm"
+riverctl float-filter-add title "transterm"
 
 # Client-side decorated windows
 
-riverctl csd-filter-add app-id nautilus
-riverctl csd-filter-add app-id firefox-nightly
+riverctl csd-filter-add app-id "com.github.wwmm.easyeffects"
+riverctl csd-filter-add app-id "firefox-nightly"
+riverctl csd-filter-add app-id "nemo"
+riverctl csd-filter-add app-id "org.gnome.Nautilus"
 
 #
 # WRAP UP
 #
+
+# Monocle "zen mode"
+riverctl map normal Super M send-layout-cmd rivertile 
 
 spawn "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=river"
 spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=river"
 
 spawn_once "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
 spawn_once "swaybg --image ~/Pictures/Wallpapers/active3.jpg --mode fill --output '*'"
+spawn_once "riverctl toggle-focused-tags $scratchtag && riverctl spawn $scratchterm ; riverctl toggle-focused-tags $scratchtag"
 
 # We'll piggy-back on the Sway systemd target for now since they'll both use the same tools either
 # way, but River should get its own target eventually, First need to look into how Home Manager
 # manages it and which apps and services we actually use in River.
 spawn "systemctl --user start sway-session.target"
+
+# Layout generator
+
+# For `rivercarro`:
+#   riverctl default-layout rivercarro
+#   exec rivercarro
+
+riverctl default-layout rivertile
+
+exec rivertile \
+  -view-padding 10 \
+  -outer-padding 10 \
+  -main-ratio 0.6 \
+  -main-count 1 \
+  -main-location left &!

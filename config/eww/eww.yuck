@@ -22,16 +22,21 @@
 ; @version  2022.210
 ;;
 
-(defvar tags "[1, 2, 4, 8, 16, 32, 64, 128, 256]")
-
+(defvar tags '[{ "tag": 1, "label": 1 }, { "tag": 2, "label": 2 }, { "tag": 4, "label": 3 }, { "tag": 8, "label": 4 }, { "tag": 16, "label": 5 }, { "tag": 32, "label": 6 }, { "tag": 64, "label": 7 }, { "tag": 128, "label": 8 }, { "tag": 256, "label": 9 }]')
 (defvar activetag "1")
+(defvar hovertag "0")
 
-(defpoll volume :interval "1s"
-  "amixer -D pipewire sget Master | grep 'Left:' | awk -F'[][]' '{ print $2 }' | tr -d '%' | head -1")
+(defpoll volume-value :interval "1s" "pamixer --get-volume")
+(defpoll volume-label :interval "1s" '[ "$(pamixer --get-mute)" = "true" ] && printf "MUT" || printf "VOL"')
 
-(defpoll time :interval "10s"
-  "date '+%H:%M'")
+(defvar clock-separator "·")
+(defvar clock-show-date false)
+(defvar clock-lock-date false)
+(defpoll clock-weekday :interval "1h" "date +'%A'")
+(defpoll clock-time :interval "1h" "date +'%H:%M'")
+(defpoll clock-date :interval "10s" "date +'%B %-d'")
 
+(defvar launchers-show false)
 
 (defwidget bar []
   (centerbox :orientation "h"
@@ -40,55 +45,106 @@
     (right)))
 
 (defwidget left []
-  (box :class "left" :orientation "h" :space-evenly false :halign "start"
-    (workspaces)))
+  (eventbox :onhover "eww --config $HOME/.config/eww-live update launchers-show=true"
+            :onhoverlost "eww --config $HOME/.config/eww-live update launchers-show=false"
+    (box :class "left" :orientation "h" :space-evenly false :halign "start"
+      (tags)
+      (launchers))))
 
 (defwidget center []
   (box :class "center" :orientation "h" :space-evenly false :halign "center"
-    (time)))
+    (clock)))
 
 (defwidget right []
   (box :class "right" :orientation "h" :space-evenly false :halign "end"
     (metric :label "CPU"
             :value {round(EWW_CPU.avg, 0)}
-            :onchange "")
+            :class "cpu"
+            :onchange ""
+            :onclick "")
     (metric :label "RAM"
             :value {EWW_RAM.used_mem_perc}
-            :onchange "")
+            :class "ram"
+            :onchange ""
+            :onclick "")
     (metric :label "DISK"
             :value {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}
-            :onchange "")
-    (metric :label "VOL"
-            :value volume
-            :onchange "amixer -D pipewire sset Master {}%")))
+            :class "disk"
+            :onchange ""
+            :onclick "")
+    (metric :label volume-label
+            :value volume-value
+            :class {volume-label == "MUT" ? "volume muted" : "volume"}
+            :onchange "pamixer --set-volume {}"
+            :onclick "pamixer --toggle-mute")))
 
-(defwidget metric [label value onchange]
+(defwidget tray []
+  (box :class "tray" :orientation "h" (system-tray)))
+
+(defwidget launchers []
+  (revealer :class "launchers revealer ${launchers-show ? 'expanded' : 'collapsed'}"
+            :transition "slideleft"
+            :reveal launchers-show
+            :duration "0.25s"
+    (box :spacing 10
+      (launcher :class "firefox" :cmd "firefox -P Default" :icon "")
+      (launcher :class "music" :cmd "riverctl spawn 'firefox -P Music'" :icon "")
+      (launcher :class "mail" :cmd "firefox -P Default https://mail.proton.me" :icon ""))))
+
+(defwidget launcher [cmd class icon]
+  (box :class "launcher ${class}"
+       :orientation "h"
+    (button :onclick cmd icon)))
+
+(defwidget metric [label value onclick onchange class]
   (box :orientation "h"
-       :class "metric"
+       :class "metric ${class}"
        :space-evenly false
-    (box :class "label" label)
+    (button :class "label" :onclick onclick label)
     (scale :min 0
            :max 101
            :active {onchange != ""}
            :value value
            :onchange onchange)))
 
-(defwidget time []
-  (box :class "time"
-       :orientation "h"
-       :space-evenly false
-       :halign "end"
-    time))
+(defwidget clock []
+  (eventbox :onhover "eww --config $HOME/.config/eww-live update clock-show-date=true"
+            :onhoverlost "eww --config $HOME/.config/eww-live update clock-show-date=false"
+            :onclick {clock-lock-date ? "eww --config $HOME/.config/eww-live update clock-lock-date=false" : "eww --config $HOME/.config/eww-live update clock-lock-date=true"}
+    (box :space-evenly false :class "clock"
+      (revealer :class "revealer ${clock-show-date ? 'expanded' : 'collapsed'}"
+                :transition "slideleft"
+                :reveal {clock-show-date || clock-lock-date}
+                :duration "0.25s"
+        (box :space-evenly false :spacing 8
+          (box :class "weekday" clock-weekday)
+          (box :class "separator" clock-separator)
+          (box "")))
 
-(defwidget workspaces []
-  (box :class "workspaces"
+      (box :class "time" clock-time)
+
+      (revealer :class "revealer ${clock-show-date ? 'expanded' : 'collapsed'}"
+              :transition "slideleft"
+              :reveal {clock-show-date || clock-lock-date}
+              :duration "0.25s"
+        (box :space-evenly false :spacing 8
+          (box "")
+          (box :class "separator" clock-separator)
+          (box :class "date" clock-date))))))
+
+(defwidget tags []
+  (box :class "tags"
        :orientation "h"
        :space-evenly true
        :halign "start"
        :spacing 10
     (for tag in tags
-      (button :onclick "riverctl set-focused-tags ${tag} ; eww --config ~/.config/eww-live update activetag=\"${tag}\" ; notify-send Success" {activetag == tag ? "a" : "o"})))
-    )
+      (box :class {activetag == tag.tag ? "tag active" : "tag inactive"}
+        (eventbox 
+          :onhover "eww --config $HOME/.config/eww-live update hovertag=${tag.tag}"
+          :onhoverlost "eww --config $HOME/.config/eww-live update hovertag=0"
+          (button :onclick "riverctl set-focused-tags ${tag.tag} ; eww --config ~/.config/eww-live update activetag=${tag.tag}"
+            {activetag == tag.tag ? "" : (hovertag == tag.tag ? tag.label : "")}))))))
 
 (defwindow bar
   :monitor 0

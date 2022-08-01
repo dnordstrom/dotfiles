@@ -87,14 +87,20 @@ nvim_set_keymap("n", "ZA", "<Cmd>w!<CR>", _nonrecursive)
 -- MODIFY DEFAULTS TO...
 --
 
--- ...change registers for delete and cut to not overwrite yanked content. Instead use the unnamed
--- register that already should contain the last yanked, cut, or deleted content (see :h quotequote)
+-- ...change registers for delete and cut to not overwrite yanked content. Use the unnamed register
+-- that already should contain the last yanked, cut, or deleted content (see :h quotequote).
 nvim_set_keymap("n", "d", '""d', _nonrecursive)
 nvim_set_keymap("n", "D", '""D', _nonrecursive)
 nvim_set_keymap("n", "x", '""x', _nonrecursive)
 nvim_set_keymap("n", "X", '""X', _nonrecursive)
 nvim_set_keymap("n", "c", '""c', _nonrecursive)
 nvim_set_keymap("n", "C", '""C', _nonrecursive)
+nvim_set_keymap("v", "d", '""d', _nonrecursive)
+nvim_set_keymap("v", "D", '""D', _nonrecursive)
+nvim_set_keymap("v", "x", '""x', _nonrecursive)
+nvim_set_keymap("v", "X", '""X', _nonrecursive)
+nvim_set_keymap("v", "c", '""c', _nonrecursive)
+nvim_set_keymap("v", "C", '""C', _nonrecursive)
 
 -- ...navigate by soft-wrapped lines unless using number (e.g. 3j, 5k)
 nvim_set_keymap("n", "j", "v:count == 0 ? 'gj' : 'j'", use_opts(_expression, _nonrecursive))

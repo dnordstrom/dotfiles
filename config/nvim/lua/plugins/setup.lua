@@ -17,42 +17,61 @@ return require("packer").startup(function(use)
 	local devicons = "kyazdani42/nvim-web-devicons"
 
 	--
-	-- Neovim
+	-- NEOVIM
 	--
 
+	-- Helper for plugins
 	use({ plenary })
+
+	-- Plugin manager
 	use({ "wbthomason/packer.nvim" })
+
+	-- Reloads configuration (`:Restart` triggers `VimEnter` while `:Reload` doesn't)
 	use({ "famiu/nvim-reload" })
+
+	--Integrates `fzf` and Neovim (UI in separate plugin)
+	use({ "vijaymarupudi/nvim-fzf" })
 
 	--
 	-- UI
 	--
 
 	-- Icons
+	use({ devicons }) -- Icons
 
-	use({ devicons })
-
-	-- Lines
-
-	use({ "famiu/feline.nvim", branch = "master" })
-	use({ "noib3/cokeline.nvim", requires = devicons })
-
-	-- Colorscheme
-
+	-- Colorschemes
 	use({ "catppuccin/nvim", as = "catppuccin" })
 
-	-- Files and buffers
+	-- Status lines
+	use({ "famiu/feline.nvim", branch = "master" })
 
+	-- Buffer line (`methline` didn't exist so this will have to do)
+	use({ "noib3/cokeline.nvim", requires = devicons })
+
+	-- LSP diagnostics window
+	use({ "folke/trouble.nvim", requires = devicons })
+
+	--
+	-- FILES AND BUFFERS
+	--
+
+	-- :Bdelete and :Bwipeout commands
 	use({ "famiu/bufdelete.nvim" })
-	use({ "vijaymarupudi/nvim-fzf" })
+
+	-- UI for `nvim-fzf`
 	use({ "ibhagwan/fzf-lua" })
+
+	-- Vifm inside Vim
 	use({ "vifm/vifm.vim" })
 
 	--
 	-- Movement
 	--
 
+	-- UI for key map hints
 	use({ "folke/which-key.nvim" })
+
+	-- Seamless navigation between Vim and Kitty windows
 	use({
 		"knubie/vim-kitty-navigator",
 		branch = "master",
@@ -60,16 +79,21 @@ return require("packer").startup(function(use)
 	})
 
 	--
-	-- Language and syntax
+	-- LANGUAGE AND SYNTAX
 	--
 
-	-- LSP
+	--
+	-- Language server configuration
+	--
 
-	use({ "neovim/nvim-lspconfig" })
+	-- Provides sources for out-of-the-box diagnostics, code actions, etc. and handles all formatting.
 	use({ "jose-elias-alvarez/null-ls.nvim" })
-	use({ "jose-elias-alvarez/nvim-lsp-ts-utils" })
-	use({ "folke/trouble.nvim", requires = devicons })
 	use({ "onsails/lspkind-nvim" })
+	use({
+		"williamboman/mason.nvim",
+		"williamboman/mason-lspconfig.nvim",
+		"neovim/nvim-lspconfig",
+	})
 
 	-- Language
 
@@ -82,18 +106,18 @@ return require("packer").startup(function(use)
 
 	-- Completion
 
-	use({ "hrsh7th/cmp-nvim-lsp" })
-	use({ "hrsh7th/cmp-cmdline" })
+	use({ "f3fora/cmp-spell" })
 	use({ "hrsh7th/cmp-buffer" })
-	use({ "hrsh7th/cmp-path" })
 	use({ "hrsh7th/cmp-calc" })
+	use({ "hrsh7th/cmp-cmdline" })
 	use({ "hrsh7th/cmp-emoji" })
+	use({ "hrsh7th/cmp-nvim-lsp" })
+	use({ "hrsh7th/cmp-path" })
 	use({ "hrsh7th/nvim-cmp" })
 	use({ "lukas-reineke/cmp-rg" })
-	use({ "saadparwaiz1/cmp_luasnip" })
 	use({ "ray-x/cmp-treesitter" })
+	use({ "saadparwaiz1/cmp_luasnip" })
 	use({ "ujihisa/neco-look" })
-	use({ "f3fora/cmp-spell" })
 
 	-- Snippets
 
@@ -110,8 +134,12 @@ return require("packer").startup(function(use)
 
 	-- Comments
 
-	use({ "numToStr/Comment.nvim" })
+	use({ "numToStr/Comment.nvim" }) -- Commenter
+
+	-- JSX/TSX markup comment support
 	use({ "JoosepAlviste/nvim-ts-context-commentstring" })
+
+	-- Documentation comment generator
 	use({
 		"danymat/neogen",
 		config = function()

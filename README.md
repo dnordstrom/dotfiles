@@ -48,7 +48,7 @@ NixOS is awesome.
 * Wireplumber (session manager)
 * EasyEffects (or JamesDSP)
 * Parametric EQ and convolver presets
-    * Usually oratory1990's own EQ values from Reddit, manually created as EasyEffects
+    * Variations of oratory1990's own EQ values from Reddit, manually created as EasyEffects
       APO equalizer presets and ported to PulseEffects in case useful to someone.
 * Real-time learning noise cancellation using rnnoise plugin
 * Qobuz (high-res audio with playlists synced via Soundiiz)
@@ -59,7 +59,7 @@ Got audio equipment for sale? Hit me up!
 
 ## Catppuccin 
 
-The setup is styled based on the [Catppuccin](https://github.com/catppuccin) colors. Aside from using the official themes I've created a few ports you can find below. Just note that I'm not a designer and that these are a constant work in progress:
+The setup is styled based on the [Catppuccin](https://github.com/catppuccin) colors. Aside from using the official themes I've created ports you can find below. Note that I'm not a designer and that these are a constant work in progress:
 
 * [Firefox](https://addons.mozilla.org/en-US/firefox/addon/catppuccinito-for-color/)
   ([userContent.css](https://github.com/dnordstrom/dotfiles/blob/main/config/firefox/chrome/userContent.css) for about:blank)

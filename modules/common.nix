@@ -265,14 +265,12 @@
 
     dbus = {
       enable = true;
-      packages = [ pkgs.nordpkgs.openvpn3 ];
+      packages = with pkgs; [ openvpn3 protonvpn-cli protonvpn-gui ];
     };
 
     flatpak.enable = true;
 
     yubikey-agent.enable = true;
-
-    gnome.gnome-keyring.enable = true;
   };
 
   #
@@ -280,8 +278,10 @@
   #
 
   systemd = {
-    services.systemd-udev-settle.enable = false;
-    services.NetworkManager-wait-online.enable = false;
+    services = {
+      systemd-udev-settle.enable = false;
+      NetworkManager-wait-online.enable = false;
+    };
   };
 
   #
