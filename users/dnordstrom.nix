@@ -854,11 +854,11 @@ in rec {
 
   home.file.".config/sway/start".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/sway/start";
-  home.file.".config/sway/config.main".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/sway/config.main";
-  home.file.".config/sway/colors.catppuccin".source =
+  home.file.".config/sway/main.conf".source =
+    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/sway/main.conf";
+  home.file.".config/sway/catppuccin.conf".source =
     config.lib.file.mkOutOfStoreSymlink
-    "${configDir}/config/sway/colors.catppuccin";
+    "${configDir}/config/sway/catppuccin.conf";
 
   home.file.".config/swaylock/config".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/swaylock/config";
