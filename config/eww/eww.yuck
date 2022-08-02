@@ -10,9 +10,9 @@
 ;
 ; Reference:
 ;
-; * Documentation  
+; * Documentation:
 ;   https://elkowar.github.io/eww  
-; * Built-in widgets  
+; * Built-in widgets:
 ;   https://elkowar.github.io/eww/widgets.html
 ;
 ; @author   Daniel Nordstrom <d@mrnordstrom.com>
@@ -22,6 +22,9 @@
 ; @version  2022.210
 ;;
 
+(defvar is-hovering false)
+(defvar is-locked-date false)
+
 (defvar tags '[{ "tag": 1, "label": 1 }, { "tag": 2, "label": 2 }, { "tag": 4, "label": 3 }, { "tag": 8, "label": 4 }, { "tag": 16, "label": 5 }, { "tag": 32, "label": 6 }, { "tag": 64, "label": 7 }, { "tag": 128, "label": 8 }, { "tag": 256, "label": 9 }]')
 (defvar active-tag "1")
 (defvar hover-tag "0")
@@ -30,26 +33,23 @@
 (defpoll volume-label :interval "1s" '[ "$(pamixer --get-mute)" = "true" ] && printf "MUT" || printf "VOL"')
 
 (defvar clock-separator "·")
-(defvar clock-show-date false)
 (defvar clock-lock-date false)
 (defpoll clock-weekday :interval "1h" "date +'%A'")
 (defpoll clock-time :interval "10s" "date +'%H:%M'")
 (defpoll clock-date :interval "1h" "date +'%B %-d'")
 
-(defvar launchers-show false)
-
 (defwidget bar []
-  (centerbox :orientation "h"
-    (left)
-    (center)
-    (right)))
+  (eventbox :onhover "eww update is-hovering=true"
+            :onhoverlost "eww update is-hovering=false"
+    (centerbox :orientation "h"
+      (left)
+      (center)
+      (right))))
 
 (defwidget left []
-  (eventbox :onhover "eww update launchers-show=true"
-            :onhoverlost "eww update launchers-show=false"
-    (box :class "left" :orientation "h" :space-evenly false :halign "start"
-      (tags)
-      (launchers))))
+  (box :class "left" :orientation "h" :space-evenly false :halign "start"
+    (tags)
+    (launchers)))
 
 (defwidget center []
   (box :class "center" :orientation "h" :space-evenly false :halign "center"
@@ -82,16 +82,59 @@
   (box :class "tray" :orientation "h" (system-tray)))
 
 (defwidget launchers []
-  (revealer :class "launchers revealer ${launchers-show ? 'expanded' : 'collapsed'}"
+  (revealer :class "launchers revealer ${is-hovering ? 'expanded' : 'collapsed'}"
             :transition "slideleft"
-            :reveal launchers-show
+            :reveal is-hovering
             :duration "0.25s"
     (box :spacing 10
-      (launcher :class "firefox" :cmd "firefox -P Default" :icon "")
-      (launcher :class "music" :cmd "riverctl spawn 'firefox -P Music'" :icon "")
-      (launcher :class "mail" :cmd "firefox -P Default https://mail.proton.me" :icon ""))))
+      (launcher :class "files"
+                :icon "" :onclick "dolphin"
+                :onrightclick "nautilus"
+                :onmiddleclick "nemo")
+      (launcher :class "firefox"
+                :onclick "firefox -P Default"
+                :onrightclick ""
+                :onmiddleclick ""
+                :icon "")
+      (launcher :class "music"
+                :onclick "riverctl spawn 'firefox -P Music'"
+                :onrightclick ""
+                :onmiddleclick "" :icon "")
+      (launcher :class "mail"
+                :onclick "firefox -P Default https://mail.proton.me"
+                :onrightclick ""
+                :onmiddleclick ""
+                :icon ""))))
 
-(defwidget launcher [cmd class icon]
+; Simple box with the given class, containing a button with the given icon (or any text) and click
+; commands. All arguments must be specified but may be empty strings.
+;
+; Useful PragmataPro Mono glyphs:
+;   * UI
+;                                                    
+;                                
+;   * Folders
+;                    
+;   * Brands
+;                                                 
+;   * Arrows
+;                                                  
+;             
+;   * Circles
+;               
+;                 
+;                 
+;   * Battery
+;                                   
+;   * Separators
+;                 
+;
+; @param icon           string - Icon to show (or technically anything).
+; @param class          string - Class of container box.
+; @param onclick        string - Command to run on left click.
+; @param onmiddleclick  string - Command to run on middle click.
+; @param onrightclick   string - Command to run on right click.
+(defwidget launcher [onclick onrightclick onmiddleclick class icon]
   (box :class "launcher ${class}"
        :orientation "h"
     (button :onclick cmd icon)))
@@ -108,29 +151,28 @@
            :onchange onchange)))
 
 (defwidget clock []
-  (eventbox :onhover "eww update clock-show-date=true"
-            :onhoverlost "eww update clock-show-date=false"
-            :onclick {clock-lock-date ? "eww update clock-lock-date=false" : "eww update clock-lock-date=true"}
-    (box :space-evenly false :class "clock"
-      (revealer :class "revealer ${clock-show-date ? 'expanded' : 'collapsed'}"
-                :transition "slideleft"
-                :reveal {clock-show-date || clock-lock-date}
-                :duration "0.25s"
-        (box :space-evenly false :spacing 8
-          (box :class "weekday" clock-weekday)
-          (box :class "separator" clock-separator)
-          (box "")))
-
-      (box :class "time" clock-time)
-
-      (revealer :class "revealer ${clock-show-date ? 'expanded' : 'collapsed'}"
+  (box :space-evenly false :class "clock"
+    (revealer :class "revealer ${is-hovering ? 'expanded' : 'collapsed'}"
               :transition "slideleft"
-              :reveal {clock-show-date || clock-lock-date}
+              :reveal {is-hovering || is-locked-date}
               :duration "0.25s"
-        (box :space-evenly false :spacing 8
-          (box "")
-          (box :class "separator" clock-separator)
-          (box :class "date" clock-date))))))
+      (box :space-evenly false :spacing 8
+        (box :class "weekday" clock-weekday)
+        (box :class "separator" clock-separator)
+        (box "")))
+
+    (button :class "time"
+            :onclick "eww update is-locked-date=${is-locked-date ? 'false' : 'true'}"
+            clock-time)
+
+    (revealer :class "revealer ${is-hovering ? 'expanded' : 'collapsed'}"
+            :transition "slideleft"
+            :reveal {is-hovering || is-locked-date}
+            :duration "0.25s"
+      (box :space-evenly false :spacing 8
+        (box "")
+        (box :class "separator" clock-separator)
+        (box :class "date" clock-date)))))
 
 (defwidget tags []
   (box :class "tags"

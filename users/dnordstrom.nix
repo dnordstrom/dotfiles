@@ -856,9 +856,9 @@ in rec {
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/sway/start";
   home.file.".config/sway/main.conf".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/sway/main.conf";
-  home.file.".config/sway/catppuccin.conf".source =
+  home.file.".config/sway/colors.catppuccin.conf".source =
     config.lib.file.mkOutOfStoreSymlink
-    "${configDir}/config/sway/catppuccin.conf";
+    "${configDir}/config/sway/colors.catppuccin.conf";
 
   home.file.".config/swaylock/config".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/swaylock/config";
@@ -1342,22 +1342,20 @@ in rec {
   # Systemd
   #
 
-  # Uncomment for Proton email bridge:
-  #
-  # systemd.user.services.protonmail-bridge = {
-  #   Unit = {
-  #     Description = "ProtonMail Bridge";
-  #     After = [ "network.target" ];
-  #   };
-  #
-  #   Service = {
-  #     Restart = "always";
-  #     ExecStart =
-  #       "${pkgs.protonmail-bridge}/bin/protonmail-bridge --cli --noninteractive";
-  #   };
-  #
-  #   Install = { WantedBy = [ "default.target" ]; };
-  # };
+  systemd.user.services.protonmail-bridge = {
+    Unit = {
+      Description = "ProtonMail Bridge";
+      After = [ "network.target" ];
+    };
+
+    Service = {
+      Restart = "always";
+      ExecStart =
+        "${pkgs.protonmail-bridge}/bin/protonmail-bridge --cli --noninteractive";
+    };
+
+    Install = { WantedBy = [ ]; }; # Use `default.target` to enable.
+  };
 
   systemd.user.services.waybar-sway = {
     Unit = {
@@ -1394,7 +1392,36 @@ in rec {
       KillMode = "mixed";
     };
 
+    Install = { WantedBy = [ ]; }; # Use `river-session.target` to enable.
+  };
+
+  systemd.user.services.eww-river = {
+    Unit = {
+      Description = "EWW configured for River.";
+      Documentation = "https://github.com/Alexays/Waybar/wiki";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+
+    Service = {
+      # Starts daemon automatically when opening a window.
+      ExecStart = "${pkgs.eww-wayland}/bin/eww open bar";
+      ExecReload = "${pkgs.eww-wayland}/bin/eww --restart open bar";
+      Restart = "on-failure";
+      KillMode = "mixed";
+    };
+
     Install = { WantedBy = [ "river-session.target" ]; };
+  };
+
+  systemd.user.targets.river-session = {
+    Unit = {
+      Description = "River compositor session";
+      Documentation = [ "man:systemd.special(7)" ];
+      BindsTo = [ "graphical-session.target" ];
+      Wants = [ "graphical-session-pre.target" ];
+      After = [ "graphical-session-pre.target" ];
+    };
   };
 
   #

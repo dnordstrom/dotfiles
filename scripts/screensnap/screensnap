@@ -18,13 +18,14 @@ option_copy=false
 option_help=false
 option_window=false
 option_screen=false
+option_region=false
 has_curl=false
 area=""
 timestamp="$(date '+%Y%m%d_%H_%M_%S')"
 target_dir=${SCREENSNAP_TARGET_DIR:-"$HOME/Pictures/Screenshots"}
 target="$target_dir/$timestamp.png"
 imgur_client_id="${IMGUR_CLIENT_ID:=e4ab8199be97038}"
-USAGE="USAGE:
+usage="USAGE:
     $(basename "$0") [options]
     $(basename "$0") [options] [target file]
 
@@ -35,6 +36,7 @@ OPTIONS:
     --help, -h        Show this help text
     --screen, -s      Select a screen
     --window, w       Select a window
+    --region, -r      Select a region
     --upload, -u      Upload to Imgur
     --copy, -c        Copy image contents to clipboard
     --open, -o        Open with image viewer
@@ -45,46 +47,45 @@ OPTIONS:
 
 # Parse flags and parameters. Credit to Richard Blechinger, see article at:
 # https://pretzelhands.com/posts/command-line-flags
-for arg in "$@"
-do
+for arg in "$@"; do
   case $arg in
-    -r|--region)
+  -r | --region)
     option_region=true
     shift
     ;;
-    -s|--screen)
+  -s | --screen)
     option_screen=true
     shift
     ;;
-    -w|--window)
+  -w | --window)
     option_window=true
     shift
     ;;
-    -o|--open)
+  -o | --open)
     option_open_file=true
     shift
     ;;
-    -d|--directory)
+  -d | --directory)
     option_open_dir=true
     shift
     ;;
-    -u|--upload)
+  -u | --upload)
     option_upload=true
     shift
     ;;
-    -c|--copy)
+  -c | --copy)
     option_copy=true
     shift
     ;;
-    -h|--help)
+  -h | --help)
     option_help=true
     shift
     ;;
-    *)
-    if [ -d "$(realpath "$1" > /dev/null 2>&1)" ]; then
+  *)
+    if [ -d "$(realpath "$1" >/dev/null 2>&1)" ]; then
       # Target is an existing directory
       target="$(realpath "$1")/$timestamp.png"
-    elif [ -d "$(dirname "$(realpath "$1" > /dev/null 2>&1)")" ]; then
+    elif [ -d "$(dirname "$(realpath "$1" >/dev/null 2>&1)")" ]; then
       # Target parent is an existing directory, use as full file path
       target="$(realpath "$(dirname "$1")")/$(basename "$1")"
       echo "$target"
@@ -104,8 +105,8 @@ if [ "$option_help" = true ]; then
 fi
 
 # Checking if target is writable
-if ! [ "$target" = "false" ] && touch "$target" > /dev/null 2>&1; then
-  rm "$target" > /dev/null 2>&1 # Remove temporary file
+if ! [ "$target" = "false" ] && touch "$target" >/dev/null 2>&1; then
+  rm "$target" >/dev/null 2>&1 # Remove temporary file
 else
   echo "Cannot write to $target. Please check that the directory exists and is writable."
 fi
@@ -147,13 +148,13 @@ if [ "$option_upload" = true ] && [ "$has_curl" = true ]; then
   fi
 
   # Parse the response
-  url="${RESPONSE##*<link>}"
+  url="${response##*<link>}"
   url="${url%%</link>*}"
   delete_hash="${response##*<deletehash>}"
   delete_hash="${delete_hash%%</deletehash>*}"
 
   # Get the image URL
-  url="${url//http:/https:}" # | sed 's/^http:/https:/'
+  url="$(printf "%s" "$url" | sed 's/^http:/https:/')"
   target="$url"
 elif [ "$option_upload" = true ]; then
   # The upload flag was used but cURL is not available
@@ -162,20 +163,20 @@ fi
 
 if [ "$option_copy" = true ]; then
   # If the --copy (or -c) flag is used, copy the entire image to clipboard
-  wl-copy < "$target"
+  wl-copy <"$target"
 else
   # Otherwise copy the output (file path or image URL) to clipboard
   wl-copy "$target"
 fi
 
 # Open the screenshot with image viewer if the --open (or -o) flag is used
-[ "$option_open_file" = "true" ] && "$image_viewer" "$target" 2> /dev/null &
+[ "$option_open_file" = "true" ] && "$image_viewer" "$target" 2>/dev/null &
 
 # Open the containing directory if --directory (or -d) flag is used
-[ "$option_open_dir" = "true" ] && "$file_manager" "$(dirname "$target")" 2> /dev/null &
+[ "$option_open_dir" = "true" ] && "$file_manager" "$(dirname "$target")" 2>/dev/null &
 
 echo "$target"
 
 if $errors; then
-	exit 1
+  exit 1
 fi
