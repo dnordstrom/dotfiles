@@ -26,7 +26,7 @@ export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 # River
 export GDK_BACKEND="wayland"
 export SDL_VIDEODRIVER="wayland"
-export XDG_CURRENT_DESKTOP="river"
+export XDG_CURRENT_DESKTOP="Unity"
 export XDG_SESSION_DESKTOP="river"
 export XDG_SESSION_TYPE="wayland"
 
@@ -34,11 +34,8 @@ export XDG_SESSION_TYPE="wayland"
 export _JAVA_AWT_WM_NONREPARENTING=1
 
 # Keyboard
+export XKB_DEFAULT_LAYOUT="us,se"
 export XKB_DEFAULT_OPTIONS="shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey"
-export XKB_DEFAULT_LAYOUT="us"
-# export XKB_DEFAULT_MODEL=""
-# export XKB_DEFAULT_VARIANT=""
-# export XKB_DEFAULT_RULES=""
 
 # Start
 river 2>"$HOME/.local/share/logs/river.log" 2>&1

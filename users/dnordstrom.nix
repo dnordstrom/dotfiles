@@ -518,6 +518,8 @@ in rec {
     wofi-emoji
     wtype
     xdg_utils # For `xdg-open`
+    xkeyboard_config
+    xorg.setxkbmap
     ydotool
 
     #
@@ -750,7 +752,8 @@ in rec {
 
   wayland.windowManager.sway = {
     enable = true;
-    extraConfig = "include config.main";
+    config = null;
+    extraConfig = "include main.conf";
   };
 
   #
@@ -845,8 +848,9 @@ in rec {
 
   # Sway
   #
-  #   We can't symlink the `~/.config/sway` directory when using home manager, we have to symlink
-  #   individual files. For somre reason `xdg.configFile` doesn't work so we use `home.file`.
+  # We can't symlink the `~/.config/sway` directory if the Home Manager module handles the systemd
+  # integration (since it adds a config file with the systemd target command), we have to symlink
+  # individual files. For some reason `xdg.configFile` doesn't work so we use `home.file`.
 
   home.file.".config/sway/start".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/sway/start";
@@ -946,10 +950,9 @@ in rec {
   programs.lsd.enable = true;
   programs.mpv.enable = true;
 
-  programs.waybar = {
-    enable = true;
-    systemd.target = "sway-session.target";
-  };
+  # Waybar has systemd support but we create our own service below since we need it to use different
+  # config files for Sway and River. See services section.
+  programs.waybar.enable = true;
 
   programs.eww = {
     enable = true;
@@ -1310,6 +1313,10 @@ in rec {
   # SERVICES
   #
 
+  #
+  # Modules
+  #
+
   services.gnome-keyring.enable = true;
 
   services.gpg-agent = {
@@ -1335,19 +1342,59 @@ in rec {
   # Systemd
   #
 
-  # Proton email bridge
+  # Uncomment for Proton email bridge:
+  #
+  # systemd.user.services.protonmail-bridge = {
+  #   Unit = {
+  #     Description = "ProtonMail Bridge";
+  #     After = [ "network.target" ];
+  #   };
+  #
+  #   Service = {
+  #     Restart = "always";
+  #     ExecStart =
+  #       "${pkgs.protonmail-bridge}/bin/protonmail-bridge --cli --noninteractive";
+  #   };
+  #
+  #   Install = { WantedBy = [ "default.target" ]; };
+  # };
 
-  systemd.user.services.protonmail-bridge = {
+  systemd.user.services.waybar-sway = {
     Unit = {
-      Description = "ProtonMail Bridge";
-      After = [ "network.target" ];
+      Description = "Waybar configured for Sway.";
+      Documentation = "https://github.com/Alexays/Waybar/wiki";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
     };
+
     Service = {
-      Restart = "always";
       ExecStart =
-        "${pkgs.protonmail-bridge}/bin/protonmail-bridge --cli --noninteractive";
+        "${pkgs.waybar}/bin/waybar --config ${config.home.homeDirectory}/config/waybar/sway.json";
+      ExecReload = "${pkgs.coreutils}/bin/kill -SIGUSR2 $MAINPID";
+      Restart = "on-failure";
+      KillMode = "mixed";
     };
-    Install = { WantedBy = [ "default.target" ]; };
+
+    Install = { WantedBy = [ "sway-session.target" ]; };
+  };
+
+  systemd.user.services.waybar-river = {
+    Unit = {
+      Description = "Waybar configured for River.";
+      Documentation = "https://github.com/Alexays/Waybar/wiki";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+
+    Service = {
+      ExecStart =
+        "${pkgs.waybar}/bin/waybar --config ${config.home.homeDirectory}/.config/waybar/river.json";
+      ExecReload = "${pkgs.coreutils}/bin/kill -SIGUSR2 $MAINPID";
+      Restart = "on-failure";
+      KillMode = "mixed";
+    };
+
+    Install = { WantedBy = [ "river-session.target" ]; };
   };
 
   #

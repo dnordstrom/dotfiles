@@ -84,16 +84,6 @@
     loader = {
       systemd-boot.enable = true;
 
-      grub = {
-        backgroundColor = "#D9DCD3";
-        configurationLimit = 100;
-        device = "nodev";
-        efiSupport = true;
-        enable = false;
-        useOSProber = false;
-        version = 2;
-      };
-
       efi = {
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot";
@@ -470,20 +460,6 @@
   };
 
   environment = {
-    variables = {
-      VST_PATH =
-        "/nix/var/nix/profiles/system/lib/vst:/var/run/current-system/sw/lib/vst:~/.vst";
-      LXVST_PATH =
-        "/nix/var/nix/profiles/system/lib/lxvst:/var/run/current-system/sw/lib/lxvst:~/.lxvst";
-      LADSPA_PATH =
-        "/nix/var/nix/profiles/system/lib/ladspa:/var/run/current-system/sw/lib/ladspa:~/.ladspa";
-      LV2_PATH =
-        "/nix/var/nix/profiles/system/lib/lv2:/var/run/current-system/sw/lib/lv2:~/.lv2";
-      DSSI_PATH =
-        "/nix/var/nix/profiles/system/lib/dssi:/var/run/current-system/sw/lib/dssi:~/.dssi";
-      LIBVIRT_DEFAULT_URI = "qemu:///system";
-    };
-
     systemPackages = with pkgs; [
       git
       nodejs
@@ -498,10 +474,10 @@
 
     pathsToLink = [ "/share/zsh" "/libexec" ];
 
-    # Launch Sway if logging in via tty1 and River if via tty2.
+    # Launch River if logging in via tty1 and Sway if via tty2.
     loginShellInit = ''
-      [ "$(tty)" = "/dev/tty1" ] && exec /home/dnordstrom/.config/sway/start
-      [ "$(tty)" = "/dev/tty2" ] && exec /home/dnordstrom/.config/river/start
+      [ "$(tty)" = "/dev/tty1" ] && exec /home/dnordstrom/.config/river/start
+      [ "$(tty)" = "/dev/tty2" ] && exec /home/dnordstrom/.config/sway/start
     '';
   };
 }

@@ -368,6 +368,11 @@ alias clone="git clone"
 # FUNCTIONS
 #
 
+# Prints active Wayland view "ID".
+print-wl-active-view() {
+  lswt | awk '/^([0-9]): [-]?+a[-]? /{print int($1)}'
+}
+
 # Prints a super simple eight column table with the 256 eight bit colors for reference.
 #
 #       0-7:  Standard colors (as in ESC [ 30–37 m)

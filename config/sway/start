@@ -33,6 +33,4 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 # Miscellaneous
 export SDL_VIDEODRIVER="wayland"
 
-dbus-update-activation-environment --systemd --all
-
 sway 2>"$HOME/.local/share/logs/sway.log"
