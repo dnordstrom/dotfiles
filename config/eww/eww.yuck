@@ -48,8 +48,13 @@
 
 (defwidget left []
   (box :class "left" :orientation "h" :space-evenly false :halign "start"
+    (launcher :class "logo"
+              :onclick "riverctl spawn 'dolphin ~'"
+              :onrightclick "riverctl spawn 'GTK_THEME=Catppuccin-Latte-Peach nemo ~'"
+              :onmiddleclick "riverctl spawn 'GTK_THEME=Catppuccin-Latte-Peach nautilus ~'"
+              :icon "")
     (tags)
-    (launchers)))
+    (left-launchers)))
 
 (defwidget center []
   (box :class "center" :orientation "h" :space-evenly false :halign "center"
@@ -57,51 +62,84 @@
 
 (defwidget right []
   (box :class "right" :orientation "h" :space-evenly false :halign "end"
+    (right-launchers)
     (metric :label "CPU"
             :value {round(EWW_CPU.avg, 0)}
             :class "cpu"
             :onchange ""
-            :onclick "")
+            :onclick "riverctl spawn 'kitty --title popupterm -e btm'"
+            :onrightclick ""
+            :onmiddleclick "")
     (metric :label "RAM"
             :value {EWW_RAM.used_mem_perc}
             :class "ram"
             :onchange ""
-            :onclick "")
+            :onclick "riverctl spawn 'kitty --title popupterm -e btm'"
+            :onrightclick ""
+            :onmiddleclick "")
     (metric :label "DISK"
             :value {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}
             :class "disk"
             :onchange ""
-            :onclick "")
+            :onclick "riverctl spawn 'kitty --title popupterm -e btm'"
+            :onrightclick ""
+            :onmiddleclick "")
     (metric :label volume-label
             :value volume-value
             :class {volume-label == "MUT" ? "volume muted" : "volume"}
             :onchange "pamixer --set-volume {}"
-            :onclick "pamixer --toggle-mute")))
+            :onclick "pamixer --toggle-mute"
+            :onmiddleclick ""
+            :onrightclick "riverctl spawn pavucontrol")))
 
 (defwidget tray []
   (box :class "tray" :orientation "h" (system-tray)))
 
-(defwidget launchers []
+(defwidget right-launchers []
   (revealer :class "launchers revealer ${is-hovering ? 'expanded' : 'collapsed'}"
             :transition "slideleft"
             :reveal is-hovering
-            :duration "0.25s"
+            :duration "0.2s"
+    (box :spacing 10
+      (launcher :class "screenshot"
+              :onclick "riverctl spawn screensnap"
+              :onmiddleclick "riverctl spawn 'screensnap --window'"
+              :onrightclick "riverctl spawn 'screensnap --screen'"
+              :icon ""))))
+
+(defwidget left-launchers []
+  (revealer :class "launchers revealer ${is-hovering ? 'expanded' : 'collapsed'}"
+            :transition "slideleft"
+            :reveal is-hovering
+            :duration "0.2s"
     (box :spacing 10
       (launcher :class "files"
-                :icon "" :onclick "dolphin"
-                :onrightclick "nautilus"
-                :onmiddleclick "nemo")
+                :icon ""
+                :onclick "riverctl spawn dolphin"
+                :onrightclick "riverctl spawn 'GTK_THEME=Catppuccin-Latte-Peach nemo'"
+                :onmiddleclick "riverctl spawn 'GTK_THEME=Catppuccin-Latte-Peach nautilus'")
+      (launcher :class "files"
+                :icon ""
+                :onclick "riverctl spawn 'dolphin ~/Pictures/Screenshots'"
+                :onrightclick "riverctl spawn 'GTK_THEME=Catppuccin-Latte-Peach nemo ~/Pictures/Screenshots'"
+                :onmiddleclick "riverctl spawn 'GTK_THEME=Catppuccin-Latte-Peach nautilus ~/Pictures/Screenshots'")
       (launcher :class "firefox"
-                :onclick "firefox -P Default"
-                :onrightclick ""
-                :onmiddleclick ""
-                :icon "")
+                :onclick "riverctl spawn 'firefox -P Default --new-tab about:blank'"
+                :onrightclick "riverctl spawn 'firefox -P Default --new-window about:blank'"
+                :onmiddleclick "riverctl spawn 'chromium'"
+                :icon "")
       (launcher :class "music"
                 :onclick "riverctl spawn 'firefox -P Music'"
                 :onrightclick ""
-                :onmiddleclick "" :icon "")
+                :onmiddleclick ""
+                :icon "")
+      (launcher :class "chat"
+                :onclick "riverctl spawn 'element-desktop'"
+                :onrightclick ""
+                :onmiddleclick ""
+                :icon "")
       (launcher :class "mail"
-                :onclick "firefox -P Default https://mail.proton.me"
+                :onclick "riverctl spawn 'firefox -P Default https://mail.proton.me'"
                 :onrightclick ""
                 :onmiddleclick ""
                 :icon ""))))
@@ -112,22 +150,24 @@
 ; Useful PragmataPro Mono glyphs:
 ;   * UI
 ;                                                    
-;                                
+;                                                   
+;      
 ;   * Folders
 ;                    
 ;   * Brands
-;                                                 
+;                                                
+;            
 ;   * Arrows
 ;                                                  
 ;             
 ;   * Circles
 ;               
 ;                 
-;                 
+;                  
 ;   * Battery
 ;                                   
 ;   * Separators
-;                 
+;                   
 ;
 ; @param icon           string - Icon to show (or technically anything).
 ; @param class          string - Class of container box.
@@ -137,25 +177,29 @@
 (defwidget launcher [onclick onrightclick onmiddleclick class icon]
   (box :class "launcher ${class}"
        :orientation "h"
-    (button :onclick cmd icon)))
+    (button :onclick onclick :onmiddleclick onmiddleclick :onrightclick onrightclick icon)))
 
-(defwidget metric [label value onclick onchange class]
+(defwidget metric [label value onclick onrightclick onmiddleclick onchange class]
   (box :orientation "h"
        :class "metric ${class}"
        :space-evenly false
-    (button :class "label" :onclick onclick label)
-    (scale :min 0
-           :max 101
-           :active {onchange != ""}
-           :value value
-           :onchange onchange)))
+    (button :class "label"
+            :onclick onclick
+            :onrightclick onrightclick
+            :onmiddleclick onmiddleclick
+      (box :orientation "h" :space-evenly false label
+        (scale :min 0
+               :max 101
+               :active {onchange != ""}
+               :value value
+               :onchange onchange)))))
 
 (defwidget clock []
   (box :space-evenly false :class "clock"
     (revealer :class "revealer ${is-hovering ? 'expanded' : 'collapsed'}"
               :transition "slideleft"
               :reveal {is-hovering || is-locked-date}
-              :duration "0.25s"
+              :duration "0.2s"
       (box :space-evenly false :spacing 8
         (box :class "weekday" clock-weekday)
         (box :class "separator" clock-separator)
@@ -168,7 +212,7 @@
     (revealer :class "revealer ${is-hovering ? 'expanded' : 'collapsed'}"
             :transition "slideleft"
             :reveal {is-hovering || is-locked-date}
-            :duration "0.25s"
+            :duration "0.2s"
       (box :space-evenly false :spacing 8
         (box "")
         (box :class "separator" clock-separator)
@@ -186,7 +230,7 @@
           :onhover "eww update hover-tag=${tag.tag}"
           :onhoverlost "eww update hover-tag=0"
           (button :onclick "riverctl set-focused-tags ${tag.tag} ; eww update active-tag=${tag.tag}"
-            {active-tag == tag.tag ? "" : (hover-tag == tag.tag ? tag.label : "")}))))))
+            {active-tag == tag.tag ? "" : (hover-tag == tag.tag ? tag.label : "")}))))))
 
 (defwindow bar
   :monitor 0

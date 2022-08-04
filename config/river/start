@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
-#
+
+##
 # RIVER WM STARTUP
 #
 # Sets up the environment before launching River.
@@ -15,7 +16,7 @@ export MOZ_DBUS_REMOTE=1
 export MOZ_USE_XINPUT2=1
 
 # GTK
-export GTK_THEME="Catppuccin-yellow"
+export GTK_THEME="Catppuccin-Latte-Peach"
 export GTK_USE_PORTAL=1
 
 # Qt
@@ -26,7 +27,7 @@ export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 # River
 export GDK_BACKEND="wayland"
 export SDL_VIDEODRIVER="wayland"
-export XDG_CURRENT_DESKTOP="Unity"
+export XDG_CURRENT_DESKTOP="river"
 export XDG_SESSION_DESKTOP="river"
 export XDG_SESSION_TYPE="wayland"
 
@@ -38,4 +39,4 @@ export XKB_DEFAULT_LAYOUT="us,se"
 export XKB_DEFAULT_OPTIONS="shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey"
 
 # Start
-river 2>"$HOME/.local/share/logs/river.log" 2>&1
+river 2>"$HOME/.local/share/logs/river.log"

@@ -2,11 +2,12 @@
 
 stdenv.mkDerivation rec {
   pname = "convox";
-  version = "3.4.4";
+  version = "3.5.7";
   system = "x86_64-linux";
 
   src = fetchurl {
-    url = "http://github.com/convox/convox/releases/download/${version}/convox-linux";
+    url =
+      "http://github.com/convox/convox/releases/download/${version}/convox-linux";
     sha256 = "sha256-mQb12zs/yQk8tQwhnicoJeNSOUlueJk277o5ZqwO9ek=";
   };
 
@@ -15,11 +16,10 @@ stdenv.mkDerivation rec {
   installPhase = ''
     mkdir -p $out/bin
     cp $src $out/bin/convox
-    chmod 755 $out/bin/convox
   '';
 
   meta = with lib; {
-    description = "Convox PaaS command line interface.";
+    description = "Multicloud Platform as a Service.";
     homepage = "https://github.com/convox/convox";
     license = licenses.asl20;
     maintainers = with maintainers; [ dnordstrom ];

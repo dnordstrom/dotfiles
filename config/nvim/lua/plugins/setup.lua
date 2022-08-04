@@ -103,6 +103,7 @@ return require("packer").startup(function(use)
 	use({ "tridactyl/vim-tridactyl" })
 	use({ "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" })
 	use({ "nvim-treesitter/nvim-treesitter-textobjects" })
+	use({ "elkowar/yuck.vim" })
 
 	-- Completion
 

@@ -313,7 +313,7 @@ $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
 
 
 /**
- * Common
+ * Shared styles
  */
 
 .bar {
@@ -335,7 +335,7 @@ $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
   border-radius: 50px;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
   margin: 8px;
-  padding: 1px 16px;
+  padding: 2px 16px 2px;
 }
 
 /**
@@ -343,8 +343,15 @@ $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
  */
 
 .left {
+  .logo {
+    margin: 0 10px 0 -1px;
+    padding-left: 0;
+  }
+
   .tags {
     font-size: 18px;
+    margin-top: 1px;
+    margin-right: 1px;
 
     .active button {
       color: $ctp-latte-yellow;
@@ -356,17 +363,12 @@ $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
 
     .inactive button:hover {
       font-weight: 400;
-      color: $ctp-latte-blue;
+      color: $ctp-latte-sky;
     }
   }
 
   .launchers {
-    color: $ctp-latte-sky;
     padding-left: 12px;
-
-    .launcher button:hover {
-      color: $ctp-latte-blue;
-    }
   }
 }
 
@@ -376,6 +378,7 @@ $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
 
 .center {
   background: $ctp-latte-mantle;
+  padding: 3px 16px 1px;
 
   .clock {
     color: $ctp-latte-subtext0;
@@ -393,7 +396,11 @@ $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
  */
 
 .right {
-  padding-right: 0;
+  padding: 3px 0 1px 16px;
+
+  .screenshot {
+    margin: 0 14px 0 2px;
+  }
 
   .volume {
     &.muted {
@@ -406,21 +413,28 @@ $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
  * Components
  */
 
+.launcher {
+  color: $ctp-latte-sky;
+  font-size: 22px;
+  padding: 0 2px;
+
+  &:not(.logo) button:hover {
+    color: $ctp-latte-blue;
+  }
+}
+
 .metric scale trough highlight {
-  all: unset;
   background-color: $ctp-frappe-sky;
   color: #000000;
   border-radius: 10px;
 }
 
 .metric scale trough {
-  all: unset;
   background-color: $ctp-frappe-surface2;
   border-radius: 50px;
-  min-height: 3px;
+  min-height: 4px;
   min-width: 50px;
   margin-left: 10px;
   margin-right: 20px;
-  margin-top: 2px;
 }
 

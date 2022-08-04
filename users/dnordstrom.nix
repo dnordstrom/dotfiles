@@ -96,7 +96,7 @@ let
   };
 
   #
-  # GLOBAL PYTHON PACKAGES
+  # PYTHON AND FRIENDS
   #
 
   python-packages = ps: with ps; [ i3ipc requests protonvpn-nm-lib ];
@@ -396,13 +396,12 @@ in rec {
     #
     # Local
     #
-    # Either grabbed from the nixpkgs GitHub repository and patched to use newer versions, or custom
-    # package derivations not available in the repository. Regular packages in the `nordpkgs` list
-    # and flake based packages in the main `pkgs` (i.e. no "nordpkgs" prefix).
+    # These are either grabbed from the `nixpkgs` GitHub repository and tampered with---those that
+    # exist but don't work---or they're written by me since they weren't available there.
     #
 
-    nordpkgs.convox
-    nordpkgs.lswt
+    convox
+    lswt
 
     #
     # Networking

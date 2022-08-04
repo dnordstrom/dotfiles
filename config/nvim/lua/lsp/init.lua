@@ -13,13 +13,13 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 --- LSP servers to autoload and call `setup()` on.
 local autoload = {
-	-- "cssls",
-	-- "html",
-	-- "jsonls",
-	-- "rnix",
-	-- "tsserver",
-	-- "vimls",
-	-- "yamlls",
+	"cssls",
+	"html",
+	"jsonls",
+	"rnix",
+	"tsserver",
+	"vimls",
+	"yamlls",
 }
 
 --- Icons displayed in signs column.
