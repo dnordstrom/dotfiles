@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
   src = fetchurl {
     url =
       "http://github.com/convox/convox/releases/download/${version}/convox-linux";
-    sha256 = "sha256-mQb12zs/yQk8tQwhnicoJeNSOUlueJk277o5ZqwO9ek=";
+    sha256 = "sha256-ySkhgd67yuqoeWZw6Oz2azzjVsHQQN9sdAofqvPkz0g=";
   };
 
   phases = [ "installPhase" ];

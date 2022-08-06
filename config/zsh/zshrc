@@ -329,6 +329,9 @@ alias la="printf '\n'; exa --accessed --sort=accessed"
 alias lt="printf '\n'; list-tree-exa"
 alias ltd="printf '\n'; list-tree-lsd"
 
+# Print `PATH` one entry per line
+alias print-path='printf "\n$(tput setaf 0; tput setab 3; tput bold) PATH ENVIRONMENT VARIABLE $(tput sgr0; tput setaf 4; tput bold)\n\n%s\n$(tput sgr0)" "$PATH" | tr "[=:=]" "\n"'
+
 # Navigate
 alias cdn="cd /etc/nixos"
 
@@ -373,6 +376,25 @@ print-wl-active-view() {
   lswt | awk '/^([0-9]): [-]?+a[-]? /{print int($1)}'
 }
 
+# Prints environment variables that start with given string converted in uppercase. Defaults to
+# print `$PATH`.
+#
+# Arguments:
+#   $1 - Environment variable name or start of name.
+#
+# Outputs:
+#   Value of any environment variables that start with uppercase transformed input string.
+var() {
+  query="${1:-PATH}"
+  titlestart="$(tput setaf 0; tput setab 3; tput bold)"
+  titleend="$(tput sgr0)"
+  title="ENVIRONMENT VARIABLES MATCHING /^$query.*/"
+
+  printf "\n%s\n\n" "$titlestart $title $titleend"
+
+  env | rg --smart-case --color=always --regexp="^$query.*"
+}
+
 # Prints a super simple eight column table with the 256 eight bit colors for reference.
 #
 #       0-7:  Standard colors (as in ESC [ 30–37 m)
@@ -396,7 +418,7 @@ print-ansi-colors() {
 # specified using the `PORT` environment variable, just in case we get shit mixed uo.
 #
 # Arguments:
-#   $1 = Port the server will listen on.
+#   $1 - Port the server will listen on.
 py-serve() {
   port="${PORT:-6969}"
   ip="127.0.0.1"

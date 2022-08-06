@@ -9,8 +9,8 @@
 set -eu
 
 errors=false
-file_manager="nautilus"
-image_viewer="feh"
+file_manager="dolphin"
+image_viewer="vimiv"
 option_open_file=false
 option_open_dir=false
 option_upload=false
@@ -22,7 +22,7 @@ option_region=false
 has_curl=false
 area=""
 timestamp="$(date '+%Y%m%d_%H_%M_%S')"
-target_dir=${SCREENSNAP_TARGET_DIR:-"$HOME/Pictures/Screenshots"}
+target_dir=${SCREENSNAP_TARGET_DIR:-"$HOME/Pictures/Snaps"}
 target="$target_dir/$timestamp.png"
 imgur_client_id="${IMGUR_CLIENT_ID:=e4ab8199be97038}"
 usage="USAGE:

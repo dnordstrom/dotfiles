@@ -400,8 +400,8 @@ in rec {
     # exist but don't work---or they're written by me since they weren't available there.
     #
 
-    convox
-    lswt
+    nordpkgs.convox
+    nordpkgs.lswt
 
     #
     # Networking
@@ -421,6 +421,7 @@ in rec {
 
     agenix
     cachix
+    nix-du
     nix-prefetch
     nixos-option
 
@@ -515,6 +516,7 @@ in rec {
     wl-clipboard
     wofi
     wofi-emoji
+    wshowkeys
     wtype
     xdg_utils # For `xdg-open`
     xkeyboard_config

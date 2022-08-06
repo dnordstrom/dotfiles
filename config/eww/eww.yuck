@@ -105,7 +105,7 @@
               :onclick "riverctl spawn screensnap"
               :onmiddleclick "riverctl spawn 'screensnap --window'"
               :onrightclick "riverctl spawn 'screensnap --screen'"
-              :icon ""))))
+              :icon ""))))
 
 (defwidget left-launchers []
   (revealer :class "launchers revealer ${is-hovering ? 'expanded' : 'collapsed'}"

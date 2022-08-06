@@ -44,11 +44,17 @@ availabletags="$((noscratchtag ^ stickytag))"
 # Terminal
 term="kitty --title term --single-instance --instance-group term"
 scratchterm="kitty --title scratchterm --single-instance --instance-group scratchterm --session ~/.config/kitty/sessions/scratchpad.session"
+popupterm="kitty --title popupterm --single-instance --instance-group popupterm"
 
 # Launchers
 launchapp="/etc/nixos/scripts/launch/launch-app"
 launchcmd="/etc/nixos/scripts/launch/launch-command"
 launchalt="wofi"
+
+# File managers
+filemanager="$popupterm -e vifm"
+filemanagerqt="dolphin"
+filemanagergtk="nemo"
 
 # Font
 font_size=8
@@ -126,6 +132,11 @@ riverctl map normal Super+Shift+Control D spawn "$launchalt"
 # Terminal emulators
 riverctl map normal Super Return spawn "$term"
 riverctl map normal Super+Shift Return spawn "$scratchterm"
+
+# File managers
+riverctl map normal Super G spawn "$filemanager"
+riverctl map normal Super+Shift G spawn "$filemanagerqt"
+riverctl map normal Super+Control+Shift G spawn "$filemanagergtk"
 
 #
 # System
@@ -372,6 +383,7 @@ done
 # We all float down here...
 ##
 
+riverctl float-filter-add app-id "element-desktop"
 riverctl float-filter-add app-id "float"
 riverctl float-filter-add app-id "io.github.celluloid_player.Celluloid"
 riverctl float-filter-add app-id "mpv"
