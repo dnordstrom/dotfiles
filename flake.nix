@@ -39,6 +39,11 @@
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # nordpkgs = {
+    #   url = "/home/dnordstrom/Code/nordpkgs";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
   };
 
   outputs = inputs@{ self, agenix, nixpkgs-mozilla, nixpkgs, nixpkgs-wayland
@@ -47,6 +52,7 @@
       inherit (utils.lib) mkFlake;
 
       input-overlays = [
+        # nordpkgs.overlay
         agenix.overlay
         nixpkgs-mozilla.overlay
         neovim-nightly-overlay.overlay

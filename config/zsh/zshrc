@@ -26,6 +26,11 @@ setopt nocaseglob
 # Expand aliases
 setopt aliases
 
+# Enable completion when using aliases, e.g. `gs <Tab>` shows completion of branches since it's an
+# alias for `git switch`. Why `completealiases` isn't `nocompletealiases` and vice versa, who kows.
+set nocompletealiases
+
+
 # Allow comments
 setopt interactivecomments
 
@@ -348,17 +353,20 @@ alias ne="nixos-edit"
 alias nb="nixos-build"
 alias nbi="nixos-build-impure"
 
-# Development shells
 alias nix-shell-node12="nix-shell /etc/nixos/shell/node12.nix"
 alias nix-shell-hugo="nix-shell /etc/nixos/shell/hugo.nix"
 
-# Development helpers
-alias g="git"
+#
+# DEVELOPMENT
+#
+
 alias gc="git commit -am"
+alias gc="git diff"
 alias gf="git fetch && git pull"
 alias gp="git push"
 alias gs="git switch"
 alias gm="git merge"
+alias gi="git status"
 
 alias commit="git commit -am"
 alias pull="git fetch && git pull"
@@ -366,6 +374,43 @@ alias push="git push"
 alias switch="git switch"
 alias merge="git merge"
 alias clone="git clone"
+
+# `g` - Runs `git status` when no arguments are used, otherwise passes them on to `git`.
+#
+# Arguments:
+# - $* - Arguments passed to `git` when used as an alias. (Optional.)
+g() {
+  if [ $# -eq 0 ]; then
+    git status
+  else
+    git $*
+  fi
+}
+
+# Starts a simple Python 3 HTTP server listening on the given port (default: 6969). Port may also be
+# specified using the `PORT` environment variable, just in case we get shit mixed uo.
+#
+# Arguments:
+#   $1 - Port the server will listen on.
+py-serve() {
+  port="${PORT:-6969}"
+  ip="127.0.0.1"
+
+  python3 -m http.server "${1:-$port}" --bind "$ip"
+}
+
+# Does a Git commit and push with given commit message. Fails if no message is provided.
+#
+# Arguments:
+#   $1 - Commit message
+gg() {
+  if ! [ $# -eq 0 ]; then
+    git commit -am "$*"
+    git push
+  else
+    printf "\n%s\n" "Please provide a commit message."
+  fi
+}
 
 #
 # FUNCTIONS
@@ -412,31 +457,6 @@ print-ansi-colors() {
   for i in {0..255}; do
     print -Pn "%K{$i}    %k%F{$i} ${(l:3::0:)i}%f " ${${(M)$((i%8)):#7}:+$'\n'}
   done
-}
-
-# Starts a simple Python 3 HTTP server listening on the given port (default: 6969). Port may also be
-# specified using the `PORT` environment variable, just in case we get shit mixed uo.
-#
-# Arguments:
-#   $1 - Port the server will listen on.
-py-serve() {
-  port="${PORT:-6969}"
-  ip="127.0.0.1"
-
-  python3 -m http.server "${1:-$port}" --bind "$ip"
-}
-
-# Does a Git commit and push with given commit message. Fails if no message is provided.
-#
-# Arguments:
-#   $1 - Commit message
-gg() {
-  if ! [ $# -eq 0 ]; then
-    git commit -am "$*"
-    git push
-  else
-    printf "\n%s\n" "Please provide a commit message."
-  fi
 }
 
 # Displays a directory tree. Two optional arguments specify depth and path. If the first argument is

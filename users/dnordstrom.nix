@@ -426,6 +426,15 @@ in rec {
     nixos-option
 
     #
+    # Virtualization
+    #
+
+    flatpak-builder
+    q4wine
+    wineWowPackages.waylandFull
+    winetricks
+
+    #
     # Programs, packages, and files
     #
 
