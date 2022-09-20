@@ -44,10 +44,10 @@ end
 -- @param bufnr  Buffer number.
 local enable_formatting = function(client, bufnr)
 	if client.supports_method("textDocument/formatting") then
-		local augroup_autoformat = nvim_create_augroup("autoformat", { clear = true })
+		local group = nvim_create_augroup("autoformat", { clear = true })
 
 		nvim_create_autocmd("BufWritePre", {
-			group = augroup_autoformat,
+			group = group,
 			bufnr = bufnr,
 			pattern = "*",
 			callback = function()

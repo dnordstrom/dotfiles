@@ -22,6 +22,7 @@ local autocommands = [[
 
     " Utilities
     autocmd BufRead utils.lua command! NUpdateUtilsReturn lua NORDUtils.update_utils_return()
+    autocmd VimEnter * command! -nargs=* NBrowserSearch lua NORDUtils.browsersearch(<q-args>)
 
     " Session management
     autocmd VimEnter * command! -nargs=* NSaveSession lua NORDUtils.save_session(<q-args>)

@@ -260,6 +260,7 @@ require("cokeline").setup({
 		components.corner_left,
 		components.padding,
 		components.filetype_icon_or_modified_indicator,
+    components.dirname_as_unique_prefix,
 		components.filename,
 		components.modified_indicator,
 		components.padding,

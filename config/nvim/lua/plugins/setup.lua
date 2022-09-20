@@ -108,10 +108,10 @@ return require("packer").startup(function(use)
 	-- Completion
 
 	use({ "f3fora/cmp-spell" })
-	use({ "hrsh7th/cmp-buffer" })
+	-- use({ "hrsh7th/cmp-buffer" })
 	use({ "hrsh7th/cmp-calc" })
-	use({ "hrsh7th/cmp-cmdline" })
-	use({ "hrsh7th/cmp-emoji" })
+	-- use({ "hrsh7th/cmp-cmdline" })
+	-- use({ "hrsh7th/cmp-emoji" })
 	use({ "hrsh7th/cmp-nvim-lsp" })
 	use({ "hrsh7th/cmp-path" })
 	use({ "hrsh7th/nvim-cmp" })
@@ -168,7 +168,7 @@ return require("packer").startup(function(use)
 	})
 	use({ "norcalli/nvim-colorizer.lua" })
 	use({ "folke/todo-comments.nvim", requires = plenary })
-	use({ "lewis6991/gitsigns.nvim", requires = plenary, tag = "release" })
+	use({ "lewis6991/gitsigns.nvim", requires = plenary, tag = "main" }) -- `main` for Nightly support
 	use({ "lukas-reineke/indent-blankline.nvim" })
 
 	-- VCS
@@ -177,7 +177,7 @@ return require("packer").startup(function(use)
 
 	-- Previewers
 
-	use({ "ellisonleao/glow.nvim" })
+	use({ "ellisonleao/glow.nvim", ft = "markdown" })
 
 	--
 	-- Update and compile

@@ -68,6 +68,9 @@ require("fzf-lua").setup({
 			["<M-d>"] = "preview-page-down",
 		},
 		fzf = {
+			["tab"] = "down",
+			["btab"] = "up",
+
 			-- Fzf navigation on Ctrl
 			["ctrl-z"] = "abort",
 			["ctrl-space"] = "toggle-down",

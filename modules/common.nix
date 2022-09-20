@@ -97,9 +97,15 @@
 
   networking = {
     hostName = "nordix";
-    wireless.enable = false;
-    networkmanager.enable = true;
     useDHCP = false;
+    useNetworkd = true;
+
+    interfaces.enp8s0.useDHCP = true;
+
+    networkmanager.enable = false;
+    wireless.enable = false;
+
+    firewall.enable = true;
   };
 
   #
@@ -116,6 +122,16 @@
   #
 
   services = {
+    #
+    # DHCP
+    #
+
+    dhcpd4.interfaces = [ "enp8s0" ];
+
+    #
+    # Key remapping
+    #
+
     interception-tools = {
       enable = true;
       plugins = [ pkgs.interception-tools-plugins.dual-function-keys ];
@@ -127,10 +143,18 @@
       '';
     };
 
+    #
+    # Smart card daemon, for hardware keys.
+    #
+
     pcscd = {
       enable = true;
       plugins = [ pkgs.ccid ];
     };
+
+    #
+    # OpenSSH, Bluetooth, and udev rules.
+    #
 
     openssh.enable = true;
 
@@ -138,12 +162,18 @@
 
     udev.packages = [ pkgs.nordpkgs.udev-rules ];
 
+    #
+    # Audio using PipeWire with Wireplumber as session manager.
+    #
+
     pipewire = {
       enable = true;
       alsa.enable = true;
       pulse.enable = true;
       wireplumber.enable = true;
 
+      # Set default and allowed output bitrate and sample rates. It will adapt automatically to
+      # match the output device (DAC/amp).
       config.pipewire = {
         context.properties = {
           link.max-buffers = 16;
@@ -155,6 +185,7 @@
         };
       };
 
+      # Device-specific setup
       media-session.config.alsa-monitor.rules = [
         # USB digital output
         {
@@ -253,6 +284,7 @@
       openFirewall = true;
     };
 
+    # Packages that use `dbus` go here.
     dbus = {
       enable = true;
       packages = with pkgs; [ openvpn3 protonvpn-cli protonvpn-gui ];
@@ -269,6 +301,7 @@
 
   systemd = {
     services = {
+      # Avoid waiting time on boot or shutdown.
       systemd-udev-settle.enable = false;
       NetworkManager-wait-online.enable = false;
     };
@@ -279,27 +312,29 @@
   #
 
   security = {
-    # Yubikey authentication, reads tokens from `~/.yubico/authorized_yubikeys`
+    # Yubikey authentication, reads tokens from `~/.yubico/authorized_yubikeys`.
     pam.yubico = {
-      mode = "client";
-      id = "70449";
       enable = true;
+      id = "70449";
+      mode = "client";
+
+      # Allow login with Yubikey or password only, rather than as MFA. Bad. Convenient, but bad.
       control = "sufficient";
     };
 
-    # Disable `sudo`
+    # Disable `sudo` in favor of `doas`.
     sudo.enable = false;
 
-    # Enable `doas`
+    # Enable `doas`.
     doas = {
       enable = true;
       wheelNeedsPassword = false;
     };
 
-    # For Pipewire (recommended in Nix wiki)
+    # For Pipewire (recommended in Nix wiki).
     rtkit.enable = true;
 
-    # Privilege escalation
+    # Privilege escalation.
     polkit.enable = true;
 
     # Make swaylock accept correct password.
@@ -331,19 +366,26 @@
   # HARDWARE
   #
 
+  # Sound should be set to disabled when using PipeWire, for whatever reason.
   sound.enable = false;
 
   hardware = {
+    # Disable PulseAudio for PipeWire.
     pulseaudio.enable = false;
 
     opengl = {
+      # This should be enabled automatically when using `programs.sway.enable`, but we're not using
+      # that so let's set this here to be sure.
       enable = true;
-      driSupport = true;
+
+      # Enable Direct Rendering for 32-bit applications (64-bit enabled by default).
+      driSupport32Bit = true;
     };
 
+    # Enable Bluetooth audio.
     bluetooth = {
       enable = true;
-      settings = { General = { Enable = "Source,Sink,Media,Socket"; }; };
+      settings.General.Enable = "Source,Sink,Media,Socket";
     };
   };
 
@@ -365,6 +407,7 @@
         xdg-desktop-portal-gnome
       ];
 
+      # Configure screen sharing using `slurp` as picker.
       wlr = {
         enable = true;
         settings = {
@@ -403,7 +446,10 @@
   users = {
     users = {
       dnordstrom = {
+        # Normal user gets a directory in `/home`.
         isNormalUser = true;
+
+        # Extra groups for audio, input gestures, etc.
         extraGroups = [
           "wheel"
           "audio"
@@ -413,9 +459,12 @@
           "qemu-libvirtd"
           "vboxusers"
         ];
+
+        # Default to Zsh in TTY.
         shell = pkgs.zsh;
       };
 
+      # User for `openvpn3`.
       openvpn = {
         isSystemUser = true;
         description = "OpenVPN 3 user";
@@ -423,6 +472,7 @@
       };
     };
 
+    # Group for `openvpn3`.
     groups.openvpn = { };
   };
 

@@ -91,14 +91,14 @@ cmp.setup({
 		-- Input mode sources
 		{ name = "nvim_lsp" },
 		{ name = "treesitter" },
-		{ name = "buffer" },
+		-- { name = "buffer" },
 		{ name = "luasnip" },
 		{ name = "path" },
-		{ name = "rg" },
-		{ name = "calc" },
+		-- { name = "rg" },
+		-- { name = "calc" },
 		{ name = "spell" },
 		{ name = "look" },
-		{ name = "emoji" },
+		-- { name = "emoji" },
 	},
 	formatting = {
 		-- Use lspkind-nvim to display icon instead of text
@@ -112,7 +112,7 @@ cmp.setup.cmdline("/", {
 		{ name = "buffer" },
 		{ name = "treesitter" },
 		{ name = "nvim_lsp" },
-		{ name = "rg" },
+		-- { name = "rg" },
 	},
 })
 
@@ -120,9 +120,9 @@ cmp.setup.cmdline("/", {
 cmp.setup.cmdline(":", {
 	sources = {
 		{ name = "path" },
-		{ name = "cmdline" },
+		-- { name = "cmdline" },
 		{ name = "calc" },
-		{ name = "rg" },
+		-- { name = "rg" },
 	},
 })
 

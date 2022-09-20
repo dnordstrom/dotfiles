@@ -16,6 +16,7 @@ stdenv.mkDerivation rec {
   installPhase = ''
     mkdir -p $out/bin
     cp $src $out/bin/convox
+    chmod u+x $out/bin/convox
   '';
 
   meta = with lib; {

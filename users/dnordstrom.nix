@@ -408,10 +408,14 @@ in rec {
     #
 
     gnome.networkmanager-openvpn
+    gnunet
+    gnunet-gtk
     haskellPackages.network-manager-tui
     libsForQt5.networkmanager-qt
     networkmanager-openvpn
     networkmanagerapplet
+    onionshare
+    onionshare-gui
     openvpn3
     qbittorrent
 
@@ -454,11 +458,13 @@ in rec {
     gotktrix
     mirage-im
     nheko
+    qtox
     quaternion
     schildichat-desktop-wayland
     signal-desktop
     slack
     slack-term
+    utox
     weechat
 
     #
@@ -543,7 +549,8 @@ in rec {
     # Web
     #
 
-    tor-browser-bundle-bin
+    # TODO: Keep an eye on `useHardenedMalloc` since it's a temporary fix.
+    (tor-browser-bundle-bin.override { useHardenedMalloc = false; })
     tridactyl-native # Firefox native messaging host
 
     #
@@ -598,6 +605,7 @@ in rec {
     pavucontrol
     playerctl
     pulsemixer
+    sayonara
     streamlink
     vlc
 
@@ -735,7 +743,6 @@ in rec {
 
     input-remapper
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
-    jetbrains.datagrip
     navi # CLI cheatsheet tool
     tealdeer # TLDR in Rust
     ytfzf # Fzf utility for YouTube
@@ -883,6 +890,10 @@ in rec {
   # Swappy 
 
   xdg.configFile."swappy/config".source = ../config/swappy/config;
+
+  # Bat 
+
+  xdg.configFile."bat/themes".source = ../config/bat/themes;
 
   # Kitty
 
@@ -1155,7 +1166,7 @@ in rec {
       color = "always";
       italic-text = "always";
       tabs = "2";
-      theme = "base16";
+      theme = "Catppuccin-latte";
       style = "header-filename,header-filesize,rule,numbers,changes";
     };
   };

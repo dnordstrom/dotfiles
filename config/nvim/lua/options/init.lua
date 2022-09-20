@@ -89,7 +89,7 @@ opt.formatoptions = "cjroql"
 --
 --   Documentation: https://github.com/catppuccin/nvim#configuration
 
-g.catppuccin_flavour = "mocha"
+g.catppuccin_flavour = "latte"
 
 require("catppuccin").setup({
 	dim_inactive = {
@@ -110,7 +110,7 @@ require("catppuccin").setup({
 		functions = { "bold" },
 		keywords = { "italic" },
 		strings = {},
-		variables = {},
+		variables = { "bold" },
 		numbers = {},
 		booleans = {},
 		properties = {},
