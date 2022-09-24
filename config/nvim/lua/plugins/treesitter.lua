@@ -3,11 +3,21 @@
 ----
 
 require("nvim-treesitter.configs").setup({
+	-- Install missing parsers automatically.
+	auto_install = true,
+
+	-- Install initial parsers from https://github.com/nvim-treesitter/nvim-treesitter#supported-languages.
 	ensure_installed = {
 		"bash",
+		"comment",
 		"css",
 		"dockerfile",
+		"go",
+		"gomod",
+		"graphql",
+		"help",
 		"html",
+		"java",
 		"javascript",
 		"jsdoc",
 		"json",
@@ -15,23 +25,35 @@ require("nvim-treesitter.configs").setup({
 		"lua",
 		"make",
 		"markdown",
+		"markdown_inline",
 		"nix",
 		"php",
 		"python",
+		"rasi",
+		"regex",
+		"ruby",
 		"scss",
+		"sql",
+		"swift",
+		"todotxt",
 		"toml",
 		"tsx",
 		"typescript",
 		"vim",
 		"yaml",
 	},
+
+	-- Module for context aware commenting, e.g. `{/* JS/TS comments in JSX/TSX}`.
 	context_commentstring = {
-		enable = false, -- TODO: Enable again once fixed
+		enable = true,
 	},
+
+	-- Module for additional text objects.
 	textobjects = {
 		select = {
 			enable = true,
 			lookahead = true,
+			lookbehind = true,
 			keymaps = {
 				["al"] = "@loop.outer",
 				["il"] = "@loop.inner",
@@ -48,15 +70,26 @@ require("nvim-treesitter.configs").setup({
 				["ic"] = "@class.inner",
 			},
 		},
-		swap = {
+
+		-- Scope navigation maps.
+		incremental_selection = {
 			enable = true,
-			swap_next = {
-				["<leader>a"] = "@parameter.inner",
-			},
-			swap_previous = {
-				["<leader>A"] = "@parameter.inner",
+			keymaps = {
+				init_selection = "gnn",
+				node_decremental = "grm",
+				node_incremental = "grn",
+				scope_incremental = "grc",
 			},
 		},
+
+		-- Parameter swap maps.
+		swap = {
+			enable = true,
+			swap_next = { ["<Leader>ct"] = "@parameter.inner" },
+			swap_previous = { ["<Leader>cT"] = "@parameter.inner" },
+		},
+
+		-- Navigation maps.
 		move = {
 			enable = true,
 			set_jumps = true,

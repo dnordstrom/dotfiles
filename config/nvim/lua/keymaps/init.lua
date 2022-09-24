@@ -80,8 +80,8 @@ nvim_set_keymap("n", "<Leader>|", ":vsplit | wincmd l<CR>", _nonrecursive)
 -- COMPLIMENT DEFAULTS WITH...
 --
 
--- ...save and keep (ZZ, ZQ)
-nvim_set_keymap("n", "ZA", "<Cmd>w!<CR>", _nonrecursive)
+-- ...save (silently without quitting; compliments ZZ and ZQ)
+nvim_set_keymap("n", "ZA", "<Cmd>silent w<CR>", _nonrecursive)
 
 --
 -- MODIFY DEFAULTS TO...
@@ -283,14 +283,11 @@ nvim_set_keymap("n", "<Leader>ts", "<Cmd>set spell!<CR>", _nonrecursive)
 -- FIND...
 --
 
--- ...by double tap: files
+-- ...quick action: file
 nvim_set_keymap("n", "<Leader>ff", "<Cmd>FzfLua files<CR>", _nonrecursive)
 
--- ...anything (shows menu)
+-- ...all (show menu)
 nvim_set_keymap("n", "<Leader>fa", "<Cmd>FzfLua<CR>", _nonrecursive)
-
--- ...file by (g)rep
-nvim_set_keymap("n", "<Leader>fg", "<Cmd>FzfLua live_grep_native<CR>", _nonrecursive)
 
 -- ...buffer
 nvim_set_keymap("n", "<Leader>fb", "<Cmd>FzfLua buffers<CR>", _nonrecursive)
@@ -298,8 +295,8 @@ nvim_set_keymap("n", "<Leader>fb", "<Cmd>FzfLua buffers<CR>", _nonrecursive)
 -- ...command
 nvim_set_keymap("n", "<Leader>fc", "<Cmd>FzfLua commands<CR>", _nonrecursive)
 
--- ...color scheme with live preview
-nvim_set_keymap("n", "<Leader>fC", "<Cmd>FzfLua colorschemes<CR>", _nonrecursive)
+-- ...file by (g)rep
+nvim_set_keymap("n", "<Leader>fg", "<Cmd>FzfLua live_grep_native<CR>", _nonrecursive)
 
 -- ...help
 nvim_set_keymap("n", "<Leader>fh", "<Cmd>FzfLua help_tags<CR>", _nonrecursive)
@@ -307,20 +304,20 @@ nvim_set_keymap("n", "<Leader>fh", "<Cmd>FzfLua help_tags<CR>", _nonrecursive)
 -- ...mark
 nvim_set_keymap("n", "<Leader>fm", "<Cmd>FzfLua marks<CR>", _nonrecursive)
 
--- ...key maps
+-- ...key map
 nvim_set_keymap("n", "<Leader>fk", "<Cmd>FzfLua keymaps<CR>", _nonrecursive)
 
--- ...symbol (file)
-nvim_set_keymap("n", "<Leader>fs", "<Cmd>FzfLua lsp_document_symbols<CR>", _nonrecursive)
+-- ...LSP code (a)ction
+nvim_set_keymap("n", "<Leader>fla", "<Cmd>FzfLua lsp_code_actions<CR>", _nonrecursive)
 
--- ...symbol (workspace)
-nvim_set_keymap("n", "<Leader>fS", "<Cmd>FzfLua lsp_workspace_symbols<CR>", _nonrecursive)
-
--- ...recent files
+-- ...recently opened file
 nvim_set_keymap("n", "<Leader>fr", "<Cmd>FzfLua oldfiles<CR>", _nonrecursive)
 
--- ..."undo" last query (resume)
-nvim_set_keymap("n", "<Leader>fu", "<Cmd>FzfLua resume<CR>", _nonrecursive)
+-- ...spelling suggestion
+nvim_set_keymap("n", "<Leader>fs", "<Cmd>FzfLua spell_suggest<CR>", _nonrecursive)
+
+-- ...repeat (i.e. resume) last query
+nvim_set_keymap("n", "<Leader>f.", "<Cmd>FzfLua resume<CR>", _nonrecursive)
 
 --
 -- BUFFER...

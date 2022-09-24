@@ -407,13 +407,10 @@ in rec {
     # Networking
     #
 
-    gnome.networkmanager-openvpn
     gnunet
     gnunet-gtk
     haskellPackages.network-manager-tui
-    libsForQt5.networkmanager-qt
     networkmanager-openvpn
-    networkmanagerapplet
     onionshare
     onionshare-gui
     openvpn3
@@ -433,7 +430,6 @@ in rec {
     # Virtualization
     #
 
-    flatpak-builder
     q4wine
     wineWowPackages.waylandFull
     winetricks
@@ -452,7 +448,6 @@ in rec {
     #
 
     element-desktop
-    fluffychat
     fractal
     gomuks
     gotktrix
@@ -508,11 +503,9 @@ in rec {
     grim
     imagemagick
     j4-dmenu-desktop
-    kile-wl
     libinput
     light # TRY: See how this works for backlight control. Should supposedly work even in TTY.
     river
-    rivercarro
     rofi-calc
     rofi-emoji
     rofi-systemd
@@ -629,10 +622,11 @@ in rec {
     #
 
     # General
-    cloudflared
+    cloudflared # CLI for CLoudflare tunnels
     gcc
 
     # Editors
+    android-studio # Stable version (`-beta`, `-dev`, and `-canary` can be appended)
     kate
 
     # LSP and syntax
@@ -642,7 +636,7 @@ in rec {
     # nodePackages.vscode-langservers-extracted
     # nodePackages.yaml-language-server
     # rnix-lsp # Uses `nixpkgs-fmt`
-    tree-sitter
+    # tree-sitter
 
     # Spelling
     nodePackages.cspell

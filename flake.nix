@@ -2,48 +2,19 @@
   description = "nordix system configuration";
 
   inputs = {
-    nixpkgs = { url = "github:NixOS/nixpkgs/nixos-unstable"; };
-
-    nixpkgs-wayland = {
-      url = "github:nix-community/nixpkgs-wayland";
-      inputs.nixpkgs.follows = "nixpkgs-wayland";
-    };
-
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    neovim-nightly-overlay = {
-      url = "github:nix-community/neovim-nightly-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    nixpkgs-mozilla = {
-      url = "github:mozilla/nixpkgs-mozilla";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    utils = {
-      url = "github:gytis-ivaskevicius/flake-utils-plus";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.utils.follows = "utils";
-    };
-
-    agenix = {
-      url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # nordpkgs = {
-    #   url = "/home/dnordstrom/Code/nordpkgs";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    utils.url = "github:gytis-ivaskevicius/flake-utils-plus";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
+    nixpkgs-wayland.inputs.nixpkgs.follows = "nixpkgs-wayland";
+    nixpkgs-mozilla.url = "github:mozilla/nixpkgs-mozilla";
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+    neovim-nightly-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    rust-overlay.url = "github:oxalica/rust-overlay";
+    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    agenix.url = "github:ryantm/agenix";
+    agenix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs@{ self, agenix, nixpkgs-mozilla, nixpkgs, nixpkgs-wayland
@@ -52,11 +23,10 @@
       inherit (utils.lib) mkFlake;
 
       input-overlays = [
-        # nordpkgs.overlay
         agenix.overlay
-        nixpkgs-mozilla.overlay
         neovim-nightly-overlay.overlay
-        rust-overlay.overlay
+        nixpkgs-mozilla.overlay
+        rust-overlay.overlays.default
       ];
 
       import-overlays = import ./overlays;
@@ -86,7 +56,7 @@
             backupFileExtension = "bak";
             useGlobalPkgs = true;
             useUserPackages = true;
-            users = { dnordstrom = import ./users/dnordstrom.nix; };
+            users.dnordstrom = import ./users/dnordstrom.nix;
           };
         }
       ];

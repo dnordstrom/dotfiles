@@ -101,24 +101,28 @@ return require("packer").startup(function(use)
 	use({ "fladson/vim-kitty" })
 	use({ "tpope/vim-markdown" })
 	use({ "tridactyl/vim-tridactyl" })
-	use({ "nvim-treesitter/nvim-treesitter", run = ":TSUpdate" })
+	use({
+		"nvim-treesitter/nvim-treesitter",
+		run = function()
+			require("nvim-treesitter.install").update({ with_sync = true })
+		end,
+	})
 	use({ "nvim-treesitter/nvim-treesitter-textobjects" })
 	use({ "elkowar/yuck.vim" })
 
 	-- Completion
 
 	use({ "f3fora/cmp-spell" })
-	-- use({ "hrsh7th/cmp-buffer" })
 	use({ "hrsh7th/cmp-calc" })
-	-- use({ "hrsh7th/cmp-cmdline" })
-	-- use({ "hrsh7th/cmp-emoji" })
 	use({ "hrsh7th/cmp-nvim-lsp" })
 	use({ "hrsh7th/cmp-path" })
 	use({ "hrsh7th/nvim-cmp" })
 	use({ "lukas-reineke/cmp-rg" })
 	use({ "ray-x/cmp-treesitter" })
 	use({ "saadparwaiz1/cmp_luasnip" })
-	use({ "ujihisa/neco-look" })
+	-- use({ "hrsh7th/cmp-buffer" })
+	-- use({ "hrsh7th/cmp-cmdline" })
+	-- use({ "hrsh7th/cmp-emoji" })
 
 	-- Snippets
 

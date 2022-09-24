@@ -91,14 +91,9 @@ cmp.setup({
 		-- Input mode sources
 		{ name = "nvim_lsp" },
 		{ name = "treesitter" },
-		-- { name = "buffer" },
 		{ name = "luasnip" },
 		{ name = "path" },
-		-- { name = "rg" },
-		-- { name = "calc" },
 		{ name = "spell" },
-		{ name = "look" },
-		-- { name = "emoji" },
 	},
 	formatting = {
 		-- Use lspkind-nvim to display icon instead of text
