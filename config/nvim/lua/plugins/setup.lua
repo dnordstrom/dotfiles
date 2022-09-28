@@ -13,8 +13,9 @@ if not installed then
 end
 
 return require("packer").startup(function(use)
-	local plenary = "nvim-lua/plenary.nvim"
 	local devicons = "kyazdani42/nvim-web-devicons"
+	local plenary = "nvim-lua/plenary.nvim"
+	local treesitter = "nvim-treesitter/nvim-treesitter"
 
 	--
 	-- NEOVIM
@@ -98,17 +99,21 @@ return require("packer").startup(function(use)
 	-- Language
 
 	use({ "LnL7/vim-nix" })
+	use({ "elkowar/yuck.vim" })
 	use({ "fladson/vim-kitty" })
 	use({ "tpope/vim-markdown" })
 	use({ "tridactyl/vim-tridactyl" })
 	use({
-		"nvim-treesitter/nvim-treesitter",
+		treesitter,
 		run = function()
 			require("nvim-treesitter.install").update({ with_sync = true })
 		end,
 	})
+	use({
+		"folke/twilight.nvim",
+		-- config = function() require("twilight").setup({}) end
+	})
 	use({ "nvim-treesitter/nvim-treesitter-textobjects" })
-	use({ "elkowar/yuck.vim" })
 
 	-- Completion
 
@@ -120,9 +125,7 @@ return require("packer").startup(function(use)
 	use({ "lukas-reineke/cmp-rg" })
 	use({ "ray-x/cmp-treesitter" })
 	use({ "saadparwaiz1/cmp_luasnip" })
-	-- use({ "hrsh7th/cmp-buffer" })
-	-- use({ "hrsh7th/cmp-cmdline" })
-	-- use({ "hrsh7th/cmp-emoji" })
+	use({ "hrsh7th/cmp-buffer" })
 
 	-- Snippets
 
@@ -134,14 +137,14 @@ return require("packer").startup(function(use)
 	use({ "filipdutescu/renamer.nvim", branch = "master", requires = plenary })
 	use({
 		"ThePrimeagen/refactoring.nvim",
-		requires = { { plenary }, { "nvim-treesitter/nvim-treesitter" } },
+		requires = { { plenary }, { treesitter } },
 	})
 
 	-- Comments
 
 	use({ "numToStr/Comment.nvim" }) -- Commenter
 
-	-- JSX/TSX markup comment support
+	-- Context aware commenting using tree-sitter
 	use({ "JoosepAlviste/nvim-ts-context-commentstring" })
 
 	-- Documentation comment generator

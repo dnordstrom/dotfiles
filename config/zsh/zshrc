@@ -352,8 +352,20 @@ alias ne="nixos-edit"
 alias nb="nixos-build"
 alias nbi="nixos-build-impure"
 
+# Nix shells
 alias nix-shell-node12="nix-shell /etc/nixos/shell/node12.nix"
 alias nix-shell-hugo="nix-shell /etc/nixos/shell/hugo.nix"
+
+# VPNs
+alias vpn-leeroy-up="openvpn3 session-start --config $HOME/Secrets/openvpn/leeroy.ovpn"
+alias vpn-leeroy-down="openvpn3 session-manage --disconnect --config $HOME/Secrets/openvpn/leeroy.ovpn"
+alias vpn-leeroy-status="openvpn3 session-stats --config $HOME/Secrets/openvpn/leeroy.ovpn"
+
+alias vpn-proton-up="doas protonvpn connect --fastest"
+alias vpn-proton-down="doas protonvpn disconnect"
+alias vpn-proton-status="doas protonvpn status"
+alias vpn-proton-up-securecore="doas protonvpn connect --sc"
+alias vpn-proton-up-p2p="doas protonvpn connect --p2p"
 
 #
 # DEVELOPMENT

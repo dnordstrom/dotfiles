@@ -21,15 +21,22 @@
     # Use unstable `nix`
     package = pkgs.nixUnstable;
 
-    # CPU scheduling policy for nix daemon: "other" for regular (default), "batch" for
-    # non-interactive, "idle" for low priority. Let's try that. Don't care if it takes longer as
-    # long as the PC isn't completely unresponsive during builds.
+    # CPU scheduling policy for Nix daemon process. Defaults to "other". Other options are "batch"
+    # (for non-interactive) and "idle" (for low priority). We set it to "idle" in an attempt to be
+    # able to use the PC during builds. (Documentation recommends this on desktop.)
     daemonCPUSchedPolicy = "idle";
+
+    # IO scheduling class for Nix daemon process. Defaults to "best-effort". We set it to "idle" in
+    # an attempt to be able to use the PC during builds. (Documentation recommends this on desktop.)
+    daemonIOSchedClass = "idle";
 
     # Build settings
     settings = {
-      # You only get half of our cores
+      # Number of cores used per one build (if it has parallel building enabled).
       cores = 4;
+
+      # Max build jobs to run in parallel.
+      max-jobs = 2;
 
       # Users with elevated `nix` command privileges
       trusted-users = [ "root" "dnordstrom" ];
@@ -97,14 +104,12 @@
 
   networking = {
     hostName = "nordix";
-    useDHCP = false;
+    useDHCP = true;
     useNetworkd = true;
-
-    interfaces.enp8s0.useDHCP = true;
-
+    dhcpcd.enable = false;
+    connman.enable = true;
     networkmanager.enable = false;
     wireless.enable = false;
-
     firewall.enable = true;
   };
 
@@ -123,10 +128,33 @@
 
   services = {
     #
-    # DHCP
+    # Input
     #
 
-    dhcpd4.interfaces = [ "enp8s0" ];
+    xserver.libinput.enable = true;
+
+    #
+    # CPU
+    #
+
+    cpupower-gui.enable = true; # Use cpupower-gui instead of TLP.
+    tlp.enable = false; # Make sure TLP stays disabled.
+
+    #
+    # Login manager
+    #
+
+    greetd = {
+      enable = true;
+      vt = 5;
+      settings = {
+        default_session = {
+          command =
+            "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --remember-session --cmd /home/dnordstrom/.config/river/start";
+          user = "greeter";
+        };
+      };
+    };
 
     #
     # Key remapping
@@ -167,118 +195,36 @@
     #
 
     pipewire = {
+      # Enable the service.
       enable = true;
-      alsa.enable = true;
-      pulse.enable = true;
-      wireplumber.enable = true;
 
-      # Set default and allowed output bitrate and sample rates. It will adapt automatically to
-      # match the output device (DAC/amp).
-      config.pipewire = {
-        context.properties = {
-          link.max-buffers = 16;
-          default.clock.rate = 44100;
-          default.clock.allowed-rates =
-            [ 44100 48000 88200 96000 176400 192000 384000 ];
-          core.daemon = true;
-          core.name = "pipewire-0";
-        };
+      # Use PipeWire as primary audio server (enabled by default).
+      audio.enable = true;
+
+      # Enable ALSA.
+      alsa = {
+        enable = true;
+        support32Bit = true;
       };
 
-      # Device-specific setup
-      media-session.config.alsa-monitor.rules = [
-        # USB digital output
-        {
-          matches = [{
-            node.name =
-              "alsa_output.usb-Focusrite_Scarlett_Solo_USB_Y7WND901607934-00.iec958-stereo";
-          }];
-          actions = {
-            update-props = {
-              asdio.allowed-rates = [ 44100 48000 88200 96000 176400 192000 ];
-              audio.format = "S32_LE";
-              audio.rate = 44100;
-              resample.quality = 10;
-            };
-          };
-        }
-        # USB digital input
-        {
-          matches = [{
-            node.name =
-              "alsa_input.usb-Focusrite_Scarlett_Solo_USB_Y7WND901607934-00.iec958-stereo";
-          }];
-          actions = {
-            update-props = {
-              audio.allowed-rates = [ 44100 48000 88200 96000 176400 192000 ];
-              audio.format = "S16_LE";
-              audio.rate = 44100;
-            };
-          };
-        }
-        # Onboard analog output
-        {
-          matches =
-            [{ node.name = "alsa_output.pci-0000_0b_00.3.analog-stereo"; }];
-          actions = {
-            update-props = {
-              audio.allowed-rates = [ 44100 48000 ];
-              audio.format = "S24_LE";
-              audio.rate = 44100;
-              resample.quality = 10;
-            };
-          };
-        }
-        # Onboard digital output
-        {
-          matches =
-            [{ node.name = "alsa_output.pci-0000_0b_00.3.iec958-stereo"; }];
-          actions = {
-            update-props = {
-              audio.allowed-rates = [ 44100 48000 88200 96000 176400 192000 ];
-              audio.format = "S32_LE";
-              audio.rate = 44100;
-              resample.quality = 10;
-            };
-          };
-        }
-        # Onboard analog input
-        {
-          matches =
-            [{ node.name = "alsa_input.pci-0000_0b_00.3.analog-stereo"; }];
-          actions = {
-            update-props = {
-              audio.allowed-rates = [ 44100 ];
-              audio.format = "S16_LE";
-              audio.rate = 44100;
-            };
-          };
-        }
-      ];
+      # Use PulseAudio emulation where PipeWire isn't supported.
+      pulse.enable = true;
 
-      # Bluetooth audio
-      media-session.config.bluez-monitor.rules = [
-        {
-          matches = [{ device.name = "~bluez_card.*"; }];
-          actions = {
-            update-props = {
-              bluez5.reconnect-profiles = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
-              bluez5.msbc-support = true;
-              bluez5.sbc-xq-support = true;
-            };
-          };
-        }
-        {
-          matches = [
-            { node.name = "~bluez_input.*"; }
-            { node.name = "~bluez_output.*"; }
-          ];
-          actions = { node.pause-on-idle = false; };
-        }
-      ];
+      # Use Wireplumber for modular session and policy management.
+      wireplumber.enable = true;
+
+      # Use 44.1 KHz by default and specify allowed sample rates of DAC.
+      config.pipewire.context.properties = {
+        default.clock = {
+          rate = 44100;
+          allowed-rates = [ 44100 48000 88200 96000 176400 192000 384000 ];
+        };
+        core.daemon = true;
+        core.name = "pipewire-0";
+      };
     };
 
-    # Roon Server will get installed automatically as a systemd service
+    # Roon Server as systemd service
     roon-server = {
       enable = true;
       openFirewall = true;
@@ -287,11 +233,11 @@
     # Packages that use `dbus` go here.
     dbus = {
       enable = true;
-      packages = with pkgs; [ openvpn3 protonvpn-cli protonvpn-gui ];
+      packages = with pkgs; [ protonvpn-cli_2 ];
     };
 
+    # Miscellaneous.
     flatpak.enable = true;
-
     yubikey-agent.enable = true;
   };
 
@@ -331,10 +277,11 @@
       wheelNeedsPassword = false;
     };
 
-    # For Pipewire (recommended in Nix wiki).
+    # RealtimeKit service for on-demand real-time scheduling priority. The NixOS wiki recommends
+    # this for PulseAudio.
     rtkit.enable = true;
 
-    # Privilege escalation.
+    # PolicyKit for privilege escalation.
     polkit.enable = true;
 
     # Make swaylock accept correct password.
@@ -373,18 +320,26 @@
     # Disable PulseAudio for PipeWire.
     pulseaudio.enable = false;
 
+    # Enable OpenGL. This is done automatically when using the `programs.sway` module to install
+    # Sway. We don't, so we enable it here. The same goes for e.g. `services.polkit.enable`.
     opengl = {
-      # This should be enabled automatically when using `programs.sway.enable`, but we're not using
+      # This would be enabled automatically if we used `programs.sway.enable`, but we're not using
       # that so let's set this here to be sure.
       enable = true;
 
-      # Enable Direct Rendering for 32-bit applications (64-bit enabled by default).
+      # Enable Direct Rendering for 32-bit applications (only 64-bit by default).
       driSupport32Bit = true;
     };
 
-    # Enable Bluetooth audio.
+    # Enable Bluetooth.
     bluetooth = {
       enable = true;
+      package = pkgs.bluezFull; # Full version includes plugins.
+
+      # Enable support for HSP and HFP profiles.
+      hsphfpd.enable = true;
+
+      # Enable audio source and sink.
       settings.General.Enable = "Source,Sink,Media,Socket";
     };
   };
@@ -412,7 +367,7 @@
         enable = true;
         settings = {
           screencast = {
-            max_fps = 30;
+            max_fps = 60;
             output_name = "DP-1";
             chooser_type = "simple";
             chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
@@ -431,6 +386,8 @@
 
     ssh.askPassword =
       pkgs.lib.mkForce "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
+
+    openvpn3.enable = true;
   };
 
   #
@@ -480,8 +437,13 @@
   # SYSTEM ENVIRONMENT
   #
 
-  # Global Qt styling, automatically installs necessary packages depending on settings, e.g.
-  # we use `qt5ct` which installs `pkgs.libsForQt5.qt5ct`, a standalone configuration GUI.
+  #
+  # Qt style
+  #
+  #   Automatically installs packages depending on settings. We use `qt5ct`, which installs
+  #   `pkgs.libsForQt5.qt5ct`, a GUI configuration tool for Qt.
+  #
+
   qt5 = {
     enable = true;
 
@@ -509,7 +471,12 @@
     # style = "gtk2";
   };
 
+  #
+  # Packages, library paths, and shell initialization.
+  #
+
   environment = {
+    # System-wide software.
     systemPackages = with pkgs; [
       git
       nodejs
@@ -522,9 +489,13 @@
       yarn
     ];
 
+    # Directories to be symlinked in `/run/current-system/sw`.
     pathsToLink = [ "/share/zsh" "/libexec" ];
 
-    # Launch River if logging in via tty1 and Sway if via tty2.
+    # Launch window manager depending on TTY instead of using a display/login manager:
+    #
+    # * tty1 -> River
+    # * tty2 -> Sway
     loginShellInit = ''
       [ "$(tty)" = "/dev/tty1" ] && exec /home/dnordstrom/.config/river/start
       [ "$(tty)" = "/dev/tty2" ] && exec /home/dnordstrom/.config/sway/start

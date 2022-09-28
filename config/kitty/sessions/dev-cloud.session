@@ -46,7 +46,7 @@ new_tab VPN
 
 enabled_layouts vertical
 
-launch --title "VPN"
-launch zsh -c "sleep 1 && kitty @ send-text --match title:'^VPN$' 'openvpn3 session-start -c leeroy || openvpn3 config-import --config ~/Secrets/openvpn/leeroy.ovpn --name leeroy --persistent && openvpn3 session-start -c leeroy'"
+launch --cwd ~ --title "VPN"
+launch zsh -c "sleep 1 && kitty @ send-text --match title:'^VPN$' 'vpn-leeroy-up'"
 
 # vim:ft=kitty

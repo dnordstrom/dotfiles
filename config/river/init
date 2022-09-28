@@ -97,13 +97,35 @@ gsettings set "$gnome_schema" document-font-name "$font"
 # SETTINGS
 ##
 
+#
 # Mouse
+#
+
 riverctl focus-follows-cursor normal
 
+#
+# Trackpad
+#
+
+# Enable acceleration.
+riverctl input "76:613:Apple_Inc._Magic_Trackpad_2" accel-profile adaptive
+
+# Acceleration factor (must be between -1.0 and 1.0).
+riverctl input "76:613:Apple_Inc._Magic_Trackpad_2" pointer-accel 0.35
+
+# Enable tap to click.
+riverctl input "76:613:Apple_Inc._Magic_Trackpad_2" tap enabled
+
+#
 # Keyboard
+#
+
 riverctl set-repeat 50 300
 
-# Colors
+#
+# Colors and borders
+#
+
 riverctl background-color 0x002b36
 riverctl border-color-focused 0x93a1a1
 riverctl border-color-unfocused 0x586e75
@@ -144,6 +166,7 @@ riverctl map normal Super+Control+Shift G spawn "$filemanagergtk"
 
 # Super+Q to close the focused view
 riverctl map normal Super Q close
+riverctl map normal BTN_FORWARD Q close
 
 # Super+Shift+E to exit river
 riverctl map normal Super Backspace exit

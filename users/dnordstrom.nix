@@ -99,7 +99,7 @@ let
   # PYTHON AND FRIENDS
   #
 
-  python-packages = ps: with ps; [ i3ipc requests protonvpn-nm-lib ];
+  python-packages = ps: with ps; [ i3ipc requests ];
   python-with-packages = pkgs.python3.withPackages python-packages;
 
 in rec {
@@ -407,31 +407,35 @@ in rec {
     # Networking
     #
 
+    blueberry
+    bluetuith # CLI Bluetooth manager
     gnunet
     gnunet-gtk
     haskellPackages.network-manager-tui
     networkmanager-openvpn
     onionshare
     onionshare-gui
-    openvpn3
     qbittorrent
+    rofi-bluetooth
 
     #
-    # Nix
+    # System
     #
 
     agenix
     cachix
+    cpupower-gui
     nix-du
     nix-prefetch
     nixos-option
+    parted
 
     #
     # Virtualization
     #
 
     q4wine
-    wineWowPackages.waylandFull
+    wine-wayland
     winetricks
 
     #
@@ -542,34 +546,28 @@ in rec {
     # Web
     #
 
-    # TODO: Keep an eye on `useHardenedMalloc` since it's a temporary fix.
-    (tor-browser-bundle-bin.override { useHardenedMalloc = false; })
+    tor-browser-bundle-bin
     tridactyl-native # Firefox native messaging host
-
-    #
-    # Mail
-    #
-
-    liferea
-    thunderbird
 
     #
     # Security
     #
 
+    # Proton suite (https://proton.me). Using community CLI due to DE/GUI dependencies in official.
+    # protonmail-bridge # Bridge for accessing ProtonMail from local email clients.
+    protonvpn-cli_2 # Community CLI
+    # protonvpn-cli # Official CLI
+    # protonvpn-gui # Official GUI
+
     bitwarden
     bitwarden-cli
     git-crypt
+    gnome.gnome-keyring
     go-2fa
+    libsForQt5.kwallet
     otpclient
-    pinentry-gtk2
-    protonmail-bridge
-    protonvpn-cli_2
-    # Using OpenVPN-based community client since official v3 below has dumbass DE/GUI dependencies.
-    # protonvpn-cli
-    # protonvpn-gui
-    qtpass
-    tmpmail
+    # pinentry-gtk2
+    pinentry-qt
     yubico-pam
     yubico-piv-tool
     yubikey-agent
@@ -585,12 +583,12 @@ in rec {
     #
 
     alsa-firmware
-    alsa-tools
-    alsa-utils
-    audacious
+    # alsa-tools
+    # alsa-utils
+    # audacious
     cava
-    celluloid
-    deadbeef-with-plugins
+    # celluloid
+    # deadbeef-with-plugins
     easyeffects # To run as service, use `services.easyeffects` instead (messes with JamesDSP)
     handbrake
     haruna
@@ -598,7 +596,7 @@ in rec {
     pavucontrol
     playerctl
     pulsemixer
-    sayonara
+    # sayonara
     streamlink
     vlc
 
@@ -612,8 +610,6 @@ in rec {
     libsndfile
     lsp-plugins
     mda_lv2
-    nlohmann_json
-    rnnoise-plugin
     speexdsp
     tbb
 
@@ -710,17 +706,12 @@ in rec {
     corefonts
     fcft # Font loading library used by foot
     font-manager
-    jetbrains-mono
-    nerd-font-patcher
     powerline-fonts
-    victor-mono
 
     # Qt libs/apps
     libsForQt5.ark
-    libsForQt5.kdegraphics-thumbnailers
     libsForQt5.qt5.qtgraphicaleffects # Needed by Quaternion Matrix client
     libsForQt5.qtstyleplugin-kvantum
-    libsForQt5.qtstyleplugins
 
     # Theming
     gdk-pixbuf
@@ -752,19 +743,19 @@ in rec {
   #
   # SWAY
   #
-  #   We use Home Manager for its systemd integration, not for the actual configuration which is
-  #   pretty big and best kept portable in its original format.
+  #   We use this option for installing Sway since it adds commands to the config for systemd
+  #   integration. Configuration is kept in original format and symlinked (impure) from
+  #   `/etc/nixos/config/sway` to `~/.config/sway` to allow editing it without rebuilding NixOS.
   #
-  #   Home Manager creates a config file to integrate with DBUS and systemd even if we set `config`
-  #   to `null`, so we use `extraConfig` to append a line at the bottom that loads our own.
-  #
-  #   NOTE: It's advised to run the DBUS command at the bottom so we'll see how well this works.
+  #   Home Manager creates a configuration file even if we set `config` to `null`, so we use 
+  #   `extraConfigEarly` to instead insert a line at the top that loads our own.
   #
 
   wayland.windowManager.sway = {
     enable = true;
     config = null;
-    extraConfig = "include main.conf";
+    systemdIntegration = true; # Enables "sway-session.target".
+    extraConfigEarly = "include main.conf";
   };
 
   #
@@ -789,19 +780,25 @@ in rec {
     ];
   in {
     enable = true;
+
     font = {
       name = "Input Sans Condensed";
       size = 9;
     };
-    theme.name = "Catppuccin-yellow"; # No package---manually installed
+
+    theme.name =
+      "Catppuccin-yellow"; # No package, manually copied to `~/.local/share/themes`.
+
     iconTheme = {
-      name = "Vimix-dark";
+      name = "Vimix";
       package = pkgs.vimix-icon-theme;
     };
+
     cursorTheme = {
       name = "Quintom_Snow";
       package = pkgs.quintom-cursor-theme;
     };
+
     gtk2.extraConfig = gtk2Config;
     gtk3.extraConfig = gtk3Config;
     gtk4.extraConfig = gtk3Config;
@@ -965,9 +962,14 @@ in rec {
   programs.lsd.enable = true;
   programs.mpv.enable = true;
 
-  # Waybar has systemd support but we create our own service below since we need it to use different
-  # config files for Sway and River. See services section.
-  programs.waybar.enable = true;
+  programs.waybar = {
+    enable = true;
+    systemd = {
+      enable = true;
+      target =
+        "sway-session.target"; # Default is `graphical-session.target`, but we only use it in Sway.
+    };
+  };
 
   programs.eww = {
     enable = true;
@@ -987,19 +989,12 @@ in rec {
 
   programs.pet = {
     enable = true;
-    snippets = [
-      {
-        description = "Set GTK theme";
-        command = "gsettings set org.gnome.desktop.interface gtk-theme";
-        tag = [ "gtk" "gnome" "theme" "configuration" ];
-      }
-      {
-        description = "Copy Firefox password";
-        command =
-          "bw get item Firefox | jq -r '.login.password // empty' | wl-copy";
-        tag = [ "password" "copy" "clipboard" "json" ];
-      }
-    ];
+    snippets = [{
+      description = "Copy Firefox password";
+      command =
+        "bw get item Firefox | jq -r '.login.password // empty' | wl-copy";
+      tag = [ "password" "copy" "clipboard" "json" ];
+    }];
   };
 
   programs.firefox = let
@@ -1181,7 +1176,7 @@ in rec {
 
   programs.direnv = {
     enable = true;
-    nix-direnv.enable = true;
+    nix-direnv.enable = true; # Improves caching of Nix devshells.
   };
 
   programs.mako = {
@@ -1193,7 +1188,7 @@ in rec {
     enable = true;
     icons = true;
     maxIconSize = 48;
-    iconPath = "/etc/profiles/per-user/dnordstrom/share/icons/Papirus-Dark";
+    iconPath = "${pkgs.vimix-icon-theme}/share/icons/Vimix";
     font = "Input Sans Condensed 8";
     margin = "12";
     markup = true;
@@ -1329,104 +1324,77 @@ in rec {
   #
 
   #
-  # Modules
+  # Nix modules
   #
 
-  services.gnome-keyring.enable = true;
+  services = {
+    # Gnome keyring is required by certain software.
+    gnome-keyring.enable = true;
 
-  services.gpg-agent = {
-    enable = true;
-    pinentryFlavor = "qt";
-  };
-
-  services.gammastep = {
-    enable = true;
-    temperature = {
-      day = 6500;
-      night = 5000;
+    gpg-agent = {
+      enable = true;
+      enableZshIntegration = true;
+      pinentryFlavor = "qt"; # Use `pinentry-qt` for password input.
     };
-    tray = true;
-    latitude = 63.2;
-    longitude = 17.3;
-  };
 
-  # We're using the package instead of this service since it messes with JamesDSP.
-  services.easyeffects.enable = false;
+    # Gammastep gradually adjusts color temperature of monitors at sunset and sunrise.
+    gammastep = {
+      # Run as service with tray icon.
+      enable = true;
+      tray = true;
+
+      # Maximum and minimum gamma values. (6500K is equivalent to daylight).
+      temperature = {
+        day = 6500;
+        night = 4500;
+      };
+
+      # Location coordinates (1-2 decimal points is enough).
+      latitude = 62.38;
+      longitude = 17.32;
+    };
+
+    # EasyEffects for PipeWire audio filters. Currently disabled to avoid conflict with JamesDSP.
+    easyeffects.enable = false;
+  };
 
   #
   # Systemd
   #
 
-  systemd.user.services.protonmail-bridge = {
-    Unit = {
-      Description = "ProtonMail Bridge";
-      After = [ "network.target" ];
-    };
+  # Proton Mail bridge for access from local email clients.
+  # systemd.user.services.protonmail-bridge = {
+  #   Unit = {
+  #     Description = "ProtonMail Bridge";
+  #     After = [ "network.target" ];
+  #   };
+  #
+  #   Service = {
+  #     Restart = "always";
+  #     ExecStart =
+  #       "${pkgs.protonmail-bridge}/bin/protonmail-bridge --cli --noninteractive";
+  #   };
+  #
+  #   Install = { WantedBy = [ ]; }; # Use `default.target` to enable.
+  # };
 
-    Service = {
-      Restart = "always";
-      ExecStart =
-        "${pkgs.protonmail-bridge}/bin/protonmail-bridge --cli --noninteractive";
-    };
-
-    Install = { WantedBy = [ ]; }; # Use `default.target` to enable.
-  };
-
-  systemd.user.services.waybar-sway = {
-    Unit = {
-      Description = "Waybar configured for Sway.";
-      Documentation = "https://github.com/Alexays/Waybar/wiki";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
-    };
-
-    Service = {
-      ExecStart =
-        "${pkgs.waybar}/bin/waybar --config ${config.home.homeDirectory}/config/waybar/sway.json";
-      ExecReload = "${pkgs.coreutils}/bin/kill -SIGUSR2 $MAINPID";
-      Restart = "on-failure";
-      KillMode = "mixed";
-    };
-
-    Install = { WantedBy = [ "sway-session.target" ]; };
-  };
-
-  systemd.user.services.waybar-river = {
-    Unit = {
-      Description = "Waybar configured for River.";
-      Documentation = "https://github.com/Alexays/Waybar/wiki";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
-    };
-
-    Service = {
-      ExecStart =
-        "${pkgs.waybar}/bin/waybar --config ${config.home.homeDirectory}/.config/waybar/river.json";
-      ExecReload = "${pkgs.coreutils}/bin/kill -SIGUSR2 $MAINPID";
-      Restart = "on-failure";
-      KillMode = "mixed";
-    };
-
-    Install = { WantedBy = [ ]; }; # Use `river-session.target` to enable.
-  };
-
-  systemd.user.services.eww-river = {
+  systemd.user.services.eww = {
     Unit = {
       Description = "EWW configured for River.";
-      Documentation = "https://github.com/Alexays/Waybar/wiki";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
+      Documentation = "https://github.com/elkowar/eww";
+      PartOf = [ "river-session.target" ];
+      After = [ "river-session.target" ];
     };
 
     Service = {
-      # Starts daemon automatically when opening a window.
+      # Daemon is started automatically when opening a window.
       ExecStart = "${pkgs.eww-wayland}/bin/eww open bar";
       ExecReload = "${pkgs.eww-wayland}/bin/eww --restart open bar";
       Restart = "on-failure";
       KillMode = "mixed";
     };
 
-    Install = { WantedBy = [ "river-session.target" ]; };
+    Install.WantedBy = [ "river-session.target" ];
   };
 
   systemd.user.targets.river-session = {
