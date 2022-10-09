@@ -85,15 +85,15 @@
             :onrightclick ""
             :onmiddleclick "")
     (metric :label volume-label
-            :value volume-value
+            :value {volume-value == "" ? 0 : volume-label}
             :class {volume-label == "MUT" ? "volume muted" : "volume"}
             :onchange "pamixer --set-volume {}"
             :onclick "pamixer --toggle-mute"
             :onmiddleclick ""
             :onrightclick "riverctl spawn pavucontrol")))
 
-(defwidget tray []
-  (box :class "tray" :orientation "h" (system-tray)))
+; (defwidget tray []
+;   (box :class "tray" :orientation "h" (system-tray)))
 
 (defwidget right-launchers []
   (revealer :class "launchers revealer ${is-hovering ? 'expanded' : 'collapsed'}"
@@ -117,7 +117,7 @@
                 :icon ""
                 :onclick "riverctl spawn dolphin"
                 :onrightclick "riverctl spawn 'GTK_THEME=Catppuccin-Latte-Peach nemo'"
-                :onmiddleclick "riverctl spawn 'GTK_THEME=Catppuccin-Latte-Peach nautilus'")
+                :onmiddleclick "riverctl spawn 'kitty --class popupterm --single-instance --instance-group popupterm'")
       (launcher :class "files"
                 :icon ""
                 :onclick "riverctl spawn 'dolphin ~/Pictures/Screenshots'"
@@ -191,7 +191,7 @@
         (scale :min 0
                :max 101
                :active {onchange != ""}
-               :value value
+               :value {round(value, 0)}
                :onchange onchange)))))
 
 (defwidget clock []

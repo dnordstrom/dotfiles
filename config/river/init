@@ -42,9 +42,16 @@ noscratchtag="$((alltags ^ scratchtag))"
 availabletags="$((noscratchtag ^ stickytag))"
 
 # Terminal
-term="kitty --title term --single-instance --instance-group term"
-scratchterm="kitty --title scratchterm --single-instance --instance-group scratchterm --session ~/.config/kitty/sessions/scratchpad.session"
-popupterm="kitty --title popupterm --single-instance --instance-group popupterm"
+plainterm="kitty --class plainterm"
+scratchterm="kitty \
+  --class scratchterm \
+  --single-instance \
+  --instance-group scratchterm \
+  --session ~/.config/kitty/sessions/scratchpad.session"
+popupterm="kitty \
+  --class popupterm \
+  --single-instance \
+  --instance-group popupterm"
 
 # Launchers
 launchapp="/etc/nixos/scripts/launch/launch-app"
@@ -87,11 +94,11 @@ icon_theme="Vimix-dark"
 flatpak override --user --filesystem "$HOME/.local/share/themes"
 flatpak override --user --env "GTK_THEME=$gtk_theme"
 
-gsettings set "$gnome_schema" gtk-theme "$gtk_theme"
-gsettings set "$gnome_schema" icon-theme "$icon_theme"
-gsettings set "$gnome_schema" cursor-theme "$cursor_theme"
-gsettings set "$gnome_schema" font-name "$font"
-gsettings set "$gnome_schema" document-font-name "$font"
+# gsettings set "$gnome_schema" gtk-theme "$gtk_theme"
+# gsettings set "$gnome_schema" icon-theme "$icon_theme"
+# gsettings set "$gnome_schema" cursor-theme "$cursor_theme"
+# gsettings set "$gnome_schema" font-name "$font"
+# gsettings set "$gnome_schema" document-font-name "$font"
 
 ##
 # SETTINGS
@@ -152,7 +159,7 @@ riverctl map normal Super+Shift D spawn "$launchcmd"
 riverctl map normal Super+Shift+Control D spawn "$launchalt"
 
 # Terminal emulators
-riverctl map normal Super Return spawn "$term"
+riverctl map normal Super Return spawn "$plainterm"
 riverctl map normal Super+Shift Return spawn "$scratchterm"
 
 # File managers
@@ -166,7 +173,6 @@ riverctl map normal Super+Control+Shift G spawn "$filemanagergtk"
 
 # Super+Q to close the focused view
 riverctl map normal Super Q close
-riverctl map normal BTN_FORWARD Q close
 
 # Super+Shift+E to exit river
 riverctl map normal Super Backspace exit
@@ -420,12 +426,14 @@ riverctl float-filter-add app-id "qt5ct"
 riverctl float-filter-add app-id "vimiv"
 riverctl float-filter-add app-id "vlc"
 riverctl float-filter-add app-id "wdisplays"
+
+riverctl float-filter-add app-id "fuzzyterm"
+riverctl float-filter-add app-id "popupterm"
+riverctl float-filter-add app-id "scratchterm"
+riverctl float-filter-add app-id "transterm"
+
 riverctl float-filter-add title "Bitwarden"
 riverctl float-filter-add title "Kvantum Manager"
-riverctl float-filter-add title "fuzzyterm"
-riverctl float-filter-add title "popupterm"
-riverctl float-filter-add title "scratchterm"
-riverctl float-filter-add title "transterm"
 
 ##
 # CLIENT-SIDE DECORATION FILTERS
@@ -449,17 +457,28 @@ riverctl csd-filter-add app-id "wdisplays"
 # Spawn on launch
 #
 
+# Variables that should be available in environment for D-BUS and systemd.
+export NORDIX_RIVER_TAGS_ALL="$(((1 << 32) - 1))"
+export NORDIX_RIVER_TAGS_STICKY="$((1 << 20))"
+export NORDIX_RIVER_TAGS_SCRATCHPAD="$((1 << 21))"
+export NORDIX_RIVER_TAGS_NON_STICKY="$((alltags ^ stickytag))"
+export NORDIX_RIVER_TAGS_NON_SCRATCHPAD="$((alltags ^ scratchtag))"
+export NORDIX_RIVER_TAGS_NON_SPECIAL="$((noscratchtag ^ stickytag))"
+export NORDIX_ENVIRONMENT="NORDIX_RIVER_TAGS_STICKY NORDIX_RIVER_TAGS_SCRATCHPAD"
+
 # Not specifying which variables should be imported is deprecated---so let's grab a few useful ones.
-spawn "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2"
+spawn "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 $exported"
 
 # This is probably unnecessary since we used `--systemd` above, but won't kill us to keep it around.
-spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2"
+spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 $exported"
 
+# Launch polkit
 spawn_once "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
 spawn_once "swaybg --image ~/Pictures/Wallpapers/active3.jpg --mode fill --output '*'"
 spawn_once "riverctl set-focused-tags $scratchtag && riverctl spawn $scratchterm ; riverctl set-focused-tags $((stickytag + 1))"
 
-systemctl --user start river-session.target
+# Trigger systemd target used to launch certain services.
+spawn_once "systemctl --user start river-session.target"
 
 #
 # MONITORS

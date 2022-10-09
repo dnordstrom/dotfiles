@@ -21,7 +21,7 @@ local t = function(str)
 end
 
 -- Replaces Vim termcodes in string, and feeds it as key presses.
-local feedkeys = function(str)
+local typekeys = function(str)
 	nvim_feedkeys(t(str), "m", true)
 end
 
@@ -30,7 +30,12 @@ end
 --- @param a First table
 --- @param b Second table
 --- @returns Resulting table
-local merge_tables = function(first, second)
+local merge = function(first, second)
+	if not first then
+		return {}
+	end
+
+	local second = second or {}
 	local result = {}
 
 	for k, v in pairs(first) do
@@ -45,13 +50,8 @@ local merge_tables = function(first, second)
 end
 
 -- Gets Neovim version in `vX.X.X-dev` format.
-local get_version = function()
-	return nvim_exec(
-		[[
-    echo matchstr(execute("version"), "NVIM \\zs[^\\n]*")
-  ]],
-		true
-	)
+local version = function()
+	return nvim_exec([[ echo matchstr(execute("version"), "NVIM \\zs[^\\n]*") ]], true)
 end
 
 -- Get date/time
@@ -83,7 +83,7 @@ local cword = function()
 end
 
 -- Copy object
-_G.copy = function(obj, seen)
+local copy = function(obj, seen)
 	if type(obj) ~= "table" then
 		return obj
 	end
@@ -104,8 +104,6 @@ _G.copy = function(obj, seen)
 	return setmetatable(res, getmetatable(obj))
 end
 
-local copy = _G.copy
-
 -- Opens Google search for provided query using xdg-open. If no query is provided, sets operatorfunc
 -- and goes into operator pending mode waiting for text object. If query is an empty string (e.g.
 -- if called via Vim command without passing an argument), the word under the cursor is used.
@@ -113,7 +111,7 @@ local browsersearch = function(query)
 	if query == nil then
 		-- Called from bind, goes into operator pending mode
 		operatorfunc = "v:lua.NORDUtils.browsersearch"
-		feedkeys("g@")
+		typekeys("g@")
 
 		return -- Wait for query
 	else
@@ -150,15 +148,11 @@ local browsersearch = function(query)
 	end
 end
 
--- Insert a new line and toggle commenting with gcc (uses a temporarily inserted character
+-- Insert a new line below cursor, navigate down to it, and toggle commenting of it (`gcc` normal mode) (uses a temporarily inserted character
 -- as workaround for plugins that don't allow comment toggling on blank lines
 local insert_line_and_toggle_comment = function(opts)
 	local opts = opts or { above = false }
 	local mode = nvim_get_mode().mode
-	local typekeys = function(str)
-		-- Replace termcodes in string and feed result as typed keys
-		nvim_feedkeys(t(str), "m", true)
-	end
 
 	if mode == "n" and opts.above then
 		typekeys("^On<Esc>gcc$xa")
@@ -285,6 +279,9 @@ local toggle_word = function()
 
 		["enabled"] = "disabled",
 		["enable"] = "disable",
+		["valid"] = "invalid",
+		["fg"] = "bg",
+		["foreground"] = "background",
 
 		["true"] = "false",
 		["True"] = "False",
@@ -340,15 +337,16 @@ return {
 	cword = cword,
 	date = date,
 	echo = echo,
-	feedkeys = feedkeys,
 	get_hex = get_hex,
+	get_semantic_version = get_semantic_version,
 	get_version = get_version,
 	insert_line_and_toggle_comment = insert_line_and_toggle_comment,
 	inspect = inspect,
 	load_session = load_session,
-	merge_tables = merge_tables,
+	merge = merge,
 	save_session = save_session,
 	t = t,
 	toggle_word = toggle_word,
+	type = typekeys,
 	update_utils_return = update_utils_return,
 }

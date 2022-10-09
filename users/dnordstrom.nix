@@ -5,7 +5,7 @@
 # Repository:   https://github.com/dnordstrom/dotfiles
 # #  
 
-{ pkgs, lib, config, ... }:
+{ pkgs, lib, config, inputs, ... }:
 
 let
   #
@@ -107,12 +107,16 @@ in rec {
   # ENVIRONMENT
   #
 
-  home.stateVersion = "22.11";
+  home = {
+    stateVersion = "22.11";
 
-  home.sessionVariables = {
-    EDITOR = editor;
-    BROWSER = browser;
-    TERMINAL = terminal;
+    sessionVariables = {
+      EDITOR = editor;
+      BROWSER = browser;
+      TERMINAL = terminal;
+    };
+
+    sessionPath = [ "$HOME/.local/bin" ];
   };
 
   #
@@ -319,6 +323,21 @@ in rec {
         startupNotify = true;
       };
 
+      kitty-session-scratch = {
+        name = "Scratchpad terminal (kitty)";
+        comment = "Scratchpad terminal (kitty)";
+        type = "Application";
+        genericName = "Text Editor";
+        exec = ''
+          kitty --class scratchterm --name scratchterm --session "${configDir}/config/kitty/sessions/scratchpad.session" --single-instance --instance-group scratch
+        '';
+        terminal = false;
+        icon = "kitty";
+        categories = [ "Utility" "TextEditor" "Development" "IDE" ];
+        mimeType = [ "text/plain" "inode/directory" ];
+        startupNotify = true;
+      };
+
       #
       # Browser profiles
       #
@@ -411,12 +430,11 @@ in rec {
     bluetuith # CLI Bluetooth manager
     gnunet
     gnunet-gtk
-    haskellPackages.network-manager-tui
-    networkmanager-openvpn
     onionshare
     onionshare-gui
     qbittorrent
     rofi-bluetooth
+    wg-bond
 
     #
     # System
@@ -424,19 +442,17 @@ in rec {
 
     agenix
     cachix
-    cpupower-gui
     nix-du
     nix-prefetch
     nixos-option
-    parted
 
     #
     # Virtualization
     #
 
-    q4wine
-    wine-wayland
-    winetricks
+    # q4wine
+    # wine-wayland
+    # winetricks
 
     #
     # Programs, packages, and files
@@ -446,6 +462,12 @@ in rec {
     cinnamon.nemo
     dolphin
     gnome.nautilus
+
+    #
+    # Feeds and news
+    #
+
+    raven-reader
 
     #
     # Communication
@@ -483,7 +505,6 @@ in rec {
     parallel
     rdrview
     ripgrep
-    silver-searcher
     tree
     unzip
     usbutils
@@ -506,9 +527,8 @@ in rec {
     flameshot
     grim
     imagemagick
-    j4-dmenu-desktop
     libinput
-    light # TRY: See how this works for backlight control. Should supposedly work even in TTY.
+    kanshi
     river
     rofi-calc
     rofi-emoji
@@ -530,7 +550,7 @@ in rec {
     wofi-emoji
     wshowkeys
     wtype
-    xdg_utils # For `xdg-open`
+    xdg_utils # For `xdg-open`.
     xkeyboard_config
     xorg.setxkbmap
     ydotool
@@ -540,14 +560,13 @@ in rec {
     #
 
     libreoffice-fresh
-    zathura
 
     #
     # Web
     #
 
     tor-browser-bundle-bin
-    tridactyl-native # Firefox native messaging host
+    tridactyl-native # Firefox native messaging host.
 
     #
     # Security
@@ -555,18 +574,14 @@ in rec {
 
     # Proton suite (https://proton.me). Using community CLI due to DE/GUI dependencies in official.
     # protonmail-bridge # Bridge for accessing ProtonMail from local email clients.
-    protonvpn-cli_2 # Community CLI
-    # protonvpn-cli # Official CLI
-    # protonvpn-gui # Official GUI
+    protonvpn-cli_2 # Community CLI.
+    # protonvpn-cli # Official CLI.
+    # protonvpn-gui # Official GUI.
 
     bitwarden
     bitwarden-cli
     git-crypt
     gnome.gnome-keyring
-    go-2fa
-    libsForQt5.kwallet
-    otpclient
-    # pinentry-gtk2
     pinentry-qt
     yubico-pam
     yubico-piv-tool
@@ -583,12 +598,7 @@ in rec {
     #
 
     alsa-firmware
-    # alsa-tools
-    # alsa-utils
-    # audacious
     cava
-    # celluloid
-    # deadbeef-with-plugins
     easyeffects # To run as service, use `services.easyeffects` instead (messes with JamesDSP)
     handbrake
     haruna
@@ -596,7 +606,6 @@ in rec {
     pavucontrol
     playerctl
     pulsemixer
-    # sayonara
     streamlink
     vlc
 
@@ -619,20 +628,10 @@ in rec {
 
     # General
     cloudflared # CLI for CLoudflare tunnels
-    gcc
 
     # Editors
     android-studio # Stable version (`-beta`, `-dev`, and `-canary` can be appended)
     kate
-
-    # LSP and syntax
-    # nodePackages.bash-language-server
-    # nodePackages.diagnostic-languageserver
-    # nodePackages.typescript-language-server
-    # nodePackages.vscode-langservers-extracted
-    # nodePackages.yaml-language-server
-    # rnix-lsp # Uses `nixpkgs-fmt`
-    # tree-sitter
 
     # Spelling
     nodePackages.cspell
@@ -652,15 +651,14 @@ in rec {
     actionlint
 
     # Nix
-    nixfmt # Opinionated formatter, used by `null-ls`
-    statix # Static analysis, used by `null-ls`
+    nixfmt # Opinionated formatter, used by `null-ls`.
+    statix # Static analysis, used by `null-ls`.
 
     # Rust
-    rust-bin.stable.latest.default
+    rust-bin.stable.latest.default # Added with Rust overlay.
 
     # Go
     gofumpt
-    # gopls
 
     # Lua
     lua53Packages.ldoc
@@ -679,14 +677,6 @@ in rec {
     # JS/TS/JSON
     nodePackages.eslint_d
     nodePackages.fixjson
-    # nodePackages.typescript
-
-    # CSS
-    # nodePackages.sass
-    # nodePackages.stylelint
-
-    # Vim
-    # nodePackages.vim-language-server
 
     # Build 
     gnumake
@@ -704,9 +694,23 @@ in rec {
 
     # Fonts
     corefonts
+    dejavu_fonts
     fcft # Font loading library used by foot
     font-manager
+    ibm-plex
+    inriafonts
+    libertine
+    merriweather
+    merriweather-sans
+    paratype-pt-mono
+    paratype-pt-sans
+    paratype-pt-serif
     powerline-fonts
+    public-sans
+    redhat-official-fonts
+    source-sans
+    source-serif
+    work-sans
 
     # Qt libs/apps
     libsForQt5.ark
@@ -714,12 +718,8 @@ in rec {
     libsForQt5.qtstyleplugin-kvantum
 
     # Theming
-    gdk-pixbuf
-    glib.bin
     gnome.dconf-editor
     gsettings-desktop-schemas
-    gtk-engine-murrine
-    gtk_engines
     icoutils
 
     #
@@ -731,13 +731,6 @@ in rec {
     navi # CLI cheatsheet tool
     tealdeer # TLDR in Rust
     ytfzf # Fzf utility for YouTube
-
-    #
-    # Dependencies
-    #
-
-    # sway-fzfify
-    pv
   ];
 
   #
@@ -819,7 +812,7 @@ in rec {
   # Scripts and shell
 
   home.file.".scripts".source = ../scripts;
-  home.file.".zshinit".source =
+  home.file.".config/zsh/.zshinit".source =
     config.lib.file.mkOutOfStoreSymlink "${configDir}/config/zsh/zshrc";
 
   # Wallpapers
@@ -1020,8 +1013,7 @@ in rec {
     };
   in {
     enable = true;
-    package =
-      pkgs.latest.firefox-nightly-bin; # From `nixpkgs-mozilla` flake and overlay
+    package = inputs.firefox.packages.${pkgs.system}.firefox-nightly-bin;
     profiles = {
       default = {
         id = 0;
@@ -1090,9 +1082,19 @@ in rec {
   programs.zsh = {
     autocd = true;
     enable = true;
-    enableAutosuggestions = true;
     enableSyntaxHighlighting = true;
     enableVteIntegration = true;
+    enableAutosuggestions = true;
+
+    # We'll add completion for system packages such as `systemd`:
+    #
+    # NOTES:
+    #   * Requires this option to get completion of arguments for system packages like `systemd`:  
+    #     `environment.pathsToLink = [ "/share/zsh" ];`
+    enableCompletion = true;
+
+    dotDir = ".config/zsh";
+    history.path = "${config.xdg.dataHome}/zsh/history";
 
     cdpath = [
       "${config.home.homeDirectory}"
@@ -1140,8 +1142,8 @@ in rec {
       }
     ];
 
-    # Source our config from `~/.zshinit` which is a symlink to `${configDir}/config/zsh/zshrc`.
-    initExtra = "source ${config.home.homeDirectory}/.zshinit";
+    # Source our config from `~/.config/zsh/.zshinit` which is a symlink to `${configDir}/config/zsh/zshrc`.
+    initExtra = "source ${config.home.homeDirectory}/.config/zsh/.zshinit";
   };
 
   programs.zoxide = {

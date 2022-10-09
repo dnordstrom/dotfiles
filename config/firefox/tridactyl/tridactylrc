@@ -482,7 +482,7 @@ jsb browser.webRequest.onHeadersReceived.addListener(tri.request.clobberCSP,{url
 
 " All sites
 "   Utilities used by other commands (or in JavaScript console)
-autocmd DocLoad .* js N = { param(str) { new URLSearchParams(location.search).get(str); }, pathStart(str) { return location.pathname.startsWith(str); }, pathMatch(regex) { const matches = location.href.match(regex); return matches; }, log: console.log.bind(window, "%c N.log ", "background: #d8dee9; color: #2e3440; font-weight: bold;"), yank(str) { navigator.clipboard.writeText(str); }, yankLoud(str) { N.yank(str); N.notify(`Yanked "${str}"`); }, run(str) { tri.excmds.composite(str); }, notify(str) { N.run(`notify ${str}`); }, query(str) { return document.querySelector(str); }, queryAll(str) { return document.querySelectorAll(str); }, q(str) { return N.query(str); }, qa(str) { return N.queryAll(str); } }
+autocmd DocLoad .* js const N = { param(str) { new URLSearchParams(location.search).get(str); }, pathStart(str) { return location.pathname.startsWith(str); }, pathMatch(regex) { const matches = location.href.match(regex); return matches; }, log: console.log.bind(window, "%c N.log ", "background: #d8dee9; color: #2e3440; font-weight: bold;"), yank(str) { navigator.clipboard.writeText(str); }, yankLoud(str) { N.yank(str); N.notify(`Yanked "${str}"`); }, run(str) { tri.excmds.composite(str); }, notify(str) { N.run(`notify ${str}`); }, query(str) { return document.querySelector(str); }, queryAll(str) { return document.querySelectorAll(str); }, q(str) { return N.query(str); }, qa(str) { return N.queryAll(str); } }
 
 " open.qobuz.com
 "   Redirect Qobuz share links to the web player like registered users would expect

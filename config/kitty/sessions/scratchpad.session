@@ -5,23 +5,42 @@
 # configuration directory, and adding a tab for potential long-running tasks.
 ##
 
+os_window_class popupterm
 enabled_layouts tall,horizontal
 
 #
-# Main tab
+# PRIMARY TAB
+#
+#   Window 1: Launch editor in NixOS configuration directory.
+#   Window 2: Home directory.
 #
 
-new_tab Onesies
+new_tab Editors
 
-launch
+launch --cwd /etc/nixos -- zsh -c "nvim ; zsh"
+launch --cwd ~
+
+#
+# SECONDARY TAB
+#
+#   Window 1: NixOS configuration directory.
+#   Window 2: Home directory.
+#
+
+new_tab Shells
+
 launch --cwd /etc/nixos
+launch --cwd ~ 
 
 #
-# Background tab
+# TERTIARY TAB
+#
+#   Window 1: Work notebook.
+#   Window 2: Home notebook.
 #
 
-new_tab Twosies
+new_tab Notes
 
-launch
-launch --cwd /etc/nixos
+launch --cwd ~ -- zsh -c "nvim Documents/log.md ; zsh"
+launch --cwd ~ -- zsh -c "nvim .notes.md ; zsh"
 

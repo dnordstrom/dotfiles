@@ -1,4 +1,4 @@
-style: "$HOME/.config/glow/nord.json"
+style: "auto"
 local: false
 mouse: true
 pager: false

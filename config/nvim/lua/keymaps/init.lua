@@ -21,7 +21,7 @@ local nvim_exec = vim.api.nvim_exec
 local nvim_set_keymap = vim.api.nvim_set_keymap
 local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
 local keymap = vim.keymap
-local use_opts = NORDUtils.merge_tables -- Merge options with `use_opts(_silent, _expression)`
+local use_opts = NORDUtils.merge -- Merge options with `use_opts(_silent, _expression)`
 local _nonrecursive = { noremap = true }
 local _nowait = { nowait = true }
 local _expression = { expr = true }

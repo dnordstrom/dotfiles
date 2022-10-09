@@ -1,10 +1,6 @@
 ----
--- OPTIONS
+-- NEOVIM OPTIONS
 ----
-
---
--- SHORTCUTS
---
 
 local g = vim.g
 local fn = vim.fn
@@ -12,6 +8,8 @@ local api = vim.api
 local opt = vim.opt
 local opt_local = vim.opt_local
 local opt_global = vim.opt_global
+local loop = vim.loop
+local os = require("os")
 local nvim_exec = vim.api.nvim_exec
 local nvim_set_keymap = vim.api.nvim_set_keymap
 local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
@@ -22,27 +20,37 @@ local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
 
 g.mapleader = " "
 
-opt.undofile = true
-opt.laststatus = 3
+opt.clipboard = "unnamedplus" -- Use system clipboard since we only use it for yanks (see key maps)
 opt.cmdheight = 0
-opt.termguicolors = true
+opt.completeopt = "noinsert,menuone,noselect"
 opt.ignorecase = true
-opt.smartcase = true
+opt.laststatus = 3
+opt.list = false
+opt.listchars:append("eol:↴")
+opt.listchars:append("space:⋅")
+opt.listchars:append("tab: ")
+opt.mouse = "a"
 opt.number = true
 opt.relativenumber = true
-opt.completeopt = "noinsert,menuone,noselect"
-opt.mouse = "a"
-opt.clipboard = "unnamedplus" -- Use system clipboard since we only use it for yanks (see key maps)
 opt.scrolloff = 4
+opt.smartcase = true
 opt.spell = false
 opt.spelllang = { "en_us" }
-opt.updatetime = 250
-opt.ttimeoutlen = 50
+opt.termguicolors = true
 opt.timeoutlen = 500 -- Recommended by which-key.nvim
-opt.list = false
-opt.listchars:append("space:⋅")
-opt.listchars:append("eol:↴")
-opt.listchars:append("tab: ")
+opt.ttimeoutlen = 50
+opt.updatetime = 250
+
+--
+-- BACKUPS & UNDO
+--
+
+opt.directory = vim.loop.os_getEnv('HOME')  -- Don't back up in same directory.
+opt.undofile = true -- Save undo state, by default in `~/.local/state/nvim`.
+opt.backup = true -- Keep backups after writes. (If `writebackup` is on so a backup is created.)
+opt.writebackup = true -- Backup on write in case it fails. How we do it depends on `backupcopy`.
+opt.backupcopy = "auto" -- Rename file and write new one if possible, otherwise copy and overwrite.
+opt.backupext = ".bak" -- Use another extension than the default tilde suffix.
 
 --
 -- EXPLORER

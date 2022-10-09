@@ -1,44 +1,62 @@
-#
+##
 # ZSH CONFIGURATION
 #
 # Manual: https://zsh.sourceforge.io/Doc
-#
+##
 
 #
 # ZSH OPTIONS
 #
 
-# Use vi mode (recommended instead of `setopt vi`)
+zmodload zsh/complist
+autoload -U compinit; compinit
+
+# Use vi mode (recommended instead of `setopt vi`; we also use Zsh-Vi-Mode plugin)
 bindkey -v
 
-# Show duplicates in history but ignore duplicates and space prefixed commands in reverse search
-setopt nohistignoredups
-setopt histfindnodups
-setopt histignorespace
+setopt glob
+setopt globdots
+setopt autopushd
+setopt cdablevars
+setopt extendedglob
+setopt menucomplete
+setopt alwaystoend
+setopt autoparamkeys
+setopt autoremoveslash
+setopt noautoparamslash
+setopt nomarkdirs
 
-# Autocorrect command and arguments
-setopt correct
-setopt nocorrectall
+# History
+setopt extendedhistory # Adds timestamp and duration to history.
+setopt histfindnodups # Don't display diplicates in history search.
+setopt histignorealldups # When inserting duplicate, remove older item.
+setopt histignorespace # Leading space prevents command from being saved to history.
+setopt noincappendhistory # Periodic writes. Sharing history needs this disabled.
+setopt noincappendhistorytime # Periodic writes with timestamp. Sharing history needs this disabled.
+setopt sharehistory # Write to history file immediately so other instances can access it right away.
 
-# Case-insensitive autocomplete
+# Autocorrect.
+setopt correct # Autocorrect commands.
+setopt nocorrectall # Don't autocorrect arguments (removes quotes if enabled)
+
+# Case-insensitive autocomplete.
 setopt nocaseglob
 
-# Expand aliases
+# Expand aliases.
 setopt aliases
 
 # Enable completion when using aliases, e.g. `gs <Tab>` shows completion of branches since it's an
 # alias for `git switch`. Why `completealiases` isn't `nocompletealiases` and vice versa, who kows.
-set nocompletealiases
+setopt nocompletealiases
 
-
-# Allow comments
+# Allow comments.
 setopt interactivecomments
 
-# Resolve symlinks to real paths when changing directory
+# Resolve symlinks to real paths when changing directory.
 setopt chaselinks
 
 #
-# OPTION VARIABLES
+# OTHER OPTIONS
 #
 
 #
@@ -124,7 +142,7 @@ opts="--bind 'ctrl-space:toggle-down' $opts"
 opts="--bind 'alt-space:toggle-up' $opts"
 
 opts="--bind 'ctrl-y:execute-silent(wl-copy {})+abort' $opts"
-opts="--bind 'ctrl-o:execute-silent(xdg-open {})+abort' $opts"
+opts="--bind 'ctrl-x:execute-silent(xdg-open {})+abort' $opts"
 
 opts="--bind 'ctrl-u:page-up' $opts"
 opts="--bind 'ctrl-d:page-down' $opts"
@@ -144,27 +162,15 @@ opts="--bind 'alt-l:preview-half-page-down' $opts"
 #   Files           -> `bat` or `cat`
 #   Directories     -> `exa` in tree view
 #   Arbitrary text  -> `echo`
-opts="--preview='\
-  [ -f {} ] && ( \
-    (command exa --icons --tree --level=1 {} | head -1 && printf "\n") && \
-    (bat --style=plain --color=always {} || cat {})
-  ) || \
-  [ -d {} ] && ( \
-    (command exa -a --icons --group-directories-first --tree --level=2 {})
-  )\
-' $opts"
-
-# Same previewer written for Fzf-tab plugin.
-preview='\
-  [ -f "$realpath" ] && ( \
-    (command exa --icons --tree --level=1 "$realpath" | head -1 && printf "\n") && \
-    (bat --style=plain --color=always "$realpath" || cat "$realpath")
-  ) || \
-  [ -d "$realpath" ] && ( \
-    (command exa -a --icons --group-directories-first --tree --level=2 "$realpath")
-  ) || \
-  echo "$realpath" 2> /dev/null \
-'
+# opts="--preview='\
+#   [ -f {} ] && ( \
+#     (command exa --icons --tree --level=1 {} | head -1 && printf "\n") && \
+#     (bat --style=plain --color=always {} || cat {})
+#   ) || \
+#   [ -d {} ] && ( \
+#     (command exa -a --icons --group-directories-first --tree --level=2 {})
+#   )\
+# ' $opts"
 
 export FZF_DEFAULT_OPTS="$opts"
 export FZF_DEFAULT_COMMAND="rg --files --hidden --glob='!.git/*' --glob='!node_modules/*'"
@@ -181,9 +187,9 @@ export FZF_COMPLETION_OPTS="$FZF_DEFAULT_OPTS"
 #
 # Arguments:
 #   $1 - Current input preceding trigger, for example  "conf" on `nvim conf**<Tab>`.
-_fzf_compgen_path() {
-  rg --hidden --files --glob='!.git/*' --glob='!node_modules/*' . "$1"
-}
+# _fzf_compgen_path() {
+#   rg --hidden --files --glob='!.git/*' --glob='!node_modules/*' . "$1"
+# }
 
 # This function outputs directory autocompletion, e.g. on `cd **<Tab>` or when pressing Alt-c. It
 # receives any current input as only argument (`cd Doc**<Tab>` means `$1` is "Doc"). We're changing
@@ -195,9 +201,9 @@ _fzf_compgen_path() {
 #
 # Arguments:
 #   $1 - Current input preceding trigger, for example  "docu" on `cd docu**<Tab>`.
-_fzf_compgen_dir() {
-	rg --hidden --files --glob='!.git/*' --glob='!node_modules/*' . "$1" 2>/dev/null | awk 'function dirname(fn) { if (fn == "") return ".";  if (fn !~ "[^/]") return "/"; sub("/*$", "", fn); if (fn !~ "/") return "."; sub("/[^/]*$", "", fn); if (fn == "") fn = "/"; return fn } {$0 = dirname($0)} !a[$0]++'
-}
+# _fzf_compgen_dir() {
+# 	rg --hidden --files --glob='!.git/*' --glob='!node_modules/*' . "$1" 2>/dev/null | awk 'function dirname(fn) { if (fn == "") return ".";  if (fn !~ "[^/]") return "/"; sub("/*$", "", fn); if (fn !~ "/") return "."; sub("/[^/]*$", "", fn); if (fn == "") fn = "/"; return fn } {$0 = dirname($0)} !a[$0]++'
+# }
 
 # This function is called when completion is triggered via `**` and is responsible for launching
 # `fzf`. Overriding this means we can launch it differently depending on context. Useful, since for
@@ -209,72 +215,89 @@ _fzf_compgen_dir() {
 #
 # Arguments:
 #   $* - The command preceding the trigger (which defaults to "**").
-_fzf_comprun() {
-  command="$1"
-  shift
-
-  case "$command" in
-  cd) \
-    fzf "$@" --preview-window 'nohidden' ;;
-  which) \
-    fzf "$@" \
-      --preview 'which {} 2>/dev/null' \
-      --preview-window 'nohidden' ;;
-  export | unset) \
-    fzf "$@" \
-      --bind 'ctrl-y:execute-silent(printf "%s=\"%s\"" {} "$(eval echo \${})" | wl-copy)+abort' \
-      --preview 'printf "%s=\"%s\"" {} "$(eval echo \${})" | bat --language=sh --style=plain --color=always' \
-      --preview-window 'nohidden' ;;
-  ssh) \
-    fzf "$@" --preview 'dig {}' ;;
-  *) \
-    fzf "$@" ;;
-  esac
-}
+# _fzf_comprun() {
+#   command="$1"
+#   shift
+#
+#   case "$command" in
+#   cd) \
+#     fzf "$@" --preview-window 'nohidden' ;;
+#   which) \
+#     fzf "$@" \
+#       --preview 'which {} 2>/dev/null' \
+#       --preview-window 'nohidden' ;;
+#   export | unset) \
+#     fzf "$@" \
+#       --bind 'ctrl-y:execute-silent(printf "%s=\"%s\"" {} "$(eval echo \${})" | wl-copy)+abort' \
+#       --preview 'printf "%s=\"%s\"" {} "$(eval echo \${})" | bat --language=sh --style=plain --color=always' \
+#       --preview-window 'nohidden' ;;
+#   ssh) \
+#     fzf "$@" --preview 'dig {}' ;;
+#   *) \
+#     fzf "$@" ;;
+#   esac
+# }
 
 # Custom command completion, just messin' around.
-_fzf_complete_i() {
-  printf "%s\n%s\n%s\n" \
-    "Build NixOS" \
-    "Screenshot in 5 seconds..." \
-    "Find with ripgrep (rg)..." \
-    | _fzf_complete --multi --reverse -- "$@"
-}
+# _fzf_complete_i() {
+#   printf "%s\n%s\n%s\n" \
+#     "Build NixOS" \
+#     "Screenshot in 5 seconds..." \
+#     "Find with ripgrep (rg)..." \
+#     | _fzf_complete --multi --reverse -- "$@"
+# }
 
 # Custom command completion post-processing, just messin' around.
-_fzf_complete_i_post() {
-  # Only seem to get the value from within `awk`, not `$*`, idk.
-  input="$(awk '{print $0}')"
-  printf "%s" "$input" | tr '[:lower:]' '[:upper:]'
-}
+# _fzf_complete_i_post() {
+#   # Only seem to get the value from within `awk`, not `$*`, idk.
+#   input="$(awk '{print $0}')"
+#   printf "%s" "$input" | tr '[:lower:]' '[:upper:]'
+# }
 
 # Fzf-Tab plugin
 #
 # This plugin is used to replace the default Zsh autocomplete with `fzf` everywhere, so we can use
 # tab rather than an explicit trigger. Using this we can do `cd Docu<Tab>` rather than `cd **<Tab>`.
-# It's configured using `zstyle` and we can set up completion differently for specific commands: for
-# `cd` and any aliases to it we'd use the `:fzf-tab:complete:cd:*` context.
+#
+# It's configured using `zstyle` and we can set up differently for specific commands: for `cd` and
+# any aliases to it we'd use the `:fzf-tab:complete:cd:*` context.
 #
 # Documentation: https://github.com/Aloxaf/fzf-tab/wiki/Configuration
 
+# Generic previewer.
+preview='\
+  [ -f "$realpath" ] && ( \
+    (command exa --icons --tree --level=1 "$realpath" | head -1 && printf "\n") && \
+    (bat --style=plain --color=always "$realpath" || cat "$realpath")
+  ) || \
+  [ -d "$realpath" ] && ( \
+    (command exa -a --icons --group-directories-first --tree --level=2 "$realpath")
+  ) || \
+  echo "$realpath" 2> /dev/null \
+'
+# Set and export `$LS_COLORS` to be used in menus/lists.
 eval "$(dircolors)"
 
-# Set format to enable display of groups, to differentiate local directories vs cdpath
-zstyle ':completion:*:descriptions' format '%d >'
+# Set format to enable display of groups to differentiate local directories vs cdpath, built-in
+# commands vs installed binaries, and so on.
+zstyle ':completion:*:descriptions' format '%d '
+zstyle ':completion:*:git-checkout:*' sort false
 zstyle ':fzf-tab:*' show-group full
-zstyle ':fzf-tab:*' switch-group '<' '>'
+zstyle ':fzf-tab:*' switch-group '>' '<' # Switch group using angle bracket keys.
 zstyle ':fzf-tab:*' prefix ''
 
 # Set list colors to enable colorization
-# zstyle ':completion:*' list-colors-extended true
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' list-colors-extended true
+zstyle ':completion:*:*:*:*:default' list-colors ${(s.:.)LS_COLORS}
 
-# Generic
+# Generic completion.
+zstyle ':completion:*' complete-options true
+zstyle ':completion:*' file-sort modification
 zstyle ':fzf-tab:complete:*:*' fzf-flags --preview-window 'hidden'
 zstyle ':fzf-tab:complete:*:*' fzf-preview $preview
 zstyle ':fzf-tab:complete:*:*' print-query alt-enter
 
-# Ppreview window open on launch
+# Showing preview window on launch.
 zstyle ':fzf-tab:complete:(cd|nvim):*' fzf-flags --preview-window 'nohidden'
 
 # `which`
@@ -296,7 +319,8 @@ zstyle ':fzf-tab:complete:export:*' fzf-preview \
 alias e="nvim"
 
 # Utilities
-alias icat="kitty +kitten icat"
+alias hg="kitty +kitten hyperlinked_grep"
+alias icat="printf '\n\n' ; kitty +kitten icat"
 alias themes="kitty +kitten themes"
 
 # `cat` with line numbers and syntax highlighting
@@ -304,8 +328,7 @@ alias cat="bat"
 alias c="cat"
 
 # Default Markdown viewer
-alias md="glow"
-alias mdless="glow -p"
+alias md="mdcat"
 
 # Default list command
 alias l="lt"
@@ -953,15 +976,14 @@ done
 # OTHER INIT
 #
 
-# Uncomment to:
-#   Init kitty terminal shell integration
-#
-#   if [ -n "$KITTY_INSTALLATION_DIR" ]; then
-#     export KITTY_SHELL_INTEGRATION="enabled"
-#     autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
-#     kitty-integration
-#     unfunction kitty-integration
-#   fi
+# Kitty terminal automatically loads shell integration when spawning a shell directly. However, it
+# won't load automatically if running e.g. `tmux`, or `exec zsh` to source new settings.
+if [ -n "$KITTY_INSTALLATION_DIR" ]; then
+  export KITTY_SHELL_INTEGRATION="enabled"
+  autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
+  kitty-integration
+  unfunction kitty-integration
+fi
 
 # Init secrets, tokens, etc.
 if [ -f "$HOME/.env" ]; then

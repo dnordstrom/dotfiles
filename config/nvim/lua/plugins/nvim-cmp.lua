@@ -64,10 +64,10 @@ cmp.setup({
 
 		-- Navigation
 		["<C-u>"] = function()
-			utils.feedkeys("<PageUp>")
+			utils.type("<PageUp>")
 		end,
 		["<C-d>"] = function()
-			utils.feedkeys("<PageDown>")
+			utils.type("<PageDown>")
 		end,
 
 		-- Close behavior depending on mode

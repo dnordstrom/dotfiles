@@ -38,27 +38,27 @@
       # Max build jobs to run in parallel.
       max-jobs = 2;
 
-      # Users with elevated `nix` command privileges
+      # Users with elevated `nix` command privileges.
       trusted-users = [ "root" "dnordstrom" ];
 
-      # Automatically symlink identical files
+      # Automatically symlink identical files.
       auto-optimise-store = true;
     };
 
-    # Automatically have nix daemon symlink identical files weekly to free storage space
+    # Automatically have nix daemon symlink identical files weekly to free storage space.
     optimise = {
       automatic = true;
       dates = [ "weekly" ];
     };
 
-    # Automatically have nix daemon remove unused packages after 30 days
+    # Automatically have nix daemon remove unused packages after 30 days.
     gc = {
       automatic = true;
       dates = "weekly";
       options = "--delete-older-than 30d";
     };
 
-    # Disable annoying warning about dirty Git tree
+    # Disable annoying warning about dirty Git tree.
     extraOptions = ''
       warn-dirty = false
     '';
@@ -89,7 +89,12 @@
     kernelPackages = pkgs.linuxPackages_latest;
 
     loader = {
-      systemd-boot.enable = true;
+      systemd-boot = {
+        enable = true;
+        consoleMode = "max";
+        netbootxyz.enable = true;
+        memtest86.enable = true;
+      };
 
       efi = {
         canTouchEfiVariables = true;
@@ -103,24 +108,25 @@
   #
 
   networking = {
+    dhcpcd.enable = false;
+    enableIPv6 = false;
+    firewall.enable = true;
     hostName = "nordix";
+    networkmanager.enable = false;
     useDHCP = true;
     useNetworkd = true;
-    dhcpcd.enable = false;
-    connman.enable = true;
-    networkmanager.enable = false;
     wireless.enable = false;
-    firewall.enable = true;
+    wireguard = {
+      enable = true; # Includes tools, services, and WireGuard kernel module.
+    };
   };
 
   #
   # FONTS
   #
 
-  fonts = {
-    fonts = with pkgs;
-      [ (nerdfonts.override { fonts = [ "Iosevka" "Hack" ]; }) ];
-  };
+  fonts.fonts = with pkgs;
+    [ (nerdfonts.override { fonts = [ "Iosevka" "Hack" ]; }) ];
 
   #
   # SERVICES
@@ -249,7 +255,32 @@
     services = {
       # Avoid waiting time on boot or shutdown.
       systemd-udev-settle.enable = false;
-      NetworkManager-wait-online.enable = false;
+    };
+
+    network = {
+      wait-online.timeout = 0;
+
+      # Insert WireGuard interfaces here:
+      #
+      #   netdevs = {
+      #     "10-wg0" = {
+      #       netdevConfig = {
+      #         Kind = "wireguard";
+      #         MTUBytes = "1300";
+      #         Name = "wg0";
+      #       };
+      #       extraConfig = ''
+      #         [WireGuard]
+      #         PrivateKeyFile=/run/keys/wireguard-privkey
+      #         ListenPort=9918
+      #
+      #         [WireGuardPeer]
+      #         PublicKey=OhApdFoOYnKesRVpnYRqwk3pdM247j8PPVH5K7aIKX0=
+      #         AllowedIPs=fc00::1/64, 10.100.0.1
+      #         Endpoint={set this to the server ip}:51820
+      #       '';
+      #     };
+      #   };
     };
   };
 
@@ -262,6 +293,8 @@
     pam.yubico = {
       enable = true;
       id = "70449";
+
+      # Use with Yubico Cloud client instead of setting up challenge-response.
       mode = "client";
 
       # Allow login with Yubikey or password only, rather than as MFA. Bad. Convenient, but bad.
@@ -421,15 +454,13 @@
         shell = pkgs.zsh;
       };
 
-      # User for `openvpn3`.
       openvpn = {
         isSystemUser = true;
-        description = "OpenVPN 3 user";
+        description = "OpenVPN user";
         group = "openvpn";
       };
     };
 
-    # Group for `openvpn3`.
     groups.openvpn = { };
   };
 
@@ -480,7 +511,6 @@
     systemPackages = with pkgs; [
       git
       nodejs
-      ntfs3g
       polkit_gnome
       roon-server
       steam-run

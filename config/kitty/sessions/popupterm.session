@@ -1,0 +1,20 @@
+##
+# POPUPTERM INIT
+#
+# Two-pane layout, one in home directory and the other in NixOS configuration directory.
+##
+
+enabled_layouts tall,horizontal
+
+#
+# PRIMARY TAB
+#
+#   Window 1: NixOS configuration directory.
+#   Window 2: Home directory.
+#
+
+new_tab Shells
+
+launch --cwd ~
+launch --cwd /etc/nixos
+
