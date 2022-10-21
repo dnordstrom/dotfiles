@@ -141,6 +141,10 @@ set jsurls.n \
 " COMMANDS
 ""
 
+" Adjust fingerprinting and restricted domains preferences to allow using Tridactyl on more pages.
+command fixamo_quiet jsb tri.excmds.setpref("privacy.resistFingerprinting.block_mozAddonManager", "true").then(tri.excmds.setpref("extensions.webextensions.restrictedDomains", '""'))
+command fixamo js tri.excmds.setpref("privacy.resistFingerprinting.block_mozAddonManager", "true").then(tri.excmds.setpref("extensions.webextensions.restrictedDomains", '""').then(tri.excmds.fillcmdline_tmp(3000, "Permissions added to user.js. Please restart Firefox to make them take affect.")))
+
 " Pass current URL to command
 command withurl composite get_current_url |
 
@@ -327,12 +331,6 @@ bind Cr recontain remember
 bind <Space>Cr recontain remember
 bind <Space>CR recontain remember
 
-" Container -> whatever
-bind CA recontain area 51
-bind Ca recontain area 51
-bind <Space>CC recontain area 51
-bind <Space>Cc recontain area 51
-
 "
 " Navigation
 "
@@ -417,7 +415,7 @@ quickmark D https://drive.google.com/drive/shared-drives
 quickmark G https://github.com/LeeroyGroup
 quickmark J https://leeroy-group.atlassian.net/jira/software/c/projects/OF/boards/69
 quickmark M https://mail.google.com/mail/u/0/#inbox
-quickmark P https://leeroy-group.atlassian.net/wiki/spaces/BI/overview
+quickmark P https://leeroy-group.atlassian.net/wiki/spaces/CLASS/overview
 quickmark V https://meet.google.com/landing?authuser=1
 
 "
@@ -431,24 +429,12 @@ bindreplaceprefix go `
 " MISCELLANEOUS
 ""
 
-" Equivalent to `set csp clobber` before it was removed. This weakens your defences against
-" cross-site-scripting attacks and other types of code-injection by reducing the strictness of
-" Content Security Policy on every site in a couple of ways.
-"
-" You may not wish to run this. Mozilla strongly feels that you shouldn't.
-"
-" It allows Tridactyl to function on more pages, e.g. raw GitHub pages.
-"
-" We remove the sandbox directive
-" https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/sandbox which
-" allows our iframe to run (and anyone else's) on any website.
-"
-" We weaken the style-src directive
-" https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/style-src to
-" allow us to theme our elements. This exposes you to 'cross site styling' attacks.
-"
-" Read https://wiki.mozilla.org/Security/CSP#Goals for more information.
+" Equivalent to former `set csp clobber`, weakening CSP to make Tridactyl work on more pages.
+" See: https://github.com/tridactyl/tridactyl/blob/master/src/lib/requests.ts
 jsb browser.webRequest.onHeadersReceived.addListener(tri.request.clobberCSP,{urls:["<all_urls>"],types:["main_frame"]},["blocking","responseHeaders"])
+
+" Set AMO fingerprinting and restricted domains to allow Tridactyl to work on more sites.
+fixamo_quiet
 
 ""
 " AUTO COMMANDS

@@ -18,7 +18,12 @@
 
   # Update CPU microcode and use power-saving mode for less noise.
   hardware.cpu.amd.updateMicrocode = true;
-  powerManagement.cpuFreqGovernor = "schedutil";
+
+  # Set power management options.
+  powerManagement = {
+    cpuFreqGovernor = "schedutil";
+    powertop.enable = true;
+  };
 
   ##
   # NIXOS

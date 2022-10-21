@@ -4,6 +4,11 @@
 # Two-pane layout, one in home directory and the other in NixOS configuration directory.
 ##
 
+#
+# DEFAULT OVERRIDES
+#
+
+os_window_class popupterm
 enabled_layouts tall,horizontal
 
 #

@@ -5,7 +5,11 @@
 # configuration directory, and adding a tab for potential long-running tasks.
 ##
 
-os_window_class popupterm
+#
+# DEFAULT OVERRIDES
+#
+
+os_window_class scratchterm
 enabled_layouts tall,horizontal
 
 #

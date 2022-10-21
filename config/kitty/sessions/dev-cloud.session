@@ -3,6 +3,12 @@
 ##
 
 #
+# DEFAULT OVERRIDES
+#
+
+os_window_class devterm
+
+#
 # EDITORS
 #
 

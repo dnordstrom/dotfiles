@@ -28,7 +28,7 @@
   };
 
   outputs = inputs@{ self, agenix, firefox, mozpkgs, nixpkgs, waypkgs
-    , home-manager, neovim, rust, utils, ... }:
+    , homemanager, neovim, rust, utils, ... }:
     let
       inherit (utils.lib) mkFlake;
 
@@ -58,7 +58,7 @@
       hostDefaults.modules = [
         ./modules/common.nix
         agenix.nixosModule
-        home-manager.nixosModules.home-manager
+        homemanager.nixosModules.home-manager
         (let args = { inherit inputs; };
         in {
           home-manager = {

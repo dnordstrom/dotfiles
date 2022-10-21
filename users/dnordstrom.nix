@@ -516,6 +516,7 @@ in rec {
     #
 
     zsh-autopair
+    zsh-completions
     zsh-fzf-tab
     zsh-nix-shell
     zsh-vi-mode
@@ -537,7 +538,7 @@ in rec {
     slurp
     swappy
     swaybg
-    swayidle # TODO: Use systemd service option instead.
+    swayidle
     swaylock-effects
     swayr
     swaywsr
@@ -729,7 +730,6 @@ in rec {
     input-remapper
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
     navi # CLI cheatsheet tool
-    tealdeer # TLDR in Rust
     ytfzf # Fzf utility for YouTube
   ];
 
@@ -760,22 +760,23 @@ in rec {
     gtk3Config = { gtk-application-prefer-dark-theme = "${config.dark}"; };
     gtk2Config = ''gtk-application-prefer-dark-theme = "${config.dark}";'';
     bookmarks = [
-      "file:///home/dnordstrom/Code"
-      "file:///home/dnordstrom/Backup"
-      "file:///home/dnordstrom/Pictures/Screenshots"
-      "file:///home/dnordstrom/Secrets"
+      "file:///home/dnordstrom/Code Code"
+      "file:///home/dnordstrom/Backup Backup"
+      "file:///home/dnordstrom/Pictures/Snaps Snaps"
+      "file:///home/dnordstrom/Secrets Keys"
       "file:///home/dnordstrom/.config .config"
       "file:///home/dnordstrom/.local/bin .local  bin"
       "file:///home/dnordstrom/.local/share .local  share"
       "file:///etc/nixos NixOS"
       "file:///etc/nixos/config/firefox NixOS  Config  firefox"
+      "file:///etc/nixos/config/kitty NixOS  Config  kitty"
       "file:///etc/nixos/config/nvim NixOS  Config  nvim"
     ];
   in {
     enable = true;
 
     font = {
-      name = "Input Sans Condensed";
+      name = "Public Sans";
       size = 9;
     };
 
@@ -954,6 +955,17 @@ in rec {
   programs.jq.enable = true;
   programs.lsd.enable = true;
   programs.mpv.enable = true;
+
+  programs.tealdeer = {
+    enable = true;
+    settings = {
+      display = {
+        compact = false;
+        use_pager = true;
+      };
+      updates.auto_update = false;
+    };
+  };
 
   programs.waybar = {
     enable = true;
@@ -1191,7 +1203,7 @@ in rec {
     icons = true;
     maxIconSize = 48;
     iconPath = "${pkgs.vimix-icon-theme}/share/icons/Vimix";
-    font = "Input Sans Condensed 8";
+    font = "Public Sans 8";
     margin = "12";
     markup = true;
     padding = "12,24";

@@ -109,7 +109,7 @@
 
   networking = {
     dhcpcd.enable = false;
-    enableIPv6 = false;
+    enableIPv6 = true;
     firewall.enable = true;
     hostName = "nordix";
     networkmanager.enable = false;
@@ -143,7 +143,7 @@
     # CPU
     #
 
-    cpupower-gui.enable = true; # Use cpupower-gui instead of TLP.
+    cpupower-gui.enable = false; # Use cpupower-gui instead of TLP.
     tlp.enable = false; # Make sure TLP stays disabled.
 
     #

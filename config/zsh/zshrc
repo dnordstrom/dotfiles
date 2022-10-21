@@ -409,6 +409,35 @@ alias switch="git switch"
 alias merge="git merge"
 alias clone="git clone"
 
+# Parse a Jira issue ID from string provided either as argument or piped to standard input. For now,
+# if no input is provided then the current Git branch name is parsed.
+#
+# If no ID could be found, it returns `{ "error": "Not found." }`
+#
+# Arguments:
+#   - $* - Arguments are combined to a string and parsed. (Optional.)
+#
+# Returns:
+#   Success - E.g. `{ "project": "CLASS", "id": 123 }`.
+#   Failure - E.g. `{ "error": "Not found." }`.
+get-jira-issue() {
+# Use `test -t 0` to check if the standard input file descriptor (0) refers to a terminal. If it does, then we're calling the function directly, and if it doesn't, then we assume content is piped to us from another command.
+  if ! [ -t 0 ]; then
+    cat | jq --raw-input '[capture("(?<a>[a-z]+)-(?<n>[0-9]+)"; "gi")] | [(.[] | {"project": (.a | ascii_upcase), "issue": .n | tonumber})] | if length == 0 then {"error": "Not found."} | halt_error(1) else . end'
+    return
+  fi
+  
+  # If one or more arguments are given, pipe them all as raw string to `jq`. If no argument is
+  # given, check current Git branch name by default.
+  if [ $# -eq 0 ]; then
+    query="$(git branch --show-current)"
+  else
+    query="$*"
+  fi
+
+  printf "%s" "$query" | jq --raw-input --slurp '[capture("(?<a>[a-z]+)-(?<n>[0-9]+)"; "gi")] | [(.[] | {"project": (.a | ascii_upcase), "issue": .n | tonumber})] | if length == 0 then {"error": "Not found."} | halt_error(1) else . end'
+}
+
 # `g` - Runs `git status` when no arguments are used, otherwise passes them on to `git`.
 #
 # Arguments:
@@ -450,9 +479,18 @@ py-serve() {
 # FUNCTIONS
 #
 
-# Prints active Wayland view "ID".
+# Prints active Wayland view.
 print-wl-active-view() {
   lswt | awk '/^([0-9]): [-]?+a[-]? /{print int($1)}'
+}
+
+# Prints all Wayland views in JSON format.
+print-wl-views() {
+  if [ $# -gt 0 ]; then
+    lswt --json | jq --color-output | grep -C2 "$*"
+  else
+    lswt --json | jq --color-output
+  fi
 }
 
 # Prints environment variables that start with given string converted in uppercase. Defaults to

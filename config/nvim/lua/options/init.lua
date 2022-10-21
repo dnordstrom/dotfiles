@@ -9,7 +9,6 @@ local opt = vim.opt
 local opt_local = vim.opt_local
 local opt_global = vim.opt_global
 local loop = vim.loop
-local os = require("os")
 local nvim_exec = vim.api.nvim_exec
 local nvim_set_keymap = vim.api.nvim_set_keymap
 local nvim_buf_set_keymap = vim.api.nvim_buf_set_keymap
@@ -45,12 +44,12 @@ opt.updatetime = 250
 -- BACKUPS & UNDO
 --
 
-opt.directory = vim.loop.os_getEnv('HOME')  -- Don't back up in same directory.
+opt.backupdir = fn.stdpath("state") .. "/backup//" -- Don't litter, use `~/.local/state/nvim/backup`.
 opt.undofile = true -- Save undo state, by default in `~/.local/state/nvim`.
 opt.backup = true -- Keep backups after writes. (If `writebackup` is on so a backup is created.)
 opt.writebackup = true -- Backup on write in case it fails. How we do it depends on `backupcopy`.
 opt.backupcopy = "auto" -- Rename file and write new one if possible, otherwise copy and overwrite.
-opt.backupext = ".bak" -- Use another extension than the default tilde suffix.
+opt.backupext = ".bak" -- Extension rather than tilde suffix (append timestamp multiple backups).
 
 --
 -- EXPLORER

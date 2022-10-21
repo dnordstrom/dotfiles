@@ -15,12 +15,19 @@
 # UTILITIES
 ##
 
+# Spawn process, forwarding any arguments to `riverctl`.
 spawn() {
   riverctl spawn "$*"
 }
 
+# Spawn only if no running process was spawned with the same exact command.
 spawn_once() {
   pgrep -f "$*" >/dev/null || riverctl spawn "$*"
+}
+
+# Spawn in shell, allowing multiple commands, piping, etc.
+spawn_shell() {
+  riverctl spawn "sh -c '$*'"
 }
 
 map_exit_mode() {
@@ -65,7 +72,7 @@ filemanagergtk="nemo"
 
 # Font
 font_size=8
-font="Input Sans Condensed $font_size"
+font="Public Sans $font_size"
 
 # GTK
 gnome_schema="org.gnome.desktop.interface"
@@ -114,14 +121,31 @@ riverctl focus-follows-cursor normal
 # Trackpad
 #
 
-# Enable acceleration.
-riverctl input "76:613:Apple_Inc._Magic_Trackpad_2" accel-profile adaptive
+trackpad="1452:613:Apple_Inc._Magic_Trackpad_2"
 
-# Acceleration factor (must be between -1.0 and 1.0).
-riverctl input "76:613:Apple_Inc._Magic_Trackpad_2" pointer-accel 0.35
+# Enable acceleration (none, flat, or adaptive)
+riverctl input $trackpad accel-profile adaptive
 
-# Enable tap to click.
-riverctl input "76:613:Apple_Inc._Magic_Trackpad_2" tap enabled
+# Acceleration factor (between -1.0 and 1.0).
+riverctl input $trackpad pointer-accel 0.5
+
+# Tap to click.
+riverctl input $trackpad tap enabled
+
+# Click method (none, button-area, clickfinger)
+riverctl input $trackpad click-method clickfinger
+
+# Hide pointer while typing.
+riverctl input $trackpad disable-while-typing enabled
+
+# Scroll method (none, two-finger, edge, button)
+riverctl input $trackpad scroll-method two-finger
+
+# Middle-click emulation.
+riverctl input $trackpad middle-eemulation enabled
+
+# Natural scroll direction.
+riverctl input $trackpad natural-scroll disabled
 
 #
 # Keyboard
@@ -178,7 +202,7 @@ riverctl map normal Super Q close
 riverctl map normal Super Backspace exit
 
 # Show status bar
-riverctl map normal Super B spawn "eww close bar || eww open bar"
+riverctl map normal Super B spawn "sh -c 'eww close bar || eww open bar'"
 
 #
 # Focus
@@ -412,6 +436,7 @@ done
 # We all float down here...
 ##
 
+riverctl float-filter-add app-id "MyMonero"
 riverctl float-filter-add app-id "element-desktop"
 riverctl float-filter-add app-id "float"
 riverctl float-filter-add app-id "io.github.celluloid_player.Celluloid"
@@ -427,13 +452,18 @@ riverctl float-filter-add app-id "vimiv"
 riverctl float-filter-add app-id "vlc"
 riverctl float-filter-add app-id "wdisplays"
 
+riverctl float-filter-add app-id "devterm"
 riverctl float-filter-add app-id "fuzzyterm"
+riverctl float-filter-add app-id "plainterm"
 riverctl float-filter-add app-id "popupterm"
 riverctl float-filter-add app-id "scratchterm"
 riverctl float-filter-add app-id "transterm"
 
 riverctl float-filter-add title "Bitwarden"
 riverctl float-filter-add title "Kvantum Manager"
+
+# TODO: Fix once regular expressions are supported.
+riverctl float-filter-add title "Developer Tools"
 
 ##
 # CLIENT-SIDE DECORATION FILTERS
@@ -457,24 +487,27 @@ riverctl csd-filter-add app-id "wdisplays"
 # Spawn on launch
 #
 
-# Variables that should be available in environment for D-BUS and systemd.
+# Convenience variables exported during session launch (or by sourcing this config).
 export NORDIX_RIVER_TAGS_ALL="$(((1 << 32) - 1))"
 export NORDIX_RIVER_TAGS_STICKY="$((1 << 20))"
 export NORDIX_RIVER_TAGS_SCRATCHPAD="$((1 << 21))"
 export NORDIX_RIVER_TAGS_NON_STICKY="$((alltags ^ stickytag))"
 export NORDIX_RIVER_TAGS_NON_SCRATCHPAD="$((alltags ^ scratchtag))"
 export NORDIX_RIVER_TAGS_NON_SPECIAL="$((noscratchtag ^ stickytag))"
-export NORDIX_ENVIRONMENT="NORDIX_RIVER_TAGS_STICKY NORDIX_RIVER_TAGS_SCRATCHPAD"
 
-# Not specifying which variables should be imported is deprecated---so let's grab a few useful ones.
-spawn "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 $exported"
+# Convenience variables imported and available to D-BUS and `systemd`.
+export NORDIX_ENV="NORDIX_ENV NORDIX_RIVER_TAGS_STICKY NORDIX_RIVER_TAGS_SCRATCHPAD"
 
-# This is probably unnecessary since we used `--systemd` above, but won't kill us to keep it around.
-spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 $exported"
+# Not specifying which variables to import is deprecated. Usually `WAYLAND_DISPLAY`, `DISPLAY`,
+# and `XDG_*` are recommended to import, but let's grab a handful as no one is watching anyway...
+spawn "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 $NORDIX_ENV"
 
-# Launch polkit
+# This is probably unnecessary since we use `--systemd` above.
+spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 $NORDIX_ENV"
+
+# Launch Policy Kit.
 spawn_once "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
-spawn_once "swaybg --image ~/Pictures/Wallpapers/active3.jpg --mode fill --output '*'"
+spawn_once "swaybg --image ~/Pictures/Wallpapers/active --mode fill --output '*'"
 spawn_once "riverctl set-focused-tags $scratchtag && riverctl spawn $scratchterm ; riverctl set-focused-tags $((stickytag + 1))"
 
 # Trigger systemd target used to launch certain services.
@@ -495,7 +528,7 @@ spawn_once "systemctl --user start river-session.target"
 riverctl default-layout rivertile
 
 # Only `exec` if we're in a TTY meaning we're logging in.
-[ -n "$(tty)" ] && exec rivertile \
+! [ -t 0 ] && exec rivertile \
   -view-padding 10 \
   -outer-padding 10 \
   -main-ratio 0.6 \
@@ -503,9 +536,9 @@ riverctl default-layout rivertile
   -main-location left 2>"$HOME/.local/share/logs/river.log"
 
 # Otherwise we're likely reloading the configuration and shouldn't exit the shell.
-[ -z "$(tty)" ] && nohup rivertile \
+[ -t 0 ] && nohup rivertile \
   -view-padding 10 \
   -outer-padding 10 \
   -main-ratio 0.6 \
   -main-count 1 \
-  -main-location left 2>"$HOME/.local/share/logs/river.log" &
+  -main-location left >/dev/null 2>"$HOME/.local/share/logs/river.log" &

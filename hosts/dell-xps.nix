@@ -27,7 +27,7 @@
 
   # Update CPU microcode and use power-saving mode for less noise.
   hardware.cpu.intel.updateMicrocode = true;
-  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+  powerManagement.cpuFreqGovernor = "powersave";
 
   #
   # System disk
