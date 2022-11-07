@@ -1,7 +1,23 @@
+##
+# SWAPPY CONFIGURATION
+#
+# Swappy is a simple and convenient image annotation tool that is perfect for screenshots. We're
+# usually using it with `grim` and `slurp`: select an area of the screen with `slurp`, pass those
+# coordinates to `grim` to grab a screenshot of the area, and finally either pipe the output to `swappy`:
+# 
+# ```
+# `grim --output "DP-1" - | swappy --file - --output-file | icat
+# ```
+#
+# The dash, "-", is commonly used to mean "standard output" or "standard input." Above, Grim outputs
+# to standard out, Swappy reads that as standard input and shows its editor, then output the result
+# to standard out which we pipe to `icat --stdin=yes` to show the final image inside Kitty terminal.
+##
+
 [Default]
-save_dir=$HOME/Pictures/Screenshots
-save_filename_format=%Y%m%d_%Hh%Mm%Ss_swappy.png
-show_panel=true
-line_size=5
-text_size=16
-text_font="Input Sans Condensed"
+save_dir="$HOME/Pictures/Snaps" # For screenshots and screen recordings.
+save_filename_format="%Y%m%d_%Hh%Mm%Ss-annotated.png" # Example: `20220714_16h32m25s-annotated.png`.
+show_panel=false # Hide paint panel on launch and toggle it with `Ctrl+B` (see `man swappy`).
+line_size=3
+text_size=12
+text_font="Public Sans"

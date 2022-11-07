@@ -2,6 +2,7 @@
 
 ## NixOS
 
+* Create style guide for Vale LSP: https://vale.sh/docs/vale-cli/overview
 * Make derivations for shell scripts (e.g. WM launchers).
 * Refactor configuration into proper modules.
 ## Neovim

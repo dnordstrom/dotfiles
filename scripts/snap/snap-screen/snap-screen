@@ -1,9 +1,17 @@
 #!/usr/bin/env sh
 #
-# Uses `slurp` to let us select an area to screenshot with `grim`.
+# Uses `slurp` to get the geometry of a by default freely selected area on the screen, and the name
+# of an output if `--screen` is used. Then `grim` captures an image of that area, and depending on
+# command line flags, either copies the image *data* onto the clipboard (for pasting into Google
+# Docs, Slack messages, instant messaging apps, and similar.
 #
-# USAGE:
-#   `./screensnap.sh [TARGET FILE]`
+# Please specify your own Imgur API key using the `SNAP_IMGUR_CLIENT` environment variable if you
+# use `--upload`. I left mine as the default value for now, as an example, but it'll be revoked
+# at some point.
+#
+# TODO: Remove Imgur API key from page, revoke it, and make a new key stored as `agenix` secret.
+#
+# USAGE: `snap-screen [TARGET FILE]`
 #
 
 set -eu

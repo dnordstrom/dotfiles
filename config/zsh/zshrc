@@ -180,80 +180,6 @@ export FZF_ALT_C_OPTS="$FZF_DEFAULT_OPTS"
 export FZF_CTRL_R_OPTS="$FZF_DEFAULT_OPTS"
 export FZF_COMPLETION_OPTS="$FZF_DEFAULT_OPTS"
 
-# This function outputs path autocompletion, e.g. on `nvim **<Tab>` or when pressing Ctrl-t. It
-# receives any current input as only argument (`nvim conf**<Tab>` means `$1` is "con"). We're
-# changing it to search using `rg` since it's faster than `find` or `fd` and supposedly more solidly
-# built than `ag` which is another fast alternative.
-#
-# Arguments:
-#   $1 - Current input preceding trigger, for example  "conf" on `nvim conf**<Tab>`.
-# _fzf_compgen_path() {
-#   rg --hidden --files --glob='!.git/*' --glob='!node_modules/*' . "$1"
-# }
-
-# This function outputs directory autocompletion, e.g. on `cd **<Tab>` or when pressing Alt-c. It
-# receives any current input as only argument (`cd Doc**<Tab>` means `$1` is "Doc"). We're changing
-# it to search using `rg` since it's faster than `find` or `fd` and supposedly more solidly built
-# than `ag` which is another fast alternative.
-#
-# The `awk` function does what `dirname` does, but it does it faster. It's needed since `rg` doesn't
-# support searching for directories. More details: https://github.com/junegunn/fzf/issues/1067
-#
-# Arguments:
-#   $1 - Current input preceding trigger, for example  "docu" on `cd docu**<Tab>`.
-# _fzf_compgen_dir() {
-# 	rg --hidden --files --glob='!.git/*' --glob='!node_modules/*' . "$1" 2>/dev/null | awk 'function dirname(fn) { if (fn == "") return ".";  if (fn !~ "[^/]") return "/"; sub("/*$", "", fn); if (fn !~ "/") return "."; sub("/[^/]*$", "", fn); if (fn == "") fn = "/"; return fn } {$0 = dirname($0)} !a[$0]++'
-# }
-
-# This function is called when completion is triggered via `**` and is responsible for launching
-# `fzf`. Overriding this means we can launch it differently depending on context. Useful, since for
-# `export FZF_**` we may want a small preview window at the bottom showing the variable in a
-# `KEY=VALUE` format while `pkill` could use extra binds for sending different signals.
-#
-# Note:
-#   * This is an optional feature so we need to hook it up in the widgets section further down.
-#
-# Arguments:
-#   $* - The command preceding the trigger (which defaults to "**").
-# _fzf_comprun() {
-#   command="$1"
-#   shift
-#
-#   case "$command" in
-#   cd) \
-#     fzf "$@" --preview-window 'nohidden' ;;
-#   which) \
-#     fzf "$@" \
-#       --preview 'which {} 2>/dev/null' \
-#       --preview-window 'nohidden' ;;
-#   export | unset) \
-#     fzf "$@" \
-#       --bind 'ctrl-y:execute-silent(printf "%s=\"%s\"" {} "$(eval echo \${})" | wl-copy)+abort' \
-#       --preview 'printf "%s=\"%s\"" {} "$(eval echo \${})" | bat --language=sh --style=plain --color=always' \
-#       --preview-window 'nohidden' ;;
-#   ssh) \
-#     fzf "$@" --preview 'dig {}' ;;
-#   *) \
-#     fzf "$@" ;;
-#   esac
-# }
-
-# Custom command completion, just messin' around.
-# _fzf_complete_i() {
-#   printf "%s\n%s\n%s\n" \
-#     "Build NixOS" \
-#     "Screenshot in 5 seconds..." \
-#     "Find with ripgrep (rg)..." \
-#     | _fzf_complete --multi --reverse -- "$@"
-# }
-
-# Custom command completion post-processing, just messin' around.
-# _fzf_complete_i_post() {
-#   # Only seem to get the value from within `awk`, not `$*`, idk.
-#   input="$(awk '{print $0}')"
-#   printf "%s" "$input" | tr '[:lower:]' '[:upper:]'
-# }
-
 # Fzf-Tab plugin
 #
 # This plugin is used to replace the default Zsh autocomplete with `fzf` everywhere, so we can use
@@ -324,8 +250,9 @@ alias icat="printf '\n\n' ; kitty +kitten icat"
 alias themes="kitty +kitten themes"
 
 # `cat` with line numbers and syntax highlighting
+alias c="bat"
 alias cat="bat"
-alias c="cat"
+alias cat-plain="command cat"
 
 # Default Markdown viewer
 alias md="mdcat"
@@ -409,6 +336,150 @@ alias switch="git switch"
 alias merge="git merge"
 alias clone="git clone"
 
+# Generate a `sh -c ...` command for running the given command(s), enclosed in single quotes after
+# the command has done the substitution.
+#
+# Notes:
+#   - I prefer explicit naming in combination with aliases, rather than short ambiguous naming.
+#
+# Example:
+#     $ riverctl spawn $(shell_command "systemctl --user enable cool.service && nvim README.md")
+#     = riverctl spawn zsh -c 'systemctl --user enable cool.service && nvim README.md'
+#
+# Options:
+#   --shell,-s  Shell that should run the command, e.g. `zsh`. Defaults to `$SHELL` or `sh`.
+#
+# Arguments: 
+#   - $* - Any arguments are passed to she shell as command to run, as printed by `printf`.
+#
+# Returns:
+#   - In terminal context, outputs shell command to standard output.
+#   - In non-terminal contexts (e.g. piped to from another command), return the shell command.
+#
+# Globals:
+#   - SHELL is used as the shell to launch. Until threre's a flag, it can be changed there:
+#     `SHELL=zsh echo "$(shell_command echo Hello, dear world.)"`
+shell_cmd() {
+  printUsage() {
+    printf "\n%s\n" "
+$(basename "$0") [OPTIONS] <command line>
+
+DESCRIPTION:
+  Print a `sh -c 'arguments here'` string for spawning processes that use e.g. pipes, in a shell of your choosing.
+
+OPTIONS:
+    -s, --shell     Shell that will run the command.
+    -h, --help      Show this help text.
+"
+  }
+
+  for arg in "$@"; do
+    case $arg in
+      -h|--help)
+      print-usage
+      exit 0
+      shift
+      ;;
+      -s|--shell)
+      shell="${${1:-$SHELL}:-sh}"
+      shift
+      ;;
+      *)
+      cmdstring="$1"
+      shift
+      ;;
+    esac
+  done
+
+  if [ "$option_all" = "true" ]; then
+    properties="initial"
+  fi
+  shell="${SHELL:-"sh"}"
+  result="$(printf "%s" "$shell -c '$*'")"
+
+  if [ -t 0 ]; then
+    printf "%s" "$result"
+  else
+    return "$result"
+  fi
+}
+
+# Get only the relevant information about current Wayland views/windows.
+#
+# TODO: Refactor Wayland helpers into reusable `jq` fragments, add delay option, and env variables..
+#
+# Arguments:
+#   - $1 - Subcommand, e.g. `all` (or `--all`) to include all properties instead of a limited set.
+#
+# Returns:
+#   JSON representation of current view tree.
+wl-views() {
+  printUsage() {
+    printf "\n%s\n" "
+$(basename "$0") [OPTIONS] [GREP STRING]
+
+DESCRIPTION:
+    Use `--all` (or `-a` or `all`) for all view properties, `--focused` for only the focused view, an optional string to grep results, or omit arguments to show `app_id`, `title`, and `activated` properties of all views.
+
+OPTIONS:
+    -a, --all       Show detailed view including all properties.
+    -f, --focused   Show only properties of the focused view.
+    -h, --help      Show this help text.
+"
+  }
+
+  properties="relevant"
+  views_cmd="lswt --json"
+  parse_cmd="jq"
+  grep_cmd="grep"
+  query=". as \$initial | \$initial[] | {app_id, title, activated} as \$relevant"
+
+  for arg in "$@"; do
+    case $arg in
+      -h|--help)
+      print-usage
+      exit 0
+      shift
+      ;;
+      -a|--all|a|all)
+      option_all=true
+      shift
+      ;;
+      -f|--focused|f|focused)
+      option_focused=true
+      shift
+      ;;
+      *)
+      option_grep=true
+      grepstring="$1"
+      shift
+      ;;
+    esac
+  done
+
+  if [ "$option_all" = "true" ]; then
+    properties="initial"
+  fi
+
+  if [ "$option_focused" = "true" ]; then
+    query="$query | select(.activated == true)"
+  fi
+
+  query="$query | \$$properties"
+
+  if [ "$option_grep" = "true" ]; then
+    if [ -n "$grepstring" ]; then
+      cmd="$views_cmd | $parse_cmd '$query' | $grep_cmd $grepstring"
+    else
+      printf "\n%s\n\n" "Invalid argument specified." "$usage"
+    fi
+  else
+    cmd="$views_cmd | $parse_cmd '$query'"
+  fi
+
+  eval $cmd
+}
+
 # Parse a Jira issue ID from string provided either as argument or piped to standard input. For now,
 # if no input is provided then the current Git branch name is parsed.
 #
@@ -420,8 +491,8 @@ alias clone="git clone"
 # Returns:
 #   Success - E.g. `{ "project": "CLASS", "id": 123 }`.
 #   Failure - E.g. `{ "error": "Not found." }`.
-get-jira-issue() {
-# Use `test -t 0` to check if the standard input file descriptor (0) refers to a terminal. If it does, then we're calling the function directly, and if it doesn't, then we assume content is piped to us from another command.
+jira-parse-id() {
+  # Use `test -t 0` to check if the standard input file descriptor (0) refers to a terminal. If it does, then we're calling the function directly with content passed as argument, and if it doesn't, then we assume content is piped to us from another command.
   if ! [ -t 0 ]; then
     cat | jq --raw-input '[capture("(?<a>[a-z]+)-(?<n>[0-9]+)"; "gi")] | [(.[] | {"project": (.a | ascii_upcase), "issue": .n | tonumber})] | if length == 0 then {"error": "Not found."} | halt_error(1) else . end'
     return
@@ -478,20 +549,6 @@ py-serve() {
 #
 # FUNCTIONS
 #
-
-# Prints active Wayland view.
-print-wl-active-view() {
-  lswt | awk '/^([0-9]): [-]?+a[-]? /{print int($1)}'
-}
-
-# Prints all Wayland views in JSON format.
-print-wl-views() {
-  if [ $# -gt 0 ]; then
-    lswt --json | jq --color-output | grep -C2 "$*"
-  else
-    lswt --json | jq --color-output
-  fi
-}
 
 # Prints environment variables that start with given string converted in uppercase. Defaults to
 # print `$PATH`.
@@ -1027,6 +1084,9 @@ fi
 if [ -f "$HOME/.env" ]; then
   source "$HOME/.env"
 fi
+
+# Init cheat sheets CLI.
+eval "$(navi widget zsh)"
 
 # Init direnv
 eval "$(direnv hook zsh)"

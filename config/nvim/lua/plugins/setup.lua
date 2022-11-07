@@ -72,13 +72,10 @@ return require("packer").startup(function(use)
 	-- UI for key map hints
 	use({ "folke/which-key.nvim" })
 
-	-- Seamless navigation between Vim and Kitty windows
-	use({
-		"knubie/vim-kitty-navigator",
-		branch = "master",
-		run = "sed -i 's/neighboring_window\\.py/\\.\\/kittens\\/neighboring_window\\.py/g' ./plugin/kitty_navigator.vim",
-	})
-
+	-- Seamless navigation between Vim and Kitty windows.
+	--
+	-- TODO: Go back to knubie's repo when PR is merged: https://github.com/knubie/vim-kitty-navigator/pull/33
+	use({ "kintsugi/vim-kitty-navigator", branch = "master" })
 	--
 	-- LANGUAGE AND SYNTAX
 	--

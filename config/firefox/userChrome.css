@@ -27,10 +27,9 @@ toolbaritem#urlbar-container {
  * SIDEBAR
  */
 
-#sidebar {
+#sidebar-box {
   max-width: none !important;
   min-width: 0 !important;
-  width: 350px !important;
 }
 
 /**
@@ -83,24 +82,21 @@ toolbaritem#urlbar-container {
 }
 
 /**
- * Disabled
- */
-
-/* Use solid background for selected tab */
-
-/*
-  .tab-text[selected="true"] {
-    color: var(--lwt-accent-color, #000000) !important;
-  }
-
-  .tab-background[selected="true"] {
-    background: var(--lwt-tab-line-color, var(--lwt-tabs-border-color, currentColor)) !important;
-  }
-*/
-
-/**
  * BOOKMARKS TOOLBAR
  */
+
+/* Tweak container spacing, and add slight border between toolbar and webpage */
+
+#PersonalToolbar {
+  /* border-bottom: 1px solid rgba(0, 0, 0, 0.1); */
+  /* padding: 4px 8px; */
+}
+
+/* Add some extra spacing to align bookmark folders with other item's icons */
+
+#PlacesToolbar {
+  /* transform: translateY(2px); */
+}
 
 /* Tweak spacing and use Nerd Font for icons */
 
@@ -146,7 +142,7 @@ toolbarbutton[open] {
 /* Remove hover color (use for background in nav bar) from toolbar items except bookmarks */
 
 toolbarbutton:hover:not(.bookmark-item) {
-  color: transparent !important;
+  /* color: transparent !important; */
 }
 
 /* Align URL bar with toolbar icons */

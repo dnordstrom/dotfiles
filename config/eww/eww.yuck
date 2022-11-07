@@ -25,8 +25,20 @@
 (defvar is-hovering false)
 (defvar is-locked-date false)
 
+;
+; TAGS
+;
+; We track the active, previous, and hover state for tags manually, updating it during such events.
+;
+; The active and hover state is just for the hover effect. However, previous tag state can act as a way to enable quick switching between two "workspace tags" (ones used to simulate traditional workspaces or virtual desktops). River already supports back-and-forth switching, but a variable is one of many ways we can add flexibility to how e.g. scratchpad tags are handled.
+;
+; For example, quick switching hides my scratchpad. I'd rather it to remain open across changes in focused tags and preferably outputs as well. Using a sticky tag is an option, tweaking the logic a bit. But I want to toggle visibility using both `Super+Z` and UI widgets (and trackpad gestures), so some global state is reuquired and. While Yuck may not be super portable as far as global state goes, requires some boilerplate, and is error prone, it's great fun and does the trick. ;)
+;
+; At least until I can make a listener for something suitable for both script and UI global state.
+; D-BUS perhaps? Flat files? SQLite?
 (defvar tags '[{ "tag": 1, "label": 1 }, { "tag": 2, "label": 2 }, { "tag": 4, "label": 3 }, { "tag": 8, "label": 4 }, { "tag": 16, "label": 5 }, { "tag": 32, "label": 6 }, { "tag": 64, "label": 7 }, { "tag": 128, "label": 8 }, { "tag": 256, "label": 9 }]')
 (defvar active-tag "1")
+(defvar previous-tag "1")
 (defvar hover-tag "0")
 
 (defpoll volume-value :interval "1s" "pamixer --get-volume")

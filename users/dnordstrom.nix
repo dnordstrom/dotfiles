@@ -426,11 +426,8 @@ in rec {
     # Networking
     #
 
-    blueberry
-    bluetuith # CLI Bluetooth manager
     gnunet
     gnunet-gtk
-    onionshare
     onionshare-gui
     qbittorrent
     rofi-bluetooth
@@ -526,9 +523,12 @@ in rec {
     #
 
     flameshot
+    gebaar-libinput
     grim
     imagemagick
     libinput
+    libinput-gestures
+    lisgd
     kanshi
     river
     rofi-calc
@@ -554,6 +554,7 @@ in rec {
     xdg_utils # For `xdg-open`.
     xkeyboard_config
     xorg.setxkbmap
+    xorg.xinput
     ydotool
 
     #
@@ -566,7 +567,8 @@ in rec {
     # Web
     #
 
-    tor-browser-bundle-bin
+    # See GH issue: https://github.com/NixOS/nixpkgs/issues/146401
+    (tor-browser-bundle-bin.override { useHardenedMalloc = false; })
     tridactyl-native # Firefox native messaging host.
 
     #
@@ -608,6 +610,8 @@ in rec {
     playerctl
     pulsemixer
     streamlink
+    ustreamer # Video for Linux webcam streamer.
+    v4l-utils # Video For Linux webcam utilities.
     vlc
 
     #
@@ -731,6 +735,8 @@ in rec {
     interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
     navi # CLI cheatsheet tool
     ytfzf # Fzf utility for YouTube
+    kooha # Screen recorder GUI
+    fx_cast_bridge # For casting video from Firefox
   ];
 
   #
@@ -950,11 +956,64 @@ in rec {
   # PROGRAMS
   #
 
+  #
+  # Tryouts
+  #
+
+  programs.kodi = let
+    # Metadata directory to use instead of `~/.kodi`.
+    kodi-directory = "${config.xdg.dataHome}/kodi";
+
+    # Kodi package to use (Wayland support and added packages).
+    kodi-with-packages =
+      pkgs.kodi-wayland.withPackages (exts: [ exts.pvr-iptvsimple ]);
+  in {
+    enable = true;
+    datadir = kodi-directory;
+    package = kodi-with-packages;
+    sources = {
+      video = {
+        default = "Videos";
+        source = [
+          {
+            name = "Downloads";
+            path = "${config.home.homeDirectory}/Downloads";
+            allowsharing = "true";
+          }
+          {
+            name = "Videos";
+            path = "${config.home.homeDirectory}/Videos";
+            allowsharing = "true";
+          }
+          {
+            name = "Photos";
+            path = "${config.home.homeDirectory}/Pictures";
+            allowsharing = "true";
+          }
+        ];
+      };
+    };
+  };
+
+  #
+  # Utilities
+  #
+
   programs.exa.enable = true;
-  programs.java.enable = true;
   programs.jq.enable = true;
   programs.lsd.enable = true;
+
+  #
+  # Media
+  #
+
   programs.mpv.enable = true;
+
+  #
+  # Development
+  #
+
+  programs.java.enable = true;
 
   programs.tealdeer = {
     enable = true;
@@ -1050,6 +1109,13 @@ in rec {
     };
   };
 
+  programs.chromium = {
+    enable = true;
+    extensions = [{
+      id = "aeblfdkhhhdcdjpifhhbdiojplfjncoa"; # 1Password
+    }];
+  };
+
   programs.kitty = {
     enable = true;
     extraConfig = "include ./config.conf";
@@ -1066,20 +1132,6 @@ in rec {
       f = "fetch";
       p = "push";
     };
-  };
-
-  programs.chromium = {
-    enable = true;
-    extensions = [
-      {
-        # 1Password
-        id = "aeblfdkhhhdcdjpifhhbdiojplfjncoa";
-      }
-      {
-        # uBlock Origin
-        id = "cjpalhdlnbpafiamejdnhcphjbkeiagm";
-      }
-    ];
   };
 
   programs.neovim = {
@@ -1319,7 +1371,12 @@ in rec {
     ];
   };
 
-  programs.gpg.enable = true;
+  programs.gpg = {
+    enable = true;
+    mutableKeys = true;
+    mutableTrust = true;
+    # settings = '''';
+  };
 
   #
   # MANUAL
@@ -1348,7 +1405,7 @@ in rec {
     gpg-agent = {
       enable = true;
       enableZshIntegration = true;
-      pinentryFlavor = "qt"; # Use `pinentry-qt` for password input.
+      pinentryFlavor = "qt";
     };
 
     # Gammastep gradually adjusts color temperature of monitors at sunset and sunrise.

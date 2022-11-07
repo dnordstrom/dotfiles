@@ -6,6 +6,7 @@ require("mason").setup()
 
 require("mason-lspconfig").setup({
 	ensure_installed = {
+		"awk_ls",
 		"bashls",
 		"cmake",
 		"cssls",
@@ -14,12 +15,13 @@ require("mason-lspconfig").setup({
 		"dockerls",
 		"eslint",
 		"gopls",
-		"grammarly",
 		"graphql",
 		"html",
+		"jdtls",
 		"jsonls",
+		"lemminx",
 		"marksman",
-		"prosemd_ls",
+		"prosemd_lsp",
 		"pylsp",
 		"pyright",
 		"quick_lint_js",
@@ -28,8 +30,8 @@ require("mason-lspconfig").setup({
 		"rust_analyzer",
 		"stylelint_lsp",
 		"sumneko_lua",
+		"terraformls",
 		"tsserver",
-		"vale",
 		"vimls",
 		"yamlls",
 		"zls",

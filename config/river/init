@@ -25,9 +25,39 @@ spawn_once() {
   pgrep -f "$*" >/dev/null || riverctl spawn "$*"
 }
 
-# Spawn in shell, allowing multiple commands, piping, etc.
+# Spawn in shell, avoiding boilerplate when using multiple commands, piping, etc.
 spawn_shell() {
   riverctl spawn "sh -c '$*'"
+}
+
+# Generate a `sh -c ...` command for running the given command(s), enclosed in single quotes after
+# the command has done the substitution.
+#
+# Notes:
+#   - I prefer explicit naming in combination with aliases, rather than short ambiguous naming.
+#
+# Examp     $ riverctl spawn $(shell_command "systemctl --user enable cool.service && nvim README.md")
+#     = riverctl spawn zsh -c 'systemctl --user enable cool.service && nvim README.md'
+#
+# Arguments:
+#   - $* - Any arguments are passed to she shell as command to run, as printed by `printf`.
+#
+# Returns:
+#   - In terminal context, outputs shell command to standard output.
+#   - In non-terminal contexts (e.g. piped to from another command), return the shell command.
+#
+# Globals:
+#   - SHELL is used as the shell to launch. Until threre's a flag, it can be changed there:
+#     `SHELL=zsh echo "$(shell_command echo Hello, dear world.)"`
+shell_command() {
+  shell="${SHELL:-"sh"}"
+  result="$(printf "%s" "$shell -c '$*'")"
+
+  if [ -t 0 ]; then
+    printf "%s" "$result"
+  else
+    return "$result"
+  fi
 }
 
 map_exit_mode() {
@@ -49,36 +79,40 @@ noscratchtag="$((alltags ^ scratchtag))"
 availabletags="$((noscratchtag ^ stickytag))"
 
 # Terminal
-plainterm="kitty --class plainterm"
-scratchterm="kitty \
-  --class scratchterm \
+cmd_terminal_plain="kitty --class 'plainterm' --title 'Plain terminal'"
+cmd_terminal_scratchpad="kitty \
+  --class 'scratchterm' \
+  --title 'Scratchpad terminal'
   --single-instance \
-  --instance-group scratchterm \
-  --session ~/.config/kitty/sessions/scratchpad.session"
-popupterm="kitty \
-  --class popupterm \
+  --instance-group 'scratchterm' \
+  --session '$HOME/.config/kitty/sessions/scratchpad.session'"
+cmd_terminal_popup="kitty \
+  --class 'popupterm' \
+  --title 'Popup terminal' \
   --single-instance \
-  --instance-group popupterm"
+  --instance-group 'popupterm'"
 
 # Launchers
-launchapp="/etc/nixos/scripts/launch/launch-app"
-launchcmd="/etc/nixos/scripts/launch/launch-command"
-launchalt="wofi"
+cmd_launch_primary="/etc/nixos/scripts/launch/launch-app"
+cmd_launch_alternate="/etc/nixos/scripts/launch/launch-command"
+cmd_launch_contingency="rofi -show combi"
+cmd_launch_emergency="wofi"
 
 # File managers
-filemanager="$popupterm -e vifm"
-filemanagerqt="dolphin"
-filemanagergtk="nemo"
+cmd_files_primary="$popupterm -e vifm"
+cmd_files_alternate="dolphin"
+cmd_files_contingency="nemo"
+cmd_files_emergency="nautilus"
 
 # Font
 font_size=8
-font="Public Sans $font_size"
+font_face="Public Sans $font_size"
 
 # GTK
 gnome_schema="org.gnome.desktop.interface"
 gtk_theme="Catppuccin-Latte-Peach"
 cursor_theme="Quintom_Snow"
-icon_theme="Vimix-dark"
+icon_theme="Vimix"
 
 # termweatherwidth=920
 # termweatherheight=920
@@ -121,7 +155,7 @@ riverctl focus-follows-cursor normal
 # Trackpad
 #
 
-trackpad="1452:613:Apple_Inc._Magic_Trackpad_2"
+trackpad="76:613:Apple_Inc._Magic_Trackpad_2"
 
 # Enable acceleration (none, flat, or adaptive)
 riverctl input $trackpad accel-profile adaptive
@@ -173,58 +207,53 @@ riverctl border-width 2
 # seriousness: we do and they're a little slow, but we cache the results so they're instant.
 # Anywhere we can use `fzf` and our currently favorite terminal, we will---priceless duo.
 #
-# NOTE: `j4-dmenu-desktop` is another alternative. Super fast, runs anything, pairs well with `fzf`.
-#
 
 # Applications and commands
-riverctl map normal Super D spawn "$launchapp"
-riverctl map normal Super Space spawn "$launchapp"
-riverctl map normal Super+Shift D spawn "$launchcmd"
-riverctl map normal Super+Shift+Control D spawn "$launchalt"
+riverctl map normal Super D spawn "$cmd_launch_primary"
+riverctl map normal Super+Shift D spawn "$cmd_launch_alternate"
+riverctl map normal Super+Control D spawn "$cmd_launch_contingency"
+riverctl map normal Super+Alt D spawn "$cmd_launch_emergency"
 
 # Terminal emulators
 riverctl map normal Super Return spawn "$plainterm"
 riverctl map normal Super+Shift Return spawn "$scratchterm"
 
 # File managers
-riverctl map normal Super G spawn "$filemanager"
-riverctl map normal Super+Shift G spawn "$filemanagerqt"
-riverctl map normal Super+Control+Shift G spawn "$filemanagergtk"
+riverctl map normal Super G spawn "$cmd_files_primary"
+riverctl map normal Super+Alt+G spawn "$cmd_files_emergency"
+riverctl map normal Super+Shift G spawn "$cmd_files_alternate"
+riverctl map normal Super+Control G spawn "$cmd_files_contingency"
 
 #
 # System
 #
 
-# Super+Q to close the focused view
+# Super+Q to close view
+# Super+Backspace to exit session.
 riverctl map normal Super Q close
-
-# Super+Shift+E to exit river
 riverctl map normal Super Backspace exit
 
-# Show status bar
+# Show status bar (starts daemon if not arunning)
 riverctl map normal Super B spawn "sh -c 'eww close bar || eww open bar'"
 
 #
 # Focus
 #
 
-# Switch to previous tags
+# Super+Tab to quick switch to previous tags.
 riverctl map normal Super Tab focus-previous-tags
 
 # Super+J and Super+K to focus the next/previous view in the layout stack
+# Super+Shift+J and Super+Shift+K to swap focused view with the next/previous view in stack.
 riverctl map normal Super J focus-view next
 riverctl map normal Super K focus-view previous
-
-# Super+Shift+J and Super+Shift+K to swap the focused view with the next/previous
-# view in the layout stack
 riverctl map normal Super+Shift J swap next
 riverctl map normal Super+Shift K swap previous
 
-# Super+Period and Super+Comma to focus the next/previous output
+# Super+Period|Comma to focus next/previous output.
+# Super+Shift+Period|Comma to send view to next/previous output.
 riverctl map normal Super Period focus-output next
 riverctl map normal Super Comma focus-output previous
-
-# Super+Shift+{Period,Comma} to send the focused view to the next/previous output
 riverctl map normal Super+Shift Period send-to-output next
 riverctl map normal Super+Shift Comma send-to-output previous
 
@@ -240,10 +269,9 @@ riverctl map normal Super L send-layout-cmd rivertile "main-ratio +0.05"
 riverctl map normal Super A send-layout-cmd rivertile "main-count +1"
 riverctl map normal Super X send-layout-cmd rivertile "main-count -1"
 
-# Modifier and left mouse button to move views
+# Super+LeftMouse+Drag to move view (automatically floats it).
+# Super+RightMouse+Drag to resize view (automatically floats it).
 riverctl map-pointer normal Super BTN_LEFT move-view
-
-# Modifier and right mouse button to resize views
 riverctl map-pointer normal Super BTN_RIGHT resize-view
 
 # Bind number keys to tag actions
@@ -263,17 +291,17 @@ for i in $(seq 1 9); do
   riverctl map normal Super+Shift+Control "$i" toggle-view-tags $tags
 done
 
-# Super+0 to focus all tags
-# Super+Shift+0 to tag focused view with all tags
+# Super+0 to focus all tags.
+# Super+Shift+0 to tag focused view with all tags.
 riverctl map normal Super 0 spawn "riverctl set-focused-tags $alltags && eww update active-tag=0"
 riverctl map normal Super+Shift 0 set-view-tags $alltags
 
 # TRY: Super+Shift/Control+F to toggle fullscreen, floating, and moving the view to the top ([F]irst
 # or [F]ocus) of the stack and to the main area. They're kinda related since tiling, fullscreen, and
 # floating are the only ways we use windows. Also, they mostly start with an `F`, mostly...
-riverctl map normal Super F toggle-fullscreen  # Fullscreen
-riverctl map normal Super+Shift F toggle-float # Float
-riverctl map normal Super+Control F zoom       # Focus
+riverctl map normal Super F toggle-fullscreen  # Toggle fullscreen.
+riverctl map normal Super+Shift F toggle-float # Toggle floating.
+riverctl map normal Super+Control F zoom       # Move view to main layout area.
 
 #
 # SCRATCHPAD AND STICKY
@@ -452,18 +480,19 @@ riverctl float-filter-add app-id "vimiv"
 riverctl float-filter-add app-id "vlc"
 riverctl float-filter-add app-id "wdisplays"
 
-riverctl float-filter-add app-id "devterm"
-riverctl float-filter-add app-id "fuzzyterm"
-riverctl float-filter-add app-id "plainterm"
-riverctl float-filter-add app-id "popupterm"
-riverctl float-filter-add app-id "scratchterm"
-riverctl float-filter-add app-id "transterm"
+# TODO: Consider using `app-id` instead of `title` for the different terminals.
+riverctl float-filter-add title "devterm"
+riverctl float-filter-add title "fuzzyterm"
+riverctl float-filter-add title "plainterm"
+riverctl float-filter-add title "popupterm"
+riverctl float-filter-add title "scratchterm"
+riverctl float-filter-add title "transterm"
 
 riverctl float-filter-add title "Bitwarden"
 riverctl float-filter-add title "Kvantum Manager"
+riverctl float-filter-add title "Parent process Browser Toolbox"
 
-# TODO: Fix once regular expressions are supported.
-riverctl float-filter-add title "Developer Tools"
+# TODO: When regular expressions are invented, use `title "Developer Tools - .+"`.
 
 ##
 # CLIENT-SIDE DECORATION FILTERS
@@ -518,8 +547,9 @@ spawn_once "systemctl --user start river-session.target"
 #
 
 # TODO: Set up monitors here using the following resolutions and update rates.
-# DP-1:     1920x1080@144.001007Hz
-# DVI-D-1:  1920x1080@60Hz
+# DP-1:     3440x1440 @ 99.982 Hz
+# HDMI-A-1: 1920x1080 @ 144.001007 Hz (60 Hz currently)
+# DVI-D-1:  1920x1080 @ 60 Hz
 
 #
 # Layout generator

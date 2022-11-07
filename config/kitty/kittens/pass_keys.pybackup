@@ -36,6 +36,8 @@ def handle_result(args, result, target_window_id, boss):
     key_mapping = args[3]
     vim_id = args[4] if len(args) > 4 else "n?vim"
 
+    print(window)
+
     if window is None:
         return
     if is_window_vim(window, vim_id):

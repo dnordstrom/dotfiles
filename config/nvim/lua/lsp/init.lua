@@ -3,6 +3,7 @@
 ----
 
 local null_ls = require("null-ls")
+local builtins = null_ls.builtins
 local lspconfig = require("lspconfig")
 local cmp_nvim_lsp = require("cmp_nvim_lsp")
 local nvim_create_augroup = vim.api.nvim_create_augroup
@@ -12,7 +13,7 @@ local nvim_buf_get_option = vim.api.nvim_buf_get_option
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 --- LSP servers to autoload and call `setup()` on.
-local autoload = {
+local list_ls = {
 	"cssls",
 	"html",
 	"jsonls",
@@ -66,25 +67,19 @@ end
 --
 
 vim.diagnostic.config({
-	-- Show floating window
+	-- Previously all errors were displayed, always-on, using virtual text. We'll replace that with
+	-- underlined text for indicating errors, and floating popup windows for only show errors relevant
+	-- to selected scope: `line` for all errors on current line, `cursor` for exact cursor position.
 	float = {
-		focus = false, -- Don't focus window (then we need to step out of it before moving)
-		scope = "cursor", -- Show when cursor is on item, not whole line (`scope = "line"`)
-		border = false, -- No border, obviously
+		focus = false, -- Don't focus window since we'd need to manually close it with `wincmd c`.
+		scope = "cursor", -- Use exact cursor position---or "line" if you prefer the wrong way.
+		border = "rounded", -- `single`, `double`, `rounded`, `solid`, `shadow`, `none`, or array.
 	},
-
-	-- Show icons in sign column
-	signs = true,
-
-	-- Underline errors
-	underline = true,
-
-	-- Update diagnostics while typing
-	update_in_insert = true,
-
-	-- Disable virtual text and sorting by severity
-	virtual_text = false,
-	severity_sort = false,
+	signs = true, -- Show LSP signs such as Git modifications in signs column.
+	underline = true, -- Recommended to see what to hover if you use cursor scope and floating window.
+	update_in_insert = true, -- NOTE: Can substantially affect performance, depending on LSP server.
+	virtual_text = false, -- Disable always-on inline errors in favor of float popup window at cursor.
+	severity_sort = true, -- Show errors before warnings and so on in quickfix list.
 })
 
 --
@@ -99,19 +94,20 @@ end
 -- Completion
 --
 
--- Use `nvim-cmp` for LSP completion via `cmp_nvim_lsp`
-capabilities = cmp_nvim_lsp.update_capabilities(capabilities)
+-- Use `nvim-cmp` for LSP completion via `cmp_nvim_lsp`.
+capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
 
--- Enable snippet support using `luasnip` (configured in `nvim-cmp` setup)
+-- Enable snippet support using `luasnip` (configured in `nvim-cmp` setup).
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 ----
 -- SERVERS
 ----
 
+--
 --`null-ls`
 --
--- Does all formatting and is used when possible for out-of-the-box diagnostics, code actions, etc.
+-- General purpose language server that makes it simple to configure r for providing all formatting and pre-/post-processing, which is how it used when possible for out-of-the-box diagnostics, code actions, etc.
 -- Makes it simple to set up more LSP sources without implementing an LSP server.
 --
 -- If server has `null-ls` source then we use that, otherwise `mason-lspconfig`, and if Mason
@@ -119,16 +115,19 @@ capabilities.textDocument.completion.completionItem.snippetSupport = true
 -- happens since it's usually either in `null-ls` or `mason-lspconfig`.
 --
 -- NOTE: These need to be installed by Mason if possible, otherwise manually (OS package manager).
+--
+
 null_ls.setup({
-	-- Sources to enable
+	-- Built-in support to enable (along with args for the language server). Actual servers must be
+  -- installed seoarateky for the majority of the formatters and  to work. An exception is, e.g., `LuaSnip`. Is
+  -- purely a Neovim Lua completion source.
 	sources = {
 		null_ls.builtins.completion.luasnip, -- Plugin
 		null_ls.builtins.formatting.eslint_d, -- OS package
 		null_ls.builtins.formatting.stylua, -- OS package
 		null_ls.builtins.formatting.fixjson, -- OS package
 		null_ls.builtins.formatting.gofumpt, -- OS package
-		null_ls.builtins.formatting.nixfmt, -- OS package
-		null_ls.builtins.formatting.shfmt.with({ -- OS package
+    null_ls.builtins.formatting.nixfmt, -- OS package null_ls.builtins.formatting.shfmt.with({ -- OS package
 			-- Fix massive(ly ugly) indenting in shell scripts
 			extra_args = function(params)
 				return {
@@ -139,12 +138,10 @@ null_ls.setup({
 		}),
 		null_ls.builtins.formatting.stylelint, -- Mason
 		null_ls.builtins.diagnostics.actionlint, -- OS package
-		null_ls.builtins.diagnostics.alex, -- OS package
 		null_ls.builtins.diagnostics.codespell, -- OS package
 		null_ls.builtins.diagnostics.eslint_d, -- OS package
 		null_ls.builtins.diagnostics.write_good, -- OS package
 		null_ls.builtins.diagnostics.shellcheck, -- OS package
-		null_ls.builtins.diagnostics.vale, -- OS package
 		null_ls.builtins.code_actions.eslint_d, -- OS package
 		null_ls.builtins.code_actions.gitsigns, -- Plugin
 		null_ls.builtins.code_actions.proselint, -- OS package
@@ -152,6 +149,13 @@ null_ls.setup({
 		null_ls.builtins.code_actions.shellcheck, -- OS package
 		null_ls.builtins.code_actions.statix, -- OS package
 		null_ls.builtins.hover.dictionary, -- OS package
+
+    -- Disabled since the technology isn't quite there yet... Awaiting "the Year of the Linux
+    -- desktop," and added support for the Mjolnir worthiness assessment.
+    --
+		-- Laggy feeling high heart rate intensive regular on certain platforms, commented out to eliminate it as cause of issue.
+		-- null_ls.builtins.diagnostics.alex, -- OS package
+		-- null_ls.builtins.diagnostics.vale, -- OS package
 	},
 
 	-- Enable formatting for `null-ls` only
