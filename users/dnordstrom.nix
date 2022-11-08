@@ -575,12 +575,14 @@ in rec {
     # Security
     #
 
-    # Proton suite (https://proton.me). Using community CLI due to DE/GUI dependencies in official.
+    # Proton suite (https://proton.me) using community CLI due to DE/GUI dependencies in official.
     # protonmail-bridge # Bridge for accessing ProtonMail from local email clients.
     protonvpn-cli_2 # Community CLI.
     # protonvpn-cli # Official CLI.
     # protonvpn-gui # Official GUI.
 
+    _1password
+    _1password-gui-beta
     bitwarden
     bitwarden-cli
     git-crypt

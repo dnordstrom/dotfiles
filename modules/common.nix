@@ -370,7 +370,7 @@
       package = pkgs.bluezFull; # Full version includes plugins.
 
       # Enable support for HSP and HFP profiles.
-      hsphfpd.enable = true;
+      hsphfpd.enable = false;
 
       # Enable audio source and sink.
       settings.General.Enable = "Source,Sink,Media,Socket";

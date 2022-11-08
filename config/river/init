@@ -93,8 +93,8 @@ cmd_terminal_popup="kitty \
   --instance-group 'popupterm'"
 
 # Launchers
-cmd_launch_primary="/etc/nixos/scripts/launch/launch-app"
-cmd_launch_alternate="/etc/nixos/scripts/launch/launch-command"
+cmd_launch_primary="/etc/nixos/scripts/launch/launchapp"
+cmd_launch_alternate="/etc/nixos/scripts/launch/launchcommand"
 cmd_launch_contingency="rofi -show combi"
 cmd_launch_emergency="wofi"
 

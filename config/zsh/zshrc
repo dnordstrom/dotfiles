@@ -1063,7 +1063,7 @@ zvm_config() {
 #
 
 # Script paths organized and prefixed by category: `nix/nix-preview`, `launch/launch-app`, etc.
-for directory in ~/.scripts/*; do
+for directory in ~/.scripts/**; do
   export PATH="$PATH:$directory"
 done
 

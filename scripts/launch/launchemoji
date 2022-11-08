@@ -1,6 +1,8 @@
-#!/nix/store/3j18grljsyy4nxc078g00sy4cx6cf16g-bash-5.1-p16/bin/bash
+#!/usr/bin/env bash
+
 sed '1,/^### DATA ###$/d' $0 | wofi --show dmenu -i | cut -d ' ' -f 1 | tr -d '\n' | wl-copy
 exit
+
 ### DATA ###
 😀 grinning face
 😃 grinning face with big eyes
