@@ -139,22 +139,8 @@ in rec {
       # Desktop applications
       #
 
-      slack-wayland = {
-        name = "Slack (Wayland)";
-        comment = "Slack Desktop";
-        type = "Application";
-        genericName = "Slack Client for Linux";
-        exec =
-          "slack --enable-features=UseOzonePlatform,WebRTCPipeWireCapturer --ozone-platform=wayland -s %U";
-        terminal = false;
-        icon = "slack";
-        categories = [ "GNOME" "GTK" "Network" "InstantMessaging" ];
-        mimeType = [ "x-scheme-handler/slack" ];
-        startupNotify = true;
-      };
-
       nemo-without-cinnamon = {
-        name = "Nemo (Non-Desktop)";
+        name = "Nemo (Non-DE)";
         comment = "Nemo without Cinnamon";
         type = "Application";
         genericName = "Access and organize files";

@@ -161,7 +161,7 @@ in {
       settings = {
         default_session = {
           command =
-            "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --remember-session --cmd /home/${home}/.config/river/start";
+            "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --remember-session --cmd ${homeDirectory}/.config/river/start";
           user = "greeter";
         };
       };
