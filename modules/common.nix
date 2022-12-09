@@ -1,6 +1,17 @@
 { config, pkgs, stdenv, lib, ... }:
 
-{
+let
+  # Yes, this is, in fact, my actual username..
+  username = "dnordstrom";
+
+  # No, this isn't my actual password. You'd want a Yubikey too—will trade for Bowmore 1965 edition.
+  password = "Hehe, jk.";
+
+  # Paths of all types and shapes.
+  homeDirectory = "/home/${username}";
+  mediaDirectory = "/home/${homeDirectory}/Videos"; # Plex and Kodi library.
+  musicDirectory = "/home/${homeDirectory}/Music"; # Roon library.
+in {
   #
   # IMPORTS
   #
@@ -59,9 +70,7 @@
     };
 
     # Disable annoying warning about dirty Git tree.
-    extraOptions = ''
-      warn-dirty = false
-    '';
+    extraOptions = "warn-dirty = false";
   };
 
   #
@@ -71,13 +80,7 @@
   nixpkgs.config = {
     allowUnsupportedSystem = true;
     allowUnfreePredicate = pkg:
-      builtins.elem (lib.getName pkg) [
-        "corefonts"
-        "datagrip"
-        "input-fonts"
-        "slack"
-      ];
-    input-fonts.acceptLicense = true;
+      builtins.elem (lib.getName pkg) [ "corefonts" "slack" ];
     firefox.enableTridactylNative = true;
   };
 
@@ -92,7 +95,7 @@
       systemd-boot = {
         enable = true;
         consoleMode = "max";
-        netbootxyz.enable = true;
+        netbootxyz.enable = false;
         memtest86.enable = true;
       };
 
@@ -109,13 +112,15 @@
 
   networking = {
     dhcpcd.enable = false;
-    enableIPv6 = true;
     firewall.enable = true;
-    hostName = "nordix";
     networkmanager.enable = false;
+
+    hostName = "nordix";
     useDHCP = true;
+    enableIPv6 = true;
     useNetworkd = true;
-    wireless.enable = false;
+    wireless.iwd.enable = true; # `iwd` instead of `iw` for WPA2 authentication.
+
     wireguard = {
       enable = true; # Includes tools, services, and WireGuard kernel module.
     };
@@ -156,7 +161,7 @@
       settings = {
         default_session = {
           command =
-            "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --remember-session --cmd /home/dnordstrom/.config/river/start";
+            "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --remember-session --cmd /home/${home}/.config/river/start";
           user = "greeter";
         };
       };
@@ -240,6 +245,13 @@
     dbus = {
       enable = true;
       packages = with pkgs; [ protonvpn-cli_2 ];
+    };
+
+    # Plex media server
+    plex = {
+      enable = true;
+      openFirewall = true;
+      dataDir = mediaDirectory;
     };
 
     # Miscellaneous.

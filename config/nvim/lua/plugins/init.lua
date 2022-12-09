@@ -14,7 +14,7 @@ require("plugins.setup")
 
 require("plugins.cokeline")
 require("plugins.colorizer")
-require("plugins.comment")
+-- require("plugins.comment")
 require("plugins.feline")
 require("plugins.fzf-lua")
 require("plugins.gitsigns")

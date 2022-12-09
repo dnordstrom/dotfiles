@@ -1,0 +1,6 @@
+{
+    "device": "alsa_output.usb-D___M_Holdings_Inc._HD-DAC1-00.iec958-stereo",
+    "device-description": "HD-DAC1 Digital Stereo (IEC958)",
+    "device-profile": "iec958-stereo-output",
+    "preset-name": "Audeze LCD-2 Closed Back Experimental"
+}

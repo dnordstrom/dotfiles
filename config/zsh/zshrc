@@ -318,6 +318,12 @@ alias vpn-proton-up-securecore="doas protonvpn connect --sc"
 alias vpn-proton-up-p2p="doas protonvpn connect --p2p"
 
 #
+# INFORMATION QUERYING
+#
+
+alias n-getsysteminfo="command cat /sys/devices/virtual/dmi/id/board_{vendor,name,version}"
+
+#
 # DEVELOPMENT
 #
 

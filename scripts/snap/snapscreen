@@ -29,10 +29,10 @@ option_screen=false
 option_region=false
 has_curl=false
 area=""
-timestamp="$(date '+%Y%m%d_%H_%M_%S')"
-target_dir=${SCREENSNAP_TARGET_DIR:-"$HOME/Pictures/Snaps"}
+timestamp="$(date '+%Y%m%d_%Hh%Mm%Ss')"
+target_dir=${SNAPSCREEN_SAVE_DIR:-"$HOME/Pictures/Screensnaps"}
 target="$target_dir/$timestamp.png"
-imgur_client_id="${IMGUR_CLIENT_ID:=e4ab8199be97038}"
+imgur_client_id="${SNAPSCREEN_IMGUR_CLIENT_ID:=e4ab8199be97038}"
 usage="USAGE:
     $(basename "$0") [options]
     $(basename "$0") [options] [target file]

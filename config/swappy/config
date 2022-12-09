@@ -15,9 +15,9 @@
 ##
 
 [Default]
-save_dir="$HOME/Pictures/Snaps" # For screenshots and screen recordings.
-save_filename_format="%Y%m%d_%Hh%Mm%Ss-annotated.png" # Example: `20220714_16h32m25s-annotated.png`.
-show_panel=false # Hide paint panel on launch and toggle it with `Ctrl+B` (see `man swappy`).
+save_dir="$HOME/Pictures/Screensnaps"
+save_filename_format="%Y%m%d_%Hh%Mm%Ss-annotated.png"
+show_panel=false
 line_size=3
-text_size=12
+text_size=14
 text_font="Public Sans"

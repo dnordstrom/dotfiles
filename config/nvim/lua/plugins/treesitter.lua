@@ -44,9 +44,9 @@ require("nvim-treesitter.configs").setup({
 	},
 
 	-- Module for context aware commenting, e.g. `{/* JS/TS comments in JSX/TSX}`.
-	context_commentstring = {
-		enable = true,
-	},
+	-- context_commentstring = {
+	-- 	enable = true,
+	-- },
 
 	-- Module for additional text objects.
 	textobjects = {

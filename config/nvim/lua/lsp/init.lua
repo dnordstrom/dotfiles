@@ -13,7 +13,7 @@ local nvim_buf_get_option = vim.api.nvim_buf_get_option
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 --- LSP servers to autoload and call `setup()` on.
-local list_ls = {
+local autoload = {
 	"cssls",
 	"html",
 	"jsonls",
@@ -127,7 +127,8 @@ null_ls.setup({
 		null_ls.builtins.formatting.stylua, -- OS package
 		null_ls.builtins.formatting.fixjson, -- OS package
 		null_ls.builtins.formatting.gofumpt, -- OS package
-    null_ls.builtins.formatting.nixfmt, -- OS package null_ls.builtins.formatting.shfmt.with({ -- OS package
+    null_ls.builtins.formatting.nixfmt, -- OS package
+    null_ls.builtins.formatting.shfmt.with({ -- OS package
 			-- Fix massive(ly ugly) indenting in shell scripts
 			extra_args = function(params)
 				return {

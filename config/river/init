@@ -16,17 +16,17 @@
 ##
 
 # Spawn process, forwarding any arguments to `riverctl`.
-spawn() {
+_rctl_spawn() {
   riverctl spawn "$*"
 }
 
 # Spawn only if no running process was spawned with the same exact command.
-spawn_once() {
+_rctl_spawn_once() {
   pgrep -f "$*" >/dev/null || riverctl spawn "$*"
 }
 
 # Spawn in shell, avoiding boilerplate when using multiple commands, piping, etc.
-spawn_shell() {
+_rctl_spawn_shell() {
   riverctl spawn "sh -c '$*'"
 }
 
@@ -49,7 +49,7 @@ spawn_shell() {
 # Globals:
 #   - SHELL is used as the shell to launch. Until threre's a flag, it can be changed there:
 #     `SHELL=zsh echo "$(shell_command echo Hello, dear world.)"`
-shell_command() {
+_rctl_create_command() {
   shell="${SHELL:-"sh"}"
   result="$(printf "%s" "$shell -c '$*'")"
 
@@ -60,7 +60,7 @@ shell_command() {
   fi
 }
 
-map_exit_mode() {
+_rctl_map_exit_mode() {
   riverctl map "$1" None Escape enter-mode normal
   riverctl map "$1" None Return enter-mode normal
   riverctl map "$1" None Space enter-mode normal
@@ -70,7 +70,10 @@ map_exit_mode() {
 # VARIABLES
 ##
 
-# Tags
+# Paths.
+path_kitty_sessions="$HOME/.config/kitty/sessions"
+
+# Tags.
 alltags="$(((1 << 32) - 1))"
 stickytag="$((1 << 20))"
 scratchtag="$((1 << 21))"
@@ -78,63 +81,36 @@ nostickytag="$((alltags ^ stickytag))"
 noscratchtag="$((alltags ^ scratchtag))"
 availabletags="$((noscratchtag ^ stickytag))"
 
-# Terminal
-cmd_terminal_plain="kitty --class 'plainterm' --title 'Plain terminal'"
-cmd_terminal_scratchpad="kitty \
-  --class 'scratchterm' \
-  --title 'Scratchpad terminal'
-  --single-instance \
-  --instance-group 'scratchterm' \
-  --session '$HOME/.config/kitty/sessions/scratchpad.session'"
-cmd_terminal_popup="kitty \
-  --class 'popupterm' \
-  --title 'Popup terminal' \
-  --single-instance \
-  --instance-group 'popupterm'"
+# Terminal startup sessions.
+cmd_terminal_plain="kitty --class=plainterm --title='Plain terminal'"
+cmd_terminal_scratchpad="kitty --class=scratchterm --title 'Scratchpad terminal' -1 --instance-group=scratchterm --session=\"$path_kitty_sessions/scratchpad.session\""
+cmd_terminal_popup="kitty --class=popupterm --title='Popup terminal' -1 --instance-group=popupterm"
 
-# Launchers
-cmd_launch_primary="/etc/nixos/scripts/launch/launchapp"
-cmd_launch_alternate="/etc/nixos/scripts/launch/launchcommand"
-cmd_launch_contingency="rofi -show combi"
-cmd_launch_emergency="wofi"
+# Launchers.
+cmd_launch_app="/etc/nixos/scripts/launch/launchapp"
+cmd_launch_cmd="/etc/nixos/scripts/launch/launchcommand"
+cmd_launch_gui="rofi -show combi"
 
-# File managers
-cmd_files_primary="$popupterm -e vifm"
-cmd_files_alternate="dolphin"
-cmd_files_contingency="nemo"
-cmd_files_emergency="nautilus"
+# File managers.
+cmd_files_gtk="nemo"
+cmd_files_qt="dolphin"
+cmd_files_tui="$popupterm -e vifm"
 
-# Font
+# Font.
 font_size=8
 font_face="Public Sans $font_size"
 
-# GTK
+# GTK.
 gnome_schema="org.gnome.desktop.interface"
 gtk_theme="Catppuccin-Latte-Peach"
 cursor_theme="Quintom_Snow"
 icon_theme="Vimix"
 
-# termweatherwidth=920
-# termweatherheight=920
-#
-# termpopupwidth=1200
-# termpopupheight=900
-#
-# termplainwidth=920
-# termplainheight=920
-#
-# termscratchwidth=1800
-# termscratchheight=950
-#
-# fuzzytermwidth=680
-# fuzzytermheight=380
-#
-# floatdefaultwidth=1280
-# floatdefaultheight=820
-
 flatpak override --user --filesystem "$HOME/.local/share/themes"
 flatpak override --user --env "GTK_THEME=$gtk_theme"
 
+# TODO: Set this up properly.
+#
 # gsettings set "$gnome_schema" gtk-theme "$gtk_theme"
 # gsettings set "$gnome_schema" icon-theme "$icon_theme"
 # gsettings set "$gnome_schema" cursor-theme "$cursor_theme"
@@ -209,20 +185,20 @@ riverctl border-width 2
 #
 
 # Applications and commands
-riverctl map normal Super D spawn "$cmd_launch_primary"
-riverctl map normal Super+Shift D spawn "$cmd_launch_alternate"
-riverctl map normal Super+Control D spawn "$cmd_launch_contingency"
-riverctl map normal Super+Alt D spawn "$cmd_launch_emergency"
+riverctl map normal Super D spawn "$cmd_launch_app"
+riverctl map normal Super+Shift D spawn "$cmd_launch_cmd"
+riverctl map normal Super+Control D spawn "$cmd_launch_gui"
 
 # Terminal emulators
-riverctl map normal Super Return spawn "$plainterm"
-riverctl map normal Super+Shift Return spawn "$scratchterm"
+riverctl map normal Super Return spawn "$cmd_terminal_plain"
+riverctl map normal Super+Shift Return spawn "$cmd_terminal_scratchpad"
+riverctl map normal Super+Control Return spawn "$cmd_terminal_popup"
 
 # File managers
-riverctl map normal Super G spawn "$cmd_files_primary"
-riverctl map normal Super+Alt+G spawn "$cmd_files_emergency"
-riverctl map normal Super+Shift G spawn "$cmd_files_alternate"
-riverctl map normal Super+Control G spawn "$cmd_files_contingency"
+riverctl map normal Super G spawn "$cmd_files_tui"
+riverctl map normal Super+Shift+G spawn "$cmd_files_qt"
+riverctl map normal Super+Control G spawn "$cmd_files_gtk"
+riverctl map normal Super+Alt G spawn "$cmd_files_qt /etc/nixos"
 
 #
 # System
@@ -338,11 +314,11 @@ riverctl declare-mode window-resize
 # Map keys to exit modes
 #
 
-map_exit_mode system
-map_exit_mode window
-map_exit_mode window-location
-map_exit_mode window-move
-map_exit_mode window-resize
+_rctl_map_exit_mode system
+_rctl_map_exit_mode window
+_rctl_map_exit_mode window-location
+_rctl_map_exit_mode window-move
+_rctl_map_exit_mode window-resize
 
 #
 # Window mode
@@ -362,7 +338,7 @@ for i in $(seq 1 9); do
   tags=$((1 << (i - 1)))
 
   # Window mode+[1-9] to tag focused view with tag [0-8]
-  riverctl map window None "$i" spawn "riverctl set-focused-tags $((stickytag + tags)) ; riverctl enter-mode normal"
+  riverctl map window None "$i" spawn "riverctl set-focused-tags $((stickytag + tags)) ; eww update activetag=$i ; riverctl enter-mode normal"
 done
 
 #
@@ -529,18 +505,18 @@ export NORDIX_ENV="NORDIX_ENV NORDIX_RIVER_TAGS_STICKY NORDIX_RIVER_TAGS_SCRATCH
 
 # Not specifying which variables to import is deprecated. Usually `WAYLAND_DISPLAY`, `DISPLAY`,
 # and `XDG_*` are recommended to import, but let's grab a handful as no one is watching anyway...
-spawn "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 $NORDIX_ENV"
+_rctl_spawn "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 $NORDIX_ENV"
 
 # This is probably unnecessary since we use `--systemd` above.
-spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 $NORDIX_ENV"
+_rctl_spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 $NORDIX_ENV"
 
 # Launch Policy Kit.
-spawn_once "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
-spawn_once "swaybg --image ~/Pictures/Wallpapers/active --mode fill --output '*'"
-spawn_once "riverctl set-focused-tags $scratchtag && riverctl spawn $scratchterm ; riverctl set-focused-tags $((stickytag + 1))"
+_rctl_spawn_once "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
+_rctl_spawn_once "swaybg --image ~/Pictures/Wallpapers/active --mode fill --output '*'"
+_rctl_spawn_once "riverctl set-focused-tags $scratchtag && riverctl spawn $scratchterm ; riverctl set-focused-tags $((stickytag + 1))"
 
 # Trigger systemd target used to launch certain services.
-spawn_once "systemctl --user start river-session.target"
+_rctl_spawn_once "systemctl --user start river-session.target"
 
 #
 # MONITORS
@@ -558,17 +534,7 @@ spawn_once "systemctl --user start river-session.target"
 riverctl default-layout rivertile
 
 # Only `exec` if we're in a TTY meaning we're logging in.
-! [ -t 0 ] && exec rivertile \
-  -view-padding 10 \
-  -outer-padding 10 \
-  -main-ratio 0.6 \
-  -main-count 1 \
-  -main-location left 2>"$HOME/.local/share/logs/river.log"
+! [ -t 0 ] && exec rivertile -view-padding 10 -outer-padding 10 -main-ratio 0.6 -main-count 1 -main-location left >/dev/null 2>"$HOME/.local/share/logs/river.log"
 
 # Otherwise we're likely reloading the configuration and shouldn't exit the shell.
-[ -t 0 ] && nohup rivertile \
-  -view-padding 10 \
-  -outer-padding 10 \
-  -main-ratio 0.6 \
-  -main-count 1 \
-  -main-location left >/dev/null 2>"$HOME/.local/share/logs/river.log" &
+[ -t 0 ] && rivertile -view-padding 10 -outer-padding 10 -main-ratio 0.6 -main-count 1 -main-location left >/dev/null 2>"$HOME/.local/share/logs/river.log" &! 

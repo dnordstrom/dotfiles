@@ -8,9 +8,12 @@
 { pkgs, lib, config, inputs, ... }:
 
 let
-  #
+  ##
   # SETUP
-  #
+  ##
+
+  # Utility shortcuts.
+  mkSymlink = config.lib.file.mkOutOfStoreSymlink;
 
   # Path used for out of store symlinks to make certain files editable without a rebuild. For
   # example the Sway WM configuration entry point links directly to this directory so that when
@@ -19,7 +22,7 @@ let
   # Example:
   #
   # ```nix
-  # config.lib.file.mkOutOfStoreSymlink "${configDir}/config/sway/config.main"
+  # mkSymlink "${configDir}/config/sway/config.main"
   # # or
   # home.file.myUserFile.source = configDir config/sway/config.main;
   # ```
@@ -32,9 +35,9 @@ let
   # @returns {path} Absolute path
   configPath = path: /. + "/etc/nixos/${path}";
 
-  #
+  ##
   # APPLICATIONS
-  #
+  ##
 
   #
   # General
@@ -60,9 +63,9 @@ let
   xdgPasswordManager = [ "bitwarden-appimage.desktop" ];
   xdgPdfViewer = [ "org.pwmt.zathura.desktop" ];
 
-  # 
+  ## 
   # MIME-TYPES
-  # 
+  ## 
 
   mimeAassociations = {
     "application/json" = xdgEditor;
@@ -103,9 +106,9 @@ let
   python-with-packages = pkgs.python3.withPackages python-packages;
 
 in rec {
-  #
+  ##
   # ENVIRONMENT
-  #
+  ##
 
   home = {
     stateVersion = "22.11";
@@ -119,9 +122,9 @@ in rec {
     sessionPath = [ "$HOME/.local/bin" ];
   };
 
-  #
+  ##
   # XDG ENTRIES AND ASSOCIATIONS
-  #
+  ##
 
   xdg = {
     enable = true;
@@ -265,7 +268,7 @@ in rec {
       };
 
       #
-      # Command line applications
+      # COMMAND LINE APPLICATIONS
       #
 
       neovim-kitty = {
@@ -305,8 +308,23 @@ in rec {
       };
 
       #
-      # Startup sessions
+      # STARTUP SESSIONS
       #
+
+      kitty-session-wpo = {
+        name = "WPO development (kitty)";
+        comment = "WPO development (kitty)";
+        type = "Application";
+        genericName = "Text Editor";
+        exec = ''
+          kitty --session "${configDir}/config/kitty/sessions/dev-cloud.session" --single-instance --instance-group dev-wpo
+        '';
+        terminal = false;
+        icon = "kitty";
+        categories = [ "Utility" "TextEditor" "Development" "IDE" ];
+        mimeType = [ "text/plain" "inode/directory" ];
+        startupNotify = true;
+      };
 
       kitty-session-cloud = {
         name = "Cloud development (kitty)";
@@ -314,7 +332,7 @@ in rec {
         type = "Application";
         genericName = "Text Editor";
         exec = ''
-          kitty --session "${configDir}/config/kitty/sessions/dev-cloud.session" --single-instance --instance-group dev
+          kitty --session "${configDir}/config/kitty/sessions/dev-cloud.session" --single-instance --instance-group dev-cloud
         '';
         terminal = false;
         icon = "kitty";
@@ -407,9 +425,9 @@ in rec {
     };
   };
 
-  #
+  ##
   # PACKAGES
-  #
+  ##
 
   home.packages = with pkgs; [
     #
@@ -547,6 +565,7 @@ in rec {
     wev
     wf-recorder
     wl-clipboard
+    wlopm
     wofi
     wofi-emoji
     wshowkeys
@@ -572,7 +591,7 @@ in rec {
     tridactyl-native # Firefox native messaging host.
 
     #
-    # Security
+    # SecurityXDG_CURRENT_DESKTOP=swayXDG_CURRENT_DESKTOP=sway
     #
 
     # Proton suite (https://proton.me) using community CLI due to DE/GUI dependencies in official.
@@ -596,7 +615,6 @@ in rec {
     yubikey-personalization
     yubikey-personalization-gui
     yubikey-touch-detector
-    yubioath-desktop
 
     #
     # Multimedia
@@ -637,7 +655,6 @@ in rec {
     cloudflared # CLI for CLoudflare tunnels
 
     # Editors
-    android-studio # Stable version (`-beta`, `-dev`, and `-canary` can be appended)
     kate
 
     # Spelling
@@ -699,7 +716,7 @@ in rec {
     # Appearance
     #
 
-    # Fonts
+    # Fonts (PragmataPro Mono with ligatures in terminal and any code, commercial license)
     corefonts
     dejavu_fonts
     fcft # Font loading library used by foot
@@ -711,9 +728,9 @@ in rec {
     merriweather-sans
     paratype-pt-mono
     paratype-pt-sans
-    paratype-pt-serif
+    paratype-pt-serif # Current serif and print format font.
     powerline-fonts
-    public-sans
+    public-sans # Current UI font. Sometimes a custom-configured and patched Input.
     redhat-official-fonts
     source-sans
     source-serif
@@ -744,18 +761,19 @@ in rec {
   #
   # SWAY
   #
-  #   We use this option for installing Sway since it adds commands to the config for systemd
-  #   integration. Configuration is kept in original format and symlinked (impure) from
-  #   `/etc/nixos/config/sway` to `~/.config/sway` to allow editing it without rebuilding NixOS.
+  # We use this option for installing Sway since it adds commands to the config for systemd
+  # integration. Configuration is kept in original format and symlinked (impure) from
+  # `/etc/nixos/config/sway` to `~/.config/sway` to allow editing it without rebuilding NixOS.
   #
-  #   Home Manager creates a configuration file even if we set `config` to `null`, so we use 
-  #   `extraConfigEarly` to instead insert a line at the top that loads our own.
+  # Home Manager creates a configuration file even if we set `config` to `null`, so we use 
+  # `extraConfigEarly` to instead insert a line at the top that loads our own.
   #
 
   wayland.windowManager.sway = {
     enable = true;
     config = null;
-    systemdIntegration = true; # Enables "sway-session.target".
+    systemdIntegration =
+      true; # Enables "sway-session.target" and triggers it in config file.
     extraConfigEarly = "include main.conf";
   };
 
@@ -770,15 +788,16 @@ in rec {
     bookmarks = [
       "file:///home/dnordstrom/Code Code"
       "file:///home/dnordstrom/Backup Backup"
-      "file:///home/dnordstrom/Pictures/Snaps Snaps"
+      "file:///home/dnordstrom/Pictures/Screensnaps Screensnaps"
       "file:///home/dnordstrom/Secrets Keys"
       "file:///home/dnordstrom/.config .config"
       "file:///home/dnordstrom/.local/bin .local  bin"
       "file:///home/dnordstrom/.local/share .local  share"
-      "file:///etc/nixos NixOS"
-      "file:///etc/nixos/config/firefox NixOS  Config  firefox"
-      "file:///etc/nixos/config/kitty NixOS  Config  kitty"
-      "file:///etc/nixos/config/nvim NixOS  Config  nvim"
+      "file:///etc/nixos etc  NixOS"
+      "file:///etc/nixos/config/firefox etc  nixos  config"
+      "file:///etc/nixos/config/firefox etc  nixos  config  firefox"
+      "file:///etc/nixos/config/kitty etc  nixos  config  kitty"
+      "file:///etc/nixos/config/nvim etc  nixos  config  nvim"
     ];
   in {
     enable = true;
@@ -789,7 +808,7 @@ in rec {
     };
 
     theme.name =
-      "Catppuccin-yellow"; # No package, manually copied to `~/.local/share/themes`.
+      "Catppuccin-Latte-Peach"; # No package, manually copied to `~/.local/share/themes`.
 
     iconTheme = {
       name = "Vimix";
@@ -807,7 +826,7 @@ in rec {
     gtk3.bookmarks = bookmarks;
   };
 
-  #
+  ##
   # CONFIGURATION FILES
   #
   # Most configuration files are stored in their normal format and here symlinked into ~/.config or
@@ -816,150 +835,172 @@ in rec {
   # This is for portability reasons to make the files easier to both share with others and work on.
   # For example, this makes it simple to copy and paste defaults or snippets from online sources,
   # and the files remain useful for those not using NixOS or Home Manager.
+  ##
+
+  #
+  # SCRIPTS AND SHELL
   #
 
-  # Scripts and shell
-
-  home.file.".scripts".source = ../scripts;
+  home.file.".scripts".source = mkSymlink "${configDir}/scripts";
   home.file.".config/zsh/.zshinit".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/zsh/zshrc";
-
-  # Wallpapers
-
-  home.file."Pictures/Wallpapers".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/wallpapers";
+    mkSymlink "${configDir}/config/zsh/zshrc";
 
   #
-  # Dolphin places
+  # WALLPAPERS
+  #
+
+  home.file."Pictures/Wallpapers".source = mkSymlink "${configDir}/wallpapers";
+
+  #
+  # DOLPHIN FILE MANAGER "PLACES"
   #
 
   home.file.".config/dolphin/user-places.xbel".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/dolphin/user-places.xbel";
+    mkSymlink "${configDir}/dolphin/user-places.xbel";
 
-  # EasyEffects
+  #
+  # EASYEFFECTS
   #
   #   Settings directories are writable but presets directory read-only. This allows EasyEffects
   #   to modify its settings while the presets are immutable since that's where the important
   #   presets are saved.
   #
   #   Also see `services.easyeffects` for background service.
+  #
 
   home.file.".config/easyeffects/output".source =
-    config.lib.file.mkOutOfStoreSymlink
-    "${configDir}/config/easyeffects/output";
+    mkSymlink "${configDir}/config/easyeffects/output";
   home.file.".config/easyeffects/input".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/easyeffects/input";
+    mkSymlink "${configDir}/config/easyeffects/input";
   home.file.".config/easyeffects/irs".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/easyeffects/irs";
+    mkSymlink "${configDir}/config/easyeffects/irs";
   home.file.".config/easyeffects/autoload".source =
-    config.lib.file.mkOutOfStoreSymlink
-    "${configDir}/config/easyeffects/autoload";
+    mkSymlink "${configDir}/config/easyeffects/autoload";
   xdg.configFile."easyeffects/presets".source = ../config/easyeffects/presets;
 
-  # Sway
+  #
+  # SWAY
   #
   # We can't symlink the `~/.config/sway` directory if the Home Manager module handles the systemd
   # integration (since it adds a config file with the systemd target command), we have to symlink
   # individual files. For some reason `xdg.configFile` doesn't work so we use `home.file`.
+  #
 
   home.file.".config/sway/start".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/sway/start";
+    mkSymlink "${configDir}/config/sway/start";
   home.file.".config/sway/main.conf".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/sway/main.conf";
+    mkSymlink "${configDir}/config/sway/main.conf";
   home.file.".config/sway/colors.catppuccin.conf".source =
-    config.lib.file.mkOutOfStoreSymlink
-    "${configDir}/config/sway/colors.catppuccin.conf";
-
+    mkSymlink "${configDir}/config/sway/colors.catppuccin.conf";
   home.file.".config/swaylock/config".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/swaylock/config";
+    mkSymlink "${configDir}/config/swaylock/config";
   home.file.".config/swaynag/config".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/swaynag/config";
+    mkSymlink "${configDir}/config/swaynag/config";
 
-  # River
+  #
+  # RIVER
+  #
 
-  home.file.".config/river".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/river";
+  home.file.".config/river".source = mkSymlink "${configDir}/config/river";
 
-  # Swappy 
+  # 
+  # SWAPPY 
+  #
 
   xdg.configFile."swappy/config".source = ../config/swappy/config;
 
-  # Bat 
+  #
+  # BAT 
+  #
 
   xdg.configFile."bat/themes".source = ../config/bat/themes;
 
-  # Kitty
+  #
+  # KITTY
+  #
 
   home.file.".config/kitty/config.conf".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/kitty/config.conf";
+    mkSymlink "${configDir}/config/kitty/config.conf";
   home.file.".config/kitty/open-actions.conf".source =
-    config.lib.file.mkOutOfStoreSymlink
-    "${configDir}/config/kitty/open-actions.conf";
+    mkSymlink "${configDir}/config/kitty/open-actions.conf";
   home.file.".config/kitty/themes".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/kitty/themes";
+    mkSymlink "${configDir}/config/kitty/themes";
   home.file.".config/kitty/sessions".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/kitty/sessions";
+    mkSymlink "${configDir}/config/kitty/sessions";
   home.file.".config/kitty/kittens".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/kitty/kittens";
+    mkSymlink "${configDir}/config/kitty/kittens";
 
-  # Starship
+  #
+  # STARSHIP
+  #
 
   xdg.configFile."starship.toml".source = ../config/starship/starship.toml;
 
-  # Zathura
+  #
+  # ZATHURA
+  #
 
   xdg.configFile."zathura".source = ../config/zathura;
 
-  # Firefox
+  #
+  # FIREFOX
+  #
 
   home.file.".config/tridactyl".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/firefox/tridactyl";
+    mkSymlink "${configDir}/config/firefox/tridactyl";
 
   home.file.".mozilla/native-messaging-hosts/tridactyl.json".source =
     "${pkgs.tridactyl-native}/lib/mozilla/native-messaging-hosts/tridactyl.json";
 
-  # Neovim
+  #
+  # NEOVIM
+  #
 
   home.file.".config/nvim/lua".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/nvim/lua";
+    mkSymlink "${configDir}/config/nvim/lua";
   home.file.".config/nvim/ftplugin".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/nvim/ftplugin";
+    mkSymlink "${configDir}/config/nvim/ftplugin";
   home.file.".config/nvim/luasnippets".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/nvim/luasnippets";
+    mkSymlink "${configDir}/config/nvim/luasnippets";
   home.file.".config/nvim/spell".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/nvim/spell";
-
-  # Vifm
-
-  home.file.".config/vifm".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/vifm";
-
-  # Glow
-
-  home.file.".config/glow".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/glow";
-
-  # lsd
-
-  home.file.".config/lsd".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/lsd";
-
-  # Wofi
-
-  home.file.".config/wofi".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/wofi";
-
-  # Waybar
-
-  home.file.".config/waybar".source =
-    config.lib.file.mkOutOfStoreSymlink "${configDir}/config/waybar";
+    mkSymlink "${configDir}/config/nvim/spell";
 
   #
+  # VIFM
+  #
+
+  home.file.".config/vifm".source = mkSymlink "${configDir}/config/vifm";
+
+  #
+  # GLOW
+  #
+
+  home.file.".config/glow".source = mkSymlink "${configDir}/config/glow";
+
+  #
+  # LSD
+  #
+
+  home.file.".config/lsd".source = mkSymlink "${configDir}/config/lsd";
+
+  #
+  # WOFI
+  #
+
+  home.file.".config/wofi".source = mkSymlink "${configDir}/config/wofi";
+
+  #
+  # WAYBAR
+  #
+
+  home.file.".config/waybar".source = mkSymlink "${configDir}/config/waybar";
+
+  ##
   # PROGRAMS
-  #
+  ##
 
   #
-  # Tryouts
+  # TRYOUTS
   #
 
   programs.kodi = let
@@ -998,7 +1039,7 @@ in rec {
   };
 
   #
-  # Utilities
+  # UTILITIES
   #
 
   programs.exa.enable = true;
@@ -1006,13 +1047,13 @@ in rec {
   programs.lsd.enable = true;
 
   #
-  # Media
+  # MEDIa
   #
 
   programs.mpv.enable = true;
 
   #
-  # Development
+  # DEVELOPMENT
   #
 
   programs.java.enable = true;
@@ -1039,7 +1080,7 @@ in rec {
 
   programs.eww = {
     enable = true;
-    configDir = config.lib.file.mkOutOfStoreSymlink "${configDir}/config/eww";
+    configDir = mkSymlink "${configDir}/config/eww";
     package = pkgs.eww-wayland;
   };
 
@@ -1062,6 +1103,10 @@ in rec {
       tag = [ "password" "copy" "clipboard" "json" ];
     }];
   };
+
+  #
+  # FIREFOX
+  #
 
   programs.firefox = let
     config = {
@@ -1168,6 +1213,10 @@ in rec {
       "${configDir}"
     ];
 
+    # Plugins installed either here with Git or from nixpkgs if available, using the build in plugin
+    # management, meaning we need to point it to the correct file to load, usually ending in
+    # ".plugin.zsh" abd then gets automtically detected by NixOS. Otherwise the `file` attribute
+    # tells it where to load it from.
     plugins = [
       {
         name = "zsh-vi-mode";
@@ -1228,7 +1277,7 @@ in rec {
     };
   };
 
-  # Fuzzy finder written in Go
+  # FUZZY FINDER WRITTEN IN Go
 
   programs.fzf = {
     enable = true;
@@ -1380,9 +1429,9 @@ in rec {
     # settings = '''';
   };
 
-  #
+  ##
   # MANUAL
-  #
+  ##
 
   manual = {
     # Installs `home-manager-help` tool.
@@ -1392,12 +1441,12 @@ in rec {
     json.enable = true;
   };
 
-  #
+  ##
   # SERVICES
-  #
+  ##
 
   #
-  # Nix modules
+  # MODULES
   #
 
   services = {
@@ -1432,7 +1481,7 @@ in rec {
   };
 
   #
-  # Systemd
+  # SYSTEMD
   #
 
   # Proton Mail bridge for access from local email clients.
@@ -1480,9 +1529,9 @@ in rec {
     };
   };
 
-  #
+  ##
   # SECURITY
-  #
+  ##
 
   pam.yubico.authorizedYubiKeys.ids = [ "ccccccurnfle" "cccccclkvllh" ];
 }

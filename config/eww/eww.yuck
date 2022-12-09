@@ -97,11 +97,11 @@
             :onrightclick ""
             :onmiddleclick "")
     (metric :label volume-label
-            :value {volume-value == "" ? 0 : volume-label}
+            :value {volume-label == "MUT" ? 0 : volume-value}
             :class {volume-label == "MUT" ? "volume muted" : "volume"}
             :onchange "pamixer --set-volume {}"
             :onclick "pamixer --toggle-mute"
-            :onmiddleclick ""
+            :onmiddleclick "riverctl spawn easyeffects"
             :onrightclick "riverctl spawn pavucontrol")))
 
 ; (defwidget tray []
@@ -114,9 +114,8 @@
             :duration "0.2s"
     (box :spacing 10
       (launcher :class "screenshot"
-              :onclick "riverctl spawn screensnap"
-              :onmiddleclick "riverctl spawn 'screensnap --window'"
-              :onrightclick "riverctl spawn 'screensnap --screen'"
+              :onclick "riverctl spawn snapscreen"
+              :onrightclick "riverctl spawn 'snapscreen --screen'"
               :icon ""))))
 
 (defwidget left-launchers []

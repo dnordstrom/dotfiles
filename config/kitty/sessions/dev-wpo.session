@@ -1,0 +1,57 @@
+##
+# CLOUD DEVELOPMENT INIT
+##
+
+#
+# DEFAULT OVERRIDES
+#
+
+os_window_class devterm-wpo
+
+#
+# EDITORS
+#
+
+new_tab Editor
+
+enabled_layouts horizontal,vertical
+
+launch --cwd ~/Code/web-preorder --title "Editor" -- zsh -c "nvim; exec zsh"
+launch --cwd ~/Code/web-preorder --title "Editor shell"
+
+#
+# SHELLS
+#
+
+new_tab Shells
+
+enabled_layouts horizontal,vertical
+
+launch --cwd ~/Code/web-preorder --title "Shell"
+launch --cwd ~/Code/web-preorder --title "Shell"
+
+#
+# SERVERS
+#
+
+new_tab Servers
+
+enabled_layouts horizontal,vertical
+
+launch --cwd ~/Code/web-preorder --title "Development server"
+launch --cwd ~/Code/web-preorder --title "Development shell"
+
+launch zsh -c "sleep 1 && kitty @ send-text --match title:'^Development\sserver$' 'yarn && yarn dev'"
+
+#
+# VPN
+#
+
+new_tab VPN
+
+enabled_layouts horizontal,vertical
+
+launch --cwd ~ --title "VPN"
+launch zsh -c "sleep 1 && kitty @ send-text --match title:'^VPN$' 'vpn-leeroy-up'"
+
+# vim:ft=kitty
