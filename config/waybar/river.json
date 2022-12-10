@@ -96,7 +96,7 @@
   },
   "custom/snap": {
     "format": "<span font='16' rise='-1500'></span>",
-    "on-click": "grim -g \"$(slurp)\" \"$HOME/Pictures/Screenshots/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png\"",
+    "on-click": "grim -g \"$(slurp)\" \"$HOME/Pictures/Screensnaps/$(date +%Y%m%d_%Hh%Mm%Ss)_area.png\"",
     "tooltip": false
   },
   "custom/protoncheck": {

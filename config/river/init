@@ -196,7 +196,7 @@ riverctl map normal Super+Control Return spawn "$cmd_terminal_popup"
 
 # File managers
 riverctl map normal Super G spawn "$cmd_files_tui"
-riverctl map normal Super+Shift+G spawn "$cmd_files_qt"
+riverctl map normal Super+Shift G spawn "$cmd_files_qt"
 riverctl map normal Super+Control G spawn "$cmd_files_gtk"
 riverctl map normal Super+Alt G spawn "$cmd_files_qt /etc/nixos"
 
@@ -209,7 +209,7 @@ riverctl map normal Super+Alt G spawn "$cmd_files_qt /etc/nixos"
 riverctl map normal Super Q close
 riverctl map normal Super Backspace exit
 
-# Show status bar (starts daemon if not arunning)
+# Show status bar (starts daemon if not running)
 riverctl map normal Super B spawn "sh -c 'eww close bar || eww open bar'"
 
 #
@@ -537,4 +537,4 @@ riverctl default-layout rivertile
 ! [ -t 0 ] && exec rivertile -view-padding 10 -outer-padding 10 -main-ratio 0.6 -main-count 1 -main-location left >/dev/null 2>"$HOME/.local/share/logs/river.log"
 
 # Otherwise we're likely reloading the configuration and shouldn't exit the shell.
-[ -t 0 ] && rivertile -view-padding 10 -outer-padding 10 -main-ratio 0.6 -main-count 1 -main-location left >/dev/null 2>"$HOME/.local/share/logs/river.log" &! 
+rivertile -view-padding 10 -outer-padding 10 -main-ratio 0.6 -main-count 1 -main-location left >/dev/null 2>"$HOME/.local/share/logs/river.log" &! 

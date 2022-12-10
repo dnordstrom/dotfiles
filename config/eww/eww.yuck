@@ -104,9 +104,6 @@
             :onmiddleclick "riverctl spawn easyeffects"
             :onrightclick "riverctl spawn pavucontrol")))
 
-; (defwidget tray []
-;   (box :class "tray" :orientation "h" (system-tray)))
-
 (defwidget right-launchers []
   (revealer :class "launchers revealer ${is-hovering ? 'expanded' : 'collapsed'}"
             :transition "slideleft"
@@ -114,7 +111,8 @@
             :duration "0.2s"
     (box :spacing 10
       (launcher :class "screenshot"
-              :onclick "riverctl spawn snapscreen"
+              :onclick "riverctl spawn 'snapscreen --region --copy'"
+              :onmiddleclick "riverctl spawn 'snapscreen --region --directory'"
               :onrightclick "riverctl spawn 'snapscreen --screen'"
               :icon ""))))
 
