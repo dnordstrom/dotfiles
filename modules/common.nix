@@ -9,8 +9,8 @@ let
 
   # Paths of all types and shapes.
   homeDirectory = "/home/${username}";
-  mediaDirectory = "/home/${homeDirectory}/Videos"; # Plex and Kodi library.
-  musicDirectory = "/home/${homeDirectory}/Music"; # Roon library.
+  mediaDirectory = "${homeDirectory}/Videos"; # Plex library.
+  musicDirectory = "${homeDirectory}/Music"; # Roon library.
 in {
   #
   # IMPORTS
@@ -525,7 +525,6 @@ in {
       nodejs
       polkit_gnome
       roon-server
-      steam-run
       wget
       xdg-desktop-portal
       yarn

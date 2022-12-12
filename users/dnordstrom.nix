@@ -12,28 +12,31 @@ let
   # SETUP
   ##
 
+  # Username to use for paths.
+  username = "dnordstrom";
+
+  # Path of NixOS build configuration.
+  buildDirectory = "/etc/nixos";
+
   # Utility shortcuts.
   mkSymlink = config.lib.file.mkOutOfStoreSymlink;
 
-  # Path used for out of store symlinks to make certain files editable without a rebuild. For
-  # example the Sway WM configuration entry point links directly to this directory so that when
-  # editing it we don't need to run `nixos-rebuild switch` each time to check the result.
-  #
-  # Example:
-  #
-  # ```nix
-  # mkSymlink "${configDir}/config/sway/config.main"
-  # # or
-  # home.file.myUserFile.source = configDir config/sway/config.main;
-  # ```
-  configDir = "/etc/nixos";
-
-  # Convenience method for getting absolute paths based on `configDir`. Leading slash not needed.
+  # Convenience method for getting absolute paths based on `buildDirectory`. Leading slash not needed.
   # The `/. +` part coerces the type from string to path.
   #
   # @param {string|path} path - Relative path
   # @returns {path} Absolute path
-  configPath = path: /. + "/etc/nixos/${path}";
+  mkConfigPath = path: /. + "config/${path}";
+
+  # Convenience method for getting absolute paths based on build configuration directory. Leading slash
+  # not needed. The `/. +` part coerces the type from string to path.
+  #
+  # @param {string|path} path - Relative path
+  # @returns {path} Absolute path
+  mkConfigRootPath = path: /. + "/${path}";
+
+  # Home directory of user.
+  homeDirectory = "/home/${username}";
 
   ##
   # APPLICATIONS
@@ -119,7 +122,7 @@ in rec {
       TERMINAL = terminal;
     };
 
-    sessionPath = [ "$HOME/.local/bin" ];
+    sessionPath = [ "${homeDirectory}/.local/bin" ];
   };
 
   ##
@@ -174,7 +177,7 @@ in rec {
         type = "Application";
         genericName = "Modern HTTP client for the API era";
         exec =
-          "appimage-run ${config.home.homeDirectory}/.local/bin/httpie/httpie.appimage %F";
+          "appimage-run ${homeDirectory}/.local/bin/httpie/httpie.appimage %F";
         terminal = false;
         icon = "httpie";
         categories = [ "Utility" "Development" ];
@@ -188,7 +191,7 @@ in rec {
         genericName =
           "Messaging app for WhatsApp, Slack, Telegram, Gmail, Hangouts and many many more.";
         exec =
-          "appimage-run ${config.home.homeDirectory}/.local/bin/ferdium/ferdium.appimage";
+          "appimage-run ${homeDirectory}/.local/bin/ferdium/ferdium.appimage";
         terminal = false;
         icon = "ferdium";
         categories = [ "Network" "InstantMessaging" ];
@@ -201,7 +204,7 @@ in rec {
         type = "Application";
         genericName = "Private messaging from your desktop";
         exec =
-          "appimage-run ${config.home.homeDirectory}/.local/bin/session/session.appimage";
+          "appimage-run ${homeDirectory}/.local/bin/session/session.appimage";
         terminal = false;
         icon = "session-desktop";
         categories = [ "Network" ];
@@ -215,7 +218,7 @@ in rec {
         type = "Application";
         genericName = "Web service manager";
         exec =
-          "GDK_BACKEND=x11 appimage-run ${config.home.homeDirectory}/.local/bin/station/station.appimage";
+          "GDK_BACKEND=x11 appimage-run ${homeDirectory}/.local/bin/station/station.appimage";
         terminal = false;
         icon = "station-desktop-app";
         categories = [ "Network" ];
@@ -229,7 +232,7 @@ in rec {
         type = "Application";
         genericName = "Monero Wallet";
         exec =
-          "GDK_BACKEND=x11 appimage-run ${config.home.homeDirectory}/.local/bin/mymonero/mymonero.appimage -- %U";
+          "GDK_BACKEND=x11 appimage-run ${homeDirectory}/.local/bin/mymonero/mymonero.appimage -- %U";
         terminal = false;
         icon = "mymonero";
         categories = [ "Office" "Finance" ];
@@ -243,7 +246,7 @@ in rec {
         type = "Application";
         genericName = "All-in-One Messenger";
         exec =
-          "appimage-run ${config.home.homeDirectory}/.local/bin/singlebox/singlebox.appimage -- %U";
+          "appimage-run ${homeDirectory}/.local/bin/singlebox/singlebox.appimage -- %U";
         terminal = false;
         icon = "singlebox";
         categories = [ "Utility" ];
@@ -261,7 +264,7 @@ in rec {
         type = "Application";
         genericName = "Password Manager";
         exec =
-          "appimage-run ${config.home.homeDirectory}/.local/bin/bitwarden/bitwarden.appimage %U";
+          "appimage-run ${homeDirectory}/.local/bin/bitwarden/bitwarden.appimage %U";
         terminal = false;
         icon = "ferdium";
         categories = [ "Utility" ];
@@ -320,7 +323,7 @@ in rec {
         type = "Application";
         genericName = "Text Editor";
         exec = ''
-          kitty --session "${configDir}/config/kitty/sessions/dev-cloud.session" --single-instance --instance-group dev-wpo
+          kitty --session "${buildDirectory}/config/kitty/sessions/dev-cloud.session" --single-instance --instance-group dev-wpo
         '';
         terminal = false;
         icon = "kitty";
@@ -335,7 +338,7 @@ in rec {
         type = "Application";
         genericName = "Text Editor";
         exec = ''
-          kitty --session "${configDir}/config/kitty/sessions/dev-cloud.session" --single-instance --instance-group dev-cloud
+          kitty --session "${buildDirectory}/config/kitty/sessions/dev-cloud.session" --single-instance --instance-group dev-cloud
         '';
         terminal = false;
         icon = "kitty";
@@ -350,7 +353,7 @@ in rec {
         type = "Application";
         genericName = "Text Editor";
         exec = ''
-          kitty --class scratchterm --name scratchterm --session "${configDir}/config/kitty/sessions/scratchpad.session" --single-instance --instance-group scratch
+          kitty --class scratchterm --name scratchterm --session "${buildDirectory}/config/kitty/sessions/scratchpad.session" --single-instance --instance-group scratch
         '';
         terminal = false;
         icon = "kitty";
@@ -618,7 +621,7 @@ in rec {
     handbrake
     haruna
     jamesdsp
-    pavucontrol-qt
+    lxqt.pavucontrol-qt
     playerctl
     pulsemixer
     streamlink
@@ -781,11 +784,12 @@ in rec {
       "file:///home/dnordstrom/Code Code"
       "file:///home/dnordstrom/Backup Backup"
       "file:///home/dnordstrom/Pictures/Screensnaps Screensnaps"
-      "file:///home/dnordstrom/Secrets Keys"
+      "file:///home/dnordstrom/Pictures/Screenscaps Screenscaps"
+      "file:///home/dnordstrom/Secrets Secrets"
       "file:///home/dnordstrom/.config .config"
       "file:///home/dnordstrom/.local/bin .local  bin"
       "file:///home/dnordstrom/.local/share .local  share"
-      "file:///etc/nixos etc  NixOS"
+      "file:///etc/nixos etc  nixos"
       "file:///etc/nixos/config/firefox etc  nixos  config"
       "file:///etc/nixos/config/firefox etc  nixos  config  firefox"
       "file:///etc/nixos/config/kitty etc  nixos  config  kitty"
@@ -833,22 +837,23 @@ in rec {
   # SCRIPTS AND SHELL
   #
 
-  home.file.".scripts".source = mkSymlink "${configDir}/scripts";
+  home.file.".local/bin/scripts".source = mkSymlink (mkConfigPath "scripts");
   home.file.".config/zsh/.zshinit".source =
-    mkSymlink "${configDir}/config/zsh/zshrc";
+    mkSymlink (mkConfigPath "zsh/zshrc");
 
   #
   # WALLPAPERS
   #
 
-  home.file."Pictures/Wallpapers".source = mkSymlink "${configDir}/wallpapers";
+  home.file."Pictures/Wallpapers".source =
+    mkSymlink (mkConfigRootPath "wallpapers");
 
   #
   # DOLPHIN FILE MANAGER "PLACES"
   #
 
   home.file.".config/dolphin/user-places.xbel".source =
-    mkSymlink "${configDir}/dolphin/user-places.xbel";
+    mkSymlink (mkConfigPath "dolphin/user-places.xbel");
 
   #
   # EASYEFFECTS
@@ -861,13 +866,15 @@ in rec {
   #
 
   home.file.".config/easyeffects/output".source =
-    mkSymlink "${configDir}/config/easyeffects/output";
+    mkSymlink (mkConfigPath "easyeffects/output");
   home.file.".config/easyeffects/input".source =
-    mkSymlink "${configDir}/config/easyeffects/input";
-  home.file.".config/easyeffects/irs".source =
-    mkSymlink "${configDir}/config/easyeffects/irs";
+    mkSymlink (mkConfigPath "easyeffects/input");
   home.file.".config/easyeffects/autoload".source =
-    mkSymlink "${configDir}/config/easyeffects/autoload";
+    mkSymlink (mkConfigPath "easyeffects/autoload");
+  home.file.".config/easyeffects/irs".source =
+    mkSymlink (mkConfigPath "easyeffects/irs");
+
+  # Keep EasyEffects oresets immutable so we don't fuck anything up. Not that we ever would, Still.
   xdg.configFile."easyeffects/presets".source = ../config/easyeffects/presets;
 
   #
@@ -878,22 +885,21 @@ in rec {
   # individual files. For some reason `xdg.configFile` doesn't work so we use `home.file`.
   #
 
-  home.file.".config/sway/start".source =
-    mkSymlink "${configDir}/config/sway/start";
+  home.file.".config/sway/start".source = mkSymlink (mkConfigPath "sway/start");
   home.file.".config/sway/main.conf".source =
-    mkSymlink "${configDir}/config/sway/main.conf";
+    mkSymlink (mkConfigPath "sway/main.conf");
   home.file.".config/sway/colors.catppuccin.conf".source =
-    mkSymlink "${configDir}/config/sway/colors.catppuccin.conf";
+    mkSymlink (mkConfigPath "sway/colors.catppuccin.conf");
   home.file.".config/swaylock/config".source =
-    mkSymlink "${configDir}/config/swaylock/config";
+    mkSymlink (mkConfigPath "swaylock/config");
   home.file.".config/swaynag/config".source =
-    mkSymlink "${configDir}/config/swaynag/config";
+    mkSymlink (mkConfigPath "swaynag/config");
 
   #
   # RIVER
   #
 
-  home.file.".config/river".source = mkSymlink "${configDir}/config/river";
+  home.file.".config/river".source = mkSymlink (mkConfigPath "river");
 
   # 
   # SWAPPY 
@@ -912,15 +918,15 @@ in rec {
   #
 
   home.file.".config/kitty/config.conf".source =
-    mkSymlink "${configDir}/config/kitty/config.conf";
+    mkSymlink (mkConfigPath "kitty/config.conf");
   home.file.".config/kitty/open-actions.conf".source =
-    mkSymlink "${configDir}/config/kitty/open-actions.conf";
+    mkSymlink (mkConfigPath "kitty/open-actions.conf");
   home.file.".config/kitty/themes".source =
-    mkSymlink "${configDir}/config/kitty/themes";
+    mkSymlink (mkConfigPath "kitty/themes");
   home.file.".config/kitty/sessions".source =
-    mkSymlink "${configDir}/config/kitty/sessions";
+    mkSymlink (mkConfigPath "kitty/sessions");
   home.file.".config/kitty/kittens".source =
-    mkSymlink "${configDir}/config/kitty/kittens";
+    mkSymlink (mkConfigPath "kitty/kittens");
 
   #
   # STARSHIP
@@ -939,7 +945,7 @@ in rec {
   #
 
   home.file.".config/tridactyl".source =
-    mkSymlink "${configDir}/config/firefox/tridactyl";
+    mkSymlink (mkConfigPath "firefox/tridactyl");
 
   home.file.".mozilla/native-messaging-hosts/tridactyl.json".source =
     "${pkgs.tridactyl-native}/lib/mozilla/native-messaging-hosts/tridactyl.json";
@@ -948,44 +954,42 @@ in rec {
   # NEOVIM
   #
 
-  home.file.".config/nvim/lua".source =
-    mkSymlink "${configDir}/config/nvim/lua";
+  home.file.".config/nvim/lua".source = mkSymlink (mkConfigPath "nvim/lua");
   home.file.".config/nvim/ftplugin".source =
-    mkSymlink "${configDir}/config/nvim/ftplugin";
+    mkSymlink (mkConfigPath "nvim/ftplugin");
   home.file.".config/nvim/luasnippets".source =
-    mkSymlink "${configDir}/config/nvim/luasnippets";
-  home.file.".config/nvim/spell".source =
-    mkSymlink "${configDir}/config/nvim/spell";
+    mkSymlink (mkConfigPath "nvim/luasnippets");
+  home.file.".config/nvim/spell".source = mkSymlink (mkConfigPath "nvim/spell");
 
   #
   # VIFM
   #
 
-  home.file.".config/vifm".source = mkSymlink "${configDir}/config/vifm";
+  home.file.".config/vifm".source = mkSymlink (mkConfigPath "vifm");
 
   #
   # GLOW
   #
 
-  home.file.".config/glow".source = mkSymlink "${configDir}/config/glow";
+  home.file.".config/glow".source = mkSymlink (mkConfigPath "glow");
 
   #
   # LSD
   #
 
-  home.file.".config/lsd".source = mkSymlink "${configDir}/config/lsd";
+  home.file.".config/lsd".source = mkSymlink (mkConfigPath "lsd");
 
   #
   # WOFI
   #
 
-  home.file.".config/wofi".source = mkSymlink "${configDir}/config/wofi";
+  home.file.".config/wofi".source = mkSymlink (mkConfigPath "wofi");
 
   #
   # WAYBAR
   #
 
-  home.file.".config/waybar".source = mkSymlink "${configDir}/config/waybar";
+  home.file.".config/waybar".source = mkSymlink (mkConfigPath "waybar");
 
   ##
   # PROGRAMS
@@ -1072,7 +1076,7 @@ in rec {
 
   programs.eww = {
     enable = true;
-    configDir = mkSymlink "${configDir}/config/eww";
+    configDir = mkSymlink (mkConfigPath "eww");
     package = pkgs.eww-wayland;
   };
 
@@ -1165,11 +1169,15 @@ in rec {
     userName = "dnordstrom";
     userEmail = "d@mrnordstrom.com";
     aliases = {
-      c = "commit -am";
-      s = "status";
-      b = "branch";
-      f = "fetch";
-      p = "push";
+      # Opens editor with commit message temnplate.
+      save = "commit --all --edit";
+      stat = "status";
+
+      # Checks out branch if it exiss, otherwise create it first.
+      swap = "switch -c";
+
+      # Show one-line commit history.
+      list = "log --online";
     };
   };
 
@@ -1200,9 +1208,11 @@ in rec {
     history.path = "${config.xdg.dataHome}/zsh/history";
 
     cdpath = [
-      "${config.home.homeDirectory}"
-      "${config.home.homeDirectory}/Code"
-      "${configDir}"
+      buildDirectory
+      homeDirectory
+      "${homeDirectory}/Code"
+      "${homeDirectory}/.local"
+      "${homeDirectory}/.config"
     ];
 
     # Plugins installed either here with Git or from nixpkgs if available, using the build in plugin
@@ -1249,8 +1259,8 @@ in rec {
       }
     ];
 
-    # Source our config from `~/.config/zsh/.zshinit` which is a symlink to `${configDir}/config/zsh/zshrc`.
-    initExtra = "source ${config.home.homeDirectory}/.config/zsh/.zshinit";
+    # Source our config from `~/.config/zsh/.zshinit` which is a symlink to `${buildDirectory}/config/zsh/zshrc`.
+    initExtra = "source ${homeDirectory}/.config/zsh/.zshinit";
   };
 
   programs.zoxide = {
