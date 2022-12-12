@@ -134,7 +134,24 @@ in rec {
       defaultApplications = mimeAassociations;
     };
 
-    desktopEntries = {
+    desktopEntries = let
+      # Firefox Nightly desktop files for different profiles are geberated based on this.
+      firefoxName = "Firefox Nightly";
+      firefoxGenericName = "Web Browser";
+      firefoxType = "Application";
+      firefoxIcon = "nightly";
+      firefoxCategories = [ "Network" "WebBrowser" ];
+      firefoxMimeType = [
+        "application/vnd.mozilla.xul+xml"
+        "application/xhtml+xml"
+        "text/html"
+        "text/xml"
+        "x-scheme-handler/ftp"
+        "x-scheme-handler/http"
+        "x-scheme-handler/https"
+        "x-scheme-handler/mailto"
+      ];
+    in {
       #
       # Desktop applications
       #
@@ -346,65 +363,54 @@ in rec {
       # Browser profiles
       #
 
+      firefoxDefault = {
+        name = "${firefoxName} (Default)";
+        type = firefoxType;
+        genericName = firefoxGenericName;
+        exec = "firefox -P Default %U";
+        terminal = false;
+        icon = firefoxIcon;
+        categories = firefoxCategories;
+        mimeType = firefoxMimeType;
+        startupNotify = false;
+        settings = { StartupWMClass = "firefox-nightly-default"; };
+      };
+
       firefoxPrivate = {
-        name = "Firefox Nightly (Private)";
-        type = "Application";
-        genericName = "Web Browser";
+        name = "${firefoxName} (Private)";
+        type = firefoxType;
+        genericName = firefoxGenericName;
         exec = "firefox -P Private %U";
         terminal = false;
-        icon = "firefox";
-        categories = [ "Network" "WebBrowser" ];
-        mimeType = [
-          "text/html"
-          "text/xml"
-          "application/xhtml+xml"
-          "application/vnd.mozilla.xul+xml"
-          "x-scheme-handler/http"
-          "x-scheme-handler/https"
-          "x-scheme-handler/ftp"
-        ];
+        icon = firefoxIcon;
+        categories = firefoxCategories;
+        mimeType = firefoxMimeType;
         startupNotify = false;
         settings = { StartupWMClass = "firefox-nightly-private"; };
       };
 
       firefoxTesting = {
-        name = "Firefox Nightly (Testing)";
-        type = "Application";
-        genericName = "Web Browser";
+        name = "${firefoxName} (Testing)";
+        type = firefoxType;
+        genericName = firefoxGenericName;
         exec = "firefox -P Testing %U";
         terminal = false;
-        icon = "firefox";
-        categories = [ "Network" "WebBrowser" ];
-        mimeType = [
-          "text/html"
-          "text/xml"
-          "application/xhtml+xml"
-          "application/vnd.mozilla.xul+xml"
-          "x-scheme-handler/http"
-          "x-scheme-handler/https"
-          "x-scheme-handler/ftp"
-        ];
+        icon = firefoxIcon;
+        categories = firefoxCategories;
+        mimeType = firefoxMimeType;
         startupNotify = false;
         settings = { StartupWMClass = "firefox-nightly-testing"; };
       };
 
       firefoxMusic = {
-        name = "Firefox Nightly (Music)";
-        type = "Application";
-        genericName = "Web Browser";
+        name = "${firefoxName} (Music)";
+        type = firefoxType;
+        genericName = firefoxGenericName;
         exec = "firefox -P Music %U";
         terminal = false;
-        icon = "firefox";
-        categories = [ "Network" "WebBrowser" ];
-        mimeType = [
-          "text/html"
-          "text/xml"
-          "application/xhtml+xml"
-          "application/vnd.mozilla.xul+xml"
-          "x-scheme-handler/http"
-          "x-scheme-handler/https"
-          "x-scheme-handler/ftp"
-        ];
+        icon = firefoxIcon;
+        categories = firefoxCategories;
+        mimeType = firefoxMimeType;
         startupNotify = false;
         settings = { StartupWMClass = "firefox-nightly-music"; };
       };
@@ -580,11 +586,11 @@ in rec {
     # SecurityXDG_CURRENT_DESKTOP=swayXDG_CURRENT_DESKTOP=sway
     #
 
-    # Proton suite (https://proton.me) using community CLI due to DE/GUI dependencies in official.
-    # protonmail-bridge # Bridge for accessing ProtonMail from local email clients.
-    protonvpn-cli_2 # Community CLI.
+    # Proton suite community CLI due to GUI/DE dependencies in the official clients.
+    # TODO: Use official clients once headless works (when they release the new client.)
     # protonvpn-cli # Official CLI.
     # protonvpn-gui # Official GUI.
+    protonvpn-cli_2 # Community CLI.
 
     _1password
     _1password-gui-beta
@@ -612,7 +618,7 @@ in rec {
     handbrake
     haruna
     jamesdsp
-    pavucontrol
+    pavucontrol-qt
     playerctl
     pulsemixer
     streamlink

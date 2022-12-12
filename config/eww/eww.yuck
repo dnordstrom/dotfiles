@@ -102,7 +102,7 @@
             :onchange "pamixer --set-volume {}"
             :onclick "pamixer --toggle-mute"
             :onmiddleclick "riverctl spawn easyeffects"
-            :onrightclick "riverctl spawn pavucontrol")))
+            :onrightclick "riverctl spawn pavucontrol-qt")))
 
 (defwidget right-launchers []
   (revealer :class "launchers revealer ${is-hovering ? 'expanded' : 'collapsed'}"

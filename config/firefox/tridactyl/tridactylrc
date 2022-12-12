@@ -71,11 +71,23 @@ set hintnames numeric
 
 "
 " Site-specific
-"   atlassian.com
 "
 
-" Fix unresponsive assignee field in Jira
+"
+" atlassian.com
+"
+
+" Fix unresponsive assignee field in Jira.
 seturl atlassian.net allowautofocus true
+
+" Only hint search results on Google and DDG.
+bindurl google.com f hint -Jc #search div:not(.action-menu) > a
+bindurl google.com F hint -Jbc #search div:not(.action-menu) > a
+ 
+" Only hint search results on DuckDuckGo.
+bindurl duckduckgo.com f hint -Jc [data-testid="result-title-a"]
+bindurl duckduckgo.com F hint -Jbc [data-testid="result-title-a"]
+"
 
 ""
 " SEARCH
@@ -419,11 +431,11 @@ quickmark P https://leeroy-group.atlassian.net/wiki/spaces/CLASS/overview
 quickmark V https://meet.google.com/landing?authuser=1
 
 "
-" Marks on ' and ` like Vim (Tridactyl's built-in backtick doesn't seem to work)
+" Marks on ' and ` like Vim (Tridactyl's onw backtick didn't seem to worK; but maybe now they do)
 "
 
-bindreplaceprefix go '
-bindreplaceprefix go `
+" bindreplaceprefix go '
+" bindreplaceprefix go `
 
 ""
 " MISCELLANEOUS
