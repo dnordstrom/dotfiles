@@ -736,6 +736,22 @@ clear-backup-notes() {
   rm $NOTES_FILE.*.*
 }
 
+# Check if string contains another string.
+#
+# Arguments:
+#   $1 - $haystack -  String to search.
+#   $2 - $needle   -  String to search for.
+stringcontains() {
+  string="$1"
+  substring="$2"
+
+  if [ "${string#*$substring}" != "$string" ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 # Checks if the given argument is a valid command or shell builtin.
 #
 # TODO: Suppess output if not running interactively.

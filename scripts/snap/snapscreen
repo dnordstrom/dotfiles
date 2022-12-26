@@ -10,9 +10,7 @@
 # at some point.
 #
 # TODO: Remove Imgur API key from page, revoke it, and make a new key stored as `agenix` secret.
-#
-# USAGE: `snap-screen [TARGET FILE]`
-#
+##
 
 set -eu
 
@@ -29,8 +27,8 @@ option_screen=false
 option_region=false
 has_curl=false
 area=""
-timestamp="$(date '+%Y%m%d_%Hh%Mm%Ss')"
-target_dir=${SNAPSCREEN_SAVE_DIR:-"$HOME/Pictures/Screensnaps"}
+timestamp="$(date '+%Y%m%d-%Hh%Mm%Ss')"
+target_dir=${SNAPSCREEN_SAVE_DIR:-"$HOME/Pictures/screensnaps"}
 target="$target_dir/$timestamp.png"
 imgur_client_id="${SNAPSCREEN_IMGUR_CLIENT_ID:=e4ab8199be97038}"
 usage="USAGE:

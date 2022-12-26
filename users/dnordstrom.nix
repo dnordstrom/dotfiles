@@ -24,16 +24,22 @@ let
   # Convenience method for getting absolute paths based on `buildDirectory`. Leading slash not needed.
   # The `/. +` part coerces the type from string to path.
   #
-  # @param {string|path} path - Relative path
-  # @returns {path} Absolute path
+  # @param {string|path} path - Relative path.
+  # @returns {path} Absolute path.
   mkConfigPath = path: /. + "config/${path}";
 
   # Convenience method for getting absolute paths based on build configuration directory. Leading slash
   # not needed. The `/. +` part coerces the type from string to path.
   #
-  # @param {string|path} path - Relative path
-  # @returns {path} Absolute path
+  # @param {string|path} path - Relative path.
+  # @returns {path} Absolute path.
   mkConfigRootPath = path: /. + "/${path}";
+
+  # Convenience method to convert relative path to absolute, based on the user's home directory.
+  #
+  # @param {string|path} path - Relative input.
+  # @returns {path} path - Absolute output.
+  mkHomePath = path: /. + "/${path}";
 
   # Home directory of user.
   homeDirectory = "/home/${username}";
@@ -47,7 +53,7 @@ let
   #
 
   browser = "firefox";
-  editor = "vim";
+  editor = "nvim";
   terminal = "kitty";
 
   #
@@ -108,6 +114,23 @@ let
   python-packages = ps: with ps; [ i3ipc requests ];
   python-with-packages = pkgs.python3.withPackages python-packages;
 
+  #
+  # GSETTINGS: MAKE IT WORK
+  #
+
+  configure-gtk = pkgs.writeTextFile {
+    name = "configure-gtk";
+    destination = "/bin/configure-gtk";
+    executable = true;
+    text = let
+      schema = pkgs.gsettings-desktop-schemas;
+      datadir = "${schema}/share/gsettings-schemas/${schema.name}";
+    in ''
+      export XDG_DATA_DIRS=${datadir}:$XDG_DATA_DIRS
+      gnome_schema=org.gnome.desktop.interface
+      gsettings set $gnome_schema gtk-theme 'Catppuccin-Latte-Peach'
+    '';
+  };
 in rec {
   ##
   # ENVIRONMENT
@@ -457,14 +480,6 @@ in rec {
     nixos-option
 
     #
-    # Virtualization
-    #
-
-    # q4wine
-    # wine-wayland
-    # winetricks
-
-    #
     # Programs, packages, and files
     #
 
@@ -472,9 +487,14 @@ in rec {
     cinnamon.nemo
     dolphin
     gnome.nautilus
+    nvme-cli
 
     #
-    # Feeds and news
+    # Feeds
+    #
+    # RSS feeds, Atom feeds, and occasionally web scraping appear to decrease in popularity. We
+    # produce more content than ever, but content discovery and digestion become fragmented. We
+    # have blog platforms that charge their readers, we have Medium which is just 
     #
 
     raven-reader
@@ -502,11 +522,12 @@ in rec {
     # Command line
     #
 
+    awscli2
     bottom
     fd
     gh
     libnotify
-    awscli2
+    librsvg # Sypposedly a dependency to mdcat for showing images.
     mdcat
     ncpamixer # TRY: We ready to let Pavucontrol go?
     neofetch
@@ -515,6 +536,7 @@ in rec {
     parallel
     rdrview
     ripgrep
+    enlightenment.terminology
     tree
     unzip
     usbutils
@@ -586,7 +608,7 @@ in rec {
     tridactyl-native # Firefox native messaging host.
 
     #
-    # SecurityXDG_CURRENT_DESKTOP=swayXDG_CURRENT_DESKTOP=sway
+    # Security
     #
 
     # Proton suite community CLI due to GUI/DE dependencies in the official clients.
@@ -618,6 +640,8 @@ in rec {
     alsa-firmware
     cava
     easyeffects # To run as service, use `services.easyeffects` instead (messes with JamesDSP)
+    enlightenment.ephoto
+    enlightenment.rage
     handbrake
     haruna
     jamesdsp
@@ -714,7 +738,7 @@ in rec {
     # Fonts (PragmataPro Mono with ligatures in terminal and any code, commercial license)
     corefonts
     dejavu_fonts
-    fcft # Font loading library used by foot
+    fcft # Font loading library used by foot.
     font-manager
     ibm-plex
     inriafonts
@@ -725,7 +749,7 @@ in rec {
     paratype-pt-sans
     paratype-pt-serif # Current serif and print format font.
     powerline-fonts
-    public-sans # Current UI font. Sometimes a custom-configured and patched Input.
+    public-sans # Current UI font. Sometimes a custom, patched Input Sans.
     redhat-official-fonts
     source-sans
     source-serif
@@ -737,6 +761,7 @@ in rec {
     libsForQt5.qtstyleplugin-kvantum
 
     # Theming
+    configure-gtk
     gnome.dconf-editor
     gsettings-desktop-schemas
     icoutils
@@ -837,7 +862,8 @@ in rec {
   # SCRIPTS AND SHELL
   #
 
-  home.file.".local/bin/scripts".source = mkSymlink (mkConfigPath "scripts");
+  home.file.".local/bin/scripts".source =
+    mkSymlink (mkConfigRootPath "scripts");
   home.file.".config/zsh/.zshinit".source =
     mkSymlink (mkConfigPath "zsh/zshrc");
 
@@ -1043,28 +1069,35 @@ in rec {
   programs.lsd.enable = true;
 
   #
-  # MEDIa
+  # MEDIA
   #
 
   programs.mpv.enable = true;
 
   #
+  # OFFICE
+  #
+  # "Word processing" and "desktop publishing" if like me you are considered a wise elderly among
+  # peers. Signs include people looking up to you in increasingly looking-down-at-you ways; people 
+  # communicating as if you're either not in the room or your age is either one digit or three.
+  #
+  # This software is for communicating with other fossils wanting to speed up the process. Also, our
+  # prototype HUMP (Household UMP) now KO's any Gates-chip within 30ft and keeps intact Gates-OS,
+  # Gates-software, what *actually* tracks your ass. For that, you want Norton Antivirus and Jesus.
+  #
+
+  # PDF viewer.
+
+  programs.zathura.enable = true;
+
+  #
   # DEVELOPMENT
   #
 
+  # Necessary evil.
   programs.java.enable = true;
 
-  programs.tealdeer = {
-    enable = true;
-    settings = {
-      display = {
-        compact = false;
-        use_pager = true;
-      };
-      updates.auto_update = false;
-    };
-  };
-
+  # Status bar we use in Sway WM.
   programs.waybar = {
     enable = true;
     systemd = {
@@ -1074,6 +1107,7 @@ in rec {
     };
   };
 
+  # Status bar we use in River WM.
   programs.eww = {
     enable = true;
     configDir = mkSymlink (mkConfigPath "eww");
@@ -1085,11 +1119,25 @@ in rec {
     enableZshIntegration = true;
   };
 
+  # Customizable shell prompt written in Rust.
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
   };
 
+  # Gives examples of command usage.
+  programs.tealdeer = {
+    enable = true;
+    settings = {
+      display = {
+        compact = false;
+        use_pager = true;
+      };
+      updates.auto_update = false;
+    };
+  };
+
+  # Command line snippets manager.
   programs.pet = {
     enable = true;
     snippets = [{
@@ -1100,10 +1148,7 @@ in rec {
     }];
   };
 
-  #
-  # FIREFOX
-  #
-
+  # Fox on fire.
   programs.firefox = let
     config = {
       # Disable annoyances
@@ -1171,6 +1216,8 @@ in rec {
     aliases = {
       # Opens editor with commit message temnplate.
       save = "commit --all --edit";
+
+      # Show current repository state.
       stat = "status";
 
       # Checks out branch if it exiss, otherwise create it first.
@@ -1217,7 +1264,7 @@ in rec {
 
     # Plugins installed either here with Git or from nixpkgs if available, using the build in plugin
     # management, meaning we need to point it to the correct file to load, usually ending in
-    # ".plugin.zsh" abd then gets automtically detected by NixOS. Otherwise the `file` attribute
+    # ".plugin.zsh" abd then gets automatically detected by NixOS. Otherwise the `file` attribute
     # tells it where to load it from.
     plugins = [
       {
@@ -1263,11 +1310,13 @@ in rec {
     initExtra = "source ${homeDirectory}/.config/zsh/.zshinit";
   };
 
+  # Smarter `cd`.
   programs.zoxide = {
     enable = true;
     enableZshIntegration = true;
   };
 
+  # Cat with wings.
   programs.bat = {
     enable = true;
     config = {
@@ -1279,8 +1328,7 @@ in rec {
     };
   };
 
-  # FUZZY FINDER WRITTEN IN Go
-
+  # Fuzzy finder written in Go.
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
@@ -1288,16 +1336,19 @@ in rec {
     enableBashIntegration = false;
   };
 
+  # Actually Go.
   programs.go = {
     enable = true;
     goPath = "${config.home.homeDirectory}/.local/bin/go"; # Don't use `~/go`...
   };
 
+  # Do things when entering a directory. Used to load isolated development shells automatically.
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true; # Improves caching of Nix devshells.
   };
 
+  # Notification daemon.
   programs.mako = {
     actions = true;
     backgroundColor = "#B7E5E6";
@@ -1316,6 +1367,7 @@ in rec {
     width = 325;
   };
 
+  # TUI RSS reader.
   programs.newsboat = {
     enable = true;
     autoReload = true;
@@ -1424,6 +1476,7 @@ in rec {
     ];
   };
 
+  # Encrypts and signs things.
   programs.gpg = {
     enable = true;
     mutableKeys = true;
@@ -1455,6 +1508,7 @@ in rec {
     # Gnome keyring is required by certain software.
     gnome-keyring.enable = true;
 
+    # Asks for GPG password when needed. About once every 3 minutes.
     gpg-agent = {
       enable = true;
       enableZshIntegration = true;
@@ -1469,7 +1523,7 @@ in rec {
 
       # Maximum and minimum gamma values. (6500K is equivalent to daylight).
       temperature = {
-        day = 6500;
+        day = 5000;
         night = 4500;
       };
 
@@ -1478,29 +1532,14 @@ in rec {
       longitude = 17.32;
     };
 
-    # EasyEffects for PipeWire audio filters. Currently disabled to avoid conflict with JamesDSP.
-    easyeffects.enable = false;
+    # EasyEffects provides for PipeWire audio filters. Disable this service to avoid conflict with
+    # JamesDSP, as this will restart itself if you stop it, and we don't want both of them active.
+    easyeffects.enable = true;
   };
 
   #
   # SYSTEMD
   #
-
-  # Proton Mail bridge for access from local email clients.
-  # systemd.user.services.protonmail-bridge = {
-  #   Unit = {
-  #     Description = "ProtonMail Bridge";
-  #     After = [ "network.target" ];
-  #   };
-  #
-  #   Service = {
-  #     Restart = "always";
-  #     ExecStart =
-  #       "${pkgs.protonmail-bridge}/bin/protonmail-bridge --cli --noninteractive";
-  #   };
-  #
-  #   Install = { WantedBy = [ ]; }; # Use `default.target` to enable.
-  # };
 
   systemd.user.services.eww = {
     Unit = {

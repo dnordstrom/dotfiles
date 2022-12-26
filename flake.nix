@@ -11,7 +11,7 @@
     homemanager.inputs.nixpkgs.follows = "nixpkgs";
     homemanager.url = "github:nix-community/home-manager";
 
-    mozpkgs.url = "github:mozilla/nixpkgs-mozilla";
+    # mozpkgs.url = "github:mozilla/nixpkgs-mozilla";
 
     neovim.inputs.nixpkgs.follows = "nixpkgs";
     neovim.url = "github:nix-community/neovim-nightly-overlay";
@@ -27,15 +27,14 @@
     waypkgs.url = "github:nix-community/nixpkgs-wayland";
   };
 
-  outputs = inputs@{ self, agenix, firefox, mozpkgs, nixpkgs, waypkgs
-    , homemanager, neovim, rust, utils, ... }:
+  outputs = inputs@{ self, agenix, firefox, nixpkgs, waypkgs, homemanager
+    , neovim, rust, utils, ... }:
     let
       inherit (utils.lib) mkFlake;
 
       specialArgs = { inherit inputs; };
 
-      input-overlays =
-        [ agenix.overlay neovim.overlay mozpkgs.overlay rust.overlays.default ];
+      input-overlays = [ agenix.overlay neovim.overlay rust.overlays.default ];
 
       import-overlays = import ./overlays;
 

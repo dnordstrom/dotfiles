@@ -1,7 +1,6 @@
 #!/usr/bin/env sh
-
-##
-# RIVER WINDOW MANAGER CONFIGURATION
+#
+# RIVER CONFIGURATION
 #
 # River is a tiling window manager for Wayland, configurable in any language via the `riverctl`
 # executable and a layout generator (currently using the default `rivertile`).
@@ -60,6 +59,9 @@ _rctl_create_command() {
   fi
 }
 
+#
+# Map the Escape, Return, and Space keys to exit given mode. If no mode is passed to the function,
+# then it notifies and/or logs it depending on settings, since it has no value it can default to.
 _rctl_map_exit_mode() {
   riverctl map "$1" None Escape enter-mode normal
   riverctl map "$1" None Return enter-mode normal
@@ -94,28 +96,30 @@ cmd_launch_gui="rofi -show combi"
 # File managers.
 cmd_files_gtk="nemo"
 cmd_files_qt="dolphin"
-cmd_files_tui="$popupterm -e vifm"
+cmd_files_tui="$cmd_terminal_popup -e vifm"
 
 # Font.
 font_size=8
-font_face="Public Sans $font_size"
+font_family="Public Sans"
+font="$font_family $font_size"
 
 # GTK.
-gnome_schema="org.gnome.desktop.interface"
+gtk_schema="org.gnome.desktop.interface"
 gtk_theme="Catppuccin-Latte-Peach"
-cursor_theme="Quintom_Snow"
-icon_theme="Vimix"
+gtk_theme_icon="Vimix"
+gtk_theme_cursor="Quintom_Snow"
+gtk_font="$font"
+gtk_font_document="$font"
 
 flatpak override --user --filesystem "$HOME/.local/share/themes"
 flatpak override --user --env "GTK_THEME=$gtk_theme"
 
 # TODO: Set this up properly.
-#
-# gsettings set "$gnome_schema" gtk-theme "$gtk_theme"
-# gsettings set "$gnome_schema" icon-theme "$icon_theme"
-# gsettings set "$gnome_schema" cursor-theme "$cursor_theme"
-# gsettings set "$gnome_schema" font-name "$font"
-# gsettings set "$gnome_schema" document-font-name "$font"
+# gsettings set "$gtk_schema" gtk-theme "$gtk_theme"
+# gsettings set "$gtk_schema" icon-theme "$gtk_theme_icon"
+# gsettings set "$gtk_schema" cursor-theme "$gtk_theme_cursor"
+# gsettings set "$gtk_schema" font-name "$gtk_font"
+# gsettings set "$gtk_schema" document-font-name "$gtk_font_document"
 
 ##
 # SETTINGS
@@ -133,7 +137,7 @@ riverctl focus-follows-cursor normal
 
 trackpad="76:613:Apple_Inc._Magic_Trackpad_2"
 
-# Enable acceleration (none, flat, or adaptive)
+# Enable acceleration (none, flat, or adaptive).
 riverctl input $trackpad accel-profile adaptive
 
 # Acceleration factor (between -1.0 and 1.0).
@@ -152,7 +156,7 @@ riverctl input $trackpad disable-while-typing enabled
 riverctl input $trackpad scroll-method two-finger
 
 # Middle-click emulation.
-riverctl input $trackpad middle-eemulation enabled
+riverctl input $trackpad middle-emulation enabled
 
 # Natural scroll direction.
 riverctl input $trackpad natural-scroll disabled
@@ -198,7 +202,7 @@ riverctl map normal Super+Control Return spawn "$cmd_terminal_popup"
 riverctl map normal Super G spawn "$cmd_files_tui"
 riverctl map normal Super+Shift G spawn "$cmd_files_qt"
 riverctl map normal Super+Control G spawn "$cmd_files_gtk"
-riverctl map normal Super+Alt G spawn "$cmd_files_qt /etc/nixos"
+riverctl map normal Super+Alt G spawn "nautilus"
 
 #
 # System
@@ -226,20 +230,23 @@ riverctl map normal Super K focus-view previous
 riverctl map normal Super+Shift J swap next
 riverctl map normal Super+Shift K swap previous
 
-# Super+Period|Comma to focus next/previous output.
-# Super+Shift+Period|Comma to send view to next/previous output.
-riverctl map normal Super Period focus-output next
-riverctl map normal Super Comma focus-output previous
-riverctl map normal Super+Shift Period send-to-output next
-riverctl map normal Super+Shift Comma send-to-output previous
+# Output maps reversed/swapped compared to the original configuration to match the physical setup.
+# Comma moves window or focus clockwise, while period moves counter-clockwise.
+#
+# Super+Period|Comma to focus previous/next output.
+# Super+Shift+Period|Comma to send view to previous/next output.
+riverctl map normal Super Comma focus-output next
+riverctl map normal Super Period focus-output previous
+riverctl map normal Super+Shift Comma send-to-output next
+riverctl map normal Super+Shift Period send-to-output previous
 
 #
 # Layout
 #
 
 # Decrease/increase the main area ratio
-riverctl map normal Super H send-layout-cmd rivertile "main-ratio -0.05"
-riverctl map normal Super L send-layout-cmd rivertile "main-ratio +0.05"
+riverctl map normal Super H send-layout-cmd rivertile "main-ratio -0.025"
+riverctl map normal Super L send-layout-cmd rivertile "main-ratio +0.025"
 
 # Increment/decrement the main area count
 riverctl map normal Super A send-layout-cmd rivertile "main-count +1"
@@ -252,9 +259,7 @@ riverctl map-pointer normal Super BTN_RIGHT resize-view
 
 # Bind number keys to tag actions
 for i in $(seq 1 9); do
-  tags=$((1 << (i - 1)))
-
-  # Super+[1-9] to focus tag [0-8]
+  tags=$((1 << (i - 1))) # Super+[1-9] to focus tag [0-8]
   riverctl map normal Super "$i" spawn "sh -c 'riverctl set-focused-tags $((stickytag + tags)) && eww update active-tag=$tags'"
 
   # Super+Shift+[1-9] to tag focused view with tag [0-8]
@@ -264,7 +269,7 @@ for i in $(seq 1 9); do
   riverctl map normal Super+Control "$i" toggle-focused-tags $tags
 
   # Super+Shift+Ctrl+[1-9] to toggle tag [0-8] of focused view
-  riverctl map normal Super+Shift+Control "$i" toggle-view-tags $tags
+  riverctl map normal Super+Alt "$i" toggle-view-tags $tags
 done
 
 # Super+0 to focus all tags.
@@ -287,12 +292,12 @@ riverctl map normal Super+Control F zoom       # Move view to main layout area.
 riverctl map normal Super Z toggle-focused-tags $scratchtag
 
 # Send window to scratchpad
-riverctl map normal Super+Shift Z set-view-tags $scratchtag
+riverctl map normal Super+Shift Z spawn "riverctl set-view-tags $scratchtag && riverctl toggle-focused-tags $scratchtag"
 
 # Toggle sticky
-riverctl map normal Super S toggle-view-tags $stickytag
+riverctl map normal Super+Shift S toggle-view-tags $stickytag
 
-# Ensure new windows don't have the scratchpad or sticky tag unless explicitly set
+# Ensure new windows don't have the scratchpad or sticky tag unless explicitly set.
 riverctl spawn-tagmask $availabletags
 
 ##
@@ -451,12 +456,13 @@ riverctl float-filter-add app-id "org.kde.Kate"
 riverctl float-filter-add app-id "org.kde.dolphin"
 riverctl float-filter-add app-id "org.kde.haruna"
 riverctl float-filter-add app-id "pavucontrol"
+riverctl float-filter-add app-id "pavucontrol-qt"
 riverctl float-filter-add app-id "qt5ct"
 riverctl float-filter-add app-id "vimiv"
 riverctl float-filter-add app-id "vlc"
 riverctl float-filter-add app-id "wdisplays"
 
-# TODO: Consider using `app-id` instead of `title` for the different terminals.
+# TODO: Consider `app-id` instead of `title` for terminals with startup sessions.
 riverctl float-filter-add title "devterm"
 riverctl float-filter-add title "fuzzyterm"
 riverctl float-filter-add title "plainterm"
@@ -468,7 +474,7 @@ riverctl float-filter-add title "Bitwarden"
 riverctl float-filter-add title "Kvantum Manager"
 riverctl float-filter-add title "Parent process Browser Toolbox"
 
-# TODO: When regular expressions are invented, use `title "Developer Tools - .+"`.
+# TODO: When regular expressions are invented, use `title "Developer Tools - .+"` for Firefox.
 
 ##
 # CLIENT-SIDE DECORATION FILTERS
@@ -513,19 +519,16 @@ _rctl_spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_SESSION_DES
 # Launch Policy Kit.
 _rctl_spawn_once "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
 _rctl_spawn_once "swaybg --image ~/Pictures/Wallpapers/active --mode fill --output '*'"
-_rctl_spawn_once "riverctl set-focused-tags $scratchtag && riverctl spawn $scratchterm ; riverctl set-focused-tags $((stickytag + 1))"
+_rctl_spawn_shell "riverctl set-focused-tags $NORDIX_RIVER_TAGS_SCRATCHPAD && sleep 0.25 && riverctl spawn $scratchterm && sleep 0.25 && riverctl set-focused-tags $NORDIX_RIVER_NON_SPECIAL"
 
 # Trigger systemd target used to launch certain services.
 _rctl_spawn_once "systemctl --user start river-session.target"
 
-#
-# MONITORS
-#
+# Set monitor positions, resolutions, update rates, etc.
+_rctl_spawn_once "kanshi"
 
-# TODO: Set up monitors here using the following resolutions and update rates.
-# DP-1:     3440x1440 @ 99.982 Hz
-# HDMI-A-1: 1920x1080 @ 144.001007 Hz (60 Hz currently)
-# DVI-D-1:  1920x1080 @ 60 Hz
+# Open top bar widget.
+_rctl_spawn_once "eww open bar"
 
 #
 # Layout generator
@@ -534,7 +537,7 @@ _rctl_spawn_once "systemctl --user start river-session.target"
 riverctl default-layout rivertile
 
 # Only `exec` if we're in a TTY meaning we're logging in.
-! [ -t 0 ] && exec rivertile -view-padding 10 -outer-padding 10 -main-ratio 0.6 -main-count 1 -main-location left >/dev/null 2>"$HOME/.local/share/logs/river.log"
+! [ -t 0 ] && exec rivertile -view-padding 10 -outer-padding 10 -main-ratio 0.6 -main-count 1 -main-location left >/dev/null 2>"$HOME/.local/share/logs/rivertile.log"
 
 # Otherwise we're likely reloading the configuration and shouldn't exit the shell.
-rivertile -view-padding 10 -outer-padding 10 -main-ratio 0.6 -main-count 1 -main-location left >/dev/null 2>"$HOME/.local/share/logs/river.log" &! 
+nohup rivertile -view-padding 10 -outer-padding 10 -main-ratio 0.6 -main-count 1 -main-location left >/dev/null 2>"$HOME/.local/share/logs/rivertile.log" &
