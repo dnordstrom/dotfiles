@@ -18,6 +18,9 @@ let
   # Path of NixOS build configuration.
   buildDirectory = "/etc/nixos";
 
+  # Home directory of user.
+  homeDirectory = "/home/${username}";
+
   # Utility shortcuts.
   mkSymlink = config.lib.file.mkOutOfStoreSymlink;
 
@@ -26,23 +29,20 @@ let
   #
   # @param {string|path} path - Relative path.
   # @returns {path} Absolute path.
-  mkConfigPath = path: /. + "config/${path}";
+  mkConfigPath = path: /. + "${buildDirectory}/config/${path}";
 
   # Convenience method for getting absolute paths based on build configuration directory. Leading slash
   # not needed. The `/. +` part coerces the type from string to path.
   #
   # @param {string|path} path - Relative path.
   # @returns {path} Absolute path.
-  mkConfigRootPath = path: /. + "/${path}";
+  mkConfigRootPath = path: /. + "${buildDirectory}/${path}";
 
   # Convenience method to convert relative path to absolute, based on the user's home directory.
   #
   # @param {string|path} path - Relative input.
   # @returns {path} path - Absolute output.
-  mkHomePath = path: /. + "/${path}";
-
-  # Home directory of user.
-  homeDirectory = "/home/${username}";
+  mkHomePath = path: /. + "${homeDirectory}/${path}";
 
   ##
   # APPLICATIONS
@@ -115,7 +115,9 @@ let
   python-with-packages = pkgs.python3.withPackages python-packages;
 
   #
-  # GSETTINGS: MAKE IT WORK
+  # GSETTINGS
+  #
+  # TODO: Make it work.
   #
 
   configure-gtk = pkgs.writeTextFile {
@@ -123,12 +125,13 @@ let
     destination = "/bin/configure-gtk";
     executable = true;
     text = let
-      schema = pkgs.gsettings-desktop-schemas;
-      datadir = "${schema}/share/gsettings-schemas/${schema.name}";
+      schemas = pkgs.gsettings-desktop-schemas;
+      datadir = "${schemas}/share/gsettings-schemas/${schemas.name}";
     in ''
       export XDG_DATA_DIRS=${datadir}:$XDG_DATA_DIRS
-      gnome_schema=org.gnome.desktop.interface
-      gsettings set $gnome_schema gtk-theme 'Catppuccin-Latte-Peach'
+
+      gnome_schema="org.gnome.desktop.interface"
+      gsettings set $gnome_schema gtk-theme "Catppuccin-Latte-Peach"
     '';
   };
 in rec {
@@ -137,7 +140,7 @@ in rec {
   ##
 
   home = {
-    stateVersion = "22.11";
+    stateVersion = "23.05";
 
     sessionVariables = {
       EDITOR = editor;
@@ -165,7 +168,7 @@ in rec {
       firefoxName = "Firefox Nightly";
       firefoxGenericName = "Web Browser";
       firefoxType = "Application";
-      firefoxIcon = "nightly";
+      firefoxIcon = "firefox-dev";
       firefoxCategories = [ "Network" "WebBrowser" ];
       firefoxMimeType = [
         "application/vnd.mozilla.xul+xml"
@@ -486,6 +489,8 @@ in rec {
     appimage-run
     cinnamon.nemo
     dolphin
+    ffmpegthumbnailer
+    fsearch
     gnome.nautilus
     nvme-cli
 
@@ -497,6 +502,9 @@ in rec {
     # have blog platforms that charge their readers, we have Medium which is just 
     #
 
+    gnome-podcasts
+    libsForQt5.kasts
+    pocket-casts
     raven-reader
 
     #
@@ -510,7 +518,6 @@ in rec {
     mirage-im
     nheko
     qtox
-    quaternion
     schildichat-desktop-wayland
     signal-desktop
     slack
@@ -557,6 +564,8 @@ in rec {
     # Wayland
     #
 
+    cliphist
+    clipman
     flameshot
     gebaar-libinput
     grim
@@ -564,7 +573,6 @@ in rec {
     libinput
     libinput-gestures
     lisgd
-    kanshi
     river
     rofi-calc
     rofi-emoji
@@ -614,8 +622,8 @@ in rec {
     # Proton suite community CLI due to GUI/DE dependencies in the official clients.
     # TODO: Use official clients once headless works (when they release the new client.)
     # protonvpn-cli # Official CLI.
-    # protonvpn-gui # Official GUI.
-    protonvpn-cli_2 # Community CLI.
+    protonvpn-gui # Official GUI.
+    # protonvpn-cli_2 # Community CLI.
 
     _1password
     _1password-gui-beta
@@ -639,13 +647,13 @@ in rec {
 
     alsa-firmware
     cava
-    easyeffects # To run as service, use `services.easyeffects` instead (messes with JamesDSP)
+    easyeffects # Systemd service (`services.easyeffects` module), but keep conflicts with JamesDSP.
     enlightenment.ephoto
     enlightenment.rage
     handbrake
     haruna
     jamesdsp
-    lxqt.pavucontrol-qt
+    pavucontrol
     playerctl
     pulsemixer
     streamlink
@@ -672,6 +680,7 @@ in rec {
 
     # General
     cloudflared # CLI for CLoudflare tunnels
+    tree-sitter
 
     # Editors
     kate
@@ -742,9 +751,12 @@ in rec {
     font-manager
     ibm-plex
     inriafonts
+    joypixels
     libertine
     merriweather
     merriweather-sans
+    openmoji-black
+    openmoji-color
     paratype-pt-mono
     paratype-pt-sans
     paratype-pt-serif # Current serif and print format font.
@@ -753,29 +765,46 @@ in rec {
     redhat-official-fonts
     source-sans
     source-serif
+    twemoji-color-font
     work-sans
 
-    # Qt libs/apps
+    # Emoji tools.
+    emoji-picker # TUI picker.
+    emojipick # For `rofi` and `wofi`.
+    emote
+    rofi-emoji
+    rofimoji
+
+
+    # Qt libs/apps.
     libsForQt5.ark
-    libsForQt5.qt5.qtgraphicaleffects # Needed by Quaternion Matrix client
+    libsForQt5.kdegraphics-thumbnailers
+    libsForQt5.keditbookmarks
+    libsForQt5.kfilemetadata
+    libsForQt5.kgpg # Graphical GPG interface.
+    libsForQt5.kparts
+    libsForQt5.okular # Document viewer which is needed for Kate's (or Kpart's) Markdown preview.
+    libsForQt5.qt5.qtgraphicaleffects # Needed by Quaternion Matrix client.
     libsForQt5.qtstyleplugin-kvantum
 
-    # Theming
+    # Theming.
     configure-gtk
+    dfeet
+    d-spy
     gnome.dconf-editor
     gsettings-desktop-schemas
     icoutils
 
     #
-    # Interesting prospects
+    # Interesting prospects.
     #
 
     input-remapper
-    interception-tools # and caps2esc plugin, for intercepting at device level instead of WM
-    navi # CLI cheatsheet tool
-    ytfzf # Fzf utility for YouTube
-    kooha # Screen recorder GUI
-    fx_cast_bridge # For casting video from Firefox
+    interception-tools # And caps2esc plugin, for intercepting at device level instead of WM.
+    navi # CLI cheatsheet tool.
+    ytfzf # Fzf utility for YouTube.
+    kooha # Screen recorder GUI.
+    fx_cast_bridge # For casting video from Firefox.
   ];
 
   #
@@ -808,14 +837,14 @@ in rec {
     bookmarks = [
       "file:///home/dnordstrom/Code Code"
       "file:///home/dnordstrom/Backup Backup"
-      "file:///home/dnordstrom/Pictures/Screensnaps Screensnaps"
-      "file:///home/dnordstrom/Pictures/Screenscaps Screenscaps"
+      "file:///home/dnordstrom/Pictures/screensnaps Screensnaps"
+      "file:///home/dnordstrom/Videos/screencasts Screencasts"
       "file:///home/dnordstrom/Secrets Secrets"
-      "file:///home/dnordstrom/.config .config"
-      "file:///home/dnordstrom/.local/bin .local  bin"
-      "file:///home/dnordstrom/.local/share .local  share"
+      "file:///home/dnordstrom/.config home  me  .config"
+      "file:///home/dnordstrom/.local/bin home  me  .local  bin"
+      "file:///home/dnordstrom/.local/share home  me  .local  share"
       "file:///etc/nixos etc  nixos"
-      "file:///etc/nixos/config/firefox etc  nixos  config"
+      "file:///etc/nixos/config etc  nixos  config"
       "file:///etc/nixos/config/firefox etc  nixos  config  firefox"
       "file:///etc/nixos/config/kitty etc  nixos  config  kitty"
       "file:///etc/nixos/config/nvim etc  nixos  config  nvim"
@@ -1087,7 +1116,6 @@ in rec {
   #
 
   # PDF viewer.
-
   programs.zathura.enable = true;
 
   #
@@ -1157,16 +1185,16 @@ in rec {
       "browser.bookmarks.restore_default_bookmarks" = false;
       "extensions.webextensions.restrictedDomains" = "";
 
-      # Enable userChrome.css and userContent.css
+      # Enable userChrome.css and `userContent.css`.
       "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
 
-      # Enable showing compact mode option
+      # Enable showing compact mode option.
       "browser.compactmode.show" = true;
 
-      # Enable legacy screen share indicator that works better in Wayland
+      # Enable legacy screen share indicator that works better in Wayland.
       "privacy.webrtc.legacyGlobalIndicator" = false;
 
-      # Needed to make certain key combinations work with Tridactyl
+      # Needed to make certain key combinations work with Tridactyl.
       "privacy.resistFingerprinting" = false;
       "privacy.resistFingerprinting.block_mozAddonManager" = false;
     };
@@ -1217,19 +1245,22 @@ in rec {
       # Opens editor with commit message temnplate.
       save = "commit --all --edit";
 
-      # Show current repository state.
+      # Show repostitory status, e.g. untracked files and changes since last commit.
       stat = "status";
 
       # Checks out branch if it exiss, otherwise create it first.
       swap = "switch -c";
 
-      # Show one-line commit history.
-      list = "log --online";
+      # Show commit history 
+      list = "log --oneline";
     };
+
+    # TODO: Need to include the key before this works.
+    # signing.signByDefault = true;
   };
 
   programs.neovim = {
-    package = pkgs.neovim-nightly;
+    package = pkgs.neovim-unwrapped; # Uses nightly flake.
     enable = true;
     viAlias = true;
     vimAlias = true;
@@ -1505,6 +1536,72 @@ in rec {
   #
 
   services = {
+    #
+    # Monitor layouts
+    #
+    # Based on the original config at `config/kanshi/config` for reference and portability. This
+    # service does not make `kanshictl` or `kanshi` available to the user. Adding `kanshi` to the
+    # package list for that if needed.
+    #
+    kanshi = {
+      enable = true;
+      systemdTarget = "river-session.target";
+      profiles = {
+        home = {
+          outputs = [
+            {
+              criteria = "DP-1";
+              mode = "3440x1440@99.982Hz";
+              position = "2397,780";
+              status = "enable";
+            }
+            {
+              criteria = "DP-2";
+              mode = "1920x1080@144.001Hz";
+              position = "0,1349";
+              scale = 0.8;
+              status = "enable";
+            }
+            {
+              criteria = "DVI-D-1";
+              mode = "1920x1080@60Hz";
+              position = "0,0";
+              scale = 0.8;
+              status = "enable";
+            }
+          ];
+        };
+        homeIgnoreHDMI = {
+          outputs = [
+            {
+              criteria = "DP-1";
+              mode = "3440x1440@99.982Hz";
+              position = "2397,780";
+              status = "enable";
+            }
+            {
+              criteria = "DP-2";
+              mode = "1920x1080@144.001Hz";
+              position = "0,1349";
+              scale = 0.8;
+              status = "enable";
+            }
+            {
+              criteria = "DVI-D-1";
+              mode = "1920x1080@60Hz";
+              position = "0,0";
+              scale = 0.8;
+              status = "enable";
+            }
+            {
+              criteria = "HDMI-A-1";
+              status = "disable";
+            }
+          ];
+        };
+      };
+    };
+
     # Gnome keyring is required by certain software.
     gnome-keyring.enable = true;
 
@@ -1517,13 +1614,13 @@ in rec {
 
     # Gammastep gradually adjusts color temperature of monitors at sunset and sunrise.
     gammastep = {
-      # Run as service with tray icon.
+      # Tray icon disabled due to me having no tray in the bar at the moment.
       enable = true;
-      tray = true;
+      tray = false;
 
       # Maximum and minimum gamma values. (6500K is equivalent to daylight).
       temperature = {
-        day = 5000;
+        day = 6500;
         night = 4500;
       };
 
@@ -1532,8 +1629,10 @@ in rec {
       longitude = 17.32;
     };
 
-    # EasyEffects provides for PipeWire audio filters. Disable this service to avoid conflict with
-    # JamesDSP, as this will restart itself if you stop it, and we don't want both of them active.
+    # EasyEffects PipeWire audio filters DAP. To be able to switch between EasyEffects and 
+    # other audio for example JamesDSP able this service to avoid conflict with
+    # JamesDSP if using that, and just launch EasyEffects or JamesDSP. This service will restart
+    # itself if we stop it, and we don't want both of them active.
     easyeffects.enable = true;
   };
 

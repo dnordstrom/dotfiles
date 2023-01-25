@@ -41,7 +41,7 @@ colorscheme catppuccin
 set newtab about:blank
 set searchengine ddg
 set editorcmd kitty --class popupterm -e nvim %f "+normal!%lGzv%c|"
-set rsscmd rsssave %u
+set rsscmd openfeed %u
 set viewsource tridactyl
 set allowautofocus false
 
@@ -49,7 +49,7 @@ set allowautofocus false
 " Behavior
 "
 
-set smoothscroll false
+set smoothscroll true
 set tabopencontaineraware true
 set visualenterauto true
 
@@ -140,10 +140,10 @@ set searchurls.t https://duckduckgo.com/?q=translate+%s
 " Preprocessed query
 "
 
-" Google (current site)
+" Google search current site.
 set jsurls.c query => `https://google.com/search?q=${query} site:${location.hostname}`
 
-" Nix packages and options (packages unless query includes a period)
+" Nix packages and options (packages unless query includes a period).
 set jsurls.n \
   query => query.includes('.') ? \
     `https://search.nixos.org/options?channel=unstable&size=500&query=${query}` : \
@@ -157,57 +157,67 @@ set jsurls.n \
 command fixamo_quiet jsb tri.excmds.setpref("privacy.resistFingerprinting.block_mozAddonManager", "true").then(tri.excmds.setpref("extensions.webextensions.restrictedDomains", '""'))
 command fixamo js tri.excmds.setpref("privacy.resistFingerprinting.block_mozAddonManager", "true").then(tri.excmds.setpref("extensions.webextensions.restrictedDomains", '""').then(tri.excmds.fillcmdline_tmp(3000, "Permissions added to user.js. Please restart Firefox to make them take affect.")))
 
-" Pass current URL to command
+" Pass current URL to command.
 command withurl composite get_current_url |
 
-" Replace binds with another prefix (exclamation point removes old binds)
+" Replace binds with another prefix (exclamation point removes old binds).
 command bindreplaceprefix js -d% const [_, oldPrefix, newPrefix] = JS_ARGS; Object.entries(tri.config.get('nmaps')).map(([key, cmd]) => ({ key, cmd })).filter(({ key }) => key.startsWith(oldPrefix)).map(({ key, cmd }) => { tri.excmds.bind('--mode=normal', key.replace(oldPrefix, newPrefix), cmd); }) %
 command bindreplaceprefix! js -d% const [_, oldPrefix, newPrefix] = JS_ARGS; Object.entries(tri.config.get('nmaps')).map(([key, cmd]) => ({ key, cmd })).filter(({ key }) => key.startsWith(oldPrefix)).map(({ key, cmd }) => { tri.excmds.bind('--mode=normal', key.replace(oldPrefix, newPrefix), cmd); tri.excmds.unbind(key); }) %
 
-" Show command line notification
+" Show command line notification.
 command notifyex js -d% tri.excmds.fillcmdline_tmp(5000, JS_ARGS.join(' ').trim()); %
 
-" Show OS notification
+" Show OS notification.
 command notifyos js -d% tri.native.run(`notify-send "${JS_ARGS.join(' ').trim()}"`); %
 
-" Show JS console notification
+" Show JS console notification.
 command notifyjs js -d% console.log("%c N.log ", "background: #d8dee9; color: #2e3440; font-weight: bold;", JS_ARGS.join(' ').trim()); %
 
-" Inspect JavaScript object in console
+" Inspect JavaScript object in console.
 command jsp js -p tri.excmds.js(`console.dir(${JS_ARG})`);
 command jsbp js -p tri.excmds.js(`console.dir(${JS_ARG})`);
 
-" Append note to ~/.notes.firefox.md (only URL and title if no argument)
+" Append note to `~/.notes.firefox.md` (only URL and title if no argument).
 command note js -d% const link = `[${document.title}](${document.location.toString()})`; const note = JS_ARGS.join(' '); if (note) { tri.native.run(`touch ~/.notes.firefox.md && echo "- \"${note}\" --- ${link}\n\$(cat ~/.notes.firefox.md)" > ~/.notes.firefox.md`); } else { tri.native.run(`touch ~/.notes.firefox.md && echo "- ${link}\n$(cat ~/.notes.firefox.md)" > ~/.notes.firefox.md`); } %
 
-" Prefill note command
+" Prefill note command.
 command fillcmdline_note js -p tri.excmds.fillcmdline_notrail(`note ${JS_ARG}`)
 
-" Prefill note command with selection (using JS because of Wayland)
+" Prefill note command with selection (using JS because of Wayland).
 command fillcmdline_note_selection js tri.excmds.fillcmdline_notrail(`note ${window.getSelection()}`);
 
-" Prefill note command with clipboard
+" Prefill note command with clipboard.
 command fillcmdline_note_clipboard js tri.excmds.fillcmdline_notrail(`note ${await tri.excmds.getclip()}`);
 
-" Get Jira issue key from URL
+" Get Jira issue key from URL.
 command yankjira js -p if (JS_ARG.trim().toLowerCase() === 'url') N.run('yankjiraurl'); else N.run('yankjiraissue');
 command yankjiraissue js const match = N.pathMatch(/[A-Z]{2,5}-[0-9]{1,4}/); if (match) N.yankLoud(match[0]); else N.notify('No issue key found.');
 command yankjiraurl js const btn = N.query('.issue_view_permalink_button_wrapper'); if (btn) N.yankLoud(btn.previousElementSibling.querySelector('a').href); else N.notify('No issue link found.');
 
-" Reload config from /etc/nixos
+" Reload config from `/etc/nixos`.
 command reconfiglive source /etc/nixos/config/firefox/tridactyl/tridactylrc
 
-" Reload config from ~/.config/tridactyl
+" Reload config from `~/.config/tridactyl`.
 command reconfig source
 
-" Save Instagram with proper filename
-command writeinstagram js (() => { const a = document.createElement('a'); const cv = document.createElement('canvas'); const cx = cv.getContext('2d'); const img = document.querySelector('[role="dialog"] img'); cv.width = img.width; cv.height = img.height; cx.drawImage(img, 0,0); const ext = new URL(img.src).pathname.match(/(\w+)$/)[0]; const url = cv.toDataURL(`image/${ext == 'jpg' ? 'jpeg' : ext}`); a.download = `${img.alt.toLowerCase().replace(/[^\s\w]/g, '').replace(/\s+/g, '_')}.${ext}`; a.href = url; document.body.appendChild(a); a.click(); document.body.removeChild(a); })()
+" Save Instagram photo with human readable filename.
+"
+" The filenames in `srcset`, `src`, and `currentSource` look like hashes (e.g.,
+" `316091346_1194156321456153_5338089432691464763_n.webp`) and are very long. Hence this function
+" grabs post username from the header, combines it with description, and adds the file extension. To
+" be able to specify our own filename for the download, we create an anchor element with `download`
+" attribute, e.g. `<a href="data:..." download="dnordstrom_some_title.jpg">`.
+"
+" FIX: Currently no longer works, since Firefox blocks automatic downloads. Working on a version that
+" offers a button or other UI for those cases.
+"
+" command writeinstagram js (() => { const a = document.createElement('a'); const cv = document.createElement('canvas'); const cx = cv.getContext('2d'); const img = document.querySelector('main[role="main"] article[role="presentation"] [role="button"] img'); cv.width = img.width; cv.height = img.height; cx.drawImage(img, 0,0); const ext = new URL(img.src).pathname.match(/(\w+)$/)[0]; const url = cv.toDataURL(`image/${ext == 'jpg' ? 'jpeg' : ext}`); a.download = `${img.alt.toLowerCase().replace(/[^\s\w]/g, '').replace(/\s+/g, '_')}.${ext}`; a.href = url; document.body.appendChild(a); a.click(); document.body.removeChild(a); })()
 
-" Open profile directory
+" Open profile directory.
 command openprofile js (async () => { await tri.native.run(`xdg-open ${await tri.native.getProfileDir()}`); })()
 
-" Open RSS feed in Feedly
-command rsssave jsb -p (async () => { await tri.excmds.tabopen(`https://feedly.com/i/subscription/feed/${encodeURIComponent(JS_ARG)}`); })()
+" Open Feedly and load current page: with no feed, it can still create one by scraping for content.
+command openfeed jsb -p (async () => { await tri.excmds.tabopen(`https://feedly.com/i/subscription/feed/${encodeURIComponent(JS_ARG)}`); })()
 
 ""
 " ALIASES

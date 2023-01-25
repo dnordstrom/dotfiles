@@ -1,0 +1,80 @@
+<gui version="1" name="dolphin">
+  <ActionProperties>
+    <Action name="open_kcommand_bar" shortcut=";; Ctrl+Space"/>
+    <Action name="hamburger_menu" shortcut="T, A"/>
+    <Action name="file_new" shortcut="Ctrl+W, N; N, W"/>
+    <Action name="new_tab" shortcut="Ctrl+T, N; N, T"/>
+    <Action name="add_to_places" shortcut="'; A, P"/>
+    <Action name="file_close" shortcut="Ctrl+T, C; "/>
+    <Action name="file_quit" shortcut="Z, Q; W, Q"/>
+    <Action name="edit_undo" shortcut="U"/>
+    <Action name="edit_cut" shortcut="C, C"/>
+    <Action name="edit_copy" shortcut="Y, Y; "/>
+    <Action name="edit_paste" shortcut="P, P; P, S"/>
+    <Action name="copy_to_inactive_split_view" shortcut="Y, S"/>
+    <Action name="toggle_search" shortcut="G, S"/>
+    <Action name="edit_select_all" shortcut="G, V; "/>
+    <Action name="invert_selection" shortcut="G, I"/>
+    <Action name="split_view" shortcut="T, S; Ctrl+W, S"/>
+    <Action name="view_redisplay" shortcut="R; F5"/>
+    <Action name="editable_location" shortcut="G, E"/>
+    <Action name="replace_location" shortcut="G, L; G, G"/>
+    <Action name="go_back" shortcut="G, B; H"/>
+    <Action name="undo_close_tab" shortcut="Ctrl+T, U"/>
+    <Action name="go_forward" shortcut="L"/>
+    <Action name="go_up" shortcut="G, U; K"/>
+    <Action name="go_home" shortcut="G, H; ~"/>
+    <Action name="compare_files" shortcut="G, C"/>
+    <Action name="open_preferred_search_tool" shortcut="?; /"/>
+    <Action name="add_bookmark" shortcut="`, `; M"/>
+    <Action name="options_show_menubar" shortcut="T, M; "/>
+    <Action name="options_configure_keybinding" shortcut="."/>
+    <Action name="options_configure" shortcut=",; "/>
+    <Action name="activate_tab_0" shortcut="1"/>
+    <Action name="activate_tab_1" shortcut="2"/>
+    <Action name="activate_tab_2" shortcut="3"/>
+    <Action name="activate_tab_3" shortcut="4"/>
+    <Action name="activate_tab_4" shortcut="5"/>
+    <Action name="activate_tab_5" shortcut="6"/>
+    <Action name="activate_tab_6" shortcut="7"/>
+    <Action name="activate_tab_7" shortcut="8"/>
+    <Action name="activate_tab_8" shortcut="9"/>
+    <Action name="activate_last_tab" shortcut="0"/>
+    <Action name="activate_next_tab" shortcut="]; Alt+N"/>
+    <Action name="activate_prev_tab" shortcut="[; Alt+P"/>
+    <Action name="show_target" shortcut="G, D; G, F"/>
+    <Action name="open_in_new_tab" shortcut="Ctrl+T, O; O, T"/>
+    <Action name="open_in_new_tabs" shortcut="O, A, T"/>
+    <Action name="open_in_new_window" shortcut="Ctrl+W, O; O, W"/>
+    <Action name="create_dir" shortcut="N, N; N, F"/>
+    <Action name="renamefile" shortcut="C, W; C, N"/>
+    <Action name="movetotrash" shortcut="D, D; Backspace"/>
+    <Action name="deletefile" shortcut="X, X; "/>
+    <Action name="duplicate" shortcut="Y, D; Alt+Return"/>
+    <Action name="properties" shortcut="G, P"/>
+    <Action name="copy_location" shortcut="Y, F; Y, P"/>
+    <Action name="icons" shortcut="V, I"/>
+    <Action name="compact" shortcut="V, L; V, C"/>
+    <Action name="details" shortcut="V, V; V, D"/>
+    <Action name="view_mode" shortcut="C, M"/>
+    <Action name="view_zoom_in" shortcut="+; Z, I"/>
+    <Action name="view_zoom_reset" shortcut="=; Z, Z"/>
+    <Action name="view_zoom_out" shortcut="-; Z, O"/>
+    <Action name="show_preview" shortcut="T, P"/>
+    <Action name="folders_first" shortcut="C, O, F"/>
+    <Action name="hidden_last" shortcut="C, O, H"/>
+    <Action name="sort_by_modificationtime" shortcut="C, O, M"/>
+    <Action name="ascending" shortcut="C, S, O"/>
+    <Action name="descending" shortcut="C, S, N"/>
+    <Action name="show_modificationtime" shortcut="T, C, M"/>
+    <Action name="show_in_groups" shortcut="T, G; Ctrl+G"/>
+    <Action name="show_hidden_files" shortcut="T, H; Ctrl+H"/>
+    <Action name="view_properties" shortcut="C, V; C, D"/>
+    <Action name="lock_panels" shortcut="C, P"/>
+    <Action name="show_information_panel" shortcut="T, I"/>
+    <Action name="show_folders_panel" shortcut="T, F"/>
+    <Action name="show_places_panel" shortcut="T, B; Ctrl+B"/>
+    <Action name="help_contents" shortcut="F1; O, H"/>
+    <Action name="help_about_app" shortcut="F2"/>
+  </ActionProperties>
+</gui>

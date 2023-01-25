@@ -27,7 +27,7 @@ option_screen=false
 option_region=false
 has_curl=false
 area=""
-timestamp="$(date '+%Y%m%d-%Hh%Mm%Ss')"
+timestamp="$(date '+%Y%m%d-%H-%M-%S')"
 target_dir=${SNAPSCREEN_SAVE_DIR:-"$HOME/Pictures/screensnaps"}
 target="$target_dir/$timestamp.png"
 imgur_client_id="${SNAPSCREEN_IMGUR_CLIENT_ID:=e4ab8199be97038}"

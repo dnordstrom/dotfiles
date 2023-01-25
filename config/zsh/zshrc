@@ -158,10 +158,13 @@ opts="--bind 'alt-j:preview-down' $opts"
 opts="--bind 'alt-k:preview-up' $opts"
 opts="--bind 'alt-l:preview-half-page-down' $opts"
 
-# Generic previewer showing file/directory icon (using `exa`), name, and output of:
-#   Files           -> `bat` or `cat`
-#   Directories     -> `exa` in tree view
-#   Arbitrary text  -> `echo`
+# Generic previewer to be used either stand-alone or along with other file and directory aliases and
+# functions. Using `exa` instead of `ls` for icon output (see `lsd` for hyperlink support),
+#
+# TYPES
+#   * Files         -> Preview with `bat` if possible, otherwise `cat`.
+#   * Files: Text   -> Preview with `printf` (more standardized than `echo`).
+#   * Directories   -> List directory contents tree view with icons, using `exa`.
 # opts="--preview='\
 #   [ -f {} ] && ( \
 #     (command exa --icons --tree --level=1 {} | head -1 && printf "\n") && \
@@ -420,7 +423,7 @@ OPTIONS:
 # Returns:
 #   JSON representation of current view tree.
 wl-views() {
-  printUsage() {
+  showusage() {
     printf "\n%s\n" "
 $(basename "$0") [OPTIONS] [GREP STRING]
 
@@ -428,8 +431,8 @@ DESCRIPTION:
     Use `--all` (or `-a` or `all`) for all view properties, `--focused` for only the focused view, an optional string to grep results, or omit arguments to show `app_id`, `title`, and `activated` properties of all views.
 
 OPTIONS:
-    -a, --all       Show detailed view including all properties.
-    -f, --focused   Show only properties of the focused view.
+    -a, --all       Show all views.
+    -f, --focused   Show focused view.
     -h, --help      Show this help text.
 "
   }
@@ -438,13 +441,14 @@ OPTIONS:
   views_cmd="lswt --json"
   parse_cmd="jq"
   grep_cmd="grep"
-  query=". as \$initial | \$initial[] | {app_id, title, activated} as \$relevant"
+  query=". as \$initial | \$initial[] | { app_id, title, activated } as \$relevant"
+  errors=0
 
   for arg in "$@"; do
     case $arg in
       -h|--help)
-      print-usage
-      exit 0
+      showusage
+      errors=1
       shift
       ;;
       -a|--all|a|all)
@@ -1059,6 +1063,7 @@ zvm_after_lazy_keybindings() {
 
   # Ctrl-Alt-L returns to insert mode again after clearing screen
   zvm_bindkey viins "^[^l" clear-screen-and-ins
+  zvm_bindkey vicmd "^[^l" clear-screen-and-ins
 
   # Alt-N then action to manage notes
   zvm_bindkey viins "^[na" add-note
@@ -1084,8 +1089,8 @@ zvm_config() {
 # PATH
 #
 
-# Script paths organized and prefixed by category: `nix/nix-preview`, `launch/launch-app`, etc.
-for directory in ~/.scripts/**; do
+# Script paths organized and prefixed by category: `nix/nixpreview`, `launch/launchapp`, etc.
+for directory in ~/.local/bin/.scripts/**; do
   export PATH="$PATH:$directory"
 done
 

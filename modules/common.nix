@@ -1,16 +1,11 @@
 { config, pkgs, stdenv, lib, ... }:
 
 let
-  # Yes, this is, in fact, my actual username..
   username = "dnordstrom";
-
-  # No, this isn't my actual password. You'd want a Yubikey too—will trade for Bowmore 1965 edition.
-  password = "Hehe, jk.";
-
-  # Paths of all types and shapes.
-  homeDirectory = "/home/${username}";
+  password = "Who knows?";
+  homeDirectory = "/home/${username}";        # Home directory.
   mediaDirectory = "${homeDirectory}/Videos"; # Plex library.
-  musicDirectory = "${homeDirectory}/Music"; # Roon library.
+  musicDirectory = "${homeDirectory}/Music";  # Roon library.
 in {
   #
   # IMPORTS
@@ -22,10 +17,11 @@ in {
   # GENERAL
   #
 
-  # Configuration version
-  system.stateVersion = "22.11";
+  # Coming NixOS releases might change an option's default value, rename it, or move it to a new
+  # location. Here we tell Nix that we want the options as they existed in 23.05. That way, they
+  # work regardless of NixOS version, and the configuration outlives us all.
+  system.stateVersion = "23.05";
 
-  # Set correct time-zone
   time.timeZone = "Europe/Stockholm";
 
   nix = {
@@ -74,7 +70,7 @@ in {
   };
 
   #
-  # Package configuration
+  # PACKAGE MANAGEMENT
   #
 
   nixpkgs.config = {
@@ -118,30 +114,60 @@ in {
   #
 
   networking = {
-    dhcpcd.enable = false;
-    firewall.enable = true;
-    networkmanager.enable = false;
-
-    enableIPv6 = true;
-    hostName = "nordix";
-    useDHCP = true;
-    useNetworkd = true;
-
-    wireless.iwd.enable = true; # Modern security. Relatively.
-    wireless.iw.enable = true; # Ancient security. Definitely.
-
-    wireguard = {
-      enable = true; # Includes tools, services, and WireGuard kernel module.
-    };
+    hostName = "nordix"; # FIX: Automate "nordix" vs. "nordix-laptop".
+    enableIPv6 = true; # Running out of IPv4 addresses? Fine.
+    useDHCP = true; # Some recommend false and enabling individual interfaces.
+    useNetworkd = true; # Use `networkd` instead of `NetworkManager`.
+    firewall.enable = true; # Sure, why not?
+    networkmanager.enable = false; # Using `networkd` instead.
+    wireless.iwd.enable = true; # Includes `iwctl` wireless networking CLI.
+    wireguard.enable = true; # Includes tools, services, and kernel module.
+    dhcpcd.enable = false; # Handled by `networkd`, can be disabled.
   };
 
   #
   # FONTS
   #
+  # In terminal emulators, PragmataPro Mono with ligatures and 10,000 glyphs is the love of my life.
+  # Unfortunately, I can't include it due to licensing. But if you go for it, simply download the
+  # OpenType files from the store and extract them to `~/.local/share/fonts`. It's 115% worth it.
+  #
+  # For GUI, we use "Public Sans" regular at 9-10.5pt. Formerly we used a customized Input Mono for
+  # terminals and Input Sans Condensed for UI, they're fantastic as well, and customizable.
+  #
+  # REFERENCES:
+  #
+  #   * Installed fonts list: `fc-list --verbose/--brief | grep [options]`
+  #   * Generated fontconfig: `/var/run/booted-system/etc/fonts/conf.d`
+  #
 
-  fonts.fonts = with pkgs;
-    [
-      (nerdfonts.override {
+  fonts = {
+    fontconfig = {
+      antialias = true;
+      useEmbeddedBitmaps = true;
+
+      #
+      defaultFonts = {
+        emoji = [ "JoyPixels" ];
+        sansSerif = [ "Public Sans" "Symbols Nerd Font" ];
+        serif = [ "PT Serif" "Symbols Nerd Font" ];
+        monospace = [ "PragmataPro Mono Liga" "Symbols Nerd Font" ];
+      };
+
+      hinting = {
+        autohint = false;
+        enable = true;
+        style = "hintslight";
+      };
+
+      subpixel = {
+        lcdfilter = "default";
+        rgba = "rgb";
+      };
+    };
+
+    fonts = [
+      (pkgs.nerdfonts.override {
         fonts = [
           "3270"
           "Agave"
@@ -163,7 +189,7 @@ in {
           "IBMPlexMono"
           "Iosevka"
           "Lekton"
-          "Linex"
+          "Lilex"
           "MPlus"
           "Monofur"
           "Monoid"
@@ -185,6 +211,7 @@ in {
         ];
       })
     ];
+  };
 
   #
   # SERVICES
@@ -196,44 +223,6 @@ in {
     #
 
     xserver.libinput.enable = true;
-
-    #
-    # Output
-    #
-
-    kanshi = {
-      extraConfig = "";
-      profiles = {
-        nordix = {
-          outputs = [
-            {
-              criteria = "DP-1";
-              mode = "3440x1440@99.982Hz";
-              position = "2397,780";
-              status = "enable";
-            }
-            {
-              criteria = "DP-2";
-              mode = "1920x1080@144.001Hz";
-              position = "0,1349";
-              status = "enable";
-            }
-            {
-              criteria = "DVI-D-1";
-              mode = "1920x1080@60Hz";
-              position = "0,0";
-              scale = "0.8";
-              status = "enable";
-            }
-            {
-              # Connected to the same monitor as DP-1 and can be disabled.
-              criteria = "HDMI-A-1";
-              status = "disable";
-            }
-          ];
-        };
-      };
-    };
 
     #
     # CPU
@@ -336,7 +325,7 @@ in {
     # Packages that use `dbus` go here.
     dbus = {
       enable = true;
-      packages = with pkgs; [ protonvpn-cli_2 ];
+      packages = [ pkgs.protonvpn-gui ];
     };
 
     # Plex media server
@@ -473,8 +462,8 @@ in {
       enable = true;
       package = pkgs.bluezFull; # Full version includes plugins.
 
-      # Enable support for HSP and HFP profiles.
-      hsphfpd.enable = true;
+      # Enable support for HSP and HFP profiles, but Wireplumber apparently does that now.
+      hsphfpd.enable = false;
 
       # Enable audio source and sink.
       settings.General.Enable = "Source,Sink,Media,Socket";
@@ -589,11 +578,13 @@ in {
   #   `pkgs.libsForQt5.qt5ct`, a GUI configuration tool for Qt.
   #
 
-  qt5 = {
+  qt = {
     enable = true;
 
-    # QT_QPA_PLATFORMTHEME
-    #   The platform theme specifies the icons, fonts, widget style, and more.
+    #
+    # QT_QPA_PLATFORMTHEME environment variable. These themes set icons, fonts, widget style, etc.
+    #
+    # Options reference:
     #
     #   "gnome" -> If you use Gnome       -> Uses as many Gnome settings as possible to style
     #   "kde"   -> If you use KDE         -> Uses KDE's Qt settings to style
@@ -603,8 +594,11 @@ in {
 
     platformTheme = "qt5ct";
 
-    # QT_STYLE_OVERRIDE
-    #    Optionally overrides widget style. We skip this since we use `qt5ct` which sets it for us.
+    #
+    # QT_STYLE_OVERRIDE environment variable. Optionally overrides just the widget style. We skip
+    # this since we use `qt5ct` which does it for us.
+    #
+    # Options reference:
     #
     #   "adwaita"
     #   "adwaita-dark"
@@ -652,8 +646,8 @@ in {
     # and wallpaper on top of six old layers, thinking "haha, I won't live here long enough anyway,
     # but damn, going to suck for the who has to remove all this crap!"
     #
-    # * tty1 -> River
-    # * tty2 -> Sway
+    # * tty1 -> River WM
+    # * tty2 -> Sway WM
     loginShellInit = ''
       [ "$(tty)" = "/dev/tty2" ] && exec /home/dnordstrom/.config/river/start
       [ "$(tty)" = "/dev/tty3" ] && exec /home/dnordstrom/.config/sway/start

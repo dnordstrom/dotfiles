@@ -7,11 +7,11 @@
  */
 
 :root {
-  --tab-border-radius: 3px !important;
-  --inline-tab-padding: 8px 1px 14px !important;
+  --tab-border-radius: 2px !important;
+  --inline-tab-padding: 8px 1px 12px !important;
   --urlbar-icon-padding: 4px !important;
   --urlbar-min-height: 26px !important;
-  --toolbarbutton-border-radius: 3px !important;
+  --toolbarbutton-border-radius: 2px !important;
 }
 
 hbox#urlbar {
@@ -28,17 +28,21 @@ toolbaritem#urlbar-container {
  */
 
 #sidebar-box {
-  max-width: none !important;
-  min-width: 0 !important;
+  max-width: 65ch !important;
+  min-width: 35ch !important;
+}
+
+/**
+ * MENU BAR
+ */
+
+menubar > menu {
+  padding: 0.75em !important;
 }
 
 /**
  * TAB BAR
  */
-
-.tab-background {
-  box-shadow: none !important;
-}
 
 .close-icon:hover {
   background: none !important;
@@ -65,12 +69,10 @@ toolbaritem#urlbar-container {
   margin-top: calc(var(--tab-min-height) - 2px) !important;
 }
 
-/* Tweak font properties for tabs */
+/* Tabs: increase width and decrease text size. */
 
-.tabbrowser-tab {
-  font-size: 0.813em;
-  font-weight: 400;
-  line-height: 3;
+.tabbrowser-tab:not([pinned]) {
+  font-size: 0.875rem; /* 14px/16px = 0.875rem */
 }
 
 /* Outline thickness for active tab and toolbar menus */
@@ -81,74 +83,34 @@ toolbaritem#urlbar-container {
   outline-offset: -1px !important;
 }
 
+/* Reduce selected tab shadow */
+
+#TabsToolbar #firefox-view-button[open] > .toolbarbutton-icon,
+#tabbrowser-tabs:not([noshadowfortests]) .tab-background:is([selected],
+[multiselected]) {
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
 /**
  * BOOKMARKS TOOLBAR
  */
 
-/* Tweak container spacing, and add slight border between toolbar and webpage */
+/* Tweak container spacing, item and separator colors, etc. */
 
 #PersonalToolbar {
-  /* border-bottom: 1px solid rgba(0, 0, 0, 0.1); */
-  /* padding: 4px 8px; */
-}
-
-/* Add some extra spacing to align bookmark folders with other item's icons */
-
-#PlacesToolbar {
-  /* transform: translateY(2px); */
-}
-
-/* Tweak spacing and use Nerd Font for icons */
-
-#PlacesToolbarItems {
-  -moz-box-pack: center;
-  margin-block: -0.25em 0.15em;
-  margin-inline: -0.7em 0.25em;
-  font-family: "Iosevka Nerd Font";
-}
-
-/* Hide folder icons in bookmarks toolbar items */
-
-toolbarbutton.bookmark-item:not(.subviewbutton) .toolbarbutton-icon {
-  display: none;
-}
-
-/* Bigger and fatter unicode labels in boookmarks toolbar items */
-
-toolbarbutton.bookmark-item:not(.subviewbutton)  {
-  font-size: 1.5em;
-  width: 2em;
-}
-
-/* Add left spacing to first unicode label in boookmarks toolbar items */
-
-toolbarbutton.bookmark-item:not(.subviewbutton):first-of-type  {
-  margin-left: -0.7em !important;
-}
-
-/* Correct width of unicode labels in boookmarks toolbar items */
-
-toolbarbutton.bookmark-item:not(.subviewbutton):first-of-type .toolbarbutton-text {
-  width: 2.6em;
-}
-
-/* Remove hover background from all toolbar items */
-
-toolbarbutton:hover,
-toolbarbutton[open] {
-  background: none !important;
-}
-
-/* Remove hover color (use for background in nav bar) from toolbar items except bookmarks */
-
-toolbarbutton:hover:not(.bookmark-item) {
-  /* color: transparent !important; */
+  --toolbarseparator-color: rgba(0, 0, 0, 0.09) !important;
+  font-family: "Symbols Nerd Font", "Public Sans", sans-serif;
+  font-size: 0.875rem !important; /* 14px/16px = 0.875rem */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15) !important;
+  padding: 0 8px !important;
+  line-height: 1.8 !important;
+  margin-bottom: -1px !important;
 }
 
 /* Align URL bar with toolbar icons */
 
 #nav-bar toolbarbutton {
-  margin: 3px 0 0 !important;
+  margin: -3px 0 3px !important;
   padding: 0 3px !important;
 }
 
@@ -167,6 +129,7 @@ toolbarbutton:hover:not(.bookmark-item) {
 #identity-icon,
 #permissions-granted-icon,
 #tracking-protection-icon,
+#tracking-protection-icon-box,
 #blocked-permissions-container > .blocked-permission-icon {
   width: 12px !important;
   height: 12px !important;
@@ -190,13 +153,19 @@ toolbarbutton:hover:not(.bookmark-item) {
   box-shadow: none !important;
 }
 
+:root:not([privatebrowsingmode="temporary"]) :is(toolbarbutton, toolbarpaletteitem) + #tabbrowser-tabs,
+:root[privatebrowsingmode="temporary"] :is(toolbarbutton:not(#firefox-view-button),
+toolbarpaletteitem:not(#wrapper-firefox-view-button)) + #tabbrowser-tabs {
+  border-inline-start: none !important;
+  margin-inline-start: 0px !important;
+}
+
 /**
  * CONTEXT MENU
  */
 
 #context-inspect-a11y,
-#context-print-selection,
-#context_bookmarkTab {
+#context-print-selection {
   display: none !important;
 }
 

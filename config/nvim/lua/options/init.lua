@@ -39,9 +39,12 @@ opt.termguicolors = true
 opt.timeoutlen = 500 -- Recommended by which-key.nvim
 opt.ttimeoutlen = 50
 opt.updatetime = 250
+opt.wrapscan = true
 
 --
 -- BACKUPS & UNDO
+--
+-- The naming of these options makes it somewhat confusing, but only until you get the hang of it.
 --
 
 opt.backupdir = fn.stdpath("state") .. "/backup//" -- Don't litter, use `~/.local/state/nvim/backup`.
@@ -55,11 +58,11 @@ opt.backupext = ".bak" -- Extension rather than tilde suffix (append timestamp m
 -- EXPLORER
 --
 
-g.netrw_liststyle = 4 -- Open in previous window
-g.netrw_browse_split = 2 -- Split vertically
-g.netrw_winsize = 25 -- In percent, ignored by `:Texplore` windows
-g.netrw_altv = 1 -- Open file to the right
-g.netrw_banner = 0 -- Hide banner
+g.netrw_liststyle = 4 -- Open in previous window.
+g.netrw_browse_split = 2 -- Split vertically.
+g.netrw_winsize = 25 -- In percent, ignored by `:Texplore` windows.
+g.netrw_altv = 1 -- Open file to the right.
+g.netrw_banner = 0 -- Hide annoying, unnecessary banner.
 
 --
 -- FORMATTING
@@ -72,18 +75,18 @@ opt.softtabstop = 2
 opt.tabstop = 2
 opt.wrap = true -- Soft wrap
 opt.wrapmargin = 100 -- Soft wrap column
-opt.textwidth = 100 -- Hard wrap column when `formatoptions~=t` or `gq` is used
-opt.formatoptions = "cjroql"
+opt.textwidth = 100 -- Hard wrap column (`formatoptions~=t` auto-wraps and `gqq` bind wraps manually.
+opt.formatoptions = "tcjroq"
 
--- Quick reference (more at :h fo-table):
+-- Reference:
 --
---   c -> comments auto-wrap at textwidth
---   j -> smart join comment lines
---   l -> don't wrap already long lines in insert mode
---   o -> auto-insert comment leader on `o` and `O`
---   q -> allow `gq` formatting
---   r -> auto-insert comment leader on <Enter>
---   t -> auto-wrap at textwidth
+--   t -> wrap text at textwidth.
+--   c -> wrap comments at textwidth.
+--   j -> join comments smartly, removing the extra prefix.
+--   l -> prevent already long lines from wrap in insert mode and use `gq` as needed instead.
+--   r -> auto-insert comment leader on Return.
+--   o -> auto-insert comment leader on `o` and `O`, same as for Return.
+--   q -> enable formatting via `gq` in normal mode or `gqq` in visual mode.
 --
 -- For hard wrap: tcjroql
 -- For hard wrap comments only: cjroql

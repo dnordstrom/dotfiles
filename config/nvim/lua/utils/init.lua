@@ -15,14 +15,17 @@ local nvim_buf_get_mark = vim.api.nvim_buf_get_mark
 local nvim_buf_get_lines = vim.api.nvim_buf_get_lines
 local nvim_replace_termcodes = vim.api.nvim_replace_termcodes
 
--- Replaces Vim termcodes in string.
+-- Replaces Vim term codes in string.
 local t = function(str)
 	return nvim_replace_termcodes(str, true, true, true)
 end
 
--- Replaces Vim termcodes in string, and feeds it as key presses.
-local typekeys = function(str)
-	nvim_feedkeys(t(str), "m", true)
+--- Replaces Vim term codes in string, and feeds it as typed key presses.
+---
+--- @param keys Second table
+--- @returns    Resulting table
+local typekeys = function(keys)
+	nvim_feedkeys(t(keys), "m", true)
 end
 
 --- Merges two tables, the second taking precedence when both contain the same key.
@@ -32,7 +35,7 @@ end
 --- @returns Resulting table
 local merge = function(first, second)
 	if not first then
-		return {}
+		return
 	end
 
 	local second = second or {}

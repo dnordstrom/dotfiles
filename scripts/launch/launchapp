@@ -143,10 +143,12 @@ if [ -n "$LAUNCHER_FIFO" ]; then
         exit 0
       fi
 
+      # Add the command and label to the FZF entries to display, as well as to the command lookup
+      # list that maps menu items to their commands upon selection.
       entries="$name:$cmd\n$entries"
       choices="$label\t$cmd\n$choices"
 
-      # Cache items and command mappings for instant startup
+      # Cache items and command mappings for instant startup. TODO: Rewrite the world in Rust.
       printf "%b" "$entries" >"$cache_meta_file"
       printf "%b" "$choices" >"$cache_menu_file"
     done

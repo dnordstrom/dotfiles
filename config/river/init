@@ -38,8 +38,8 @@ _rctl_spawn_shell() {
 # Examp     $ riverctl spawn $(shell_command "systemctl --user enable cool.service && nvim README.md")
 #     = riverctl spawn zsh -c 'systemctl --user enable cool.service && nvim README.md'
 #
-# Arguments:
-#   - $* - Any arguments are passed to she shell as command to run, as printed by `printf`.
+# arguments:
+#   - $* - any arguments are passed to the shell as command to run, as printed by `printf`.
 #
 # Returns:
 #   - In terminal context, outputs shell command to standard output.
@@ -52,16 +52,21 @@ _rctl_create_command() {
   shell="${SHELL:-"sh"}"
   result="$(printf "%s" "$shell -c '$*'")"
 
+  # Check if we're running in TTY interactive login shell or a regular emulator interactive shell.
   if [ -t 0 ]; then
+    # TTY: print command.
     printf "%s" "$result"
   else
+    # Script: return command.
     return "$result"
   fi
 }
 
-#
 # Map the Escape, Return, and Space keys to exit given mode. If no mode is passed to the function,
 # then it notifies and/or logs it depending on settings, since it has no value it can default to.
+#
+# Arguments:
+#   - $* - Name of the mode we want to add exit maps for.
 _rctl_map_exit_mode() {
   riverctl map "$1" None Escape enter-mode normal
   riverctl map "$1" None Return enter-mode normal
@@ -84,19 +89,27 @@ noscratchtag="$((alltags ^ scratchtag))"
 availabletags="$((noscratchtag ^ stickytag))"
 
 # Terminal startup sessions.
-cmd_terminal_plain="kitty --class=plainterm --title='Plain terminal'"
-cmd_terminal_scratchpad="kitty --class=scratchterm --title 'Scratchpad terminal' -1 --instance-group=scratchterm --session=\"$path_kitty_sessions/scratchpad.session\""
-cmd_terminal_popup="kitty --class=popupterm --title='Popup terminal' -1 --instance-group=popupterm"
+cmd_terminal_plain="kitty --class=plainterm --title Plain"
+cmd_terminal_scratchpad="kitty --class=scratchterm --title 'Scratchpad terminal' --single-instance --instance-group=scratchterm --session=\"$path_kitty_sessions/scratchpad.session\""
+cmd_terminal_popup="kitty --class=popupterm --title='Popup terminal' --single-instance --instance-group=popupterm"
+cmd_terminal_trans="kitty --class=transterm --title='Transparent terminal'"
+cmd_terminal_dev="kitty --class=devterm --title='Development'"
 
 # Launchers.
 cmd_launch_app="/etc/nixos/scripts/launch/launchapp"
 cmd_launch_cmd="/etc/nixos/scripts/launch/launchcommand"
-cmd_launch_gui="rofi -show combi"
+cmd_launch_gui="rofi -show drun"
 
-# File managers.
-cmd_files_gtk="nemo"
+# File managers. Choice is hard. Luckily choice is just an illusion anyway. Free will is just a
+# naive perspective that puts us in control, when reality is a game of dominoes and all we can do is
+# watch the dominoes fall, each a direct consequence of the previous and direct cause of the next.
 cmd_files_qt="dolphin"
+cmd_files_gtkone="nemo"
+cmd_files_gtktwo="nautilus"
 cmd_files_tui="$cmd_terminal_popup -e vifm"
+
+# WM state.
+state_debug="$NX_RIVER_DEBUG"
 
 # Font.
 font_size=8
@@ -105,9 +118,9 @@ font="$font_family $font_size"
 
 # GTK.
 gtk_schema="org.gnome.desktop.interface"
-gtk_theme="Catppuccin-Latte-Peach"
+gtk_theme_main="Catppuccin-Latte-Peach"
 gtk_theme_icon="Vimix"
-gtk_theme_cursor="Quintom_Snow"
+gtk_theme_cursors="Quintom_Snow"
 gtk_font="$font"
 gtk_font_document="$font"
 
@@ -115,57 +128,15 @@ flatpak override --user --filesystem "$HOME/.local/share/themes"
 flatpak override --user --env "GTK_THEME=$gtk_theme"
 
 # TODO: Set this up properly.
-# gsettings set "$gtk_schema" gtk-theme "$gtk_theme"
+# gsettings set "$gtk_schema" gtk-theme "$gtk_theme_main"
 # gsettings set "$gtk_schema" icon-theme "$gtk_theme_icon"
-# gsettings set "$gtk_schema" cursor-theme "$gtk_theme_cursor"
+# gsettings set "$gtk_schema" cursor-theme "$gtk_theme_cursors"
 # gsettings set "$gtk_schema" font-name "$gtk_font"
 # gsettings set "$gtk_schema" document-font-name "$gtk_font_document"
 
 ##
 # SETTINGS
 ##
-
-#
-# Mouse
-#
-
-riverctl focus-follows-cursor normal
-
-#
-# Trackpad
-#
-
-trackpad="76:613:Apple_Inc._Magic_Trackpad_2"
-
-# Enable acceleration (none, flat, or adaptive).
-riverctl input $trackpad accel-profile adaptive
-
-# Acceleration factor (between -1.0 and 1.0).
-riverctl input $trackpad pointer-accel 0.5
-
-# Tap to click.
-riverctl input $trackpad tap enabled
-
-# Click method (none, button-area, clickfinger)
-riverctl input $trackpad click-method clickfinger
-
-# Hide pointer while typing.
-riverctl input $trackpad disable-while-typing enabled
-
-# Scroll method (none, two-finger, edge, button)
-riverctl input $trackpad scroll-method two-finger
-
-# Middle-click emulation.
-riverctl input $trackpad middle-emulation enabled
-
-# Natural scroll direction.
-riverctl input $trackpad natural-scroll disabled
-
-#
-# Keyboard
-#
-
-riverctl set-repeat 50 300
 
 #
 # Colors and borders
@@ -175,6 +146,103 @@ riverctl background-color 0x002b36
 riverctl border-color-focused 0x93a1a1
 riverctl border-color-unfocused 0x586e75
 riverctl border-width 2
+
+##
+# INPUTS
+##
+
+#
+# Keyboards
+#
+
+# Settings.
+riverctl set-repeat 35 250
+
+# Device IDs from `riverctl list-inputs`.
+#
+# NOTE: I'd recommend just concatenating device IDs directly to the single `keebs` variable, but
+# that's no fun.
+keeb_ducky="keyboard-12851-25345-Ducky_Ducky_One2_Mini_RGB"
+keeb_havit="keyboard-1452-591-KB496L"
+keeb_das="keyboard-9456-322-Metadot_-_Das_Keyboard_D4269"
+keeb_vortex="keyboard-1241-519-USB-HID_Keyboard"
+
+# Keyboard features like layered system, media, and mouse keys.
+keeb_das="${keeb_das} ${keeb_das}_Consumer_Control  ${keeb_das}_System_Control"
+keeb_vortex="${keeb_vortex} ${keeb_vortex}_Consumer_Control ${keeb_vortex}_System_Control"
+
+
+# Concatenate all keyboards and separate by newline instead of space.
+keebs="$keeb_das $keeb_ducky $keeb_vortex $keeb_havit"
+keebs="$(printf "$keebs" | tr '[:space:]' '\n')"
+
+# Configure common settings for all keyboard the same.
+while read -r keeb; do
+  # TODO: Think. There must be *something* we can apply to all the devices here.
+
+  if [ -n state_debug ]; then
+    printf "Configuring keyboard \"$keeb\"…\n"
+  fi
+done <<EOF
+$keebs
+EOF
+
+#
+# Pointing devices
+#
+
+# Device IDs from `riverctl list-inputs`.
+pointer_lgtch="pointer-1133-16505-Logitech_G_Pro"
+pointer_apple="pointer-76-613-Apple_Inc._Magic_Trackpad_2"
+
+# Concatenate and separate by newline.
+pointers="$pointer_lgtch $pointer_apple"
+pointers="$(printf "$pointers" | tr '[:space:]' '\n')"
+
+# Configure common settings for all mice and trackpads the same.
+while read -r pointer; do
+  # TODO: Think. There must be *something* we can apply to all the devices here.
+
+  if [ -n state_debug ]; then
+    printf "Configuring pointer device \"%s\"…\n" "$pointer"
+  fi
+done <<EOF
+$pointers
+EOF
+
+# Set to `normal` to not refocus if another view has been explicitly focused. That means dragging
+# the pointer to another output/monitor doesn't always focus it, so pressing Super+2 would switch
+# focused tags on the first, wrong, output. Which is annoying.
+riverctl focus-follows-cursor always
+
+# Enable acceleration (none, flat, or adaptive).
+riverctl input "$pointer_apple" accel-profile adaptive
+
+# Acceleration factor (between -1.0 and 1.0).
+riverctl input "$pointer_apple" pointer-accel 0.5
+
+# Tap to click.
+riverctl input "$pointer_apple" tap enabled
+
+# Click method (none, button-area, clickfinger)
+riverctl input "$pointer_apple" click-method clickfinger
+
+# Hide pointer while typing.
+riverctl input "$pointer_apple" disable-while-typing enabled
+
+# Scroll method (none, two-finger, edge, button)
+riverctl input "$pointer_apple" scroll-method two-finger
+
+# Middle-click emulation.
+riverctl input "$pointer_apple" middle-emulation enabled
+
+# Natural scroll direction.
+riverctl input "$pointer_apple" natural-scroll disabled
+
+#
+# Keyboard
+#
+
 
 ##
 # KEY MAPS
@@ -189,9 +257,9 @@ riverctl border-width 2
 #
 
 # Applications and commands
-riverctl map normal Super D spawn "$cmd_launch_app"
+riverctl map normal Super D spawn "$cmd_launch_gui"
 riverctl map normal Super+Shift D spawn "$cmd_launch_cmd"
-riverctl map normal Super+Control D spawn "$cmd_launch_gui"
+riverctl map normal Super+Control D spawn "$cmd_launch_app"
 
 # Terminal emulators
 riverctl map normal Super Return spawn "$cmd_terminal_plain"
@@ -201,8 +269,8 @@ riverctl map normal Super+Control Return spawn "$cmd_terminal_popup"
 # File managers
 riverctl map normal Super G spawn "$cmd_files_tui"
 riverctl map normal Super+Shift G spawn "$cmd_files_qt"
-riverctl map normal Super+Control G spawn "$cmd_files_gtk"
-riverctl map normal Super+Alt G spawn "nautilus"
+riverctl map normal Super+Control G spawn "$cmd_files_gtk1"
+riverctl map normal Super+Alt G spawn "$cmd_files_gtk2"
 
 #
 # System
@@ -213,8 +281,8 @@ riverctl map normal Super+Alt G spawn "nautilus"
 riverctl map normal Super Q close
 riverctl map normal Super Backspace exit
 
-# Show status bar (starts daemon if not running)
-riverctl map normal Super B spawn "sh -c 'eww close bar || eww open bar'"
+# Show status bar (starts daemon if not running).
+riverctl map normal Super B spawn "sh -c 'eww close bar-1 || eww open bar-1'"
 
 #
 # Focus
@@ -252,12 +320,29 @@ riverctl map normal Super L send-layout-cmd rivertile "main-ratio +0.025"
 riverctl map normal Super A send-layout-cmd rivertile "main-count +1"
 riverctl map normal Super X send-layout-cmd rivertile "main-count -1"
 
-# Super+LeftMouse+Drag to move view (automatically floats it).
-# Super+RightMouse+Drag to resize view (automatically floats it).
-riverctl map-pointer normal Super BTN_LEFT move-view
+##
+# POINTER MAPS
+##
+
+# TODO: If any of these buttons don't get used, change it. Have it run a custom, mouse-oriented Eww
+# launcher. Toggle the scratchpad. Show the regular `fzf` lanuchers. Show pickers for clipboard
+# history, passwords (with Bitwarden CLI), snippets (any code, phrase, word, or sentence sub-optimal
+# to type on 60% keebs), emojis, Unicode symbols, Nerd Font icons, colors from the screen or from a
+# picker like GTK's, characters like em-dashes and middle dots (similar to Kitty's picker).
+# Anything. Prime button location. :)
+
+riverctl map-pointer normal Super BTN_LEFT move-view # Moving the window also floats it.
+riverctl map-pointer normal Super+Shift BTN_LEFT toggle-float # Move view to main layout area.
 riverctl map-pointer normal Super BTN_RIGHT resize-view
 
-# Bind number keys to tag actions
+riverctl map-pointer normal Super BTN_FORWARD close
+riverctl map-pointer normal Super BTN_BACK send-to-output previous
+
+riverctl map-pointer normal Super BTN_MIDDLE close # Close view under cursor.
+riverctl map-pointer normal Super+Shift BTN_MIDDLE zoom # Move view to main layout area.
+riverctl map-pointer normal Super+Control BTN_MIDDLE spawn "riverctl set-view-tags $scratchtag && riverctl toggle-focused-tags $scratchtag"
+
+# Bind number keys to tag actions.
 for i in $(seq 1 9); do
   tags=$((1 << (i - 1))) # Super+[1-9] to focus tag [0-8]
   riverctl map normal Super "$i" spawn "sh -c 'riverctl set-focused-tags $((stickytag + tags)) && eww update active-tag=$tags'"
@@ -277,28 +362,36 @@ done
 riverctl map normal Super 0 spawn "riverctl set-focused-tags $alltags && eww update active-tag=0"
 riverctl map normal Super+Shift 0 set-view-tags $alltags
 
-# TRY: Super+Shift/Control+F to toggle fullscreen, floating, and moving the view to the top ([F]irst
-# or [F]ocus) of the stack and to the main area. They're kinda related since tiling, fullscreen, and
-# floating are the only ways we use windows. Also, they mostly start with an `F`, mostly...
-riverctl map normal Super F toggle-fullscreen  # Toggle fullscreen.
-riverctl map normal Super+Shift F toggle-float # Toggle floating.
-riverctl map normal Super+Control F zoom       # Move view to main layout area.
-
+# Toggle view-related state such as fullscreen mode, floating mode, and whether or not to insert new
+# views at the top or the bottom of the list of views called the view stack.
 #
+# In practice, when using Rivertile, *top* means new views are moved to the main layout area on
+# creation, which by default is the left half of the screen and holds a single view.
+#
+# The `zoom` command moves the focused view to the top of the view stack, but the focused view
+# retains its focus (i.e., you have to click the view or use `Super+J` or `Super+K` focus it. and
+# `Super+A` and `Super+X` increases and decreases how many views it holds).
+#
+# The `zoom` action that can be mapped to move a view to that area (though will not affect focus).
+riverctl map normal Super F toggle-fullscreen
+riverctl map normal Super+Shift F toggle-float
+riverctl map normal Super+Control F zoom
+
+##
 # SCRATCHPAD AND STICKY
-#
+##
 
-# Toggle scratchpad
-riverctl map normal Super Z toggle-focused-tags $scratchtag
+# Toggle scratchpad.
+riverctl map normal Super Z toggle-focused-tags "$scratchtag"
 
-# Send window to scratchpad
+# Send window to scratchpad.
 riverctl map normal Super+Shift Z spawn "riverctl set-view-tags $scratchtag && riverctl toggle-focused-tags $scratchtag"
 
-# Toggle sticky
-riverctl map normal Super+Shift S toggle-view-tags $stickytag
+# Toggle sticky.
+riverctl map normal Super+Shift S toggle-view-tags "$stickytag"
 
 # Ensure new windows don't have the scratchpad or sticky tag unless explicitly set.
-riverctl spawn-tagmask $availabletags
+riverctl spawn-tagmask "$availabletags"
 
 ##
 # MODES
@@ -453,22 +546,24 @@ riverctl float-filter-add app-id "mpv"
 riverctl float-filter-add app-id "nemo"
 riverctl float-filter-add app-id "org.gnome.Nautilus"
 riverctl float-filter-add app-id "org.kde.Kate"
+riverctl float-filter-add app-id "org.kde.Kwrite"
 riverctl float-filter-add app-id "org.kde.dolphin"
+riverctl float-filter-add app-id "org.ksnip.ksnip"
 riverctl float-filter-add app-id "org.kde.haruna"
 riverctl float-filter-add app-id "pavucontrol"
 riverctl float-filter-add app-id "pavucontrol-qt"
 riverctl float-filter-add app-id "qt5ct"
+riverctl float-filter-add app-id "qv4l2"   # Cam settings UI, works great with a Logitech Brio 4K.
+riverctl float-filter-add app-id "qvidcap" # Cam settings UI, preview window.
 riverctl float-filter-add app-id "vimiv"
 riverctl float-filter-add app-id "vlc"
 riverctl float-filter-add app-id "wdisplays"
 
-# TODO: Consider `app-id` instead of `title` for terminals with startup sessions.
-riverctl float-filter-add title "devterm"
-riverctl float-filter-add title "fuzzyterm"
-riverctl float-filter-add title "plainterm"
-riverctl float-filter-add title "popupterm"
-riverctl float-filter-add title "scratchterm"
-riverctl float-filter-add title "transterm"
+riverctl float-filter-add app-id "fuzzyterm"
+riverctl float-filter-add app-id "plainterm"
+riverctl float-filter-add app-id "popupterm"
+riverctl float-filter-add app-id "scratchterm"
+riverctl float-filter-add app-id "transterm"
 
 riverctl float-filter-add title "Bitwarden"
 riverctl float-filter-add title "Kvantum Manager"
@@ -487,6 +582,7 @@ riverctl csd-filter-add app-id "com.github.wwmm.easyeffects"
 riverctl csd-filter-add app-id "firefox-nightly"
 riverctl csd-filter-add app-id "nemo"
 riverctl csd-filter-add app-id "org.gnome.Nautilus"
+riverctl csd-filter-add app-id "org.ksnip.ksnip"
 riverctl csd-filter-add app-id "io.github.celluloid_player.Celluloid"
 riverctl csd-filter-add app-id "wdisplays"
 
@@ -495,23 +591,25 @@ riverctl csd-filter-add app-id "wdisplays"
 ##
 
 #
-# Spawn on launch
+# AUTO-START
 #
 
 # Convenience variables exported during session launch (or by sourcing this config).
-export NORDIX_RIVER_TAGS_ALL="$(((1 << 32) - 1))"
-export NORDIX_RIVER_TAGS_STICKY="$((1 << 20))"
-export NORDIX_RIVER_TAGS_SCRATCHPAD="$((1 << 21))"
-export NORDIX_RIVER_TAGS_NON_STICKY="$((alltags ^ stickytag))"
-export NORDIX_RIVER_TAGS_NON_SCRATCHPAD="$((alltags ^ scratchtag))"
-export NORDIX_RIVER_TAGS_NON_SPECIAL="$((noscratchtag ^ stickytag))"
+export NX_RIVER_TAGS_ALL="$(((1 << 32) - 1))"
+export NX_RIVER_TAGS_STICKY="$((1 << 20))"
+export NX_RIVER_TAGS_SCRATCHPAD="$((1 << 21))"
+export NX_RIVER_TAGS_NONSTICKY="$((alltags ^ stickytag))"
+export NX_RIVER_TAGS_NONSCRATCHPAD="$((alltags ^ scratchtag))"
+export NX_RIVER_TAGS_NONSPECIAL="$((noscratchtag ^ stickytag))"
 
-# Convenience variables imported and available to D-BUS and `systemd`.
-export NORDIX_ENV="NORDIX_ENV NORDIX_RIVER_TAGS_STICKY NORDIX_RIVER_TAGS_SCRATCHPAD"
+# Convenience variables imported and available to D-BUS and `systemd`. No substitution.
+export NX_ENV_RIVER="NX_RIVER_TAGS_STICKY NX_RIVER_TAGS_SCRATCHPAD "
+export NX_ENV_IMPORTS="$NX_ENV DISPLAY WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XDG_RUNTIME_DIR MOZ_DBUS_REMOTE MOZ_USE_XINPUT2"
 
-# Not specifying which variables to import is deprecated. Usually `WAYLAND_DISPLAY`, `DISPLAY`,
-# and `XDG_*` are recommended to import, but let's grab a handful as no one is watching anyway...
-_rctl_spawn "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 $NORDIX_ENV"
+# To not specify which variables to import is deprecated. Usually `WAYLAND_DISPLAY`, `DISPLAY`, and
+# and `XDG_*` are recommended, but let's add some others that were set in the River launch script,
+# at `./start`.
+_rctl_spawn "dbus-update-activation-environment --systemd $NX_ENV"
 
 # This is probably unnecessary since we use `--systemd` above.
 _rctl_spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 $NORDIX_ENV"
@@ -519,7 +617,7 @@ _rctl_spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_SESSION_DES
 # Launch Policy Kit.
 _rctl_spawn_once "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
 _rctl_spawn_once "swaybg --image ~/Pictures/Wallpapers/active --mode fill --output '*'"
-_rctl_spawn_shell "riverctl set-focused-tags $NORDIX_RIVER_TAGS_SCRATCHPAD && sleep 0.25 && riverctl spawn $scratchterm && sleep 0.25 && riverctl set-focused-tags $NORDIX_RIVER_NON_SPECIAL"
+_rctl_spawn_shell "riverctl set-focused-tags $NORDIX_RIVER_TAGS_SCRATCHPAD && sleep 0.5 && riverctl spawn $cmd_terminal_scratchpad && sleep 0.25 && riverctl set-focused-tags $NX_RIVER_NONSPECIAL"
 
 # Trigger systemd target used to launch certain services.
 _rctl_spawn_once "systemctl --user start river-session.target"
@@ -527,8 +625,15 @@ _rctl_spawn_once "systemctl --user start river-session.target"
 # Set monitor positions, resolutions, update rates, etc.
 _rctl_spawn_once "kanshi"
 
-# Open top bar widget.
-_rctl_spawn_once "eww open bar"
+# Top bar widget for primary monitor.
+#
+# Using the same window for multiple monitors isn't supported yet. Instead, I've added a "bar-2" and
+# "bar-3", one per monitor, all identical except for naming. Those can be opened on the two smaller
+# 24" monitors stacked vertically to the left of the primary 34" ultra-wide. Performance difference 
+# is negligable on this Ryzen 7 machine (likely helps that `eww` runs as a daemon).
+#
+# Currently prefer having the one bar on the main monitor as it saves space on the two 24" 1080p.
+_rctl_spawn_once "eww open bar-1"
 
 #
 # Layout generator

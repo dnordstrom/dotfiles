@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xbel>
+<xbel xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info" xmlns:kdepriv="http://www.kde.org/kdepriv" dbusName="dolphin" xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks">
+ <folder>
+  <title>test</title>
+  <folder>
+   <title>Test</title>
+   <desc>Test</desc>
+  </folder>
+ </folder>
+</xbel>

@@ -1,0 +1,20 @@
+##
+# MONITOR CONFIGURATION
+#
+# Just a configuration file for Kanshi, the daemon we chose to manage the monitor settings and
+# layouts accordingly. It probably keeps track of updates, reloading the config as needed. I know
+# for a fact that it loads a matching profile plug 'n' play when monitors are plugged in or out.
+##
+
+profile home {
+	output DP-1 enable scale 1 mode 3440x1440@99.982 position 2397,780
+  output DP-2 enable scale 0.8 mode 1920x1080@144.001 position 0,1349
+  output DVI-D-1 enable scale 0.8 mode 1920x1080@60Hz position 0,0
+}
+
+profile homeIgnoreHDMI {
+	output DP-1 enable scale 1 mode 3440x1440@99.982 position 2397,780
+  output DP-2 enable scale 0.8 mode 1920x1080@144.001 position 0,1349
+  output DVI-D-1 enable scale 0.8 mode 1920x1080@60Hz position 0,0
+  output HDMI-A-1 disable
+}

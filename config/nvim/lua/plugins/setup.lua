@@ -2,15 +2,18 @@
 -- PLUGINS SETUP
 ----
 
-local fn = vim.fn
-local path = fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
-local command = "git clone --depth 1 https://github.com/wbthomason/packer.nvim"
-local installed = fn.empty(fn.glob(path)) == 0
-local bootstrapped = false
-
-if not installed then
-	bootstrapped = fn.system({ string.split(command, " "), path })
+local ensure_packer = function()
+  local fn = vim.fn
+  local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+  if fn.empty(fn.glob(install_path)) > 0 then
+    fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+    vim.cmd [[packadd packer.nvim]]
+    return true
+  end
+  return false
 end
+
+local packer_bootstrap = ensure_packer()
 
 return require("packer").startup(function(use)
 	local devicons = "kyazdani42/nvim-web-devicons"
@@ -21,11 +24,11 @@ return require("packer").startup(function(use)
 	-- NEOVIM
 	--
 
+	-- Plugin manager (must come first)
+	use({ "wbthomason/packer.nvim" })
+
 	-- Helper for plugins
 	use({ plenary })
-
-	-- Plugin manager
-	use({ "wbthomason/packer.nvim" })
 
 	-- Reloads configuration (`:Restart` triggers `VimEnter` while `:Reload` doesn't)
 	use({ "famiu/nvim-reload" })
@@ -187,7 +190,7 @@ return require("packer").startup(function(use)
 	-- Update and compile
 	--
 
-	if bootstrapped then
+	if packer_bootstrap then
 		require("packer").sync()
 	end
 end)

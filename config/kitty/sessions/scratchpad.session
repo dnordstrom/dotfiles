@@ -21,7 +21,7 @@ enabled_layouts tall,horizontal
 
 new_tab Home
 
-launch --cwd ~ -- zsh -c "nvim .notes.md ; exec zsh"
+launch --cwd ~ -- sh -c "nvim .notes.md ; exec zsh"
 launch --cwd ~
 
 #
@@ -33,6 +33,6 @@ launch --cwd ~
 
 new_tab NixOS
 
-launch --cwd /etc/nixos -- zsh -c "nvim ; exec zsh"
+launch --cwd /etc/nixos -- sh -c "nvim ; exec zsh"
 launch --cwd /etc/nixos
 

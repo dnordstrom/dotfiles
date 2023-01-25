@@ -15,21 +15,24 @@ NixOS is awesome.
 
 ## Blueprints
 
-* `cachix/`: Generated files for pointing to binary caches for various inputs.
+* `cachix/`: Generated files for registering binary caches for flake inputs. A package can be anything 
+* `users/`: User specific configuration using Home Manager.
+* `modules/`: Will contain Nix modules we make as we refactor. `common.nix` is 
+  `/etc/nixos/configuration.nix`
 
 ## Hardware
 
-* Ryzen 7 2700X
-* Radeon RX 590 Fatboy
-* Ducky One 2 Mini, Vortex Pok3r RGB, and Das Keyboard Ultimate 4C keyboards
-* Shure SM7B microphone
-* Focusrite Scarlett Solo 3rd Gen (audio interface)
-* Cloudlifter CL-1 microphone amp
-* Audeze LCD-2 Closed Back headphones (via audio interface)
-* Sennheiser HD 660 S open back headphones (via front jack)
-* NAD C328 stereo amplifier
-* Logitech Brio webcam
-* Logitech G Pro Wireless and Apple Magic Trackpad 2
+* Ryzen 7 2700X.
+* Radeon RX 590 Fatboy.
+* Ducky One 2 Mini, Vortex Pok3r RGB, and Das Keyboard Ultimate 4C keyboards.
+* Shure SM7B microphone.
+* Focusrite Scarlett Solo 3rd Gen (audio interface).
+* Cloudlifter CL-1 microphone amp.
+* Audeze LCD-2 Closed Back headphones (via audio interface).
+* Sennheiser HD 660 S open back headphones (via front jack).
+* NAD C328 stereo amplifier.
+* Logitech Brio webcam.
+* Logitech G Pro Wireless and Apple Magic Trackpad 2.
 
 ## Software
 
