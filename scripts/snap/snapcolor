@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 #
-# Simple color picker using slurp. Copies the color to clipboard and shows a notification if a
+# Simple color picker using `slurp` to grab any clicked pixel, and copies the color to clipboard and shows a notification if a
 # daemon is found. Hex format unless using the --rgb (-r) flag.
 #
 
@@ -8,11 +8,15 @@ usage="USAGE:
     $(basename "$0") [options]
 
 DESCRIPTION:
-    Click a color to copy it to clipboard. A notificaion is displayed if a notification daemon is installed. Hex format is used unless the --rgb (-r) flag is used.
+    A command line tool for clicking a pixel on the screen and getting
+    its color in hex format, as notification and copied to clipboard.
+
+    If RGB values float your boat, see \`--rgb\` or shorthand \`-r\`.
 
 OPTIONS:
     --rgb, -r     Use RGB format
-    --help, -h    Show this help text"
+    --help, -h    Show this help text
+"
 
 for arg in "$@"; do
   case $arg in
@@ -31,16 +35,16 @@ for arg in "$@"; do
   esac
 done
 
-# Make sure ImageMagick dependency is available
+# Make sure ImageMagick dependency is available.
 if ! [ -x "$(command -v convert)" ]; then
   printf "%s" "Cannot find convert command. Please make sure ImageMagick is installed."
   exit 1
 fi
 
-# Use slurp to pick position, grim to get pixel image, and convert to get color
+# Use slurp to pick position, grim to get pixel image, and convert to get color.
 color=$(grim -g "$(slurp -p)" -t ppm - | convert - -format '%[pixel:p{0,0}]' txt:- | tail -n 1) 2>/dev/null
 
-# Fetch color as hex and RGB
+# Fetch color as hex and RGB.
 rgb="$(printf "%s" "$color" | sed 's,^.*\([0-9]\+\)\,\([0-9]\+\)\,\([0-9]\+\).*$,rgb(\1\, \2\, \3),g')"
 hex="$(printf "%s" "$color" | sed 's,^.*\(#\w\{6\}\).*$,\1,g')"
 
@@ -52,12 +56,12 @@ else
   secondary="$rgb"
 fi
 
-# Copy to clipboard
+# Copy to clipboard.
 [ -x "$(command -v wl-copy)" ] && \
   wl-copy "$primary"
 
-# Show notification
+# Show notification.
 [ -x "$(command -v notify-send)" ] && \
-  notify-send --urgency low --icon deepin-picker "$primary" "$secondary"
+  dbus-launch -- notify-send --icon deepin-picker "$primary" "$secondary"
 
 exit 0

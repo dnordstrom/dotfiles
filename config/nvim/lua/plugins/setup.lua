@@ -43,7 +43,7 @@ return require("packer").startup(function(use)
 	-- Icons
 	use({ devicons }) -- Icons
 
-	-- Colorschemes
+	-- Color schemes
 	use({ "catppuccin/nvim", as = "catppuccin" })
 
 	-- Status lines
@@ -79,9 +79,13 @@ return require("packer").startup(function(use)
 	--
 	-- TODO: Go back to knubie's repo when PR is merged: https://github.com/knubie/vim-kitty-navigator/pull/33
 	use({ "kintsugi/vim-kitty-navigator", branch = "master" })
+
 	--
 	-- LANGUAGE AND SYNTAX
 	--
+
+  -- Zen Mode centered layout with less distractions.
+  use({ "folke/zen-mode.nvim", config = function() require("zen-mode").setup({}) end })
 
 	--
 	-- Language server configuration

@@ -1,0 +1,6 @@
+{
+    "device": "alsa_output.pci-0000_0b_00.3.analog-stereo.2",
+    "device-description": "Family 17h (Models 00h-0fh) HD Audio Controller Analog Stereo",
+    "device-profile": "analog-output-lineout",
+    "preset-name": "Audio-Technica ATH M50 · oratory1990 Velour Pad Sound"
+}

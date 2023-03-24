@@ -95,6 +95,12 @@ menubar > menu {
  * BOOKMARKS TOOLBAR
  */
 
+/* Remove the "place your bookmarks here" from empty bookmarks toolbar */
+
+#personal-toolbar-empty-description {
+  display: none !important;
+}
+
 /* Tweak container spacing, item and separator colors, etc. */
 
 #PersonalToolbar {
@@ -102,40 +108,16 @@ menubar > menu {
   font-family: "Symbols Nerd Font", "Public Sans", sans-serif;
   font-size: 0.875rem !important; /* 14px/16px = 0.875rem */
   border-bottom: 1px solid rgba(0, 0, 0, 0.15) !important;
-  padding: 0 8px !important;
   line-height: 1.8 !important;
   margin-bottom: -1px !important;
 }
-
-/* Align URL bar with toolbar icons */
-
-#nav-bar toolbarbutton {
-  margin: -3px 0 3px !important;
-  padding: 0 3px !important;
-}
-
-/**
- * NAV BAR
- */
 
 #nav-bar {
   padding-block: 2px 6px !important;
   -moz-box-align: center !important;
 }
 
-/* Reduce size of URL bar icons */
-
-.sharing-icon,
-#identity-icon,
-#permissions-granted-icon,
-#tracking-protection-icon,
-#tracking-protection-icon-box,
-#blocked-permissions-container > .blocked-permission-icon {
-  width: 12px !important;
-  height: 12px !important;
-}
-
-/* Compact format */
+/* COMPACT DENSITY */
 
 .tabbrowser-tab[last-visible-tab='true'] {
   padding-inline-end: 0 !important;

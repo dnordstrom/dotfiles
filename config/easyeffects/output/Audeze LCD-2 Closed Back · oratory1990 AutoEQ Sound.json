@@ -1,7 +1,9 @@
 {
     "output": {
         "blocklist": [],
-        "equalizer": {
+        "equalizer#0": {
+            "balance": 0.0,
+            "bypass": false,
             "input-gain": -6.4,
             "left": {
                 "band0": {
@@ -108,6 +110,8 @@
             "mode": "FIR",
             "num-bands": 10,
             "output-gain": 0.0,
+            "pitch-left": 0.0,
+            "pitch-right": 0.0,
             "right": {
                 "band0": {
                     "frequency": 21.0,
@@ -213,7 +217,7 @@
             "split-channels": false
         },
         "plugins_order": [
-            "equalizer"
+            "equalizer#0"
         ]
     }
 }

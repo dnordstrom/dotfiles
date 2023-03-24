@@ -1,0 +1,6 @@
+{
+    "device": "alsa_output.usb-Sennheiser_electronic_GmbH___Co._KG_MOMENTUM_3_KG091016467900576383B12J902760004-00.iec958-stereo",
+    "device-description": "MOMENTUM 3 Digital Stereo (IEC958)",
+    "device-profile": "iec958-stereo-output",
+    "preset-name": "Sennheiser MOMENTUM 3 Wireless · NORD Signature Sound"
+}

@@ -61,7 +61,7 @@
       # more stable, hopefully we can make plugins without assuming latest nightly alpha version.
       # Use overlays from the `./overlays/default.nix` module.
       overlay-import = import ./overlays;
-      overlay-inputs = [ agenix.overlay neovim.overlay rust.overlays.default ];
+      overlay-inputs = [ agenix.overlays.default neovim.overlay rust.overlays.default ];
     in mkFlake {
       inherit self inputs;
 
@@ -85,7 +85,7 @@
 
         # Encrypts and decrypts what shouldn't be viewable in a public Git repository. Could be SSH
         # and GPG keys, shell variables to export, and so on.
-        agenix.nixosModule
+        agenix.nixosModules.default
         homemanager.nixosModules.home-manager
         (let args = { inherit inputs; };
         in {

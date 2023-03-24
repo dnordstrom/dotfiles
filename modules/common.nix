@@ -3,9 +3,9 @@
 let
   username = "dnordstrom";
   password = "Who knows?";
-  homeDirectory = "/home/${username}";        # Home directory.
+  homeDirectory = "/home/${username}"; # Home directory.
   mediaDirectory = "${homeDirectory}/Videos"; # Plex library.
-  musicDirectory = "${homeDirectory}/Music";  # Roon library.
+  musicDirectory = "${homeDirectory}/Music"; # Roon library.
 in {
   #
   # IMPORTS
@@ -146,9 +146,8 @@ in {
       antialias = true;
       useEmbeddedBitmaps = true;
 
-      #
       defaultFonts = {
-        emoji = [ "JoyPixels" ];
+        emoji = [ "Twemoji" ];
         sansSerif = [ "Public Sans" "Symbols Nerd Font" ];
         serif = [ "PT Serif" "Symbols Nerd Font" ];
         monospace = [ "PragmataPro Mono Liga" "Symbols Nerd Font" ];
@@ -281,14 +280,15 @@ in {
     udev.packages = [ pkgs.nordpkgs.udev-rules ];
 
     #
-    # Audio using PipeWire with Wireplumber as session manager.
+    # Audio
     #
 
     pipewire = {
       # Enable the service.
       enable = true;
 
-      # Use PipeWire as primary audio server (enabled by default).
+      # Use PipeWire as primary audio server (enabled by default). This adds some configuration
+      # files for Wireplumber and Bluetooth quirks, see derivation for details.
       audio.enable = true;
 
       # Enable ALSA.
@@ -300,18 +300,37 @@ in {
       # Use PulseAudio emulation where PipeWire isn't supported.
       pulse.enable = true;
 
-      # Use Wireplumber for modular session and policy management.
+      # Use Wireplumber as session manager.
       wireplumber.enable = true;
 
-      # Use 44.1 KHz by default and specify allowed sample rates of DAC.
-      config.pipewire = {
-        "context.properties" = {
-          "core.daemon" = true;
-          "core.name" = "pipewire-0";
-          "default.clock.rate" = 44100;
-          "default.allowed-rates" =
-            [ 44100 48000 88200 96000 176400 192000 384000 ];
-          "link.max-buffers" = 16;
+      # Set up `systemd` with user services rather than system services--adding a few configuration
+      # files to the system `etc`--like the `NEWS` file for PipeWire 0.3.11 recommends on GitHub:
+      #
+      # https://github.com/PipeWire/pipewire/blob/fb8709716cc69f43cc2bfe83177d69f7501c052e/NEWS#L4270
+      systemWide = false;
+
+      # Disable simple default session manager, since we use Wireplumber.
+      media-session.enable = false;
+
+      # Configure PipeWire.
+      config = {
+        pipewire = {
+          "context.properties" = {
+            "core.daemon" = true;
+            "core.name" = "pipewire-0";
+            "default.clock.allowed-rates" =
+              [ 44100 48000 88200 96000 176400 192000 ];
+            "default.clock.max-quantum" = 512;
+            "default.clock.min-quantum" = 64;
+            "default.clock.quantum" = 256;
+            "default.clock.rate" = 44100;
+            "link.max-buffers" = 16;
+            "log.level" = 2;
+          };
+        };
+
+        pipewire-pulse = {
+          "stream.properties" = { "resample.quality" = 10; };
         };
       };
     };
@@ -462,7 +481,7 @@ in {
       enable = true;
       package = pkgs.bluezFull; # Full version includes plugins.
 
-      # Enable support for HSP and HFP profiles, but Wireplumber apparently does that now.
+      # We would enable support for HSP and HFP profiles, but Wireplumber apparently does that now.
       hsphfpd.enable = false;
 
       # Enable audio source and sink.

@@ -345,6 +345,18 @@ alias switch="git switch"
 alias merge="git merge"
 alias clone="git clone"
 
+# `watch` - Opens video or audio from URL (e.g. YouTube) in media player.
+#
+# Arguments:
+# - $* - URL to scrape for video stream to download.
+w() {
+  if [ $# -eq 0 ]; then
+    ytfzf
+  else
+    youtube-dl "$*" -o - | nohup mpv - >/dev/null 2>&1
+  fi
+}
+
 # Generate a `sh -c ...` command for running the given command(s), enclosed in single quotes after
 # the command has done the substitution.
 #

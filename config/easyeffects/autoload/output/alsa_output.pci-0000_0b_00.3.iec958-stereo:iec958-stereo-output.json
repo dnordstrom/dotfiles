@@ -1,6 +1,0 @@
-{
-    "device": "alsa_output.pci-0000_0b_00.3.iec958-stereo",
-    "device-description": "Family 17h (Models 00h-0fh) HD Audio Controller Digital Stereo (IEC958)",
-    "device-profile": "iec958-stereo-output",
-    "preset-name": "Sennheiser HD 660 S Reddit oratory1990 Parametric EQ Optimum Hifi"
-}

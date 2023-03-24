@@ -210,6 +210,11 @@ done <<EOF
 $pointers
 EOF
 
+# Disable mouse acceleration. Profile "none" and factor "0" (must be between -1.0 and 1.0).
+riverctl input "$pointer_lgtch" accel-profile none
+riverctl input "$pointer_lgtch" pointer-accel 0
+
+
 # Set to `normal` to not refocus if another view has been explicitly focused. That means dragging
 # the pointer to another output/monitor doesn't always focus it, so pressing Super+2 would switch
 # focused tags on the first, wrong, output. Which is annoying.
@@ -249,156 +254,7 @@ riverctl input "$pointer_apple" natural-scroll disabled
 ##
 
 #
-# Launchers
-#
-# We use our own little shell script launchers instead of some rock-solid, mature crap... In
-# seriousness: we do and they're a little slow, but we cache the results so they're instant.
-# Anywhere we can use `fzf` and our currently favorite terminal, we will---priceless duo.
-#
-
-# Applications and commands
-riverctl map normal Super D spawn "$cmd_launch_gui"
-riverctl map normal Super+Shift D spawn "$cmd_launch_cmd"
-riverctl map normal Super+Control D spawn "$cmd_launch_app"
-
-# Terminal emulators
-riverctl map normal Super Return spawn "$cmd_terminal_plain"
-riverctl map normal Super+Shift Return spawn "$cmd_terminal_scratchpad"
-riverctl map normal Super+Control Return spawn "$cmd_terminal_popup"
-
-# File managers
-riverctl map normal Super G spawn "$cmd_files_tui"
-riverctl map normal Super+Shift G spawn "$cmd_files_qt"
-riverctl map normal Super+Control G spawn "$cmd_files_gtk1"
-riverctl map normal Super+Alt G spawn "$cmd_files_gtk2"
-
-#
-# System
-#
-
-# Super+Q to close view
-# Super+Backspace to exit session.
-riverctl map normal Super Q close
-riverctl map normal Super Backspace exit
-
-# Show status bar (starts daemon if not running).
-riverctl map normal Super B spawn "sh -c 'eww close bar-1 || eww open bar-1'"
-
-#
-# Focus
-#
-
-# Super+Tab to quick switch to previous tags.
-riverctl map normal Super Tab focus-previous-tags
-
-# Super+J and Super+K to focus the next/previous view in the layout stack
-# Super+Shift+J and Super+Shift+K to swap focused view with the next/previous view in stack.
-riverctl map normal Super J focus-view next
-riverctl map normal Super K focus-view previous
-riverctl map normal Super+Shift J swap next
-riverctl map normal Super+Shift K swap previous
-
-# Output maps reversed/swapped compared to the original configuration to match the physical setup.
-# Comma moves window or focus clockwise, while period moves counter-clockwise.
-#
-# Super+Period|Comma to focus previous/next output.
-# Super+Shift+Period|Comma to send view to previous/next output.
-riverctl map normal Super Comma focus-output next
-riverctl map normal Super Period focus-output previous
-riverctl map normal Super+Shift Comma send-to-output next
-riverctl map normal Super+Shift Period send-to-output previous
-
-#
-# Layout
-#
-
-# Decrease/increase the main area ratio
-riverctl map normal Super H send-layout-cmd rivertile "main-ratio -0.025"
-riverctl map normal Super L send-layout-cmd rivertile "main-ratio +0.025"
-
-# Increment/decrement the main area count
-riverctl map normal Super A send-layout-cmd rivertile "main-count +1"
-riverctl map normal Super X send-layout-cmd rivertile "main-count -1"
-
-##
-# POINTER MAPS
-##
-
-# TODO: If any of these buttons don't get used, change it. Have it run a custom, mouse-oriented Eww
-# launcher. Toggle the scratchpad. Show the regular `fzf` lanuchers. Show pickers for clipboard
-# history, passwords (with Bitwarden CLI), snippets (any code, phrase, word, or sentence sub-optimal
-# to type on 60% keebs), emojis, Unicode symbols, Nerd Font icons, colors from the screen or from a
-# picker like GTK's, characters like em-dashes and middle dots (similar to Kitty's picker).
-# Anything. Prime button location. :)
-
-riverctl map-pointer normal Super BTN_LEFT move-view # Moving the window also floats it.
-riverctl map-pointer normal Super+Shift BTN_LEFT toggle-float # Move view to main layout area.
-riverctl map-pointer normal Super BTN_RIGHT resize-view
-
-riverctl map-pointer normal Super BTN_FORWARD close
-riverctl map-pointer normal Super BTN_BACK send-to-output previous
-
-riverctl map-pointer normal Super BTN_MIDDLE close # Close view under cursor.
-riverctl map-pointer normal Super+Shift BTN_MIDDLE zoom # Move view to main layout area.
-riverctl map-pointer normal Super+Control BTN_MIDDLE spawn "riverctl set-view-tags $scratchtag && riverctl toggle-focused-tags $scratchtag"
-
-# Bind number keys to tag actions.
-for i in $(seq 1 9); do
-  tags=$((1 << (i - 1))) # Super+[1-9] to focus tag [0-8]
-  riverctl map normal Super "$i" spawn "sh -c 'riverctl set-focused-tags $((stickytag + tags)) && eww update active-tag=$tags'"
-
-  # Super+Shift+[1-9] to tag focused view with tag [0-8]
-  riverctl map normal Super+Shift "$i" set-view-tags $tags
-
-  # Super+Ctrl+[1-9] to toggle focus of tag [0-8]
-  riverctl map normal Super+Control "$i" toggle-focused-tags $tags
-
-  # Super+Shift+Ctrl+[1-9] to toggle tag [0-8] of focused view
-  riverctl map normal Super+Alt "$i" toggle-view-tags $tags
-done
-
-# Super+0 to focus all tags.
-# Super+Shift+0 to tag focused view with all tags.
-riverctl map normal Super 0 spawn "riverctl set-focused-tags $alltags && eww update active-tag=0"
-riverctl map normal Super+Shift 0 set-view-tags $alltags
-
-# Toggle view-related state such as fullscreen mode, floating mode, and whether or not to insert new
-# views at the top or the bottom of the list of views called the view stack.
-#
-# In practice, when using Rivertile, *top* means new views are moved to the main layout area on
-# creation, which by default is the left half of the screen and holds a single view.
-#
-# The `zoom` command moves the focused view to the top of the view stack, but the focused view
-# retains its focus (i.e., you have to click the view or use `Super+J` or `Super+K` focus it. and
-# `Super+A` and `Super+X` increases and decreases how many views it holds).
-#
-# The `zoom` action that can be mapped to move a view to that area (though will not affect focus).
-riverctl map normal Super F toggle-fullscreen
-riverctl map normal Super+Shift F toggle-float
-riverctl map normal Super+Control F zoom
-
-##
-# SCRATCHPAD AND STICKY
-##
-
-# Toggle scratchpad.
-riverctl map normal Super Z toggle-focused-tags "$scratchtag"
-
-# Send window to scratchpad.
-riverctl map normal Super+Shift Z spawn "riverctl set-view-tags $scratchtag && riverctl toggle-focused-tags $scratchtag"
-
-# Toggle sticky.
-riverctl map normal Super+Shift S toggle-view-tags "$stickytag"
-
-# Ensure new windows don't have the scratchpad or sticky tag unless explicitly set.
-riverctl spawn-tagmask "$availabletags"
-
-##
-# MODES
-##
-
-#
-# Declarations
+# Modes
 #
 
 riverctl declare-mode passthrough
@@ -409,7 +265,7 @@ riverctl declare-mode window-move
 riverctl declare-mode window-resize
 
 #
-# Map keys to exit modes
+# Map keys to return to normal mode
 #
 
 _rctl_map_exit_mode system
@@ -531,12 +387,168 @@ for mode in normal locked; do
   riverctl map -repeat $mode None XF86MonBrightnessUp spawn "light -A 5"
   riverctl map -repeat $mode None XF86MonBrightnessDown spawn "light -U 5"
 done
+#
+# Launchers
+#
+# We use our own little shell script launchers instead of some rock-solid, mature crap... In
+# seriousness: we do and they're a little slow, but we cache the results so they're instant.
+# Anywhere we can use `fzf` and our currently favorite terminal, we will---priceless duo.
+#
+
+# Applications and commands
+riverctl map normal Super D spawn "$cmd_launch_gui"
+riverctl map normal Super+Shift D spawn "$cmd_launch_cmd"
+riverctl map normal Super+Control D spawn "$cmd_launch_app"
+
+# Terminal emulators
+riverctl map normal Super Return spawn "$cmd_terminal_plain"
+riverctl map normal Super+Shift Return spawn "$cmd_terminal_scratchpad"
+riverctl map normal Super+Control Return spawn "$cmd_terminal_popup"
+
+# File managers
+riverctl map normal Super G spawn "$cmd_files_tui"
+riverctl map normal Super+Shift G spawn "$cmd_files_qt"
+riverctl map normal Super+Control G spawn "$cmd_files_gtk1"
+riverctl map normal Super+Alt G spawn "$cmd_files_gtk2"
+
+#
+# System
+#
+
+# Super+Q to close view
+# Super+Backspace to exit session.
+riverctl map normal Super Q close
+riverctl map normal Super Backspace exit
+
+# Show status bar (starts daemon if not running).
+riverctl map normal Super B spawn "sh -c 'eww close bar-1 || eww open bar-1'"
+
+#
+# Focus
+#
+
+# Super+Tab to quick switch to previous tags.
+riverctl map normal Super Tab focus-previous-tags
+
+# Super+J and Super+K to focus the next/previous view in the layout stack
+# Super+Shift+J and Super+Shift+K to swap focused view with the next/previous view in stack.
+riverctl map normal Super J focus-view next
+riverctl map normal Super K focus-view previous
+riverctl map normal Super+Shift J swap next
+riverctl map normal Super+Shift K swap previous
+
+# Output maps reversed/swapped compared to the original configuration to match the physical setup.
+# Comma moves window or focus clockwise, while period moves counter-clockwise.
+#
+# Super+Period|Comma to focus previous/next output.
+# Super+Shift+Period|Comma to send view to previous/next output.
+riverctl map normal Super Comma focus-output next
+riverctl map normal Super Period focus-output previous
+riverctl map normal Super+Shift Comma send-to-output next
+riverctl map normal Super+Shift Period send-to-output previous
+
+#
+# Layout
+#
+
+# Decrease/increase the main area ratio
+riverctl map normal Super H send-layout-cmd rivertile "main-ratio -0.025"
+riverctl map normal Super L send-layout-cmd rivertile "main-ratio +0.025"
+
+# Increment/decrement the main area count
+riverctl map normal Super A send-layout-cmd rivertile "main-count +1"
+riverctl map normal Super X send-layout-cmd rivertile "main-count -1"
+
+##
+# POINTER MAPS
+##
+
+# TODO: If any of these buttons don't get used, change it. Have it run a custom, mouse-oriented Eww
+# launcher. Toggle the scratchpad. Show the regular `fzf` lanuchers. Show pickers for clipboard
+# history, passwords (with Bitwarden CLI), snippets (any code, phrase, word, or sentence sub-optimal
+# to type on 60% keebs), emojis, Unicode symbols, Nerd Font icons, colors from the screen or from a
+# picker like GTK's, characters like em-dashes and middle dots (similar to Kitty's picker).
+# Anything. Prime button location. :)
+
+# Normal mode without modifier.
+riverctl map-pointer normal None BTN_FORWARD close
+riverctl map-pointer normal None BTN_BACK enter-mode window
+
+# Normal mode with modifier.
+riverctl map-pointer normal Super BTN_LEFT move-view
+riverctl map-pointer normal Super BTN_RIGHT resize-view
+riverctl map-pointer normal Super BTN_MIDDLE toggle-float
+riverctl map-pointer normal Super BTN_FORWARD toggle-fullscreen
+riverctl map-pointer normal Super BTN_BACK enter-mode window
+
+# Window mode without modifier.
+riverctl map-pointer window None BTN_LEFT move-view
+riverctl map-pointer window None BTN_RIGHT resize-view
+riverctl map-pointer window None BTN_MIDDLE enter-mode normal
+riverctl map-pointer window None BTN_FORWARD toggle-fullscreen
+riverctl map-pointer window None BTN_BACK enter-mode normal
+
+# Bind number keys to tag actions.
+for i in $(seq 1 9); do
+  tags=$((1 << (i - 1))) # Super+[1-9] to focus tag [0-8]
+  riverctl map normal Super "$i" spawn "sh -c 'riverctl set-focused-tags $((stickytag + tags)) && eww update active-tag=$tags'"
+
+  # Super+Shift+[1-9] to tag focused view with tag [0-8]
+  riverctl map normal Super+Shift "$i" set-view-tags $tags
+
+  # Super+Ctrl+[1-9] to toggle focus of tag [0-8]
+  riverctl map normal Super+Control "$i" toggle-focused-tags $tags
+
+  # Super+Shift+Ctrl+[1-9] to toggle tag [0-8] of focused view
+  riverctl map normal Super+Alt "$i" toggle-view-tags $tags
+done
+
+# Super+0 to focus all tags.
+# Super+Shift+0 to tag focused view with all tags.
+riverctl map normal Super 0 spawn "riverctl set-focused-tags $alltags && eww update active-tag=0"
+riverctl map normal Super+Shift 0 set-view-tags $alltags
+
+# Toggle view-related state such as fullscreen mode, floating mode, and whether or not to insert new
+# views at the top or the bottom of the list of views called the view stack.
+#
+# In practice, when using Rivertile, *top* means new views are moved to the main layout area on
+# creation, which by default is the left half of the screen and holds a single view.
+#
+# The `zoom` command moves the focused view to the top of the view stack, but the focused view
+# retains its focus (i.e., you have to click the view or use `Super+J` or `Super+K` focus it. and
+# `Super+A` and `Super+X` increases and decreases how many views it holds).
+#
+# The `zoom` action that can be mapped to move a view to that area (though will not affect focus).
+riverctl map normal Super F toggle-fullscreen
+riverctl map normal Super+Shift F toggle-float
+riverctl map normal Super+Control F zoom
+
+##
+# SCRATCHPAD AND STICKY
+##
+
+# Toggle scratchpad.
+riverctl map normal Super Z toggle-focused-tags "$scratchtag"
+
+# Send window to scratchpad.
+riverctl map normal Super+Shift Z spawn "riverctl set-view-tags $scratchtag && riverctl toggle-focused-tags $scratchtag"
+
+# Toggle sticky.
+riverctl map normal Super+Shift S toggle-view-tags "$stickytag"
+
+# Ensure new windows don't have the scratchpad or sticky tag unless explicitly set.
+riverctl spawn-tagmask "$availabletags"
+
 
 ##
 # FLOATING FILTERS
 #
 # We all float down here...
 ##
+
+#
+# Float windows by application ID (i.e., window class, or `WM_CLASS`).
+#
 
 riverctl float-filter-add app-id "MyMonero"
 riverctl float-filter-add app-id "element-desktop"
@@ -553,11 +565,16 @@ riverctl float-filter-add app-id "org.kde.haruna"
 riverctl float-filter-add app-id "pavucontrol"
 riverctl float-filter-add app-id "pavucontrol-qt"
 riverctl float-filter-add app-id "qt5ct"
-riverctl float-filter-add app-id "qv4l2"   # Cam settings UI, works great with a Logitech Brio 4K.
+riverctl float-filter-add app-id "qv4l2"   # Cam settings UI, great with Logitech Brio 4K.
 riverctl float-filter-add app-id "qvidcap" # Cam settings UI, preview window.
 riverctl float-filter-add app-id "vimiv"
 riverctl float-filter-add app-id "vlc"
 riverctl float-filter-add app-id "wdisplays"
+riverctl float-filter-add app-id "xdg-desktop-portal-gnome"
+
+#
+# Terminal emulators
+#
 
 riverctl float-filter-add app-id "fuzzyterm"
 riverctl float-filter-add app-id "plainterm"
@@ -565,9 +582,21 @@ riverctl float-filter-add app-id "popupterm"
 riverctl float-filter-add app-id "scratchterm"
 riverctl float-filter-add app-id "transterm"
 
+#
+# Float windows based on title. E.g., in Firefox Nightly it's
+# "Cool site - Cool title tag - Firefox Nightly". However, this can be
+# changed using browser extensions, command line flags, etc.
+#
+
+riverctl float-filter-add title "Save As",
 riverctl float-filter-add title "Bitwarden"
 riverctl float-filter-add title "Kvantum Manager"
-riverctl float-filter-add title "Parent process Browser Toolbox"
+
+# Firefox
+
+riverctl float-filter-add title "Parent process Browser Toolbox" # Devtools for the browser itself.
+riverctl float-filter-add title "Picture-in-Picture" # Firefox's PIP windows.
+riverctl float-filter-add title "" # Notifications. app-id is "firefox-nightly" and title is empty.
 
 # TODO: When regular expressions are invented, use `title "Developer Tools - .+"` for Firefox.
 
@@ -585,6 +614,7 @@ riverctl csd-filter-add app-id "org.gnome.Nautilus"
 riverctl csd-filter-add app-id "org.ksnip.ksnip"
 riverctl csd-filter-add app-id "io.github.celluloid_player.Celluloid"
 riverctl csd-filter-add app-id "wdisplays"
+riverctl csd-filter-add app-id "nemo"
 
 ##
 # WRAP UP

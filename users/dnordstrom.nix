@@ -503,9 +503,25 @@ in rec {
     #
 
     gnome-podcasts
-    libsForQt5.kasts
     pocket-casts
     raven-reader
+
+    #
+    # Borrowed KDE software
+    #
+
+    libsForQt5.kasts
+    libsForQt5.kdf
+    libsForQt5.kget
+    libsForQt5.kmix
+    libsForQt5.koko
+    libsForQt5.kontact
+    libsForQt5.krdc
+    libsForQt5.krfb
+
+    qt6.qt5compat
+    qt6.qt3d
+    qt6.full
 
     #
     # Communication
@@ -515,13 +531,14 @@ in rec {
     fractal
     gomuks
     gotktrix
+    kotatogram-desktop-with-webkit
     mirage-im
     nheko
     qtox
     schildichat-desktop-wayland
     signal-desktop
     slack
-    slack-term
+    tdesktop # Telegram desktop client.
     utox
     weechat
 
@@ -529,12 +546,11 @@ in rec {
     # Command line
     #
 
-    awscli2
     bottom
     fd
     gh
     libnotify
-    librsvg # Sypposedly a dependency to mdcat for showing images.
+    librsvg # Sypposedly a dependency to `mdcat` for showing images.
     mdcat
     ncpamixer # TRY: We ready to let Pavucontrol go?
     neofetch
@@ -605,7 +621,7 @@ in rec {
     # Office 
     #
 
-    libreoffice-fresh
+    # libreoffice-fresh TODO: Uncomment when not broken.
 
     #
     # Web
@@ -625,8 +641,6 @@ in rec {
     protonvpn-gui # Official GUI.
     # protonvpn-cli_2 # Community CLI.
 
-    _1password
-    _1password-gui-beta
     bitwarden
     bitwarden-cli
     git-crypt
@@ -635,8 +649,8 @@ in rec {
     yubico-pam
     yubico-piv-tool
     yubikey-agent
-    yubikey-manager
-    yubikey-manager-qt
+    # yubikey-manager
+    # yubikey-manager-qt
     yubikey-personalization
     yubikey-personalization-gui
     yubikey-touch-detector
@@ -650,7 +664,6 @@ in rec {
     easyeffects # Systemd service (`services.easyeffects` module), but keep conflicts with JamesDSP.
     enlightenment.ephoto
     enlightenment.rage
-    handbrake
     haruna
     jamesdsp
     pavucontrol
@@ -679,8 +692,10 @@ in rec {
     #
 
     # General
-    cloudflared # CLI for CLoudflare tunnels
-    tree-sitter
+    cloudflared # CLI for CLoudflare tunnels.
+    gcc
+    wrangler # CLI for Cloudflare workers.
+    tree-sitter # Syntax parser. Requires GCC or another C/C++ compiler.
 
     # Editors
     kate
@@ -749,14 +764,11 @@ in rec {
     dejavu_fonts
     fcft # Font loading library used by foot.
     font-manager
-    ibm-plex
     inriafonts
     joypixels
     libertine
     merriweather
     merriweather-sans
-    openmoji-black
-    openmoji-color
     paratype-pt-mono
     paratype-pt-sans
     paratype-pt-serif # Current serif and print format font.
@@ -799,12 +811,12 @@ in rec {
     # Interesting prospects.
     #
 
-    input-remapper
-    interception-tools # And caps2esc plugin, for intercepting at device level instead of WM.
+    input-remapper # Key remapper, surprise!
+    interception-tools # Key remapper at lower level than WM/DE, works in TTY, has caps2esc plugin.
     navi # CLI cheatsheet tool.
     ytfzf # Fzf utility for YouTube.
+    youtube-dl # Download command used by `ytfzf`: we want to use it standalone as as well.
     kooha # Screen recorder GUI.
-    fx_cast_bridge # For casting video from Firefox.
   ];
 
   #
@@ -821,8 +833,7 @@ in rec {
   wayland.windowManager.sway = {
     enable = true;
     config = null;
-    systemdIntegration =
-      true; # Enables "sway-session.target" and triggers it in config file.
+    systemdIntegration = true; # Enables "sway-session.target" and triggers it in config.
     extraConfigEarly = "include main.conf";
   };
 
@@ -1370,32 +1381,13 @@ in rec {
   # Actually Go.
   programs.go = {
     enable = true;
-    goPath = "${config.home.homeDirectory}/.local/bin/go"; # Don't use `~/go`...
+    goPath = "${homeDirectory}/.local/bin/go"; # Don't use `~/go`...
   };
 
   # Do things when entering a directory. Used to load isolated development shells automatically.
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true; # Improves caching of Nix devshells.
-  };
-
-  # Notification daemon.
-  programs.mako = {
-    actions = true;
-    backgroundColor = "#B7E5E6";
-    borderColor = "#6E6C7E";
-    borderRadius = 0;
-    defaultTimeout = 5000;
-    enable = true;
-    icons = true;
-    maxIconSize = 48;
-    iconPath = "${pkgs.vimix-icon-theme}/share/icons/Vimix";
-    font = "Public Sans 8";
-    margin = "12";
-    markup = true;
-    padding = "12,24";
-    textColor = "#1E1E28";
-    width = 325;
   };
 
   # TUI RSS reader.
@@ -1536,6 +1528,27 @@ in rec {
   #
 
   services = {
+    #
+    # Notification daemon
+    #
+    mako = {
+      actions = true;
+      backgroundColor = "#B7E5E6";
+      borderColor = "#6E6C7E";
+      borderRadius = 0;
+      defaultTimeout = 5000;
+      enable = true;
+      icons = true;
+      maxIconSize = 48;
+      iconPath = "${pkgs.vimix-icon-theme}/share/icons/Vimix";
+      font = "Public Sans 8";
+      margin = "12";
+      markup = true;
+      padding = "12,24";
+      textColor = "#1E1E28";
+      width = 325;
+    };
+
     #
     # Monitor layouts
     #

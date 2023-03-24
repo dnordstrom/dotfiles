@@ -16,7 +16,7 @@ export MOZ_DBUS_REMOTE=1
 export MOZ_USE_XINPUT2=1
 
 # GTK
-export GTK_THEME="Catppuccin-Latte-Peach"
+export GTK_THEME="Catppuccin-Latte-Yellow"
 export GTK_USE_PORTAL=1
 
 # Qt
@@ -38,5 +38,5 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 export XKB_DEFAULT_LAYOUT="us,se"
 export XKB_DEFAULT_OPTIONS="shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey"
 
-# Start
+# Start and log errors to disk
 river 2>"$HOME/.local/share/logs/river.log"
