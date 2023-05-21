@@ -1051,6 +1051,12 @@ in rec {
   home.file.".config/nvim/spell".source = mkSymlink (mkConfigPath "nvim/spell");
 
   #
+  # PIPEWIRE
+  #
+
+  home.file.".config/pipewire".source = mkSymlink (mkConfigPath "pipewire");
+
+  #
   # VIFM
   #
 
