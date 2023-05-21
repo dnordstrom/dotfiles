@@ -25,7 +25,12 @@ in {
   time.timeZone = "Europe/Stockholm";
 
   nix = {
-    # Use unstable `nix`
+    # Use unstable `nix` CLI tool. Written by greek goddess Medusa, hence the subcommand naming is
+    # a bit eight-headed. Not sure it this is still required for using flakes, but it used to be.
+    # If you like consistency and stability, stick with stable. If you like to know what's
+    # coming, understand problems better, and contribute by trying new stuff: use unstable.
+    #
+    # That being said, I've used it for years without any issues, so I'd say it's nice and stable.
     package = pkgs.nixUnstable;
 
     # CPU scheduling policy for Nix daemon process. Defaults to "other". Other options are "batch"
@@ -39,10 +44,12 @@ in {
 
     # Build settings
     settings = {
-      # Number of cores used per one build (if it has parallel building enabled).
-      cores = 4;
+      # Number of cores used per one build (if it has parallel building enabled). You probably don't
+      # want to touch this, but I'd love if the PC was responsive while upgrading.
+      cores = 1;
 
-      # Max build jobs to run in parallel.
+      # Max build jobs to run in parallel. You probably don't want to touch this, but I'd love if
+      # the PC was responsive while upgrading.
       max-jobs = 2;
 
       # Users with elevated `nix` command privileges.
@@ -114,15 +121,25 @@ in {
   #
 
   networking = {
-    hostName = "nordix"; # FIX: Automate "nordix" vs. "nordix-laptop".
+    hostName = "nordix"; # TODO: Automate "nordix" vs. "nordix-laptop".
     enableIPv6 = true; # Running out of IPv4 addresses? Fine.
     useDHCP = true; # Some recommend false and enabling individual interfaces.
     useNetworkd = true; # Use `networkd` instead of `NetworkManager`.
-    firewall.enable = true; # Sure, why not?
+    firewall.enable = false; # TODO: Enable after fixing Plex and Roon ARC.
     networkmanager.enable = false; # Using `networkd` instead.
     wireless.iwd.enable = true; # Includes `iwctl` wireless networking CLI.
     wireguard.enable = true; # Includes tools, services, and kernel module.
     dhcpcd.enable = false; # Handled by `networkd`, can be disabled.
+
+    # Hostnames written to `/etc/hosts`.
+    hosts = {
+      "::1" = [ "localhost" ];
+      "127.0.0.1" = [ "localhost" ];
+      "10.1.1.1" = [ "router.local" "gateway.local" ]; # ISP-provided gateway.
+      "10.1.1.2" = [ "homeassistant.local" "nordix.local" ]; # Main workstation.
+      "10.1.1.3" = [ "nordix.tv" ]; # Samsung Smart TV.
+      "10.1.1.4" = [ "nordix.mobi" ]; # iPhone.
+    };
   };
 
   #
@@ -231,6 +248,70 @@ in {
     tlp.enable = false; # Make sure TLP stays disabled.
 
     #
+    # Smart home
+    #
+
+    home-assistant = {
+      enable = true;
+      configWritable = true;
+      openFirewall = true;
+
+      config = {
+        homeassistant = {
+          name = "nordix.home";
+          latitude = 62.38;
+          longitude = 17.32;
+        };
+        http = {
+          server_port = 8123;
+          server_host = [
+            "10.1.1.2"
+            "127.0.0.1"
+            "homeassistant.local"
+            "fe80::692:26ff:fed3:4647"
+          ];
+        };
+      };
+
+      extraComponents = [
+        # Set of sane default components, listed in the documentation:
+        # https://www.home-assistant.io/integrations/default_config
+        "default_config"
+
+        "apple_tv" # Apple TV control.
+        "browser" # Open URLs on host machine.
+        "caldav" # Calendar.
+        "camera" # IP camera support.
+        "cast" # For Google/Chrome casting.
+        "configurator" # Can request information from user.
+        "dlna_dms" # DLNA streaming support.
+        "ffmpeg" # FFmpg processing.
+        "flux" # Adjust lighting based on sun.
+        "google_assistant"
+        "homekit" # For controlling Home Assistant from the Apple Home app.
+        "homekit_controller" # For adding HomeKit devices to Home Assistant.
+        "hue" # Philips Hue support.
+        "ios" # iPhone support.
+        "jellyfin" # Media server.
+        "keyboard" # Support keyboard devices.
+        "kodi" # Media player.
+        "mastodon" # Mastodon notifications.
+        "matter" # Beta Matter and Thread support.
+        "matrix" # Matrix notification support.
+        "media_player" # Interacts with various media players.
+        "plex" # Media server.
+        "pocketcasts" # Premium standalone podcast player for Apple Watch (and more).
+        "rest_command" # Call REST APIs.
+        "roborock" # Robot vacuum cleaner.
+        "roon" # Control Roon music player.
+        "shell_command" # Run arbitrary commands.
+        "smartthings" # Samsung SmartThings integration, for smart TV and more.
+        "tradfri" # IKEA gateway with Zigbee and eventual Matter support.
+        "twitter" # Twitter control.
+      ];
+    };
+
+    #
     # Login manager
     #
 
@@ -283,6 +364,9 @@ in {
     # Audio
     #
 
+    # PipeWire configuration is no longer supported here. As of April 2023, it's recommended to add
+    # drop-in configuration files in `/etc/pipewire/pipewire.conf.d` (or a local equivalent, since
+    # we don't install it system-wide (see below).
     pipewire = {
       # Enable the service.
       enable = true;
@@ -305,34 +389,8 @@ in {
 
       # Set up `systemd` with user services rather than system services--adding a few configuration
       # files to the system `etc`--like the `NEWS` file for PipeWire 0.3.11 recommends on GitHub:
-      #
       # https://github.com/PipeWire/pipewire/blob/fb8709716cc69f43cc2bfe83177d69f7501c052e/NEWS#L4270
       systemWide = false;
-
-      # Disable simple default session manager, since we use Wireplumber.
-      media-session.enable = false;
-
-      # Configure PipeWire.
-      config = {
-        pipewire = {
-          "context.properties" = {
-            "core.daemon" = true;
-            "core.name" = "pipewire-0";
-            "default.clock.allowed-rates" =
-              [ 44100 48000 88200 96000 176400 192000 ];
-            "default.clock.max-quantum" = 512;
-            "default.clock.min-quantum" = 64;
-            "default.clock.quantum" = 256;
-            "default.clock.rate" = 44100;
-            "link.max-buffers" = 16;
-            "log.level" = 2;
-          };
-        };
-
-        pipewire-pulse = {
-          "stream.properties" = { "resample.quality" = 10; };
-        };
-      };
     };
 
     # Roon Server as systemd service
@@ -341,17 +399,23 @@ in {
       openFirewall = true;
     };
 
-    # Packages that use `dbus` go here.
+    # Packages that need system dbus access go here.
     dbus = {
       enable = true;
-      packages = [ pkgs.protonvpn-gui ];
+      packages = [ ];
     };
 
-    # Plex media server
+    # Plex media server.
     plex = {
       enable = true;
       openFirewall = true;
       dataDir = mediaDirectory;
+    };
+
+    # Jellyfin Media Server.
+    jellyfin = {
+      enable = true;
+      openFirewall = true;
     };
 
     # Flatpak agent.
@@ -373,26 +437,37 @@ in {
       wait-online.timeout = 0;
 
       # Insert WireGuard interfaces here:
-      #
-      #   netdevs = {
-      #     "10-wg0" = {
-      #       netdevConfig = {
-      #         Kind = "wireguard";
-      #         MTUBytes = "1300";
-      #         Name = "wg0";
-      #       };
-      #       extraConfig = ''
-      #         [WireGuard]
-      #         PrivateKeyFile=/run/keys/wireguard-privkey
-      #         ListenPort=9918
-      #
-      #         [WireGuardPeer]
-      #         PublicKey=OhApdFoOYnKesRVpnYRqwk3pdM247j8PPVH5K7aIKX0=
-      #         AllowedIPs=fc00::1/64, 10.100.0.1
-      #         Endpoint={set this to the server ip}:51820
-      #       '';
-      #     };
-      #   };
+      netdevs = {
+        protonvpn-sweden = {
+          enable = true;
+
+          netdevConfig = {
+            Description = "ProtonVPN via Sweden";
+            Kind = "wireguard";
+            Name = "proton-sweden";
+          };
+          extraConfig = ''
+            [WireGuard]
+            # Key for se3-full
+            # Bouncing = 0
+            # NetShield = 2
+            # Moderate NAT = on
+            # NAT-PMP (Port Forwarding) = on
+            # VPN Accelerator = on
+            PrivateKeyFile=/run/keys/protonvpn-sweden
+            ListenPort=9918
+            PrivateKey = uKhYESQ9WY3ggi7eC3yuwNa6nhO5972T9Hbh+ylJ0ks=
+            Address = 10.2.0.2/32
+            DNS = 10.2.0.1
+
+            [WireGuardPeer]
+            # SE#3
+            PublicKey = iVnf4knNO1M/kRyn74SxRDNgWJMtyzglXRRcn9HMEBI=
+            AllowedIPs=0.0.0.0/0
+            Endpoint = 45.87.214.98:51820:51820
+          '';
+        };
+      };
     };
   };
 
@@ -401,18 +476,6 @@ in {
   #
 
   security = {
-    # Yubikey authentication, reads tokens from `~/.yubico/authorized_yubikeys`.
-    pam.yubico = {
-      enable = true;
-      id = "70449";
-
-      # Use with Yubico Cloud client instead of setting up challenge-response.
-      mode = "client";
-
-      # Allow login with Yubikey or password only, rather than as MFA. Bad. Convenient, but bad.
-      control = "sufficient";
-    };
-
     # Disable `sudo` in favor of `doas`.
     sudo.enable = false;
 
@@ -429,12 +492,35 @@ in {
     # PolicyKit for privilege escalation.
     polkit.enable = true;
 
-    # Make swaylock accept correct password.
-    # See: https://github.com/mortie/swaylock-effects/blob/master/pam/swaylock
-    pam.services.swaylock = {
-      text = ''
-        auth include login
-      '';
+    pam = {
+      # Yubikey hardware key authentication.
+      yubico = {
+        enable = true;
+        id = "70449";
+
+        # Use with Yubico Cloud client instead of setting up challenge-response.
+        mode = "client";
+
+        # Allow login with Yubikey or password only, rather than as MFA. Bad. Convenient, but bad.
+        control = "sufficient";
+      };
+
+      services = {
+        # KWallet key/secret management.
+        kwallet = {
+          name = "kwallet";
+          enableKwallet = true;
+        };
+
+        # Make swaylock accept correct password.
+        # See: https://github.com/mortie/swaylock-effects/blob/master/pam/swaylock
+        swaylock = {
+          name = "swaylock";
+          text = ''
+            auth include login
+          '';
+        };
+      };
     };
   };
 
@@ -504,7 +590,6 @@ in {
         xdg-desktop-portal-gtk
         xdg-desktop-portal-wlr
         xdg-desktop-portal-kde
-        xdg-desktop-portal-gnome
       ];
 
       # Configure screen sharing using `slurp` as picker.
@@ -527,11 +612,10 @@ in {
   #
 
   programs = {
+    zsh.enable = true;
     dconf.enable = true;
-
     ssh.askPassword =
       pkgs.lib.mkForce "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
-
     openvpn3.enable = true;
   };
 
@@ -637,6 +721,7 @@ in {
     # System-wide software.
     systemPackages = with pkgs; [
       git
+      kwalletcli
       nodejs
       polkit_gnome
       roon-server

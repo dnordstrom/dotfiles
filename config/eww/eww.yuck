@@ -61,9 +61,9 @@
 (defwidget left []
   (box :class "left" :orientation "h" :space-evenly false :halign "start"
     (launcher :class "logo"
-              :onclick "riverctl spawn 'dolphin ~'"
-              :onrightclick "riverctl spawn 'GTK_THEME=Catppuccin-Latte-Peach nemo ~'"
-              :onmiddleclick "riverctl spawn 'GTK_THEME=Catppuccin-Latte-Peach nautilus ~'"
+              :onclick "riverctl spawn 'dolphin'"
+              :onrightclick "riverctl spawn 'nemo'"
+              :onmiddleclick "riverctl spawn 'nautilus'"
               :icon "")
     (tags)
     (left-launchers)))
@@ -283,16 +283,3 @@
   (bar)
 )
 
-(defwindow bar-4
-  :monitor 3
-  :geometry (geometry
-    :x "0%"
-    :y "0%"
-    :width "100%"
-    :height "34px"
-    :anchor "top center")
-  :stacking "fg"
-  :exclusive true
-  :focusable false
-  (bar)
-)

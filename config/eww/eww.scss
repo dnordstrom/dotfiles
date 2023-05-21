@@ -1,3 +1,15 @@
+/**
+ * EWW WIDGET STYLING
+ *
+ * Brewed by Catppuccin. Latte flavored. Yellow accent color.
+ */
+
+/**
+ * CATPPUCCIN COLOR PALETTES
+ *
+ * Variables for all four variants in case we want to spice it up one day.
+ */
+
 $ctp-latte-rosewater: #de9584;
 $ctp-latte-rosewater-rgb: rgb(222, 149, 132);
 $ctp-latte-rosewater-hsl: hsl(11, 58%, 69%);
@@ -313,14 +325,16 @@ $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
 
 
 /**
- * Shared styles
+ * SHARED WIDGET STYLES
+ *
+ * Generic classes from 
  */
 
 .bar {
   color: $ctp-latte-text;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
   font-family: "PragmataPro Mono Liga";
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -333,6 +347,7 @@ $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
 .right {
   background: $ctp-latte-base;
   border-radius: 50px;
+  color: $ctp-latte-text;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
   margin: 8px;
   padding: 2px 16px 2px;
@@ -396,6 +411,7 @@ $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
  */
 
 .right {
+  font-weight: 700;
   padding: 3px 0 1px 16px;
 
   .screenshot {

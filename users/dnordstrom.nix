@@ -131,7 +131,7 @@ let
       export XDG_DATA_DIRS=${datadir}:$XDG_DATA_DIRS
 
       gnome_schema="org.gnome.desktop.interface"
-      gsettings set $gnome_schema gtk-theme "Catppuccin-Latte-Peach"
+      gsettings set $gnome_schema gtk-theme "Catppuccin-Latte-Yellow"
     '';
   };
 in rec {
@@ -146,6 +146,7 @@ in rec {
       EDITOR = editor;
       BROWSER = browser;
       TERMINAL = terminal;
+      NIXOS_OZONE_WL = "1";
     };
 
     sessionPath = [ "${homeDirectory}/.local/bin" ];
@@ -186,8 +187,8 @@ in rec {
       #
 
       nemo-without-cinnamon = {
-        name = "Nemo (Non-DE)";
-        comment = "Nemo without Cinnamon";
+        name = "Nemo";
+        comment = "Nemo, but skip the Cinnamon";
         type = "Application";
         genericName = "Access and organize files";
         exec = "nemo %U";
@@ -458,7 +459,6 @@ in rec {
     # exist but don't work---or they're written by me since they weren't available there.
     #
 
-    nordpkgs.convox
     nordpkgs.lswt
 
     #
@@ -493,6 +493,7 @@ in rec {
     fsearch
     gnome.nautilus
     nvme-cli
+    unar
 
     #
     # Feeds
@@ -507,17 +508,44 @@ in rec {
     raven-reader
 
     #
-    # Borrowed KDE software
+    # Borrowed KDE software (and libs I don't need)
     #
 
+    libsForQt5.ark
+    libsForQt5.breeze-gtk
+    libsForQt5.breeze-icons
+    libsForQt5.breeze-plymouth
+    libsForQt5.breeze-qt5
+    libsForQt5.ffmpegthumbs
     libsForQt5.kasts
+    libsForQt5.kdegraphics-thumbnailers
     libsForQt5.kdf
+    libsForQt5.keditbookmarks
+    libsForQt5.kfilemetadata
     libsForQt5.kget
+    libsForQt5.kgpg # Graphical GPG interface.
+    libsForQt5.kio
+    libsForQt5.kio-extras
     libsForQt5.kmix
     libsForQt5.koko
     libsForQt5.kontact
+    libsForQt5.kparts
     libsForQt5.krdc
     libsForQt5.krfb
+    libsForQt5.kwallet
+    libsForQt5.kwallet-pam
+    libsForQt5.kwalletmanager
+    libsForQt5.lightly
+    libsForQt5.okular # Document viewer needed for Kate's (or Kpart's) Markdown preview.
+    libsForQt5.qt5.qtgraphicaleffects # Needed by Quaternion Matrix client.
+    libsForQt5.qt5.qtimageformats
+    libsForQt5.qt5.qtmultimedia
+    libsForQt5.qt5.qtwayland
+    libsForQt5.qtstyleplugin-kvantum
+    libsForQt5.qtstyleplugins
+    libsForQt5.quazip
+
+    kwalletcli
 
     qt6.qt5compat
     qt6.qt3d
@@ -635,11 +663,9 @@ in rec {
     # Security
     #
 
-    # Proton suite community CLI due to GUI/DE dependencies in the official clients.
-    # TODO: Use official clients once headless works (when they release the new client.)
-    # protonvpn-cli # Official CLI.
-    protonvpn-gui # Official GUI.
-    # protonvpn-cli_2 # Community CLI.
+    # Proton's official CLI and GUI apps both have GUI/DE dependencies and won't run headless. We'll
+    # use `wg-quick` to start a WireGuard session instead, but let's add the CLI just in case.
+    protonvpn-cli # Official CLI.
 
     bitwarden
     bitwarden-cli
@@ -649,8 +675,6 @@ in rec {
     yubico-pam
     yubico-piv-tool
     yubikey-agent
-    # yubikey-manager
-    # yubikey-manager-qt
     yubikey-personalization
     yubikey-personalization-gui
     yubikey-touch-detector
@@ -660,15 +684,25 @@ in rec {
     #
 
     alsa-firmware
+    alsa-scarlett-gui
+    castnow
     cava
-    easyeffects # Systemd service (`services.easyeffects` module), but keep conflicts with JamesDSP.
+    chrome-export
+    easyeffects # Prefer service `services.easyeffects`, we skip it for simpler switch to JamesDSP.
     enlightenment.ephoto
     enlightenment.rage
+    fx_cast_bridge
+    gnomecast
+    google-chrome
     haruna
     jamesdsp
-    pavucontrol
+    libcamera
+    lxqt.pavucontrol-qt
     playerctl
+    plexamp
+    pulseaudio-dlna
     pulsemixer
+    qpwgraph
     streamlink
     ustreamer # Video for Linux webcam streamer.
     v4l-utils # Video For Linux webcam utilities.
@@ -787,18 +821,6 @@ in rec {
     rofi-emoji
     rofimoji
 
-
-    # Qt libs/apps.
-    libsForQt5.ark
-    libsForQt5.kdegraphics-thumbnailers
-    libsForQt5.keditbookmarks
-    libsForQt5.kfilemetadata
-    libsForQt5.kgpg # Graphical GPG interface.
-    libsForQt5.kparts
-    libsForQt5.okular # Document viewer which is needed for Kate's (or Kpart's) Markdown preview.
-    libsForQt5.qt5.qtgraphicaleffects # Needed by Quaternion Matrix client.
-    libsForQt5.qtstyleplugin-kvantum
-
     # Theming.
     configure-gtk
     dfeet
@@ -833,7 +855,8 @@ in rec {
   wayland.windowManager.sway = {
     enable = true;
     config = null;
-    systemdIntegration = true; # Enables "sway-session.target" and triggers it in config.
+    systemdIntegration =
+      true; # Enables "sway-session.target" and triggers it in config.
     extraConfigEarly = "include main.conf";
   };
 
@@ -869,7 +892,7 @@ in rec {
     };
 
     theme.name =
-      "Catppuccin-Latte-Peach"; # No package, manually copied to `~/.local/share/themes`.
+      "Catppuccin-Latte-Yellow"; # No package, manually copied to `~/.local/share/themes`.
 
     iconTheme = {
       name = "Vimix";
@@ -911,7 +934,7 @@ in rec {
   # WALLPAPERS
   #
 
-  home.file."Pictures/Wallpapers".source =
+  home.file."Pictures/wallpapers".source =
     mkSymlink (mkConfigRootPath "wallpapers");
 
   #
@@ -1112,7 +1135,14 @@ in rec {
   # MEDIA
   #
 
-  programs.mpv.enable = true;
+  programs.mpv = {
+    enable = true;
+    config = {
+      profile = "gpu-hq";
+      force-window = true;
+      ytdl-format = "bestvideo+bestaudio";
+    };
+  };
 
   #
   # OFFICE
@@ -1238,9 +1268,7 @@ in rec {
 
   programs.chromium = {
     enable = true;
-    extensions = [{
-      id = "aeblfdkhhhdcdjpifhhbdiojplfjncoa"; # 1Password
-    }];
+    package = pkgs.google-chrome;
   };
 
   programs.kitty = {
@@ -1554,61 +1582,86 @@ in rec {
     #
     # Based on the original config at `config/kanshi/config` for reference and portability. This
     # service does not make `kanshictl` or `kanshi` available to the user. Adding `kanshi` to the
-    # package list for that if needed.
+    # package list does that, if needed.
     #
-    kanshi = {
+    kanshi = let
+      # Primary (center): BenQ 35" 1440p @ 100Hz
+      benq-1 = {
+        mode = "3440x1440@99.982Hz";
+        position = "2397,780";
+        scale = 1.0;
+      };
+      # Secondary (left): AOC 24" 1080p @ 144Hz
+      aoc-1 = {
+        mode = "1920x1080@144.001Hz";
+        position = "0,1349";
+        scale = 0.8;
+      };
+      # Tertiary (top left): AOC 24" 1080p @ 60Hz
+      aoc-2 = {
+        mode = "1920x1080@60Hz";
+        position = "0,0";
+        scale = 0.8;
+      };
+    in {
       enable = true;
       systemdTarget = "river-session.target";
       profiles = {
-        home = {
+        # Home setup with primary over DisplayPort.
+        #
+        # NOTE: This disables HDR and some other fancy features---there's an incompatibility 
+        # somewhere. Either the monitor or the graphics card requires HDMI for those features, or 
+        # the cable doesn't support them. The BenQ detects DP 1.4 and outputs 4K-ish@100Hz though.
+        home_dp = {
           outputs = [
             {
               criteria = "DP-1";
-              mode = "3440x1440@99.982Hz";
-              position = "2397,780";
               status = "enable";
+              mode = benq-1.mode;
+              position = benq-1.position;
+              scale = benq-1.scale;
             }
             {
-              criteria = "DP-2";
-              mode = "1920x1080@144.001Hz";
-              position = "0,1349";
-              scale = 0.8;
+              criteria = "DP-3";
               status = "enable";
+              mode = aoc-1.mode;
+              position = aoc-1.position;
+              scale = aoc-1.scale;
             }
             {
               criteria = "DVI-D-1";
-              mode = "1920x1080@60Hz";
-              position = "0,0";
-              scale = 0.8;
               status = "enable";
+              mode = aoc-2.mode;
+              position = aoc-2.position;
+              scale = aoc-2.scale;
             }
           ];
         };
-        homeIgnoreHDMI = {
+        # Home setup with primary over HDMI.
+        #
+        # NOTE: Currently over HDMI 1.4 cable---upgrade, now.
+        home_hdmi = {
           outputs = [
             {
-              criteria = "DP-1";
-              mode = "3440x1440@99.982Hz";
-              position = "2397,780";
+              criteria = "HDMI-A-1";
               status = "enable";
+              mode = benq-1.mode;
+              position = benq-1.position;
+              scale = benq-1.scale;
             }
             {
-              criteria = "DP-2";
-              mode = "1920x1080@144.001Hz";
-              position = "0,1349";
-              scale = 0.8;
+              criteria = "DP-3";
               status = "enable";
+              mode = aoc-1.mode;
+              position = aoc-1.position;
+              scale = aoc-1.scale;
             }
             {
               criteria = "DVI-D-1";
-              mode = "1920x1080@60Hz";
-              position = "0,0";
-              scale = 0.8;
               status = "enable";
-            }
-            {
-              criteria = "HDMI-A-1";
-              status = "disable";
+              mode = aoc-2.mode;
+              position = aoc-2.position;
+              scale = aoc-2.scale;
             }
           ];
         };

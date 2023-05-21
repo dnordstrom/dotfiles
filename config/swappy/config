@@ -15,9 +15,9 @@
 ##
 
 [Default]
-save_dir="$HOME/Pictures/Screensnaps"
-save_filename_format="%Y%m%d_%Hh%Mm%Ss-annotated.png"
-show_panel=false
+save_dir=~/Pictures/screensnaps
+save_filename_format=%Y%m%d_%Hh%Mm%Ss-annotated.png
+show_panel=true
 line_size=3
 text_size=14
-text_font="Public Sans"
+text_font="Cooper Hewitt"

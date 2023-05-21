@@ -11,31 +11,20 @@
 ##
 
 ##
+# STUFF THAT CONSIDERS ITSELF IMPORTANT
+##
+
+NX_RCTL_LOGFILE="$HOME/.local/share/logs/river.log"
+NX_RTILE_LOGFILE="$HOME/.local/share/logs/rivertile.log"
+
+##
 # UTILITIES
 ##
 
-# Spawn process, forwarding any arguments to `riverctl`.
-_rctl_spawn() {
-  riverctl spawn "$*"
-}
-
-# Spawn only if no running process was spawned with the same exact command.
-_rctl_spawn_once() {
-  pgrep -f "$*" >/dev/null || riverctl spawn "$*"
-}
-
-# Spawn in shell, avoiding boilerplate when using multiple commands, piping, etc.
-_rctl_spawn_shell() {
-  riverctl spawn "sh -c '$*'"
-}
-
-# Generate a `sh -c ...` command for running the given command(s), enclosed in single quotes after
-# the command has done the substitution.
+# Spawn process, forwarding any arguments to `riverctl`. Jusr some premature preparation in case we
+# want to do something cool and convenient in the future.
 #
-# Notes:
-#   - I prefer explicit naming in combination with aliases, rather than short ambiguous naming.
-#
-# Examp     $ riverctl spawn $(shell_command "systemctl --user enable cool.service && nvim README.md")
+# Example     $ riverctl spawn $(shell_command "systemctl --user enable cool.service && nvim README.md")
 #     = riverctl spawn zsh -c 'systemctl --user enable cool.service && nvim README.md'
 #
 # arguments:
@@ -48,18 +37,61 @@ _rctl_spawn_shell() {
 # Globals:
 #   - SHELL is used as the shell to launch. Until threre's a flag, it can be changed there:
 #     `SHELL=zsh echo "$(shell_command echo Hello, dear world.)"`
-_rctl_create_command() {
+nx_rctl_spawn() {
+  riverctl spawn "$*"
+}
+
+# Spawn only if no running process was spawned with the same exact command.
+nx_rctl_spawn_once() {
+  pgrep -f "$*" >/dev/null || riverctl spawn "$*"
+}
+
+# Spawn in shell, avoiding boilerplate when using multiple commands, piping, etc.
+nx_rctl_spawn_shell() {
+  riverctl spawn "sh -c '$*'"
+}
+
+# Generate a `sh -c ...` command for running the given command(s), enclosed in single quotes after
+# the command has done the substitution.
+#
+# Notes:
+#   - I prefer explicit naming in combination with aliases, rather than short ambiguous naming.
+#
+# Example:
+#   - `riverctl spawn $(shell_command "systemctl --user enable cool.service && nvim README.md")`
+#   - `riverctl spawn "sh -c 'systemctl --user enable cool.service && nvim README.md'".
+#
+# arguments:
+#   - $* - Arguments are passed to the shell command to run `sh -c <cmd>`, "sanitized" by `printf`.
+#
+# Returns:
+#   - Terminal context: output shell command to standard output.
+#   - Non-terminal context: `return` the shell command.
+#
+# Globals:
+#   - SHELL is used as the shell to launch. Until we have an option/flag, it can be changed there:
+#
+#     ```
+#     $ SHELL=zsh printf '%s' "$(nx_rctl_create_command echo Hello, dear world.)"
+#     $ printf '%s' "$(sh -c 'shell_command echo Hello, dear world.')"
+#     ```
+nx_rctl_create_concrete_cmd() {
   shell="${SHELL:-"sh"}"
   result="$(printf "%s" "$shell -c '$*'")"
 
-  # Check if we're running in TTY interactive login shell or a regular emulator interactive shell.
+  # Check if we're running in an interactive or a login shell. Running the script in a terminal
+  # emulator should exit, but if used in a script, it should return the command output.
   if [ -t 0 ]; then
     # TTY: print command.
     printf "%s" "$result"
+    exit 0
   else
     # Script: return command.
     return "$result"
   fi
+
+  # This should be unreachable.
+  exit 1
 }
 
 # Map the Escape, Return, and Space keys to exit given mode. If no mode is passed to the function,
@@ -67,7 +99,7 @@ _rctl_create_command() {
 #
 # Arguments:
 #   - $* - Name of the mode we want to add exit maps for.
-_rctl_map_exit_mode() {
+nx_rctl_add_mode_exit_maps() {
   riverctl map "$1" None Escape enter-mode normal
   riverctl map "$1" None Return enter-mode normal
   riverctl map "$1" None Space enter-mode normal
@@ -78,22 +110,28 @@ _rctl_map_exit_mode() {
 ##
 
 # Paths.
-path_kitty_sessions="$HOME/.config/kitty/sessions"
+export NX_KITTY_SESSIONS="$HOME/.config/kitty/sessions"
+
+# Look and feel (also known as layout manager options.
+export NX_RTILE_MAIN_RATIO=0.5
+export NX_RTILE_MAIN_COUNT=1
+export NX_RTILE_MAIN_LOCATION="left"
+export NX_RTILE_VIEW_PADDING=10
+export NX_RTILE_OUTER_PADDING=10
 
 # Tags.
-alltags="$(((1 << 32) - 1))"
-stickytag="$((1 << 20))"
-scratchtag="$((1 << 21))"
-nostickytag="$((alltags ^ stickytag))"
-noscratchtag="$((alltags ^ scratchtag))"
-availabletags="$((noscratchtag ^ stickytag))"
+export alltags="$(((1 << 32) - 1))"
+export stickytag="$((1 << 20))"
+export scratchtag="$((1 << 21))"
+export nostickytag="$((alltags ^ stickytag))"
+export noscratchtag="$((alltags ^ scratchtag))"
+export availabletags="$((noscratchtag ^ stickytag))"
 
-# Terminal startup sessions.
-cmd_terminal_plain="kitty --class=plainterm --title Plain"
-cmd_terminal_scratchpad="kitty --class=scratchterm --title 'Scratchpad terminal' --single-instance --instance-group=scratchterm --session=\"$path_kitty_sessions/scratchpad.session\""
-cmd_terminal_popup="kitty --class=popupterm --title='Popup terminal' --single-instance --instance-group=popupterm"
-cmd_terminal_trans="kitty --class=transterm --title='Transparent terminal'"
-cmd_terminal_dev="kitty --class=devterm --title='Development'"
+# Terminal startup sessions for using different layouts and init commands, literally does anything.
+export cmd_terminal_plain="kitty --class=plainterm --title Plain"
+export cmd_terminal_scratchpad="kitty --class=scratchterm --title 'Scratchpad terminal' --single-instance --instance-group scratchterm --session \"$NX_KITTY_SESSIONS/scratchpad.session\""
+export cmd_terminal_popup="kitty --class=popupterm --title='Popup terminal' --single-instance --instance-group=popupterm"
+export cmd_terminal_trans="kitty --class=transterm --title='Transparent terminal'"
 
 # Launchers.
 cmd_launch_app="/etc/nixos/scripts/launch/launchapp"
@@ -112,14 +150,14 @@ cmd_files_tui="$cmd_terminal_popup -e vifm"
 state_debug="$NX_RIVER_DEBUG"
 
 # Font.
-font_size=8
-font_family="Public Sans"
+font_size=10
+font_family="Cooper Hewitt"
 font="$font_family $font_size"
 
 # GTK.
 gtk_schema="org.gnome.desktop.interface"
-gtk_theme_main="Catppuccin-Latte-Peach"
-gtk_theme_icon="Vimix"
+gtk_theme_main="Catppuccin-Latte-Yellow"
+gtk_theme_icon="Vimix Amethyst"
 gtk_theme_cursors="Quintom_Snow"
 gtk_font="$font"
 gtk_font_document="$font"
@@ -171,7 +209,6 @@ keeb_vortex="keyboard-1241-519-USB-HID_Keyboard"
 keeb_das="${keeb_das} ${keeb_das}_Consumer_Control  ${keeb_das}_System_Control"
 keeb_vortex="${keeb_vortex} ${keeb_vortex}_Consumer_Control ${keeb_vortex}_System_Control"
 
-
 # Concatenate all keyboards and separate by newline instead of space.
 keebs="$keeb_das $keeb_ducky $keeb_vortex $keeb_havit"
 keebs="$(printf "$keebs" | tr '[:space:]' '\n')"
@@ -180,8 +217,8 @@ keebs="$(printf "$keebs" | tr '[:space:]' '\n')"
 while read -r keeb; do
   # TODO: Think. There must be *something* we can apply to all the devices here.
 
-  if [ -n state_debug ]; then
-    printf "Configuring keyboard \"$keeb\"…\n"
+  if [ -n "$state_debug" ]; then
+    printf "%s\n" "Configuring keyboard \"$keeb\"…"
   fi
 done <<EOF
 $keebs
@@ -197,23 +234,22 @@ pointer_apple="pointer-76-613-Apple_Inc._Magic_Trackpad_2"
 
 # Concatenate and separate by newline.
 pointers="$pointer_lgtch $pointer_apple"
-pointers="$(printf "$pointers" | tr '[:space:]' '\n')"
+pointers="$(printf "%s" "$pointers" | tr '[:space:]' '\n')"
 
 # Configure common settings for all mice and trackpads the same.
 while read -r pointer; do
   # TODO: Think. There must be *something* we can apply to all the devices here.
 
-  if [ -n state_debug ]; then
+  if [ -n "$state_debug" ]; then
     printf "Configuring pointer device \"%s\"…\n" "$pointer"
   fi
 done <<EOF
 $pointers
 EOF
 
-# Disable mouse acceleration. Profile "none" and factor "0" (must be between -1.0 and 1.0).
+# Disable mouse acceleration globally using profile "none" and "0" factor (min -1.0, max 1.0).
 riverctl input "$pointer_lgtch" accel-profile none
 riverctl input "$pointer_lgtch" pointer-accel 0
-
 
 # Set to `normal` to not refocus if another view has been explicitly focused. That means dragging
 # the pointer to another output/monitor doesn't always focus it, so pressing Super+2 would switch
@@ -224,7 +260,7 @@ riverctl focus-follows-cursor always
 riverctl input "$pointer_apple" accel-profile adaptive
 
 # Acceleration factor (between -1.0 and 1.0).
-riverctl input "$pointer_apple" pointer-accel 0.5
+riverctl input "$pointer_apple" pointer-accel 0.4
 
 # Tap to click.
 riverctl input "$pointer_apple" tap enabled
@@ -248,7 +284,6 @@ riverctl input "$pointer_apple" natural-scroll disabled
 # Keyboard
 #
 
-
 ##
 # KEY MAPS
 ##
@@ -268,23 +303,23 @@ riverctl declare-mode window-resize
 # Map keys to return to normal mode
 #
 
-_rctl_map_exit_mode system
-_rctl_map_exit_mode window
-_rctl_map_exit_mode window-location
-_rctl_map_exit_mode window-move
-_rctl_map_exit_mode window-resize
+nx_rctl_add_mode_exit_maps system
+nx_rctl_add_mode_exit_maps window
+nx_rctl_add_mode_exit_maps window-location
+nx_rctl_add_mode_exit_maps window-move
+nx_rctl_add_mode_exit_maps window-resize
 
 #
 # Window mode
 #
 
-# Trigger
+# Window mode.
 riverctl map normal Super W enter-mode window
 
-# Toggle sticky
+# Window mode -> S => Toggle sticky tag for focused view.
 riverctl map window None S toggle-view-tags $stickytag
 
-# Send to scratchpad
+# Window mode -> P => Send focused window to scratchpad (toggle visibility with Super+Z).
 riverctl map window None P set-view-tags $scratchtag
 
 # Tag with [1-9]
@@ -408,8 +443,8 @@ riverctl map normal Super+Control Return spawn "$cmd_terminal_popup"
 # File managers
 riverctl map normal Super G spawn "$cmd_files_tui"
 riverctl map normal Super+Shift G spawn "$cmd_files_qt"
-riverctl map normal Super+Control G spawn "$cmd_files_gtk1"
-riverctl map normal Super+Alt G spawn "$cmd_files_gtk2"
+riverctl map normal Super+Control G spawn "$cmd_files_gtkone"
+riverctl map normal Super+Alt G spawn "$cmd_files_gtktwo"
 
 #
 # System
@@ -421,7 +456,7 @@ riverctl map normal Super Q close
 riverctl map normal Super Backspace exit
 
 # Show status bar (starts daemon if not running).
-riverctl map normal Super B spawn "sh -c 'eww close bar-1 || eww open bar-1'"
+riverctl map normal Super B spawn "sh -c 'eww open bar-1 --toggle'"
 
 #
 # Focus
@@ -539,7 +574,6 @@ riverctl map normal Super+Shift S toggle-view-tags "$stickytag"
 # Ensure new windows don't have the scratchpad or sticky tag unless explicitly set.
 riverctl spawn-tagmask "$availabletags"
 
-
 ##
 # FLOATING FILTERS
 #
@@ -557,8 +591,8 @@ riverctl float-filter-add app-id "io.github.celluloid_player.Celluloid"
 riverctl float-filter-add app-id "mpv"
 riverctl float-filter-add app-id "nemo"
 riverctl float-filter-add app-id "org.gnome.Nautilus"
-riverctl float-filter-add app-id "org.kde.Kate"
-riverctl float-filter-add app-id "org.kde.Kwrite"
+riverctl float-filter-add app-id "org.kde.kate"
+riverctl float-filter-add app-id "org.kde.kwrite"
 riverctl float-filter-add app-id "org.kde.dolphin"
 riverctl float-filter-add app-id "org.ksnip.ksnip"
 riverctl float-filter-add app-id "org.kde.haruna"
@@ -594,9 +628,10 @@ riverctl float-filter-add title "Kvantum Manager"
 
 # Firefox
 
-riverctl float-filter-add title "Parent process Browser Toolbox" # Devtools for the browser itself.
-riverctl float-filter-add title "Picture-in-Picture" # Firefox's PIP windows.
-riverctl float-filter-add title "" # Notifications. app-id is "firefox-nightly" and title is empty.
+riverctl float-filter-add title "Extension: (Clippings) - Paste Clipping — Firefox Nightly" # Snippets add-on.
+riverctl float-filter-add title "Parent process Browser Toolbox"                            # Devtools for the browser itself.
+riverctl float-filter-add title "Picture-in-Picture"                                        # Firefox's PIP windows.
+riverctl float-filter-add title ""                                                          # Notifications. app-id is "firefox-nightly" and title is empty.
 
 # TODO: When regular expressions are invented, use `title "Developer Tools - .+"` for Firefox.
 
@@ -634,36 +669,34 @@ export NX_RIVER_TAGS_NONSPECIAL="$((noscratchtag ^ stickytag))"
 
 # Convenience variables imported and available to D-BUS and `systemd`. No substitution.
 export NX_ENV_RIVER="NX_RIVER_TAGS_STICKY NX_RIVER_TAGS_SCRATCHPAD "
-export NX_ENV_IMPORTS="$NX_ENV DISPLAY WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XDG_RUNTIME_DIR MOZ_DBUS_REMOTE MOZ_USE_XINPUT2"
+export NX_ENV_IMPORTS="DISPLAY WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XDG_RUNTIME_DIR MOZ_DBUS_REMOTE MOZ_USE_XINPUT2"
+export NX_ENV="$NX_ENV_RIVER $NX_ENV_IMPORTS"
 
 # To not specify which variables to import is deprecated. Usually `WAYLAND_DISPLAY`, `DISPLAY`, and
 # and `XDG_*` are recommended, but let's add some others that were set in the River launch script,
 # at `./start`.
-_rctl_spawn "dbus-update-activation-environment --systemd $NX_ENV"
+nx_rctl_spawn "dbus-update-activation-environment --systemd $NX_ENV"
 
 # This is probably unnecessary since we use `--systemd` above.
-_rctl_spawn "systemctl --user import-environment WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XCURSOR_PATH XDG_RUNTIME_DIR LOCALE_ARCHIVE_2_27 DISPLAY GDK_BACKEND MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 $NORDIX_ENV"
+nx_rctl_spawn "systemctl --user import-environment $NX_ENV"
 
 # Launch Policy Kit.
-_rctl_spawn_once "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
-_rctl_spawn_once "swaybg --image ~/Pictures/Wallpapers/active --mode fill --output '*'"
-_rctl_spawn_shell "riverctl set-focused-tags $NORDIX_RIVER_TAGS_SCRATCHPAD && sleep 0.5 && riverctl spawn $cmd_terminal_scratchpad && sleep 0.25 && riverctl set-focused-tags $NX_RIVER_NONSPECIAL"
+nx_rctl_spawn_once "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
+nx_rctl_spawn_once "swaybg --image ~/Pictures/wallpapers/active --mode fill --output '*'"
+nx_rctl_spawn_shell "riverctl set-focused-tags $NX_RIVER_TAGS_SCRATCHPAD && sleep 0.5 && riverctl spawn $cmd_terminal_scratchpad && sleep 0.25 && riverctl set-focused-tags $NX_RIVER_TAGS_NONSPECIAL"
 
 # Trigger systemd target used to launch certain services.
-_rctl_spawn_once "systemctl --user start river-session.target"
-
-# Set monitor positions, resolutions, update rates, etc.
-_rctl_spawn_once "kanshi"
+nx_rctl_spawn_once "systemctl --user start river-session.target"
 
 # Top bar widget for primary monitor.
 #
 # Using the same window for multiple monitors isn't supported yet. Instead, I've added a "bar-2" and
 # "bar-3", one per monitor, all identical except for naming. Those can be opened on the two smaller
-# 24" monitors stacked vertically to the left of the primary 34" ultra-wide. Performance difference 
-# is negligable on this Ryzen 7 machine (likely helps that `eww` runs as a daemon).
+# 24" monitors stacked vertically to the left of the primary 34" ultra-wide. Performance difference
+# is negligible on this Ryzen 7 machine (likely helps that `eww` runs as a daemon).
 #
 # Currently prefer having the one bar on the main monitor as it saves space on the two 24" 1080p.
-_rctl_spawn_once "eww open bar-1"
+nx_rctl_spawn_once "eww open bar-1"
 
 #
 # Layout generator
@@ -671,8 +704,66 @@ _rctl_spawn_once "eww open bar-1"
 
 riverctl default-layout rivertile
 
-# Only `exec` if we're in a TTY meaning we're logging in.
-! [ -t 0 ] && exec rivertile -view-padding 10 -outer-padding 10 -main-ratio 0.6 -main-count 1 -main-location left >/dev/null 2>"$HOME/.local/share/logs/rivertile.log"
+# Prepare to redirect standard error to user local file `~/.local/share/logs/rivertile.log`,
+# overwriting the existing file after backing it up (only backs up one previous revision).
+# "Good enough for government work!"
+#
+# shellcheck disable=SC2317  # Don't warn about unreachable commands in this function
+nx_rctl_spawn_logged() {
+  if [ $# -eq 2 ]; then
+    cmd="$1"
+    logname="$2"
+    logfile="$HOME/.local/share/logs/$logname.log"
+    bakfile="$logname.bak"
 
-# Otherwise we're likely reloading the configuration and shouldn't exit the shell.
-nohup rivertile -view-padding 10 -outer-padding 10 -main-ratio 0.6 -main-count 1 -main-location left >/dev/null 2>"$HOME/.local/share/logs/rivertile.log" &
+    [ -f "$bakfile" ] && rm "$bakfile" >/dev/null 2>&1
+    [ -f "$logfile" ] && mv "$logfile" "$bakfile" >/dev/null 2>&1
+
+    printf "Launching command: %s\nLogging to file: %s\n\n" "$1" "$2"
+
+    $cmd 2>"$logfile" &
+  fi
+}
+
+# Start layout manager, using somewhat sane defaults. This function just avoids having to duplicate
+# arguments below if we run this command directly (depending on if we're in an interactive shell or
+# a login shell, etcetera, etcetera, et al.).
+#
+# shellcheck disable=SC2317 # Don't warn about unreachable commands in this function
+# shellcheck disable=SC2139 # Don't warn about expand on define--*exactly* what we want to fkn do.
+export NX_CMD_LAYOUT_MANAGER="rivertile \
+  -view-padding ${view_padding:-10} \
+  -outer-padding ${outer_padding:-10} \
+  -main-ratio ${main_ratio:-10} \
+  -main-count ${main_count:-10} \
+  -main-location ${main_location:-\"left\"} \
+"
+
+# It prints a banner to standard output. With, like, equality signs (operators...?) around it. Does
+# not yet support any padding or other fancy shit I'll probably add around 2026, I say Q3. Could
+# also never ever happen, and this could be Lua in a few hours, no one knows. Tried asking ChatGPT?
+nx_banner() {
+  output=""
+  title="$*"
+  count=$(printf "%s" "$*" | wc -m)
+  bar="$(builtin echo "$(for i in $(seq 1 count); do printf '-'; done))""
+  content="\n= $title =\n"
+
+  # shellcheck disable=SC2059 # Chill with the 'no vars there'. It's controlling and rude.
+  builtin echo "\n\n$output\n"
+}
+
+# Start layout manager using `exec` only on boot, and otherwise start it without replacing the
+# process. This makes sure the init script can be executed in an interactive shell without replacing
+# the shell process with `exec`. Instead we start it as a background job, using `nohup` because
+# POSIX says so. 'command &! ' and 'cmd & disown' work in most traditional shells though.
+if [ -t 0 ]; then
+  # Likely we're post-login in a terminal emulator, so just start layout engine in background.
+  printf "%s" "$NX_CMD_LAYOUT_MANAGER /dev/null 2>\"$NX_RTILE_LOGFILE\"" | tr --squeeze-repeats "[:space:]"
+  nx_banner "Configuration reloaded."
+else
+  # Likely logging in, so we'll start layout engine by replacing this process with it.
+  exec "$NX_CMD_LAYOUT_MANAGER >/dev/null 2>\"$NX_RTILE_LOGFILE\""
+fi
+
+exit 0

@@ -530,8 +530,8 @@
 
 .CodeMirror {
   font-family: "PragmataPro Mono Liga", monospace !important;
-  line-height: 1.4 !important;
   font-size: 0.875rem !important;
+  line-height: 1.4 !important;
 }
 
 .cm-s-default.CodeMirror {
@@ -678,7 +678,7 @@
  */
 
 body {
-  font-family: "Input Sans Compressed", sans-serif;
+  font-family: "Cooper Hewitt", sans-serif;
   font-size: 14px;
   transition-duration: 0.15s !important; /* Speed up all transitions */
 }
@@ -815,10 +815,10 @@ nav > label:hover {
 }
 
 .menu > button {
-  font-family: "Input Sans Compressed", sans-serif;
+  font-family: inherit;
   font-size: 0.813rem;
   height: 3rem; /* Increase spacing */
-    padding: 0 0.6em;
+  padding: 0 0.6em;
 }
 
 button.bin img,
@@ -839,8 +839,8 @@ button.bin img,
 }
 
 aside li {
+  font-size: 0.813rem;
   padding: 0.05rem 1rem; /* Increase spacing between styles/scripts */
-    font-size: 0.813rem;
 }
 
 aside li:hover {
@@ -915,7 +915,7 @@ button[type="submit"] {
   text-shadow: none;
   margin: 1rem auto 5rem;
   box-shadow: none; /* Make it look like other buttons */
-    font-size: 0.813rem;
+  font-size: 0.813rem;
 }
 
 button[type="submit"]:hover {

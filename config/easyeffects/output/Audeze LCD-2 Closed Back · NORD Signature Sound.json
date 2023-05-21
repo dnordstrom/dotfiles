@@ -1,6 +1,94 @@
 {
     "output": {
+        "bass_enhancer#0": {
+            "amount": 3.500000000000003,
+            "blend": 0.0,
+            "bypass": false,
+            "floor": 23.5,
+            "floor-active": true,
+            "harmonics": 3.500000000000003,
+            "input-gain": 0.0,
+            "output-gain": -2.5,
+            "scope": 235.0
+        },
         "blocklist": [],
+        "crossfeed#0": {
+            "bypass": false,
+            "fcut": 550,
+            "feed": 9.0,
+            "input-gain": 0.0,
+            "output-gain": 0.0
+        },
+        "crystalizer#0": {
+            "band0": {
+                "bypass": false,
+                "intensity": 0.0,
+                "mute": false
+            },
+            "band1": {
+                "bypass": false,
+                "intensity": -1.0,
+                "mute": false
+            },
+            "band10": {
+                "bypass": false,
+                "intensity": -2.0,
+                "mute": false
+            },
+            "band11": {
+                "bypass": false,
+                "intensity": -1.0,
+                "mute": false
+            },
+            "band12": {
+                "bypass": false,
+                "intensity": 0.0,
+                "mute": false
+            },
+            "band2": {
+                "bypass": false,
+                "intensity": -2.0,
+                "mute": false
+            },
+            "band3": {
+                "bypass": false,
+                "intensity": -3.0,
+                "mute": false
+            },
+            "band4": {
+                "bypass": false,
+                "intensity": -4.0,
+                "mute": false
+            },
+            "band5": {
+                "bypass": false,
+                "intensity": -5.0,
+                "mute": false
+            },
+            "band6": {
+                "bypass": false,
+                "intensity": -6.0,
+                "mute": false
+            },
+            "band7": {
+                "bypass": false,
+                "intensity": -5.0,
+                "mute": false
+            },
+            "band8": {
+                "bypass": false,
+                "intensity": -4.0,
+                "mute": false
+            },
+            "band9": {
+                "bypass": false,
+                "intensity": -3.0,
+                "mute": false
+            },
+            "bypass": false,
+            "input-gain": 0.0,
+            "output-gain": 0.0
+        },
         "equalizer#0": {
             "balance": 0.0,
             "bypass": false,
@@ -8,7 +96,7 @@
             "left": {
                 "band0": {
                     "frequency": 80.0,
-                    "gain": 0.14,
+                    "gain": -4.0,
                     "mode": "APO (DR)",
                     "mute": false,
                     "q": 0.4000000059604645,
@@ -28,7 +116,7 @@
                 },
                 "band2": {
                     "frequency": 230.0,
-                    "gain": 1.01,
+                    "gain": -1.0,
                     "mode": "APO (DR)",
                     "mute": false,
                     "q": 1.7000000476837158,
@@ -105,7 +193,7 @@
             "right": {
                 "band0": {
                     "frequency": 80.0,
-                    "gain": 0.14,
+                    "gain": -4.0,
                     "mode": "APO (DR)",
                     "mute": false,
                     "q": 0.4000000059604645,
@@ -125,7 +213,7 @@
                 },
                 "band2": {
                     "frequency": 230.0,
-                    "gain": 1.01,
+                    "gain": -1.0,
                     "mode": "APO (DR)",
                     "mute": false,
                     "q": 1.7000000476837158,
@@ -197,7 +285,10 @@
             "split-channels": false
         },
         "plugins_order": [
-            "equalizer#0"
+            "crystalizer#0",
+            "equalizer#0",
+            "bass_enhancer#0",
+            "crossfeed#0"
         ]
     }
 }

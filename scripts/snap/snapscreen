@@ -112,7 +112,8 @@ fi
 
 # Checking if target is writable
 if ! [ "$target" = "false" ] && touch "$target" >/dev/null 2>&1; then
-  rm "$target" >/dev/null 2>&1 # Remove temporary file
+  # Remove temporary file.
+  rm "$target" >/dev/null 2>&1
 else
   echo "Cannot write to $target. Please check that the directory exists and is writable."
 fi
@@ -122,7 +123,10 @@ if [ "$option_window" = true ]; then
   area="$(swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp)"
 elif [ "$option_screen" = true ]; then
   area="$(swaymsg -t get_outputs | jq -r '.[] | select(.active) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp)"
-else
+  if [ $? -ne 0 ]; then
+    printf '\n\n%s\n\n%s\n\n' "Screenshotting a window or screen is currently supported in Sway only." "If you know of a simple solution to get a window or a screen's screen coordinates, please let me know!"
+  fi
+elif [ "$option_window" = true ]; then
   area="$(slurp)"
 fi
 

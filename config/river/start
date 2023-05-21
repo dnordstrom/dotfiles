@@ -19,13 +19,9 @@ export MOZ_USE_XINPUT2=1
 export GTK_THEME="Catppuccin-Latte-Yellow"
 export GTK_USE_PORTAL=1
 
-# Qt
-export QT_QPA_PLATFORM="wayland"
-export QT_QPA_PLATFORMTHEME="qt5ct"
-export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
-
 # River
 export GDK_BACKEND="wayland"
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 export SDL_VIDEODRIVER="wayland"
 export XDG_CURRENT_DESKTOP="river"
 export XDG_SESSION_DESKTOP="river"
@@ -38,5 +34,16 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 export XKB_DEFAULT_LAYOUT="us,se"
 export XKB_DEFAULT_OPTIONS="shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey"
 
-# Start and log errors to disk
-river 2>"$HOME/.local/share/logs/river.log"
+# Start and output to disk
+logfile="$HOME/.local/share/logs/riversession.log"
+bakfile="$logfile.bak"
+
+if [ -f "$bakfile" ]; then
+  rm -f "$bakfile" >/dev/null 2>&1
+fi
+
+if [ -f "$logfile" ]; then
+  mv "$logfile" "$bakfile" >/dev/null 2>&1
+fi
+
+river 2>"$logfile"

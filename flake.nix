@@ -32,7 +32,7 @@
     # * Neovim PR:  
     #   https://github.com/neovim/neovim/pull/21586
     neovim.url = "github:nix-community/neovim-nightly-overlay";
-    neovim.inputs.nixpkgs.url = "github:nixos/nixpkgs?rev=fad51abd42ca17a60fc1d4cb9382e2d79ae31836";
+    neovim.inputs.nixpkgs.follows = "nixpkgs";
 
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
@@ -61,7 +61,8 @@
       # more stable, hopefully we can make plugins without assuming latest nightly alpha version.
       # Use overlays from the `./overlays/default.nix` module.
       overlay-import = import ./overlays;
-      overlay-inputs = [ agenix.overlays.default neovim.overlay rust.overlays.default ];
+      overlay-inputs =
+        [ agenix.overlays.default neovim.overlay rust.overlays.default ];
     in mkFlake {
       inherit self inputs;
 
@@ -71,11 +72,12 @@
         allowBroken = true;
         allowUnfree = true;
         allowUnsupportedSystem = true;
-        joypixels.acceptLicense = true; # TODO: Check if I actually use this or other unfree shit.
+        joypixels.acceptLicense =
+          true; # TODO: Check if I actually use this or other unfree shit.
       };
 
       # Args passed to every Nix file loaded, from `./hosts/`, to `./users/`, and gone.
-      specialArgs = specialArgs; 
+      specialArgs = specialArgs;
 
       sharedOverlays = overlay-import ++ overlay-inputs;
 

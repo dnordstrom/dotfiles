@@ -9,7 +9,7 @@ final: prev: {
     preFixup = ''
       ${drv.preFixup}
       gappsWrapperArgs+=(
-        --set GTK_THEME "Catppuccin-Latte-Peach"
+        --set GTK_THEME "Catppuccin-Latte-Yellow"
       )
     '';
   });
