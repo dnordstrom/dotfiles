@@ -258,7 +258,7 @@ in {
 
     calibre-server = {
       enable = true;
-      libraries = /home/dnordstrom/Documents/calibre-library;
+      libraries = [ /home/dnordstrom/Documents/calibre-library ];
     };
 
     calibre-web = {
@@ -267,6 +267,11 @@ in {
       listen = {
         ip = "10.1.1.2";
         port = 8083;
+      };
+      options = {
+        calibreLibrary = /home/dnordstrom/Documents/calibre-library;
+        enableBookUploading = true;
+        enableBookConversion = true;
       };
     };
 
