@@ -253,6 +253,24 @@ in {
     cpupower-gui.enable = true;
 
     #
+    # Enable hip ebook manager and dank web UI.
+    #
+
+    calibre-server = {
+      enable = true;
+      libraries = /home/dnordstrom/Documents/calibre-library;
+    };
+
+    calibre-web = {
+      enable = true;
+      openFirewall = true;
+      listen = {
+        ip = "10.1.1.2";
+        port = 8083;
+      };
+    };
+
+    #
     # Smart home setup.
     #
 
