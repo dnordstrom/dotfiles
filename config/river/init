@@ -14,7 +14,6 @@
 # STUFF THAT CONSIDERS ITSELF IMPORTANT
 ##
 
-NX_RCTL_LOGFILE="$HOME/.local/share/logs/river.log"
 NX_RTILE_LOGFILE="$HOME/.local/share/logs/rivertile.log"
 
 ##
@@ -731,26 +730,22 @@ nx_rctl_spawn_logged() {
 #
 # shellcheck disable=SC2317 # Don't warn about unreachable commands in this function
 # shellcheck disable=SC2139 # Don't warn about expand on define--*exactly* what we want to fkn do.
-export NX_CMD_LAYOUT_MANAGER="rivertile \
-  -view-padding ${view_padding:-10} \
-  -outer-padding ${outer_padding:-10} \
-  -main-ratio ${main_ratio:-10} \
-  -main-count ${main_count:-10} \
-  -main-location ${main_location:-\"left\"} \
-"
+export NX_CMD_LAYOUT_MANAGER="rivertile -view-padding ${view_padding:-10} -outer-padding ${outer_padding:-10} -main-ratio ${main_ratio:-0.6} -main-count ${main_count:-10} -main-location ${main_location:-\"left\"}"
 
-# It prints a banner to standard output. With, like, equality signs (operators...?) around it. Does
-# not yet support any padding or other fancy shit I'll probably add around 2026, I say Q3. Could
-# also never ever happen, and this could be Lua in a few hours, no one knows. Tried asking ChatGPT?
+# Print a bordered banner to standard output in a POSIX compatible manner. `$padchar` contains the
+# character to use for borders. Support for specifying padding width, border character, and
+# other fancy stuff will be added "later." As in 2026.
+#
+# It runs in POSIX `sh`, and uses GNU coretools `echo` and `printf` commands rather than builtins.
 nx_banner() {
-  output=""
-  title="$*"
-  count=$(printf "%s" "$*" | wc -m)
-  bar="$(builtin echo "$(for i in $(seq 1 count); do printf '-'; done))""
-  content="\n= $title =\n"
+  padchar="="
+  content="$padchar $* $padchar"                                                   # Join args.
+  content="$(command printf '%s' "$content" | tr '[:lower:]' '[:upper:]')"         # Make uppercase.
+  columns="$(command printf '%s' "$content" | wc -m)"                              # Padded width.
+  wrapper="$(for i in $(seq 1 $columns); do command printf '%s' "$padchar"; done)" # Top and bottom.
 
-  # shellcheck disable=SC2059 # Chill with the 'no vars there'. It's controlling and rude.
-  builtin echo "\n\n$output\n"
+  # shellcheck disable=SC2059 # Chill with the "no vars there." It's rude, and super controlling. :/
+  command printf '\n%s\n%s\n%s\n' "$content" # Put them together, and add empty lines for spacing.
 }
 
 # Start layout manager using `exec` only on boot, and otherwise start it without replacing the
@@ -759,11 +754,14 @@ nx_banner() {
 # POSIX says so. 'command &! ' and 'cmd & disown' work in most traditional shells though.
 if [ -t 0 ]; then
   # Likely we're post-login in a terminal emulator, so just start layout engine in background.
-  printf "%s" "$NX_CMD_LAYOUT_MANAGER /dev/null 2>\"$NX_RTILE_LOGFILE\"" | tr --squeeze-repeats "[:space:]"
-  nx_banner "Configuration reloaded."
+  if pgrep rivertile >/dev/null 2>&1; then
+    pkill rivertile
+  fi
+
+  nohup sh -c "$NX_CMD_LAYOUT_MANAGER" >/dev/null 2>"$NX_RTILE_LOGFILE" &
 else
   # Likely logging in, so we'll start layout engine by replacing this process with it.
-  exec "$NX_CMD_LAYOUT_MANAGER >/dev/null 2>\"$NX_RTILE_LOGFILE\""
+  exec "$NX_CMD_LAYOUT_MANAGER >/dev/null 2>$NX_RTILE_LOGFILE"
 fi
 
 exit 0

@@ -39,8 +39,12 @@ setopt sharehistory # Write to history file immediately so other instances can a
 setopt correct # Autocorrect commands.
 setopt nocorrectall # Don't autocorrect arguments (removes quotes if enabled)
 
-# Case-insensitive autocomplete.
+# Always use case-insensitive globbing. Paths can be configured separately with the
+# CASE_PATHS/casepaths option, otherwise all globbing uses this case sensitivity.
 setopt nocaseglob
+
+# Shorten `**/*` to `**`, and `***/*` (follows symlinks) to `***`, unless followed by a slash.
+setopt globstarshort
 
 # Expand aliases.
 setopt aliases
@@ -1101,8 +1105,8 @@ zvm_config() {
 # PATH
 #
 
-# Script paths organized and prefixed by category: `nix/nixpreview`, `launch/launchapp`, etc.
-for directory in ~/.local/bin/.scripts/**; do
+# Scripts organized and prefixed by category/group: scripts/snap/* -> snap-screen, snap-color, etc.
+for directory in ~/.local/bin/scripts/*; do
   export PATH="$PATH:$directory"
 done
 
@@ -1127,5 +1131,5 @@ fi
 # Init cheat sheets CLI.
 eval "$(navi widget zsh)"
 
-# Init direnv
+# Init direnv.
 eval "$(direnv hook zsh)"

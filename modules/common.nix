@@ -235,20 +235,25 @@ in {
 
   services = {
     #
-    # Input
+    # Enable libinput for mouse and touchpad setup.
     #
 
     xserver.libinput.enable = true;
 
     #
-    # CPU
+    # DDC Control for controlling monitor settings.
     #
 
-    cpupower-gui.enable = false; # Use cpupower-gui instead of TLP.
-    tlp.enable = false; # Make sure TLP stays disabled.
+    ddccontrol.enable = true;
 
     #
-    # Smart home
+    # Enable GUI for CPU frequency scheduling.
+    #
+
+    cpupower-gui.enable = true;
+
+    #
+    # Smart home setup.
     #
 
     home-assistant = {
@@ -277,7 +282,6 @@ in {
         # Set of sane default components, listed in the documentation:
         # https://www.home-assistant.io/integrations/default_config
         "default_config"
-
         "apple_tv" # Apple TV control.
         "browser" # Open URLs on host machine.
         "caldav" # Calendar.
@@ -312,12 +316,12 @@ in {
     };
 
     #
-    # Login manager
+    # Use `tuigreet` as TUI login manager.
     #
 
     greetd = {
       enable = true;
-      vt = 5;
+      vt = 5; # TTY 1 and 2 will start Sway or River on login, respectively.
       settings = {
         default_session = {
           command =
@@ -328,7 +332,7 @@ in {
     };
 
     #
-    # Key remapping
+    # Remap keys using Interception Tools plugins (works in TTY).
     #
 
     interception-tools = {
@@ -343,7 +347,7 @@ in {
     };
 
     #
-    # Smart card daemon, for hardware keys.
+    # Smart card daemon for hardware keys.
     #
 
     pcscd = {
@@ -352,58 +356,32 @@ in {
     };
 
     #
-    # OpenSSH, Bluetooth, and udev rules.
+    # Network and Bluetooth services.
     #
 
-    # Using `bluetoothd`, `bluetoothctl`, and `BlueZ` for BT audio.
     blueman.enable = false;
+
     openssh.enable = true;
+
     udev.packages = [ pkgs.nordpkgs.udev-rules ];
 
     #
     # Audio
     #
 
-    # PipeWire configuration is no longer supported here. As of April 2023, it's recommended to add
-    # drop-in configuration files in `/etc/pipewire/pipewire.conf.d` (or a local equivalent, since
-    # we don't install it system-wide (see below).
+    # Enable PipeWire audio server. Adds systemd services. The config lives in `~/.config/pipewire`,
+    # or `/etc/pipewire` if using a system-wide setup. NixOS and PipeWire docs recommend using user
+    # rather than system services. User services and socket activation is enabled by default.
     pipewire = {
-      # Enable the service.
-      enable = true;
-      socketActivation = true;
-
-      # Use PipeWire as primary audio server (enabled by default). This adds some configuration
-      # files for Wireplumber and Bluetooth quirks, see derivation for details.
-      audio.enable = true;
-
-      # Enable ALSA.
-      alsa = {
-        enable = true;
-        support32Bit = true;
-      };
-
-      # Use PulseAudio emulation where PipeWire isn't supported.
+      alsa.enable = true;
+      jack.enable = true;
       pulse.enable = true;
-
-      # Use Wireplumber as session manager.
-      wireplumber.enable = true;
-
-      # Set up `systemd` with user services rather than system services--adding a few configuration
-      # files to the system `etc`--like the `NEWS` file for PipeWire 0.3.11 recommends on GitHub:
-      # https://github.com/PipeWire/pipewire/blob/fb8709716cc69f43cc2bfe83177d69f7501c052e/NEWS#L4270
-      systemWide = false;
     };
 
     # Roon Server as systemd service
     roon-server = {
       enable = true;
       openFirewall = true;
-    };
-
-    # Packages that need system dbus access go here.
-    dbus = {
-      enable = true;
-      packages = [ ];
     };
 
     # Plex media server.
@@ -419,25 +397,44 @@ in {
       openFirewall = true;
     };
 
-    # Flatpak agent.
+    #
+    # Miscellaneous, other stuff.
+    #
+
+    # Packages that need system D-Bus access go in the list below. Usually the NixOS modules will
+    # take care of this.
+    dbus = {
+      enable = true;
+      packages = [ ];
+    };
+
+    # Enable Flatpak agent service.
     flatpak.enable = true;
 
-    # Yubikey agent.
+    # Enable Yubikey agent for hardware security keys.
     yubikey-agent.enable = true;
   };
 
   #
-  # Systemd
+  # SYSTEMD
   #
 
   systemd = {
-    services = { systemd-udev-settle.enable = false; };
+    #
+    # Services
+    #
+
+    services.systemd-udev-settle.enable = false;
+
+    #
+    # Systemd-networkd
+    #
 
     network = {
       # Avoid waiting time on boot or shutdown.
       wait-online.timeout = 0;
 
-      # Insert WireGuard interfaces here:
+      # Insert WireGuard interfaces here.
       netdevs = {
         protonvpn-sweden = {
           enable = true;
@@ -447,6 +444,7 @@ in {
             Kind = "wireguard";
             Name = "proton-sweden";
           };
+
           extraConfig = ''
             [WireGuard]
             # Key for se3-full
@@ -498,28 +496,16 @@ in {
       yubico = {
         enable = true;
         id = "70449";
-
-        # Use with Yubico Cloud client instead of setting up challenge-response.
-        mode = "client";
-
-        # Allow login with Yubikey or password only, rather than as MFA. Bad. Convenient, but bad.
-        control = "sufficient";
+        mode = "client"; # Yubico Cloud client instead of challenge-response.
+        control = "sufficient"; # Allow login with key or password only. BAD.
       };
 
       services = {
-        # KWallet key/secret management.
-        kwallet = {
-          name = "kwallet";
-          enableKwallet = true;
-        };
-
-        # Make swaylock accept correct password.
+        # Make `swaylock` accept correct password, in case we want to use Sway WM.
         # See: https://github.com/mortie/swaylock-effects/blob/master/pam/swaylock
         swaylock = {
           name = "swaylock";
-          text = ''
-            auth include login
-          '';
+          text = "auth include login";
         };
       };
     };
@@ -545,33 +531,17 @@ in {
   # HARDWARE
   #
 
-  # Sound should be set to disabled when using PipeWire, for whatever reason.
-  sound.enable = false;
-
   hardware = {
-    # Disable PulseAudio for PipeWire.
+    # Disable PulseAudio since we use PipeWire.
     pulseaudio.enable = false;
 
     # Enable OpenGL. This is done automatically when using the `programs.sway` module to install
-    # Sway. We don't, so we enable it here. The same goes for e.g. `services.polkit.enable`.
-    opengl = {
-      # This would be enabled automatically if we used `programs.sway.enable`, but we're not using
-      # that so let's set this here to be sure.
-      enable = true;
-
-      # Enable Direct Rendering for 32-bit applications (only 64-bit by default).
-      driSupport32Bit = true;
-    };
+    # Sway. We don't, so we enable it. The same goes for e.g. `services.polkit.enable`.
+    opengl.enable = true;
 
     # Enable Bluetooth.
     bluetooth = {
       enable = true;
-      package = pkgs.bluezFull; # Full version includes plugins.
-
-      # We would enable support for HSP and HFP profiles, but Wireplumber apparently does that now.
-      hsphfpd.enable = false;
-
-      # Enable audio source and sink.
       settings.General.Enable = "Source,Sink,Media,Socket";
     };
   };
@@ -599,7 +569,7 @@ in {
         settings = {
           screencast = {
             max_fps = 60;
-            output_name = "DP-1";
+            output_name = "HDMI-A-1"; # We'll never remember to change this...
             chooser_type = "simple";
             chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
           };
