@@ -522,20 +522,10 @@ in rec {
     libsForQt5.kdf
     libsForQt5.keditbookmarks
     libsForQt5.kfilemetadata
-    libsForQt5.kget
     libsForQt5.kgpg # Graphical GPG interface.
     libsForQt5.kio
     libsForQt5.kio-extras
-    libsForQt5.kmix
-    libsForQt5.koko
-    libsForQt5.kontact
     libsForQt5.kparts
-    libsForQt5.krdc
-    libsForQt5.krfb
-    libsForQt5.kwallet
-    libsForQt5.kwallet-pam
-    libsForQt5.kwalletmanager
-    libsForQt5.lightly
     libsForQt5.okular # Document viewer needed for Kate's (or Kpart's) Markdown preview.
     libsForQt5.qt5.qtgraphicaleffects # Needed by Quaternion Matrix client.
     libsForQt5.qt5.qtimageformats
@@ -543,9 +533,6 @@ in rec {
     libsForQt5.qt5.qtwayland
     libsForQt5.qtstyleplugin-kvantum
     libsForQt5.qtstyleplugins
-    libsForQt5.quazip
-
-    kwalletcli
 
     qt6.qt5compat
     qt6.qt3d
@@ -556,15 +543,10 @@ in rec {
     #
 
     element-desktop
-    fractal
     gomuks
     gotktrix
-    kotatogram-desktop-with-webkit
-    mirage-im
-    nheko
     qtox
     schildichat-desktop-wayland
-    signal-desktop
     slack
     tdesktop # Telegram desktop client.
     utox
@@ -688,16 +670,14 @@ in rec {
     castnow
     cava
     chrome-export
-    easyeffects # Prefer service `services.easyeffects`, we skip it for simpler switch to JamesDSP.
+    easyeffects # Also see option `services.easyeffects`.
     enlightenment.ephoto
-    enlightenment.rage
     fx_cast_bridge
-    gnomecast
     google-chrome
     haruna
     jamesdsp
     libcamera
-    lxqt.pavucontrol-qt
+    pavucontrol
     playerctl
     plexamp
     pulseaudio-dlna
@@ -785,7 +765,6 @@ in rec {
     nodePackages.node-gyp-build
 
     # APIs and testing 
-    insomnia
     curlie
     httpie
 
@@ -795,12 +774,9 @@ in rec {
 
     # Fonts (PragmataPro Mono with ligatures in terminal and any code, commercial license)
     corefonts
-    dejavu_fonts
     fcft # Font loading library used by foot.
     font-manager
-    inriafonts
     joypixels
-    libertine
     merriweather
     merriweather-sans
     paratype-pt-mono
@@ -822,7 +798,7 @@ in rec {
     rofimoji
 
     # Theming.
-    configure-gtk
+    configure-gtk # TODO: Try the thing.
     dfeet
     d-spy
     gnome.dconf-editor
@@ -838,7 +814,6 @@ in rec {
     navi # CLI cheatsheet tool.
     ytfzf # Fzf utility for YouTube.
     youtube-dl # Download command used by `ytfzf`: we want to use it standalone as as well.
-    kooha # Screen recorder GUI.
   ];
 
   #
@@ -1701,11 +1676,10 @@ in rec {
       longitude = 17.32;
     };
 
-    # EasyEffects PipeWire audio filters DAP. To be able to switch between EasyEffects and 
-    # other audio for example JamesDSP able this service to avoid conflict with
-    # JamesDSP if using that, and just launch EasyEffects or JamesDSP. This service will restart
-    # itself if we stop it, and we don't want both of them active.
-    easyeffects.enable = true;
+    # Audio effects/filters manager for PipeWire. Having this service enabled will restart
+    # EasyEffects whenever it stops. We only want this if we never use other DSP software (such as
+    # JamesDSP), since both would be active.
+    easyeffects.enable = false;
   };
 
   #

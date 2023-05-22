@@ -85,6 +85,7 @@ in {
     allowUnfreePredicate = pkg:
       builtins.elem (lib.getName pkg) [ "corefonts" "slack" ];
     firefox.enableTridactylNative = true;
+    permittedInsecurePackages = [ "openssl-1.1.1t" "nodejs-16.20.0" ];
   };
 
   #
@@ -196,7 +197,6 @@ in {
           "Cousine"
           "DaddyTimeMono"
           "FantasqueSansMono"
-          "FontPatcher"
           "Gohu"
           "Hack"
           "Hasklig"
@@ -370,6 +370,7 @@ in {
     pipewire = {
       # Enable the service.
       enable = true;
+      socketActivation = true;
 
       # Use PipeWire as primary audio server (enabled by default). This adds some configuration
       # files for Wireplumber and Bluetooth quirks, see derivation for details.

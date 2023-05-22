@@ -1,6 +1,0 @@
-{
-    "device": "alsa_input.usb-Focusrite_Scarlett_Solo_USB_Y7WND901607934-00.iec958-stereo",
-    "device-description": "Scarlett Solo (3rd Gen.) Digital Stereo (IEC958)",
-    "device-profile": "iec958-stereo-input",
-    "preset-name": "Shure SM7B at home"
-}
