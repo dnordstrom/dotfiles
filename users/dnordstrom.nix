@@ -665,8 +665,6 @@ in rec {
     # Multimedia
     #
 
-    alsa-firmware
-    alsa-scarlett-gui
     castnow
     cava
     chrome-export
@@ -674,13 +672,11 @@ in rec {
     enlightenment.ephoto
     fx_cast_bridge
     google-chrome
-    haruna
     jamesdsp
     libcamera
     pavucontrol
     playerctl
     plexamp
-    pulseaudio-dlna
     pulsemixer
     qpwgraph
     streamlink
