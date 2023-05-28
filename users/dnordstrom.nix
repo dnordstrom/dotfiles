@@ -137,10 +137,10 @@ let
       "${gsettings}/share/gsettings-schemas/${gsettings.name}";
   in ''
     export XDG_DATA_DIRS="${gsettings-schemas}:${gtk3-schemas}:$XDG_DATA_DIRS"
-    mkdir -p "${catppuccin}/.config/gtk-4.0"
-    ln -sf "${catppuccin}/gtk-4.0/assets" "${homeDirectory}/.config/gtk-4.0/assets"
-    ln -sf "${catppuccin}/gtk-4.0/gtk.css" "${homeDirectory}/.config/gtk-4.0/gtk.css"
-    ln -sf "${catppuccin}/gtk-4.0/gtk-dark.css" "${homeDirectory}/.config/gtk-4.0/gtk-dark.css"
+    mkdir "/home/dnordstrom/.config/gtk-4.0"
+    ln -sf "${catppuccin}/gtk-4.0/assets" "/home/dnordstrom/.config/gtk-4.0/assets"
+    ln -sf "${catppuccin}/gtk-4.0/gtk.css" "/home/dnordstrom/.config/gtk-4.0/gtk.css"
+    ln -sf "${catppuccin}/gtk-4.0/gtk-dark.css" "/home/dnordstrom/.config/gtk-4.0/gtk-dark.css"
   '';
 in rec {
   ##
@@ -892,7 +892,6 @@ in rec {
 
     gtk2.extraConfig = gtk2Config;
     gtk3.extraConfig = gtk3Config;
-    gtk4.extraConfig = gtk3Config;
     gtk3.bookmarks = bookmarks;
   };
 
@@ -1041,6 +1040,8 @@ in rec {
   #
 
   home.file.".config/pipewire".source = mkSymlink (mkConfigPath "pipewire");
+  home.file.".config/wireplumber".source =
+    mkSymlink (mkConfigPath "wireplumber");
 
   #
   # VIFM

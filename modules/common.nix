@@ -396,9 +396,14 @@ in {
     # or `/etc/pipewire` if using a system-wide setup. NixOS and PipeWire docs recommend using user
     # rather than system services. User services and socket activation is enabled by default.
     pipewire = {
-      alsa.enable = true;
-      jack.enable = true;
+      enable = true;
+      systemWide = false;
       pulse.enable = true;
+
+      alsa = {
+        enable = true;
+        support32Bit = true;
+      };
     };
 
     # Roon Server as systemd service
@@ -553,6 +558,8 @@ in {
   #
   # HARDWARE
   #
+
+  sound.enable = false;
 
   hardware = {
     # Disable PulseAudio since we use PipeWire.
