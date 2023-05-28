@@ -44,6 +44,14 @@ let
   # @returns {path} path - Absolute output.
   mkHomePath = path: /. + "${homeDirectory}/${path}";
 
+  # Catppuccin GTK theme with variant, accent colors, etc.
+  catppuccin-gtk-with-tweaks = pkgs.catppuccin-gtk.override {
+    accents = [ "yellow" ];
+    size = "compact";
+    tweaks = [ "rimless" ];
+    variant = "latte";
+  };
+
   ##
   # APPLICATIONS
   ##
@@ -120,20 +128,20 @@ let
   # TODO: Make it work.
   #
 
-  configure-gtk = pkgs.writeTextFile {
-    name = "configure-gtk";
-    destination = "/bin/configure-gtk";
-    executable = true;
-    text = let
-      schemas = pkgs.gsettings-desktop-schemas;
-      datadir = "${schemas}/share/gsettings-schemas/${schemas.name}";
-    in ''
-      export XDG_DATA_DIRS=${datadir}:$XDG_DATA_DIRS
-
-      gnome_schema="org.gnome.desktop.interface"
-      gsettings set $gnome_schema gtk-theme "Catppuccin-Latte-Yellow"
-    '';
-  };
+  profileCommands = let
+    catppuccin = catppuccin-gtk-with-tweaks;
+    gtk3 = pkgs.gtk3;
+    gsettings = pkgs.gsettings-desktop-schemas;
+    gtk3-schemas = "${gtk3}/share/gsettings-schemas/${gtk3.name}";
+    gsettings-schemas =
+      "${gsettings}/share/gsettings-schemas/${gsettings.name}";
+  in ''
+    export XDG_DATA_DIRS="${gsettings-schemas}:${gtk3-schemas}:$XDG_DATA_DIRS"
+    mkdir -p "${catppuccin}/.config/gtk-4.0"
+    ln -sf "${catppuccin}/gtk-4.0/assets" "${homeDirectory}/.config/gtk-4.0/assets"
+    ln -sf "${catppuccin}/gtk-4.0/gtk.css" "${homeDirectory}/.config/gtk-4.0/gtk.css"
+    ln -sf "${catppuccin}/gtk-4.0/gtk-dark.css" "${homeDirectory}/.config/gtk-4.0/gtk-dark.css"
+  '';
 in rec {
   ##
   # ENVIRONMENT
@@ -150,6 +158,8 @@ in rec {
     };
 
     sessionPath = [ "${homeDirectory}/.local/bin" ];
+
+    extraProfileCommands = profileCommands;
   };
 
   ##
@@ -648,7 +658,6 @@ in rec {
     # Proton's official CLI and GUI apps both have GUI/DE dependencies and won't run headless. We'll
     # use `wg-quick` to start a WireGuard session instead, but let's add the CLI just in case.
     protonvpn-cli # Official CLI.
-
     bitwarden
     bitwarden-cli
     git-crypt
@@ -757,12 +766,14 @@ in rec {
 
     # Build 
     gnumake
-    nodePackages.node-gyp
-    nodePackages.node-gyp-build
 
     # APIs and testing 
     curlie
     httpie
+
+    # GUI
+    gnome.zenity
+    yad
 
     #
     # Appearance
@@ -779,7 +790,7 @@ in rec {
     paratype-pt-sans
     paratype-pt-serif # Current serif and print format font.
     powerline-fonts
-    public-sans # Current UI font. Sometimes a custom, patched Input Sans.
+    public-sans
     redhat-official-fonts
     source-sans
     source-serif
@@ -794,11 +805,13 @@ in rec {
     rofimoji
 
     # Theming.
-    configure-gtk # TODO: Try the thing.
-    dfeet
     d-spy
+    dfeet
     gnome.dconf-editor
+    gnome.gnome-themes-extra
     gsettings-desktop-schemas
+    gtk3 # Needed for the gsettings script to add its schema path.
+    gtk-engine-murrine
     icoutils
 
     #
@@ -858,12 +871,14 @@ in rec {
     enable = true;
 
     font = {
-      name = "Public Sans";
+      name = "PT Sans";
       size = 9;
     };
 
-    theme.name =
-      "Catppuccin-Latte-Yellow"; # No package, manually copied to `~/.local/share/themes`.
+    theme = {
+      name = "Catppuccin-Latte-Yellow";
+      package = catppuccin-gtk-with-tweaks;
+    };
 
     iconTheme = {
       name = "Vimix";

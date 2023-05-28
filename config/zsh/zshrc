@@ -440,16 +440,17 @@ OPTIONS:
 #   JSON representation of current view tree.
 wl-views() {
   showusage() {
-    printf "\n%s\n" "
+    printf '\n%s\n' "
 $(basename "$0") [OPTIONS] [GREP STRING]
 
 DESCRIPTION:
-    Use `--all` (or `-a` or `all`) for all view properties, `--focused` for only the focused view, an optional string to grep results, or omit arguments to show `app_id`, `title`, and `activated` properties of all views.
+    Use \`--all\` (or \`-a\` or \`--all\`) for all view properties, \`--focused\` for only the focused view, an optional string to grep results, or omit arguments to show \`app_id\`, \`title\`, and \`activated\` properties of all views.
 
 OPTIONS:
-    -a, --all       Show all views.
-    -f, --focused   Show focused view.
-    -h, --help      Show this help text.
+    -p, --pretty    Prettify JSON output (requires flying rat)
+    -a, --all       Show all toplevels.
+    -f, --activated Show activated toplevel.
+    -h, --help      Join #ghostbusters on Libera.Chat.
 "
   }
 
@@ -497,13 +498,13 @@ OPTIONS:
     if [ -n "$grepstring" ]; then
       cmd="$views_cmd | $parse_cmd '$query' | $grep_cmd $grepstring"
     else
-      printf "\n%s\n\n" "Invalid argument specified." "$usage"
+      printf '\n%s\n\n' "Invalid argument specified." "$usage"
     fi
   else
     cmd="$views_cmd | $parse_cmd '$query'"
   fi
 
-  eval $cmd
+  eval "$cmd"
 }
 
 # Parse a Jira issue ID from string provided either as argument or piped to standard input. For now,
@@ -532,7 +533,7 @@ jira-parse-id() {
     query="$*"
   fi
 
-  printf "%s" "$query" | jq --raw-input --slurp '[capture("(?<a>[a-z]+)-(?<n>[0-9]+)"; "gi")] | [(.[] | {"project": (.a | ascii_upcase), "issue": .n | tonumber})] | if length == 0 then {"error": "Not found."} | halt_error(1) else . end'
+  printf '%s' "$query" | jq --raw-input --slurp '[capture("(?<a>[a-z]+)-(?<n>[0-9]+)"; "gi")] | [(.[] | {"project": (.a | ascii_upcase), "issue": .n | tonumber})] | if length == 0 then {"error": "Not found."} | halt_error(1) else . end'
 }
 
 # `g` - Runs `git status` when no arguments are used, otherwise passes them on to `git`.
