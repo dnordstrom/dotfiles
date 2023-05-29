@@ -35,7 +35,7 @@ export XKB_DEFAULT_LAYOUT="us,se"
 export XKB_DEFAULT_OPTIONS="shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey"
 
 # Start and output to disk
-logfile="$HOME/.local/share/logs/riversession.log"
+logfile="$HOME/.local/share/logs/river.log"
 bakfile="$logfile.bak"
 
 if [ -f "$bakfile" ]; then
