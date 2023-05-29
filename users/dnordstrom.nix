@@ -137,10 +137,6 @@ let
       "${gsettings}/share/gsettings-schemas/${gsettings.name}";
   in ''
     export XDG_DATA_DIRS="${gsettings-schemas}:${gtk3-schemas}:$XDG_DATA_DIRS"
-    mkdir "/home/dnordstrom/.config/gtk-4.0"
-    ln -sf "${catppuccin}/gtk-4.0/assets" "/home/dnordstrom/.config/gtk-4.0/assets"
-    ln -sf "${catppuccin}/gtk-4.0/gtk.css" "/home/dnordstrom/.config/gtk-4.0/gtk.css"
-    ln -sf "${catppuccin}/gtk-4.0/gtk-dark.css" "/home/dnordstrom/.config/gtk-4.0/gtk-dark.css"
   '';
 in rec {
   ##
@@ -892,6 +888,7 @@ in rec {
 
     gtk2.extraConfig = gtk2Config;
     gtk3.extraConfig = gtk3Config;
+    gtk4.extraConfig = gtk3Config;
     gtk3.bookmarks = bookmarks;
   };
 
@@ -948,7 +945,7 @@ in rec {
   home.file.".config/easyeffects/irs".source =
     mkSymlink (mkConfigPath "easyeffects/irs");
 
-  # Keep EasyEffects oresets immutable so we don't fuck anything up. Not that we ever would, Still.
+  # Keep EasyEffects presets immutable so we don't fuck anything up. Not that we ever would, Still.
   xdg.configFile."easyeffects/presets".source = ../config/easyeffects/presets;
 
   #
