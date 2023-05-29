@@ -3,9 +3,24 @@
 let
   username = "dnordstrom";
   password = "Who knows?";
+  defaultBrowser = "firefox";
+  defaultEditor = "nvim";
   homeDirectory = "/home/${username}"; # Home directory.
   mediaDirectory = "${homeDirectory}/Videos"; # Plex library.
   musicDirectory = "${homeDirectory}/Music"; # Roon library.
+  xdgPortalPackage = [ pkgs.xdg-desktop-portal ];
+  xdgPortalsExtraPackages = with pkgs; [
+    libsForQt5.xdg-desktop-portal-kde
+    xdg-desktop-portal-wlr
+    xdg-desktop-portal-gnome
+    xdg-desktop-portal-gtk
+  ];
+  xdgPortalsJoinedPackages = xdgPortalPackage ++ xdgPortalsExtraPackages;
+  xdgPortalsJoinedPackagesEnv = pkgs.buildEnv {
+    name = "xdg-portals";
+    paths = xdgPortalsJoinedPackages;
+    pathsToLink = [ "/share/xdg-desktop-portal/portals" "/share/applications" ];
+  };
 in {
   #
   # IMPORTS
@@ -433,7 +448,7 @@ in {
     # take care of this.
     dbus = {
       enable = true;
-      packages = [ ];
+      packages = xdgPortalsJoinedPackages;
     };
 
     # Enable Flatpak agent service.
@@ -448,6 +463,12 @@ in {
   #
 
   systemd = {
+    #
+    # Packages
+    #
+
+    packages = xdgPortalsJoinedPackages;
+
     #
     # Services
     #
@@ -567,7 +588,7 @@ in {
 
     # Enable OpenGL. This is done automatically when using the `programs.sway` module to install
     # Sway. We don't, so we enable it. The same goes for e.g. `services.polkit.enable`.
-    opengl.enable = true;
+    opengl = { enable = true; };
 
     # Enable Bluetooth.
     bluetooth = {
@@ -586,12 +607,9 @@ in {
 
     portal = {
       enable = true;
-
-      extraPortals = with pkgs; [
-        xdg-desktop-portal-gtk
-        xdg-desktop-portal-wlr
-        xdg-desktop-portal-kde
-      ];
+      extraPortals = xdgPortalsExtraPackages;
+      xdgOpenUsePortal = true;
+      lxqt.enable = true;
 
       # Configure screen sharing using `slurp` as picker.
       wlr = {
@@ -685,22 +703,13 @@ in {
   qt = {
     enable = true;
 
-    #
-    # QT_QPA_PLATFORMTHEME environment variable. These themes set icons, fonts, widget style, etc.
-    #
-    # Options reference:
-    #
-    #   "gnome" -> If you use Gnome       -> Uses as many Gnome settings as possible to style
-    #   "kde"   -> If you use KDE         -> Uses KDE's Qt settings to style
-    #   "lxqt"  -> If you use LXDE        -> Uses LXDE's Qt settings to style
-    #   "gtk2"  -> If you use mostly GTK  -> Uses GTK theme to style
-    #   "qt5ct" -> If you use a computer  -> Uses `qt5ct` app to specify styles, icons, and cursors
-
+    # This sets the `QT_QPA_PLATFORMTHEME` environment variable. The `qt5ct` app will determine the
+    # Kvantum theme, icons, fonts, widget style, and so on.
     platformTheme = "qt5ct";
 
     #
-    # QT_STYLE_OVERRIDE environment variable. Optionally overrides just the widget style. We skip
-    # this since we use `qt5ct` which does it for us.
+    # This sets the `QT_STYLE_OVERRIDE` environment variable, which overrides the widget style only.
+    # We skip it, since running `qt5ct` is cooler than rebuilding.
     #
     # Options reference:
     #
@@ -719,40 +728,46 @@ in {
   #
 
   environment = {
-    # System-wide software.
     systemPackages = with pkgs; [
       git
-      kwalletcli
-      nodejs
+      libva-utils
       polkit_gnome
       roon-server
       wget
-      xdg-desktop-portal
-      yarn
+      xdg-utils
+      xdgPortalsJoinedPackagesEnv
+      wireplumber
+      alsa-tools
+      pulseaudio
+      alsaUtils
+      pciutils
     ];
 
-    # Directories to be symlinked in `/run/current-system/sw`.
-    pathsToLink = [ "/share/zsh" "/libexec" ];
+    sessionVariables = {
+      BROWSER = defaultBrowser;
+      EDITOR = defaultEditor;
+      GTK_USE_PORTAL = "1";
+      NIXOS_XDG_OPEN_USE_PORTAL = "1";
+      XDG_DESKTOP_PORTAL_DIR = lib.mkForce
+        "${xdgPortalsJoinedPackagesEnv}/share/xdg-desktop-portal/portals";
+    };
 
-    # Initially, what window manager we launched depended on TTY used to log in, rather than a GUI
-    # display manager. Currently, we're kind of in the middle using `agetty`, a TUI login manager.
-    # We do so, for now, because it's nearly plain TTY fast, can launch different sessions without
-    # `Ctrl+Alt+F2` to switch TTY, plays well with hardware keys, has easily accessible reboot and 
-    # shutdown options (oftentimes logging in to run `systemctl reboot`, or even just `reboot`, is
-    # the difference between life and death!), and it lets me type a custom command to run on login.
+    # Directories to be symlinked in `/run/current-system/sw`.
+    pathsToLink = [ "/share/zsh" "/libexec" "/share/applications" ];
+
+    # Before `getty`, logging in at `tty1` started Sway and `ttY2` started River. Faster than a
+    # display manager. The `agetty` TUI login manager gives clean UI that pops up crazy fast.
     #
-    # Mine's a script that does some D-BUS and `systemd` magic before launching `river`, which will
-    # run any executable found at `~/.config/river/init`. Mine's another shell script, since it's
-    # basic. Hobby: Rust or Python just to learn. Professionally: if I'm all alone, Lua, for being
-    # fast, simple, and fun to use in Neovim—useful knowledge. Rust could avoid constant compiling
-    # if you use some configuration library and call `riverctl` accordingly. But that would defeat
-    # the purpose; rather than make lives simpler, we actually *add* the complexity of a whole new
-    # layer of configuration on top of the current layer. It's technology's way to put carpet floor
-    # and wallpaper on top of six old layers, thinking "haha, I won't live here long enough anyway,
-    # but damn, going to suck for the who has to remove all this crap!"
+    # It also simplifies choosing window manager (no `Ctrl+Alt+F2`), allows changing launch command
+    # at login screen, supports hardware keys, and makes shutdown options available via key bind.
     #
-    # * tty1 -> River WM
-    # * tty2 -> Sway WM
+    # The River `start` script does some D-BUS and `systemd` magic, then it runs `river`. River will
+    # run whatever is at `~/.config/river/init`. Here it's a shell script, but Lua would be neat.
+    # Rust would be cool, probably orders of magnitute faster than today's 0.28 second launch time!
+    #
+    # * tty1 -> No WN. Confuses those who have the audacity(!) to touch other people's shit.
+    # * tty2 -> River WM
+    # * tty3 -> Sway WM
     loginShellInit = ''
       [ "$(tty)" = "/dev/tty2" ] && exec /home/dnordstrom/.config/river/start
       [ "$(tty)" = "/dev/tty3" ] && exec /home/dnordstrom/.config/sway/start

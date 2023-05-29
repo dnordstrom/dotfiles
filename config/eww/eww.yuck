@@ -42,7 +42,8 @@
 (defvar hover-tag "0")
 
 (defpoll volume-value :interval "1s" "pamixer --get-volume")
-(defpoll volume-label :interval "1s" '[ "$(pamixer --get-mute)" = "true" ] && printf "MUT" || printf "VOL"')
+(defvar volume-label "VOL")
+; (defpoll volume-label :interval "1s" '[ "$(pamixer --get-mute)" = "true" ] && printf "MUT" || printf "VOL"')
 
 (defvar clock-separator "·")
 (defvar clock-lock-date false)

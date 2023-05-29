@@ -84,8 +84,8 @@
    </metadata>
   </info>
  </bookmark>
- <bookmark href="file:///home/dnordstrom/Pictures/Screenshots">
-  <title>Screenshots</title>
+ <bookmark href="file:///home/dnordstrom/Pictures/screensnaps">
+  <title>Screensnaps</title>
   <info>
    <metadata owner="http://freedesktop.org">
     <bookmark:icon name="source-ui"/>
@@ -108,6 +108,20 @@
     <ID>1626273837/7</ID>
     <isSystemItem>true</isSystemItem>
     <IsHidden>false</IsHidden>
+    <OnlyInApp/>
+   </metadata>
+  </info>
+ </bookmark>
+ <bookmark href="file:///home/dnordstrom/Videos/screencasts">
+  <title>Screencasts</title>
+  <info>
+   <metadata owner="http://freedesktop.org">
+    <bookmark:icon name="default-folder-video"/>
+   </metadata>
+   <metadata owner="http://www.kde.org">
+    <ID>1626273837/8</ID>
+    <isSystemItem>true</isSystemItem>
+    <IsHidden>true</IsHidden>
     <OnlyInApp/>
    </metadata>
   </info>
