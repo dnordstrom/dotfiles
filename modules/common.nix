@@ -1,4 +1,4 @@
-{ config, pkgs, stdenv, lib, ... }:
+{ config, pkgs, stdenv, lib, inputs, ... }:
 
 let
   username = "dnordstrom";
@@ -8,14 +8,12 @@ let
   homeDirectory = "/home/${username}"; # Home directory.
   mediaDirectory = "${homeDirectory}/Videos"; # Plex library.
   musicDirectory = "${homeDirectory}/Music"; # Roon library.
-  xdgPortalPackage = [ pkgs.xdg-desktop-portal ];
+  xdgPortalsPackage = [ pkgs.xdg-desktop-portal ];
   xdgPortalsExtraPackages = with pkgs; [
-    libsForQt5.xdg-desktop-portal-kde
     xdg-desktop-portal-wlr
-    xdg-desktop-portal-gnome
     xdg-desktop-portal-gtk
   ];
-  xdgPortalsJoinedPackages = xdgPortalPackage ++ xdgPortalsExtraPackages;
+  xdgPortalsJoinedPackages = xdgPortalsPackage ++ xdgPortalsExtraPackages;
   xdgPortalsJoinedPackagesEnv = pkgs.buildEnv {
     name = "xdg-portals";
     paths = xdgPortalsJoinedPackages;
@@ -114,8 +112,6 @@ in {
       systemd-boot = {
         enable = true;
         consoleMode = "max";
-        netbootxyz.enable = false;
-        memtest86.enable = false;
       };
 
       efi = {
@@ -181,7 +177,7 @@ in {
 
       defaultFonts = {
         emoji = [ "Twemoji" ];
-        sansSerif = [ "Public Sans" "Symbols Nerd Font" ];
+        sansSerif = [ "PT Sans" "Symbols Nerd Font" ];
         serif = [ "PT Serif" "Symbols Nerd Font" ];
         monospace = [ "PragmataPro Mono Liga" "Symbols Nerd Font" ];
       };
@@ -201,43 +197,20 @@ in {
     fonts = [
       (pkgs.nerdfonts.override {
         fonts = [
-          "3270"
-          "Agave"
-          "AnonymousPro"
-          "Arimo"
-          "AurulentSansMono"
           "BitstreamVeraSansMono"
           "CascadiaCode"
           "CodeNewRoman"
-          "Cousine"
           "DaddyTimeMono"
           "FantasqueSansMono"
-          "Gohu"
           "Hack"
-          "Hasklig"
-          "HeavyData"
-          "Hermit"
           "IBMPlexMono"
           "Iosevka"
-          "Lekton"
-          "Lilex"
           "MPlus"
-          "Monofur"
-          "Monoid"
-          "Mononoki"
           "NerdFontsSymbolsOnly"
           "Noto"
           "Overpass"
           "ProFont"
-          "ProggyClean"
-          "RobotoMono"
-          "ShareTechMono"
           "SourceCodePro"
-          "SpaceMono"
-          "Terminus"
-          "Tinos"
-          "Ubuntu"
-          "UbuntuMono"
           "iA-Writer"
         ];
       })
@@ -448,7 +421,7 @@ in {
     # take care of this.
     dbus = {
       enable = true;
-      packages = xdgPortalsJoinedPackages;
+      packages = [ inputs.firefox.packages.${pkgs.system}.firefox-nightly-bin ];
     };
 
     # Enable Flatpak agent service.
@@ -467,7 +440,8 @@ in {
     # Packages
     #
 
-    packages = xdgPortalsJoinedPackages;
+    # packages = xdgPortalsJoinedPackages;
+    packages = [ inputs.firefox.packages.${pkgs.system}.firefox-nightly-bin ];
 
     #
     # Services
@@ -548,15 +522,6 @@ in {
         mode = "client"; # Yubico Cloud client instead of challenge-response.
         control = "sufficient"; # Allow login with key or password only. BAD.
       };
-
-      services = {
-        # Make `swaylock` accept correct password, in case we want to use Sway WM.
-        # See: https://github.com/mortie/swaylock-effects/blob/master/pam/swaylock
-        swaylock = {
-          name = "swaylock";
-          text = "auth include login";
-        };
-      };
     };
   };
 
@@ -588,7 +553,10 @@ in {
 
     # Enable OpenGL. This is done automatically when using the `programs.sway` module to install
     # Sway. We don't, so we enable it. The same goes for e.g. `services.polkit.enable`.
-    opengl = { enable = true; };
+    opengl = {
+      enable = true;
+      driSupport32Bit = true;
+    };
 
     # Enable Bluetooth.
     bluetooth = {
@@ -609,7 +577,6 @@ in {
       enable = true;
       extraPortals = xdgPortalsExtraPackages;
       xdgOpenUsePortal = true;
-      lxqt.enable = true;
 
       # Configure screen sharing using `slurp` as picker.
       wlr = {
@@ -617,7 +584,7 @@ in {
         settings = {
           screencast = {
             max_fps = 60;
-            output_name = "HDMI-A-1"; # We'll never remember to change this...
+            output_name = "HDMI-A-1";
             chooser_type = "simple";
             chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
           };
@@ -731,25 +698,53 @@ in {
     systemPackages = with pkgs; [
       git
       libva-utils
-      polkit_gnome
+      libsForQt5.polkit-qt
       roon-server
       wget
+      glib
       xdg-utils
-      xdgPortalsJoinedPackagesEnv
+      # xdgPortalsJoinedPackagesEnv
       wireplumber
       alsa-tools
       pulseaudio
       alsaUtils
       pciutils
+      xkeyboard_config
+      xorg.setxkbmap
+      xorg.xinput
     ];
 
     sessionVariables = {
       BROWSER = defaultBrowser;
       EDITOR = defaultEditor;
+
+      # XDG portals
       GTK_USE_PORTAL = "1";
-      NIXOS_XDG_OPEN_USE_PORTAL = "1";
-      XDG_DESKTOP_PORTAL_DIR = lib.mkForce
-        "${xdgPortalsJoinedPackagesEnv}/share/xdg-desktop-portal/portals";
+      # NIXOS_XDG_OPEN_USE_PORTAL = "1";
+
+      # Firefox
+      MOZ_DBUS_REMOTE = "1";
+      MOZ_USE_XINPUT2 = "1";
+      MOZ_ENABLE_WAYLAND = "1";
+
+      # Wayland
+      GDK_BACKEND = "wayland";
+      QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+      SDL_VIDEODRIVER = "wayland";
+      XDG_CURRENT_DESKTOP = "river";
+      XDG_SESSION_DESKTOP = "river";
+      XDG_SESSION_TYPE = "wayland";
+
+      # XDG_DESKTOP_PORTAL_DIR = lib.mkForce
+      #   "${xdgPortalsJoinedPackagesEnv}/share/xdg-desktop-portal/portals";
+
+      # Java
+      _JAVA_AWT_WM_NONREPARENTING = "1";
+
+      # Keyboard
+      XKB_DEFAULT_LAYOUT = "us,se";
+      XKB_DEFAULT_OPTIONS =
+        "shift:both_capslock,grp:ctrls_toggle,lv3:ralt_switch_multikey";
     };
 
     # Directories to be symlinked in `/run/current-system/sw`.

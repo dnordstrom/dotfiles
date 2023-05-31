@@ -667,20 +667,14 @@ export NX_RIVER_TAGS_NONSCRATCHPAD="$((alltags ^ scratchtag))"
 export NX_RIVER_TAGS_NONSPECIAL="$((noscratchtag ^ stickytag))"
 
 # Convenience variables imported and available to D-BUS and `systemd`. No substitution.
-export NX_ENV_RIVER="NX_RIVER_TAGS_STICKY NX_RIVER_TAGS_SCRATCHPAD "
-export NX_ENV_IMPORTS="DISPLAY WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XDG_RUNTIME_DIR MOZ_DBUS_REMOTE MOZ_USE_XINPUT2"
+export NX_ENV_RIVER="NX_RIVER_TAGS_STICKY NX_RIVER_TAGS_SCRATCHPAD"
+export NX_ENV_IMPORTS="DISPLAY WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE GDK_BACKEND SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XDG_RUNTIME_DIR MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 MOZ_ENABLE_WAYLAND QT_WAYLAND_DISABLE_WINDOWDECORATION QT_QPA_PLATFORM"
 export NX_ENV="$NX_ENV_RIVER $NX_ENV_IMPORTS"
 
-# To not specify which variables to import is deprecated. Usually `WAYLAND_DISPLAY`, `DISPLAY`, and
-# and `XDG_*` are recommended, but let's add some others that were set in the River launch script,
-# at `./start`.
-nx_rctl_spawn "dbus-update-activation-environment --systemd $NX_ENV"
-
-# This is probably unnecessary since we use `--systemd` above.
-nx_rctl_spawn "systemctl --user import-environment $NX_ENV"
+dbus-update-activation-environment --systemd "$NX_ENV"
 
 # Launch Policy Kit.
-nx_rctl_spawn_once "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
+# nx_rctl_spawn_once "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
 nx_rctl_spawn_once "swaybg --image ~/Pictures/wallpapers/active --mode fill --output '*'"
 nx_rctl_spawn_shell "riverctl set-focused-tags $NX_RIVER_TAGS_SCRATCHPAD && sleep 0.5 && riverctl spawn $cmd_terminal_scratchpad && sleep 0.25 && riverctl set-focused-tags $NX_RIVER_TAGS_NONSPECIAL"
 
@@ -764,4 +758,7 @@ else
   exec "$NX_CMD_LAYOUT_MANAGER >/dev/null 2>$NX_RTILE_LOGFILE"
 fi
 
-exit 0
+rivertile -view-padding "${view_padding:-10}" -outer-padding "${outer_padding:-10}" -main-ratio "${main_ratio:-0.5}" -main-count "${main_count:-1}" -main-location "${main_location:-'left'}" >/dev/null 2>"$NX_RTILE_LOGFILE" &
+
+dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=river
+systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=river

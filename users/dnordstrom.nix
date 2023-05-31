@@ -575,7 +575,6 @@ in rec {
     parallel
     rdrview
     ripgrep
-    enlightenment.terminology
     tree
     unzip
     usbutils
@@ -598,7 +597,6 @@ in rec {
 
     cliphist
     clipman
-    flameshot
     gebaar-libinput
     grim
     imagemagick
@@ -615,8 +613,6 @@ in rec {
     swaybg
     swayidle
     swaylock-effects
-    swayr
-    swaywsr
     vimiv-qt
     wdisplays
     wev
@@ -627,10 +623,6 @@ in rec {
     wofi-emoji
     wshowkeys
     wtype
-    xdg_utils # For `xdg-open`.
-    xkeyboard_config
-    xorg.setxkbmap
-    xorg.xinput
     ydotool
 
     #
@@ -657,7 +649,6 @@ in rec {
     bitwarden
     bitwarden-cli
     git-crypt
-    gnome.gnome-keyring
     pinentry-qt
     yubico-pam
     yubico-piv-tool
@@ -673,17 +664,16 @@ in rec {
     castnow
     cava
     chrome-export
-    easyeffects # Also see option `services.easyeffects`.
+    # easyeffects # Also see option `services.easyeffects`.
     enlightenment.ephoto
     fx_cast_bridge
     google-chrome
     jamesdsp
     libcamera
-    pavucontrol
+    lxqt.pavucontrol-qt
     playerctl
     plexamp
     pulsemixer
-    qpwgraph
     streamlink
     ustreamer # Video for Linux webcam streamer.
     v4l-utils # Video For Linux webcam utilities.

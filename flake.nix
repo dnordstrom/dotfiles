@@ -78,7 +78,7 @@
           true; # TODO: Check if I actually use this or other unfree shit.
       };
 
-      # Args passed to every Nix file loaded, from `./hosts/`, to `./users/`, and gone.
+      # Args passed to every Nix file loaded, from `./hosts/`, to `./users/`.
       specialArgs = specialArgs;
 
       sharedOverlays = overlay-import ++ overlay-inputs;
