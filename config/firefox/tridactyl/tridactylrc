@@ -39,7 +39,7 @@ colorscheme catppuccin
 "
 
 set newtab about:blank
-set searchengine ddg
+set searchengine qwant
 set editorcmd kitty --class popupterm -e nvim %f "+normal!%lGzv%c|"
 set rsscmd openfeed %u
 set viewsource tridactyl
@@ -148,6 +148,9 @@ set searchurls.n https://search.nixos.org/packages?channel=unstable&size=500&que
 " Nix options: searches unstable channel, 500 results per page.
 set searchurls.no https://search.nixos.org/options?channel=unstable&size=500&query=%s
 
+" Qwant Lite: light, pink, safe search disabled, English, US region.
+set searchurls.qwant https://lite.qwant.com/?q=%s&client=ext-lite-sb&l=en&locale=en_us&s=0&theme=0&ta=0
+
 "
 " Pre-processed query
 "
@@ -160,6 +163,10 @@ set jsurls.n \
   query => query.includes('.') ? \
     `https://search.nixos.org/options?channel=unstable&size=500&query=${query}` : \
     `https://search.nixos.org/packages?channel=unstable&size=500&query=${query}`
+
+" Mail delivery days.
+set jsurls.post `https://postnord.se`
+pipecontrol
 
 ""
 " COMMANDS
@@ -177,13 +184,13 @@ command bindreplaceprefix js -d% const [_, oldPrefix, newPrefix] = JS_ARGS; Obje
 command bindreplaceprefix! js -d% const [_, oldPrefix, newPrefix] = JS_ARGS; Object.entries(tri.config.get('nmaps')).map(([key, cmd]) => ({ key, cmd })).filter(({ key }) => key.startsWith(oldPrefix)).map(({ key, cmd }) => { tri.excmds.bind('--mode=normal', key.replace(oldPrefix, newPrefix), cmd); tri.excmds.unbind(key); }) %
 
 " Show command line notification.
-command notifyex js -d% tri.excmds.fillcmdline_tmp(5000, JS_ARGS.join(' ').trim()); %
+command notifyex js % tri.excmds.fillcmdline_tmp(5000, JS_ARGS.join(' ').trim()); %
 
 " Show OS notification.
-command notifyos js -d% tri.native.run(`dbus-launch -- notify-send "${JS_ARGS.join(' ').trim()}"`); %
+command notifyos js -d% tri.native.run(`notify-send "${JS_ARGS.join(' ').trim()}"`); %
 
 " Show JS console notification.
-command notifyjs js -d% console.log("%c N.log ", "background: #d8dee9; color: #2e3440; font-weight: bold;", JS_ARGS.join(' ').trim()); %
+command notifyjs js -d% tri.native.run(("%c N.log ", "background: #d8dee9; color: #2e3440; font-weight: bold;", JS_ARGS.join(' ').trim()); %
 
 " Inspect JavaScript object in console.
 command jsp js -p tri.excmds.js(`console.dir(${JS_ARG})`);

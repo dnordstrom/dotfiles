@@ -323,19 +323,26 @@ $ctp-mocha-crust: #11111b;
 $ctp-mocha-crust-rgb: rgb(17, 17, 27);
 $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
 
+/**
+ * OPTIONS
+ */
+
+$base-font-family: "FantasqueSansM Nerd Font Mono", "Symbols Nerd Font Mono", sans-serif;
+$base-font-size: 12px;
+$clock-font-size: 14px;
+$icon-font-size: 16px;
+
 
 /**
  * SHARED WIDGET STYLES
- *
- * Generic classes from 
  */
 
 .bar {
   color: $ctp-latte-text;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
-  font-family: "PragmataPro Mono Liga";
-  font-size: 12px;
-  font-weight: 700;
+  font-family: $base-font-family;
+  font-size: $base-font-size;
+  font-weight: 400;
 }
 
 * {
@@ -350,7 +357,7 @@ $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
   color: $ctp-latte-text;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
   margin: 8px;
-  padding: 2px 16px 2px;
+  padding: 3px 16px 3px;
 }
 
 /**
@@ -364,7 +371,7 @@ $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
   }
 
   .tags {
-    font-size: 18px;
+    font-size: $icon-font-size;
     margin-top: 1px;
     margin-right: 1px;
 
@@ -393,15 +400,17 @@ $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
 
 .center {
   background: $ctp-latte-mantle;
-  padding: 3px 16px 1px;
 
   .clock {
     color: $ctp-latte-subtext0;
-    font-weight: 500;
+    font-weight: 600;
     
     .time {
       color: $ctp-latte-text;
+      font-family: $base-font-family;
+      font-size: $clock-font-size;
       font-weight: 900;
+      padding: 2px 0 0 0;
     }
   }
 }
@@ -431,7 +440,7 @@ $ctp-mocha-crust-hsl: hsl(240, 23%, 9%);
 
 .launcher {
   color: $ctp-latte-sky;
-  font-size: 22px;
+  font-size: $icon-font-size;
   padding: 0 2px;
 
   &:not(.logo) button:hover {

@@ -44,12 +44,27 @@ let
   # @returns {path} path - Absolute output.
   mkHomePath = path: /. + "${homeDirectory}/${path}";
 
-  # Catppuccin GTK theme with variant, accent colors, etc.
-  catppuccin-gtk-with-tweaks = pkgs.catppuccin-gtk.override {
-    accents = [ "yellow" ];
-    size = "compact";
-    tweaks = [ "rimless" ];
-    variant = "latte";
+  customIconTheme = {
+    name = "Papirus";
+    package = pkgs.catppuccin-papirus-folders.override {
+      flavor = "latte";
+      accent = "yellow";
+    };
+  };
+
+  customGtkTheme = {
+    name = "Catppuccin-Latte-Compact-Yellow";
+    package = pkgs.catppuccin-gtk.override {
+      accents = [ "yellow" ];
+      size = "compact";
+      tweaks = [ "rimless" ];
+      variant = "latte";
+    };
+  };
+
+  customCursorTheme = {
+    name = "Catppuccin-Latte-Yellow-Cursors";
+    package = pkgs.catppuccin-cursors.latteYellow;
   };
 
   ##
@@ -129,12 +144,11 @@ let
   #
 
   profileCommands = let
-    catppuccin = catppuccin-gtk-with-tweaks;
     gtk3 = pkgs.gtk3;
     gsettings = pkgs.gsettings-desktop-schemas;
-    gtk3-schemas = "${gtk3}/share/gsettings-schemas/${gtk3.name}";
+    gtk3-schemas = "${pkgs.gtk3.out}/share/gsettings-schemas/${gtk3.name}";
     gsettings-schemas =
-      "${gsettings}/share/gsettings-schemas/${gsettings.name}";
+      "${gsettings.out}/share/gsettings-schemas/${gsettings.name}";
   in ''
     export XDG_DATA_DIRS="${gsettings-schemas}:${gtk3-schemas}:$XDG_DATA_DIRS"
   '';
@@ -791,6 +805,7 @@ in rec {
     rofimoji
 
     # Theming.
+    catppuccin-kvantum
     d-spy
     dfeet
     gnome.dconf-editor
@@ -812,32 +827,10 @@ in rec {
   ];
 
   #
-  # SWAY
-  #
-  # We use this option for installing Sway since it adds commands to the config for systemd
-  # integration. Configuration is kept in original format and symlinked (impure) from
-  # `/etc/nixos/config/sway` to `~/.config/sway` to allow editing it without rebuilding NixOS.
-  #
-  # Home Manager creates a configuration file even if we set `config` to `null`, so we use 
-  # `extraConfigEarly` to instead insert a line at the top that loads our own.
-  #
-
-  wayland.windowManager.sway = {
-    enable = true;
-    config = null;
-    systemdIntegration =
-      true; # Enables "sway-session.target" and triggers it in config.
-    extraConfigEarly = "include main.conf";
-  };
-
-  #
   # GTK
   #
 
   gtk = let
-    config = { dark = "false"; };
-    gtk3Config = { gtk-application-prefer-dark-theme = "${config.dark}"; };
-    gtk2Config = ''gtk-application-prefer-dark-theme = "${config.dark}";'';
     bookmarks = [
       "file:///home/dnordstrom/Code Code"
       "file:///home/dnordstrom/Backup Backup"
@@ -861,24 +854,10 @@ in rec {
       size = 9;
     };
 
-    theme = {
-      name = "Catppuccin-Latte-Yellow";
-      package = catppuccin-gtk-with-tweaks;
-    };
+    theme = customGtkTheme;
+    iconTheme = customIconTheme;
+    cursorTheme = customCursorTheme;
 
-    iconTheme = {
-      name = "Vimix";
-      package = pkgs.vimix-icon-theme;
-    };
-
-    cursorTheme = {
-      name = "Quintom_Snow";
-      package = pkgs.quintom-cursor-theme;
-    };
-
-    gtk2.extraConfig = gtk2Config;
-    gtk3.extraConfig = gtk3Config;
-    gtk4.extraConfig = gtk3Config;
     gtk3.bookmarks = bookmarks;
   };
 
@@ -1064,455 +1043,453 @@ in rec {
   # PROGRAMS
   ##
 
-  #
-  # TRYOUTS
-  #
-
-  programs.kodi = let
-    # Metadata directory to use instead of `~/.kodi`.
-    kodi-directory = "${config.xdg.dataHome}/kodi";
-
-    # Kodi package to use (Wayland support and added packages).
-    kodi-with-packages =
-      pkgs.kodi-wayland.withPackages (exts: [ exts.pvr-iptvsimple ]);
-  in {
-    enable = true;
-    datadir = kodi-directory;
-    package = kodi-with-packages;
-    sources = {
-      video = {
-        default = "Videos";
-        source = [
-          {
-            name = "Downloads";
-            path = "${config.home.homeDirectory}/Downloads";
-            allowsharing = "true";
-          }
-          {
-            name = "Videos";
-            path = "${config.home.homeDirectory}/Videos";
-            allowsharing = "true";
-          }
-          {
-            name = "Photos";
-            path = "${config.home.homeDirectory}/Pictures";
-            allowsharing = "true";
-          }
-        ];
-      };
-    };
-  };
-
-  #
-  # UTILITIES
-  #
-
-  programs.exa.enable = true;
-  programs.jq.enable = true;
-  programs.lsd.enable = true;
-
-  #
-  # MEDIA
-  #
-
-  programs.mpv = {
-    enable = true;
-    config = {
-      profile = "gpu-hq";
-      force-window = true;
-      ytdl-format = "bestvideo+bestaudio";
-    };
-  };
-
-  #
-  # OFFICE
-  #
-  # "Word processing" and "desktop publishing" if like me you are considered a wise elderly among
-  # peers. Signs include people looking up to you in increasingly looking-down-at-you ways; people 
-  # communicating as if you're either not in the room or your age is either one digit or three.
-  #
-  # This software is for communicating with other fossils wanting to speed up the process. Also, our
-  # prototype HUMP (Household UMP) now KO's any Gates-chip within 30ft and keeps intact Gates-OS,
-  # Gates-software, what *actually* tracks your ass. For that, you want Norton Antivirus and Jesus.
-  #
-
-  # PDF viewer.
-  programs.zathura.enable = true;
-
-  #
-  # DEVELOPMENT
-  #
-
-  # Necessary evil.
-  programs.java.enable = true;
-
-  # Status bar we use in Sway WM.
-  programs.waybar = {
-    enable = true;
-    systemd = {
-      enable = true;
-      target =
-        "sway-session.target"; # Default is `graphical-session.target`, but we only use it in Sway.
-    };
-  };
-
-  # Status bar we use in River WM.
-  programs.eww = {
-    enable = true;
-    configDir = mkSymlink (mkConfigPath "eww");
-    package = pkgs.eww-wayland;
-  };
-
-  programs.nix-index = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-
-  # Customizable shell prompt written in Rust.
-  programs.starship = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-
-  # Gives examples of command usage.
-  programs.tealdeer = {
-    enable = true;
-    settings = {
-      display = {
-        compact = false;
-        use_pager = true;
-      };
-      updates.auto_update = false;
-    };
-  };
-
-  # Command line snippets manager.
-  programs.pet = {
-    enable = true;
-    snippets = [{
-      description = "Copy Firefox password";
-      command =
-        "bw get item Firefox | jq -r '.login.password // empty' | wl-copy";
-      tag = [ "password" "copy" "clipboard" "json" ];
-    }];
-  };
-
-  # Fox on fire.
-  programs.firefox = let
-    config = {
-      # Disable annoyances
-      "browser.aboutConfig.showWarning" = false;
-      "browser.shell.checkDefaultBrowser" = false;
-      "browser.bookmarks.restore_default_bookmarks" = false;
-      "extensions.webextensions.restrictedDomains" = "";
-
-      # Enable userChrome.css and `userContent.css`.
-      "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
-
-      # Enable showing compact mode option.
-      "browser.compactmode.show" = true;
-
-      # Enable legacy screen share indicator that works better in Wayland.
-      "privacy.webrtc.legacyGlobalIndicator" = false;
-
-      # Needed to make certain key combinations work with Tridactyl.
-      "privacy.resistFingerprinting" = false;
-      "privacy.resistFingerprinting.block_mozAddonManager" = false;
-    };
-  in {
-    enable = true;
-    package = inputs.firefox.packages.${pkgs.system}.firefox-nightly-bin;
-    profiles = {
-      default = {
-        id = 0;
-        name = "Default";
-        settings = config;
-      };
-      private = {
-        id = 1;
-        name = "Private";
-        settings = config;
-      };
-      testing = {
-        id = 2;
-        name = "Testing";
-        settings = config;
-      };
-      music = {
-        id = 3;
-        name = "Music";
-        settings = config;
-      };
-    };
-  };
-
-  programs.chromium = {
-    enable = true;
-    package = pkgs.google-chrome;
-  };
-
-  programs.kitty = {
-    enable = true;
-    extraConfig = "include ./config.conf";
-  };
-
-  programs.git = {
-    enable = true;
-    userName = "dnordstrom";
-    userEmail = "d@mrnordstrom.com";
-    aliases = {
-      # Opens editor with commit message temnplate.
-      save = "commit --all --edit";
-
-      # Show repostitory status, e.g. untracked files and changes since last commit.
-      stat = "status";
-
-      # Checks out branch if it exiss, otherwise create it first.
-      swap = "switch -c";
-
-      # Show commit history 
-      list = "log --oneline";
-    };
-
-    # TODO: Need to include the key before this works.
-    # signing.signByDefault = true;
-  };
-
-  programs.neovim = {
-    package = pkgs.neovim-unwrapped; # Uses nightly flake.
-    enable = true;
-    viAlias = true;
-    vimAlias = true;
-    vimdiffAlias = true;
-    extraConfig = "lua require('init')";
-  };
-
-  programs.zsh = {
-    autocd = true;
-    enable = true;
-    enableSyntaxHighlighting = true;
-    enableVteIntegration = true;
-    enableAutosuggestions = true;
-
-    # We'll add completion for system packages such as `systemd`:
+  programs = {
     #
-    # NOTES:
-    #   * Requires this option to get completion of arguments for system packages like `systemd`:  
-    #     `environment.pathsToLink = [ "/share/zsh" ];`
-    enableCompletion = true;
+    # TRYOUTS
+    #
 
-    dotDir = ".config/zsh";
-    history.path = "${config.xdg.dataHome}/zsh/history";
+    kodi = let
+      # Metadata directory to use instead of `~/.kodi`.
+      kodi-directory = "${config.xdg.dataHome}/kodi";
 
-    cdpath = [
-      buildDirectory
-      homeDirectory
-      "${homeDirectory}/Code"
-      "${homeDirectory}/.local"
-      "${homeDirectory}/.config"
-    ];
-
-    # Plugins installed either here with Git or from nixpkgs if available, using the build in plugin
-    # management, meaning we need to point it to the correct file to load, usually ending in
-    # ".plugin.zsh" abd then gets automatically detected by NixOS. Otherwise the `file` attribute
-    # tells it where to load it from.
-    plugins = [
-      {
-        name = "zsh-vi-mode";
-        src = "${pkgs.zsh-vi-mode}/share/zsh-vi-mode";
-      }
-      {
-        name = "fzf-tab";
-        src = "${pkgs.zsh-fzf-tab}/share/fzf-tab";
-      }
-      {
-        name = "nix-shell";
-        src = "${pkgs.zsh-nix-shell}/share/zsh-nix-shell";
-      }
-      {
-        name = "autopair";
-        file = "autopair.zsh";
-        src = "${pkgs.zsh-autopair}/share/zsh/zsh-autopair";
-      }
-      {
-        name = "zsh-abbrev-alias";
-        file = "abbrev-alias.plugin.zsh";
-        src = pkgs.fetchFromGitHub {
-          owner = "momo-lab";
-          repo = "zsh-abbrev-alias";
-          rev = "33fe094da0a70e279e1cc5376a3d7cb7a5343df5";
-          sha256 = "sha256-jq5YEpIpvmBa/M7F4NeC77mE9WHSnza3tZwvgMPab7M=";
+      # Kodi package to use (Wayland support and added packages).
+      kodi-with-packages =
+        pkgs.kodi-wayland.withPackages (exts: [ exts.pvr-iptvsimple ]);
+    in {
+      enable = true;
+      datadir = kodi-directory;
+      package = kodi-with-packages;
+      sources = {
+        video = {
+          default = "Videos";
+          source = [
+            {
+              name = "Downloads";
+              path = "${config.home.homeDirectory}/Downloads";
+              allowsharing = "true";
+            }
+            {
+              name = "Videos";
+              path = "${config.home.homeDirectory}/Videos";
+              allowsharing = "true";
+            }
+            {
+              name = "Photos";
+              path = "${config.home.homeDirectory}/Pictures";
+              allowsharing = "true";
+            }
+          ];
         };
-      }
-      {
-        name = "doas";
-        file = "doas.plugin.zsh";
-        src = pkgs.fetchFromGitHub {
-          owner = "Senderman";
-          repo = "doas-zsh-plugin";
-          rev = "f5c58a34df2f8e934b52b4b921a618b76aff96ba";
-          sha256 = "sha256-136DzYG4v/TuCeJatqS6l7qr7bItEJxENozpUGedJ9o=";
-        };
-      }
-    ];
-
-    # Source our config from `~/.config/zsh/.zshinit` which is a symlink to `${buildDirectory}/config/zsh/zshrc`.
-    initExtra = "source ${homeDirectory}/.config/zsh/.zshinit";
-  };
-
-  # Smarter `cd`.
-  programs.zoxide = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-
-  # Cat with wings.
-  programs.bat = {
-    enable = true;
-    config = {
-      color = "always";
-      italic-text = "always";
-      tabs = "2";
-      theme = "Catppuccin-latte";
-      style = "header-filename,header-filesize,rule,numbers,changes";
+      };
     };
-  };
 
-  # Fuzzy finder written in Go.
-  programs.fzf = {
-    enable = true;
-    enableZshIntegration = true;
-    enableFishIntegration = false;
-    enableBashIntegration = false;
-  };
+    #
+    # UTILITIES
+    #
 
-  # Actually Go.
-  programs.go = {
-    enable = true;
-    goPath = "${homeDirectory}/.local/bin/go"; # Don't use `~/go`...
-  };
+    exa.enable = true;
+    jq.enable = true;
+    lsd.enable = true;
 
-  # Do things when entering a directory. Used to load isolated development shells automatically.
-  programs.direnv = {
-    enable = true;
-    nix-direnv.enable = true; # Improves caching of Nix devshells.
-  };
+    #
+    # MEDIA
+    #
 
-  # TUI RSS reader.
-  programs.newsboat = {
-    enable = true;
-    autoReload = true;
-    extraConfig = ''
+    mpv = {
+      enable = true;
+      config = {
+        profile = "gpu-hq";
+        force-window = true;
+        ytdl-format = "bestvideo+bestaudio";
+      };
+    };
+
+    #
+    # OFFICE
+    #
+
+    # PDF viewer.
+    zathura.enable = true;
+
+    #
+    # DEVELOPMENT
+    #
+
+    # Unnecessary evil.
+    java.enable = false;
+
+    # Status bar we use in Sway WM.
+    waybar = {
+      enable = true;
+      systemd = {
+        enable = true;
+        target =
+          "sway-session.target"; # Default is `graphical-session.target`, but we only use it in Sway.
+      };
+    };
+
+    # Status bar we use in River WM.
+    eww = {
+      enable = true;
+      configDir = mkSymlink (mkConfigPath "eww");
+      package = pkgs.eww-wayland;
+    };
+
+    nix-index = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
+    # Customizable shell prompt written in Rust.
+    starship = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
+    # Gives examples of command usage.
+    tealdeer = {
+      enable = true;
+      settings = {
+        display = {
+          compact = false;
+          use_pager = true;
+        };
+        updates.auto_update = false;
+      };
+    };
+
+    # Command line snippets manager.
+    pet = {
+      enable = true;
+      snippets = [{
+        description = "Copy Firefox password";
+        command =
+          "bw get item Firefox | jq -r '.login.password // empty' | wl-copy";
+        tag = [ "password" "copy" "clipboard" "json" ];
+      }];
+    };
+
+    # Fox on fire.
+    firefox = let
+      config = {
+        # Disable annoyances
+        "browser.aboutConfig.showWarning" = false;
+        "browser.shell.checkDefaultBrowser" = false;
+        "browser.bookmarks.restore_default_bookmarks" = false;
+        "extensions.webextensions.restrictedDomains" = "";
+
+        # Enable userChrome.css and `userContent.css`.
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+
+        # Enable showing compact mode option.
+        "browser.compactmode.show" = true;
+
+        # Enable legacy screen share indicator that works better in Wayland.
+        "privacy.webrtc.legacyGlobalIndicator" = false;
+
+        # Needed to make certain key combinations work with Tridactyl.
+        "privacy.resistFingerprinting" = false;
+        "privacy.resistFingerprinting.block_mozAddonManager" = false;
+      };
+    in {
+      enable = true;
+      package = inputs.firefox.packages.${pkgs.system}.firefox-nightly-bin;
+      profiles = {
+        default = {
+          id = 0;
+          name = "Default";
+          settings = config;
+        };
+        private = {
+          id = 1;
+          name = "Private";
+          settings = config;
+        };
+        testing = {
+          id = 2;
+          name = "Testing";
+          settings = config;
+        };
+        music = {
+          id = 3;
+          name = "Music";
+          settings = config;
+        };
+      };
+    };
+
+    chromium = { enable = true; };
+
+    kitty = {
+      enable = true;
+      extraConfig = "include ./config.conf";
+    };
+
+    # Configure Git to use the email privacy feature in GitHub.
+    git = {
+      enable = true;
+      userName = "dnordstrom";
+      userEmail = "dnordstrom@users.noreply.github.com";
+      aliases = {
+        # Open editor with commit message temnplate found in the `.git` directory in repositories. For
+        # max convenience, tweak that message: see `.git/hooks/prepare-commit-msg.sample` and
+        # `.git/hooks/commit-msg.sample`. Remove the ".sample" suffix to enable this feature.
+        save = "commit --all --edit";
+
+        # Show repostitory status, e.g. untracked files and changes since last commit.
+        s = "status";
+
+        # Checks out branch if it exiss, otherwise create it first.
+        swap = "switch -c";
+
+        # Show commit history in a reasonably readable format without unneeded details. Abbreviates
+        # commit hashes, shows simple details one line per commit, formats dates for humans, and of
+        # course sets the tabs to two spaces as it should be.
+        brieflog = "log --pretty=oneline -expand-tabs=2";
+      };
+
+      # TODO: Need to include the key before this works.
+      # signing.signByDefault = true;
+    };
+
+    neovim = {
+      package = pkgs.neovim-nightly;
+      enable = true;
+      viAlias = true;
+      vimAlias = true;
+      vimdiffAlias = true;
+
+      # The config is 100% written in Lua, so all `init.vim` needs to do is load `init.lua`, which
+      # takes care of the rest.
+      extraConfig = "lua require('init')";
+    };
+
+    zsh = {
+      autocd = true;
+      enable = true;
+      enableSyntaxHighlighting = true;
+      enableVteIntegration = true;
+      enableAutosuggestions = true;
+
+      # Add completion for system packages such as `systemd`:
       #
-      # Newsboat configuration
+      # NOTE:
+      #   * Requires this option to get completion of arguments for system packages like `systemd`:  
+      #     `environment.pathsToLink = [ "/share/zsh" ];`
       #
-      # Based on:
-      #   - https://github.com/meribold/dotfiles
-      #   - https://github.com/rememberYou/dotfiles
-      #
+      # We've added it in `./modules/common.nix`
+      enableCompletion = true;
 
-      #
-      # GENERAL
-      #
+      dotDir = ".config/zsh";
+      history.path = "${config.xdg.dataHome}/zsh/history";
 
-      auto-reload yes
-      refresh-on-startup yes
-      reload-threads 16
-      reload-time 15
-      show-read-feeds yes
-      notify-program "notify-send"
-      notify-format "Feeds refreshed (%d new)"
-      text-width 72
-      download-full-page yes
-      browser "rdrview -B 'lynx -display-charset=utf8 -dump' '%u' | less"
+      cdpath = [ buildDirectory homeDirectory "${homeDirectory}/Code" ];
 
-      #
-      # MACROS
-      #
+      # Plugins installed either here with Git or from nixpkgs if available, using the build in plugin
+      # management, meaning we need to point it to the correct file to load, usually ending in
+      # ".plugin.zsh" abd then gets automatically detected by NixOS. Otherwise the `file` attribute
+      # tells it where to load it from.
+      plugins = [
+        {
+          name = "zsh-vi-mode";
+          src = "${pkgs.zsh-vi-mode}/share/zsh-vi-mode";
+        }
+        {
+          name = "fzf-tab";
+          src = "${pkgs.zsh-fzf-tab}/share/fzf-tab";
+        }
+        {
+          name = "nix-shell";
+          src = "${pkgs.zsh-nix-shell}/share/zsh-nix-shell";
+        }
+        {
+          name = "autopair";
+          file = "autopair.zsh";
+          src = "${pkgs.zsh-autopair}/share/zsh/zsh-autopair";
+        }
+        {
+          name = "zsh-abbrev-alias";
+          file = "abbrev-alias.plugin.zsh";
+          src = pkgs.fetchFromGitHub {
+            owner = "momo-lab";
+            repo = "zsh-abbrev-alias";
+            rev = "33fe094da0a70e279e1cc5376a3d7cb7a5343df5";
+            sha256 = "sha256-jq5YEpIpvmBa/M7F4NeC77mE9WHSnza3tZwvgMPab7M=";
+          };
+        }
+        {
+          name = "doas";
+          file = "doas.plugin.zsh";
+          src = pkgs.fetchFromGitHub {
+            owner = "Senderman";
+            repo = "doas-zsh-plugin";
+            rev = "f5c58a34df2f8e934b52b4b921a618b76aff96ba";
+            sha256 = "sha256-136DzYG4v/TuCeJatqS6l7qr7bItEJxENozpUGedJ9o=";
+          };
+        }
+      ];
 
-      # ,m -> Open with mpv
-      macro m set browser "mpv %u" ; open-in-browser ; set browser "rdrview -B 'lynx -display-charset=utf8 -dump' '%u' | less"
+      # Source the user's private config that we symlink to `~/.config/zsh/.zshinit`. In real life,
+      # it's located at `/etc/nixos/config/zsh/zshrc` but renamed since `~/.config/zsh/zshrc` is
+      # generated automatically. This adds lines to the bottom of it.
+      initExtra = "source ${homeDirectory}/.config/zsh/.zshinit";
+    };
 
-      # ,o -> Open with default
-      macro o set browser "xdg-open '%u'" ; open-in-browser ; set browser "rdrview -B 'lynx -display-charset=utf8 -dump' '%u' | less"
+    # Smarter `cd`.
+    zoxide = {
+      enable = true;
+      enableZshIntegration = true;
+    };
 
-      #
-      # UNMAP DANGEROUS DEFAULTS
-      #
+    # Cat with wings.
+    bat = {
+      enable = true;
+      config = {
+        color = "always";
+        italic-text = "always";
+        tabs = "2";
+        theme = "Catppuccin-latte";
+        style = "header-filename,header-filesize,rule,numbers,changes";
+      };
+    };
 
-      # mark-all-feeds-read
-      unbind-key C
+    # Fuzzy finder written in Go.
+    fzf = {
+      enable = true;
+      enableZshIntegration = true;
+      enableFishIntegration = false;
+      enableBashIntegration = false;
+    };
 
-      # delete-all-articles
-      unbind-key ^D
+    # Actually Go.
+    go = {
+      enable = true;
+      goPath = "${homeDirectory}/.local/bin/go"; # Using `~/go` is lunacy.
+    };
 
-      # delete-article
-      unbind-key D
+    # Do things when entering a directory, such as load isolated development shells automatically with
+    # all necessary dependencies available. Can be done with `direnv` alone but `nix-direnv` Improves
+    # the caching of dependencies.
+    direnv = {
+      enable = true;
+      nix-direnv.enable = true; # Improves caching of Nix devshells.
+    };
 
-      #
-      # KEY BINDS
-      #
+    # TUI RSS reader.
+    newsboat = {
+      enable = true;
+      autoReload = true;
+      extraConfig = ''
+        #
+        # Newsboat configuration
+        #
+        # Based on:
+        #   - https://github.com/meribold/dotfiles
+        #   - https://github.com/rememberYou/dotfiles
+        #
 
-      bind-key @ macro-prefix
-      bind-key ^X delete-article
-      bind-key ; cmdline
-      bind-key SPACE next-unread
-      bind-key j down
-      bind-key k up
-      bind-key J next-feed articlelist
-      bind-key K prev-feed articlelist
-      bind-key ^N next-unread
-      bind-key ^P prev-unread
-      bind-key ^N next-unread-feed articlelist
-      bind-key ^P prev-unread-feed articlelist
-      bind-key ] next feedlist
-      bind-key [ prev feedlist
-      bind-key ] next-feed articlelist
-      bind-key [ prev-feed articlelist
-      bind-key g home
-      bind-key G end
-      bind-key ^U pageup
-      bind-key ^D pagedown
-      bind-key u pageup
-      bind-key d pagedown
+        #
+        # GENERAL
+        #
 
-      #
-      # COLORS
-      #
+        auto-reload yes
+        refresh-on-startup yes
+        reload-threads 16
+        reload-time 15
+        show-read-feeds yes
+        notify-program "notify-send"
+        notify-format "Feeds refreshed (%d new)"
+        text-width 72
+        download-full-page yes
+        browser "rdrview -B 'lynx -display-charset=utf8 -dump' '%u' | less"
 
-      color background        default  default
-      color info              color232 color3   bold
-      color listnormal        default  default
-      color listnormal_unread default  default  bold
-      color listfocus         color232 blue
-      color listfocus_unread  color232 blue     bold
-      color article           default  default
-    '';
-    urls = [
-      {
-        title = "Updates";
-        tags = [ "newsboat" ];
-        url = "https://newsboat.org/news.atom";
-      }
-      {
-        title = "Pocket";
-        tags = [ "pocket" ];
-        url = "https://getpocket.com/users/dnordstrom/feed/all";
-      }
-      {
-        title = "Pocket Unread";
-        tags = [ "pocket" ];
-        url = "https://getpocket.com/users/dnordstrom/feed/unread";
-      }
-    ];
-  };
+        #
+        # MACROS
+        #
 
-  # Encrypts and signs things.
-  programs.gpg = {
-    enable = true;
-    mutableKeys = true;
-    mutableTrust = true;
-    # settings = '''';
+        # ,m -> Open with mpv
+        macro m set browser "mpv %u" ; open-in-browser ; set browser "rdrview -B 'lynx -display-charset=utf8 -dump' '%u' | less"
+
+        # ,o -> Open with default
+        macro o set browser "xdg-open '%u'" ; open-in-browser ; set browser "rdrview -B 'lynx -display-charset=utf8 -dump' '%u' | less"
+
+        #
+        # UNMAP DANGEROUS DEFAULTS
+        #
+
+        # mark-all-feeds-read
+        unbind-key C
+
+        # delete-all-articles
+        unbind-key ^D
+
+        # delete-article
+        unbind-key D
+
+        #
+        # KEY BINDS
+        #
+
+        bind-key @ macro-prefix
+        bind-key ^X delete-article
+        bind-key ; cmdline
+        bind-key SPACE next-unread
+        bind-key j down
+        bind-key k up
+        bind-key J next-feed articlelist
+        bind-key K prev-feed articlelist
+        bind-key ^N next-unread
+        bind-key ^P prev-unread
+        bind-key ^N next-unread-feed articlelist
+        bind-key ^P prev-unread-feed articlelist
+        bind-key ] next feedlist
+        bind-key [ prev feedlist
+        bind-key ] next-feed articlelist
+        bind-key [ prev-feed articlelist
+        bind-key g home
+        bind-key G end
+        bind-key ^U pageup
+        bind-key ^D pagedown
+        bind-key u pageup
+        bind-key d pagedown
+
+        #
+        # COLORS
+        #
+
+        color background        default  default
+        color info              color232 color3   bold
+        color listnormal        default  default
+        color listnormal_unread default  default  bold
+        color listfocus         color232 blue
+        color listfocus_unread  color232 blue     bold
+        color article           default  default
+      '';
+      urls = [
+        {
+          title = "Updates";
+          tags = [ "newsboat" ];
+          url = "https://newsboat.org/news.atom";
+        }
+        {
+          title = "Pocket";
+          tags = [ "pocket" ];
+          url = "https://getpocket.com/users/dnordstrom/feed/all";
+        }
+        {
+          title = "Pocket Unread";
+          tags = [ "pocket" ];
+          url = "https://getpocket.com/users/dnordstrom/feed/unread";
+        }
+      ];
+    };
+
+    # Encrypts and signs things. Good if it's mutable so it's usable.
+    gpg = {
+      enable = true;
+      mutableKeys = true;
+      mutableTrust = true;
+    };
   };
 
   ##
@@ -1548,8 +1525,9 @@ in rec {
       enable = true;
       icons = true;
       maxIconSize = 48;
-      iconPath = "${pkgs.vimix-icon-theme}/share/icons/Vimix";
-      font = "Public Sans 8";
+      iconPath =
+        "${customIconTheme.package}/share/icons/${customIconTheme.name}";
+      font = "PT Sans 9";
       margin = "12";
       markup = true;
       padding = "12,24";
@@ -1560,24 +1538,20 @@ in rec {
     #
     # Monitor layouts
     #
-    # Based on the original config at `config/kanshi/config` for reference and portability. This
-    # service does not make `kanshictl` or `kanshi` available to the user. Adding `kanshi` to the
-    # package list does that, if needed.
-    #
     kanshi = let
-      # Primary (center): BenQ 35" 1440p @ 100Hz
+      # Primary [center]: 35" 1440p @ 100Hz
       benq-1 = {
         mode = "3440x1440@99.982Hz";
         position = "2397,780";
         scale = 1.0;
       };
-      # Secondary (left): AOC 24" 1080p @ 144Hz
+      # Secondary [bottom left]: 24" 1080p @ 144Hz & Downscaled
       aoc-1 = {
         mode = "1920x1080@144.001Hz";
         position = "0,1349";
         scale = 0.8;
       };
-      # Tertiary (top left): AOC 24" 1080p @ 60Hz
+      # Tertiary [top left]: 24" 1080p @ 60Hz & Downscaled
       aoc-2 = {
         mode = "1920x1080@60Hz";
         position = "0,0";
@@ -1587,11 +1561,7 @@ in rec {
       enable = true;
       systemdTarget = "river-session.target";
       profiles = {
-        # Home setup with primary over DisplayPort.
-        #
-        # NOTE: This disables HDR and some other fancy features---there's an incompatibility 
-        # somewhere. Either the monitor or the graphics card requires HDMI for those features, or 
-        # the cable doesn't support them. The BenQ detects DP 1.4 and outputs 4K-ish@100Hz though.
+        # Home: DisplayPort for primary monitor.
         home_dp = {
           outputs = [
             {
@@ -1617,9 +1587,8 @@ in rec {
             }
           ];
         };
-        # Home setup with primary over HDMI.
-        #
-        # NOTE: Currently over HDMI 1.4 cable---upgrade, now.
+
+        # Home: HDMI for primary monitor.
         home_hdmi = {
           outputs = [
             {
@@ -1648,7 +1617,7 @@ in rec {
       };
     };
 
-    # Gnome keyring is required by certain software.
+    # I don't want it, but Gnome keyring is required by certain software.
     gnome-keyring.enable = true;
 
     # Asks for GPG password when needed. About once every 3 minutes.
@@ -1658,59 +1627,57 @@ in rec {
       pinentryFlavor = "qt";
     };
 
-    # Gammastep gradually adjusts color temperature of monitors at sunset and sunrise.
+    # Gammastep gradually adjusts color temperature of monitors at sunset and sunrise. Tray icon
+    # disabled for now, until EWW is confirmed to support system tray. PR should be merged IIRC.
     gammastep = {
-      # Tray icon disabled due to me having no tray in the bar at the moment.
       enable = true;
       tray = false;
 
-      # Maximum and minimum gamma values. (6500K is equivalent to daylight).
       temperature = {
         day = 6500;
         night = 4500;
       };
 
-      # Location coordinates (1-2 decimal points is enough).
       latitude = 62.38;
       longitude = 17.32;
     };
-
-    # Audio effects/filters manager for PipeWire. Having this service enabled will restart
-    # EasyEffects whenever it stops. We only want this if we never use other DSP software (such as
-    # JamesDSP), since both would be active.
-    easyeffects.enable = false;
   };
 
   #
   # SYSTEMD
   #
 
-  systemd.user.services.eww = {
-    Unit = {
-      Description = "EWW configured for River.";
-      Documentation = "https://github.com/elkowar/eww";
-      PartOf = [ "river-session.target" ];
-      After = [ "river-session.target" ];
+  # EWW daemon for widgets like the top bar.
+  systemd.user = {
+    services = {
+      eww = {
+        Unit = {
+          Description = "EWW configured for River.";
+          Documentation = "https://github.com/elkowar/eww";
+          PartOf = [ "river-session.target" ];
+          After = [ "river-session.target" ];
+        };
+        Service = {
+          ExecStart = "${pkgs.eww-wayland}/bin/eww open bar-2";
+          ExecReload = "${pkgs.eww-wayland}/bin/eww --restart open bar-2";
+          Restart = "on-failure";
+          KillMode = "mixed";
+        };
+        Install.WantedBy = [ "river-session.target" ];
+      };
     };
 
-    Service = {
-      # Daemon is started automatically when opening a window.
-      ExecStart = "${pkgs.eww-wayland}/bin/eww open bar";
-      ExecReload = "${pkgs.eww-wayland}/bin/eww --restart open bar";
-      Restart = "on-failure";
-      KillMode = "mixed";
-    };
-
-    Install.WantedBy = [ "river-session.target" ];
-  };
-
-  systemd.user.targets.river-session = {
-    Unit = {
-      Description = "River compositor session";
-      Documentation = [ "man:systemd.special(7)" ];
-      BindsTo = [ "graphical-session.target" ];
-      Wants = [ "graphical-session-pre.target" ];
-      After = [ "graphical-session-pre.target" ];
+    # Target triggered when River WM has been launched.
+    targets = {
+      river-session = {
+        Unit = {
+          Description = "River compositor session";
+          Documentation = [ "man:systemd.special(7)" ];
+          BindsTo = [ "graphical-session.target" ];
+          Wants = [ "graphical-session-pre.target" ];
+          After = [ "graphical-session-pre.target" ];
+        };
+      };
     };
   };
 

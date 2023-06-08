@@ -57,11 +57,9 @@ else
 fi
 
 # Copy to clipboard.
-[ -x "$(command -v wl-copy)" ] && \
-  wl-copy "$primary"
+[ -x "$(command -v wl-copy)" ] && wl-copy "$primary"
 
 # Show notification.
-[ -x "$(command -v notify-send)" ] && \
-  dbus-launch -- notify-send --icon deepin-picker "$primary" "$secondary"
+[ -x "$(command -v notify-send)" ] && notify-send --icon deepin-picker "$primary" "$secondary"
 
 exit 0

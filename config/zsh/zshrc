@@ -623,8 +623,8 @@ print-ansi-colors() {
 #   $1 - Depth of tree view. Optional. Defaults to 1
 #   $2 - Directory to view. Optional. Defaults to working directory
 list-tree-exa() {
-  local levels="1"
-  local paths="."
+  levels="1"
+  paths="."
 
   if [ $# -gt 0 ] && ! [ -d "$1" ] && [ "$1" -eq "$1" ] 2>/dev/null; then
     levels="$1"
@@ -677,6 +677,22 @@ list-tree-lsd() {
 
   printf "\n"
   command lsd --all --date="+%_d %b %R" --permission=octal --header --long --tree --hyperlink=auto --config-file="/home/dnordstrom/.config/lsd/config.yaml" --depth="$levels" "$paths"
+}
+
+timestamp() {
+  stamp="$(date +'%Y%m%d-%H-%M-%S')"
+
+  # Include a newline if called directly as a command (file descriptor 0 check returns true) but not
+  # for shell interpolation. That way, `cp file.md file.md.$(timestamp)` doesn't append a newline.
+  command test -t 0 && printf '%s\n' "$stamp" || printf '%s' "$stamp"
+}
+
+datestamp() {
+  stamp="$(date +'%Y%m%d')"
+
+  # Include a newline if called directly as a command (file descriptor 0 check returns true) but not
+  # for shell interpolation. That way, `cp file.md file.md.$(datestamp)` doesn't append a newline.
+  command test -t 0 && printf '%s\n' "$stamp" || printf '%s' "$stamp"
 }
 
 insert-date() {
@@ -981,6 +997,22 @@ build-nixos() {
   doas nixos-rebuild switch --flake /etc/nixos --impure
 }
 
+# Print a bordered banner to standard output in a POSIX compatible manner. `$padchar` contains the
+# character to use for borders. Support for specifying padding width, border character, and
+# other fancy stuff will be added "later." As in 2026.
+#
+# It runs in POSIX `sh`, and uses GNU coretools `echo` and `printf` commands rather than builtins.
+nx_banner() {
+  padding="="
+  content="$(command printf '%s' "$*" | tr '[:lower:]' '[:upper:]')" # Uppercase.
+  content="$padding $content $padding"
+  columns="$(command printf '%s' "$content" | wc -m)" # Pad.
+  wrapper="$(for _ in $(seq 1 $columns); do command printf '%s' "$padding"; done)"
+
+  # shellcheck disable=SC2059 # Chill with the "no vars there." It's rude, and super controlling. :/
+  command printf '\n%s\n%s\n%s\n' "$wrapper" "$content" "$wrapper" # Put them together.
+}
+
 # Runs `fg` command if buffer line is empty, otherwise saves current line buffer to stack.
 magic-ctrl-z() {
   if [ $#BUFFER -eq 0 ]; then
@@ -1099,8 +1131,6 @@ zvm_config() {
   export ZVM_KEYTIMEOUT=0.4
   export ZVM_KEYTIMEOUT_ESC=0.1
 }
-
-# zvm_config
 
 #
 # PATH

@@ -14,7 +14,7 @@
 # STUFF THAT CONSIDERS ITSELF IMPORTANT
 ##
 
-NX_RTILE_LOGFILE="$HOME/.local/share/logs/rivertile.log"
+export NX_RTILE_LOGFILE="$HOME/.local/share/logs/rivertile.log"
 
 ##
 # UTILITIES
@@ -50,49 +50,6 @@ nx_rctl_spawn_shell() {
   riverctl spawn "sh -c '$*'"
 }
 
-# Generate a `sh -c ...` command for running the given command(s), enclosed in single quotes after
-# the command has done the substitution.
-#
-# Notes:
-#   - I prefer explicit naming in combination with aliases, rather than short ambiguous naming.
-#
-# Example:
-#   - `riverctl spawn $(shell_command "systemctl --user enable cool.service && nvim README.md")`
-#   - `riverctl spawn "sh -c 'systemctl --user enable cool.service && nvim README.md'".
-#
-# arguments:
-#   - $* - Arguments are passed to the shell command to run `sh -c <cmd>`, "sanitized" by `printf`.
-#
-# Returns:
-#   - Terminal context: output shell command to standard output.
-#   - Non-terminal context: `return` the shell command.
-#
-# Globals:
-#   - SHELL is used as the shell to launch. Until we have an option/flag, it can be changed there:
-#
-#     ```
-#     $ SHELL=zsh printf '%s' "$(nx_rctl_create_command echo Hello, dear world.)"
-#     $ printf '%s' "$(sh -c 'shell_command echo Hello, dear world.')"
-#     ```
-nx_rctl_create_concrete_cmd() {
-  shell="${SHELL:-"sh"}"
-  result="$(printf "%s" "$shell -c '$*'")"
-
-  # Check if we're running in an interactive or a login shell. Running the script in a terminal
-  # emulator should exit, but if used in a script, it should return the command output.
-  if [ -t 0 ]; then
-    # TTY: print command.
-    printf "%s" "$result"
-    exit 0
-  else
-    # Script: return command.
-    return "$result"
-  fi
-
-  # This should be unreachable.
-  exit 1
-}
-
 # Map the Escape, Return, and Space keys to exit given mode. If no mode is passed to the function,
 # then it notifies and/or logs it depending on settings, since it has no value it can default to.
 #
@@ -119,18 +76,18 @@ export NX_RTILE_VIEW_PADDING=10
 export NX_RTILE_OUTER_PADDING=10
 
 # Tags.
-export alltags="$(((1 << 32) - 1))"
-export stickytag="$((1 << 20))"
-export scratchtag="$((1 << 21))"
-export nostickytag="$((alltags ^ stickytag))"
-export noscratchtag="$((alltags ^ scratchtag))"
-export availabletags="$((noscratchtag ^ stickytag))"
+export NX_RIVER_TAGS_ALL="$(((1 << 32) - 1))"
+export NX_RIVER_TAGS_STICKY="$((1 << 20))"
+export NX_RIVER_TAGS_SCRATCHPAD="$((1 << 21))"
+export NX_RIVER_TAGS_NONSTICKY="$((NX_RIVER_TAGS_ALL ^ NX_RIVER_TAGS_STICKY))"
+export NX_RIVER_TAGS_NONSCRATCHPAD="$((NX_RIVER_TAGS_ALL ^ NX_RIVER_TAGS_SCRATCHPAD))"
+export NX_RIVER_TAGS_NONSPECIAL="$((NX_RIVER_TAGS_NONSTICKY ^ NX_RIVER_TAGS_NONSCRATCHPAD))"
 
 # Terminal startup sessions for using different layouts and init commands, literally does anything.
-export cmd_terminal_plain="kitty --class=plainterm --title Plain"
-export cmd_terminal_scratchpad="kitty --class=scratchterm --title 'Scratchpad terminal' --single-instance --instance-group scratchterm --session \"$NX_KITTY_SESSIONS/scratchpad.session\""
-export cmd_terminal_popup="kitty --class=popupterm --title='Popup terminal' --single-instance --instance-group=popupterm"
-export cmd_terminal_trans="kitty --class=transterm --title='Transparent terminal'"
+cmd_terminal_plain="kitty --class=plainterm --title Plain"
+cmd_terminal_scratchpad="kitty --class=scratchterm --title 'Scratchpad terminal' --single-instance --instance-group scratchterm --session \"$NX_KITTY_SESSIONS/scratchpad.session\""
+cmd_terminal_popup="kitty --class=popupterm --title='Popup terminal' --single-instance --instance-group=popupterm"
+cmd_terminal_trans="kitty --class=transterm --title='Transparent terminal'"
 
 # Launchers.
 cmd_launch_app="/etc/nixos/scripts/launch/launchapp"
@@ -145,35 +102,16 @@ cmd_files_gtkone="nemo"
 cmd_files_gtktwo="nautilus"
 cmd_files_tui="$cmd_terminal_popup -e vifm"
 
-# WM state.
-state_debug="$NX_RIVER_DEBUG"
-
-# Font.
-font_size=10
-font_family="Cooper Hewitt"
-font="$font_family $font_size"
-
-# GTK.
-gtk_schema="org.gnome.desktop.interface"
-gtk_theme_main="Catppuccin-Latte-Yellow"
-gtk_theme_icon="Vimix Amethyst"
-gtk_theme_cursors="Quintom_Snow"
-gtk_font="$font"
-gtk_font_document="$font"
-
-flatpak override --user --filesystem "$HOME/.local/share/themes"
-flatpak override --user --env "GTK_THEME=$gtk_theme"
-
-# TODO: Set this up properly.
-# gsettings set "$gtk_schema" gtk-theme "$gtk_theme_main"
-# gsettings set "$gtk_schema" icon-theme "$gtk_theme_icon"
-# gsettings set "$gtk_schema" cursor-theme "$gtk_theme_cursors"
-# gsettings set "$gtk_schema" font-name "$gtk_font"
-# gsettings set "$gtk_schema" document-font-name "$gtk_font_document"
-
 ##
 # SETTINGS
 ##
+
+#
+# Behavior
+#
+
+# Set to `normal` to not refocus if another view has been explicitly focused.
+riverctl focus-follows-cursor normal
 
 #
 # Colors and borders
@@ -192,7 +130,6 @@ riverctl border-width 2
 # Keyboards
 #
 
-# Settings.
 riverctl set-repeat 35 250
 
 # Device IDs from `riverctl list-inputs`.
@@ -210,14 +147,12 @@ keeb_vortex="${keeb_vortex} ${keeb_vortex}_Consumer_Control ${keeb_vortex}_Syste
 
 # Concatenate all keyboards and separate by newline instead of space.
 keebs="$keeb_das $keeb_ducky $keeb_vortex $keeb_havit"
-keebs="$(printf "$keebs" | tr '[:space:]' '\n')"
+keebs="$(printf '%s' "$keebs" | tr '[:space:]' '\n')"
 
 # Configure common settings for all keyboard the same.
 while read -r keeb; do
-  # TODO: Think. There must be *something* we can apply to all the devices here.
-
-  if [ -n "$state_debug" ]; then
-    printf "%s\n" "Configuring keyboard \"$keeb\"…"
+  if [ -n "$NX_DEBUG_RIVER" ]; then
+    printf '%s\n' "Configuring keyboard \"$keeb\"…"
   fi
 done <<EOF
 $keebs
@@ -233,13 +168,11 @@ pointer_apple="pointer-76-613-Apple_Inc._Magic_Trackpad_2"
 
 # Concatenate and separate by newline.
 pointers="$pointer_lgtch $pointer_apple"
-pointers="$(printf "%s" "$pointers" | tr '[:space:]' '\n')"
+pointers="$(printf '%s' "$pointers" | tr '[:space:]' '\n')"
 
 # Configure common settings for all mice and trackpads the same.
 while read -r pointer; do
-  # TODO: Think. There must be *something* we can apply to all the devices here.
-
-  if [ -n "$state_debug" ]; then
+  if [ -n "$NX_DEBUG_RIVER" ]; then
     printf "Configuring pointer device \"%s\"…\n" "$pointer"
   fi
 done <<EOF
@@ -247,41 +180,32 @@ $pointers
 EOF
 
 # Disable mouse acceleration globally using profile "none" and "0" factor (min -1.0, max 1.0).
-riverctl input "$pointer_lgtch" accel-profile none
-riverctl input "$pointer_lgtch" pointer-accel 0
-
-# Set to `normal` to not refocus if another view has been explicitly focused. That means dragging
-# the pointer to another output/monitor doesn't always focus it, so pressing Super+2 would switch
-# focused tags on the first, wrong, output. Which is annoying.
-riverctl focus-follows-cursor always
+riverctl input "$pointer_lgtch" accel-profile flat
+riverctl input "$pointer_lgtch" pointer-accel 0.65
 
 # Enable acceleration (none, flat, or adaptive).
 riverctl input "$pointer_apple" accel-profile adaptive
 
 # Acceleration factor (between -1.0 and 1.0).
-riverctl input "$pointer_apple" pointer-accel 0.4
+riverctl input "$pointer_apple" pointer-accel -0.1
 
-# Tap to click.
+# Tap to click, or click to click, it's pro-choice.
 riverctl input "$pointer_apple" tap enabled
 
-# Click method (none, button-area, clickfinger)
+# Tap anywhere: two and three fingers for right and middle click (none, button-area, clickfinger).
 riverctl input "$pointer_apple" click-method clickfinger
 
-# Hide pointer while typing.
+# Keep pointer visible when typing (Kitty terminal still hides it according to its own config).
 riverctl input "$pointer_apple" disable-while-typing enabled
 
-# Scroll method (none, two-finger, edge, button)
+# Scroll with two fingers, not at edge of trackpad (none, two-finger, edge, button).
 riverctl input "$pointer_apple" scroll-method two-finger
 
-# Middle-click emulation.
+# Middle-click emulation when tapping with three fingers.
 riverctl input "$pointer_apple" middle-emulation enabled
 
-# Natural scroll direction.
+# Natural scroll direction is disgusting.
 riverctl input "$pointer_apple" natural-scroll disabled
-
-#
-# Keyboard
-#
 
 ##
 # KEY MAPS
@@ -316,17 +240,17 @@ nx_rctl_add_mode_exit_maps window-resize
 riverctl map normal Super W enter-mode window
 
 # Window mode -> S => Toggle sticky tag for focused view.
-riverctl map window None S toggle-view-tags $stickytag
+riverctl map window None S toggle-view-tags "$NX_RIVER_TAGS_STICKY"
 
 # Window mode -> P => Send focused window to scratchpad (toggle visibility with Super+Z).
-riverctl map window None P set-view-tags $scratchtag
+riverctl map window None P set-view-tags "$NX_RIVER_TAGS_SCRATCHPAD"
 
-# Tag with [1-9]
+# Window mode -> [1-9] => Send window to tag.
 for i in $(seq 1 9); do
   tags=$((1 << (i - 1)))
 
   # Window mode+[1-9] to tag focused view with tag [0-8]
-  riverctl map window None "$i" spawn "riverctl set-focused-tags $((stickytag + tags)) ; eww update activetag=$i ; riverctl enter-mode normal"
+  riverctl map window None "$i" spawn "riverctl set-focused-tags $((NX_RIVER_TAGS_STICKY + tags)) ; eww update activetag=$i ; riverctl enter-mode normal"
 done
 
 #
@@ -345,22 +269,19 @@ riverctl map -repeat window-resize None L resize horizontal 50
 #
 # Window -> Move mode
 #
-# Super+W>M to resize window with H, J, K, L.
 #
 
 # Trigger
 riverctl map window None M enter-mode window-move
 
-# Move
+# Nive
 riverctl map -repeat window-move None H move left 50
 riverctl map -repeat window-move None J move down 50
 riverctl map -repeat window-move None K move up 50
 riverctl map -repeat window-move None L move right 50
 
 #
-# Window -> Location mode
-#
-# Super+W>L to set main window location with H, J, K, L.
+# Window -> Main location mode
 #
 
 # Trigger
@@ -375,24 +296,20 @@ riverctl map window-location None L send-layout-cmd rivertile "main-location rig
 #
 # System status mode
 #
-# Super+Space>[key] print time, date, etc. as system notification.
-#
 
 # Trigger
 riverctl map normal Super Space enter-mode system
 
-# Time
+# Display time
 riverctl map system None T spawn \
   "notify-send \"\$(date +'%H:%M')\" ; riverctl enter-mode normal"
 
-# Date
+# Display date
 riverctl map system None D spawn \
   "notify-send \"\$(date +'%A · %F · Week %V')\" ; riverctl enter-mode normal"
 
 #
-# Passthrough mode
-#
-# Only has a mapping to return to normal mode (useful for testing).
+# Passthrough mode for testing
 #
 
 # Trigger
@@ -402,25 +319,26 @@ riverctl map normal Super F11 enter-mode passthrough
 riverctl map passthrough Super F11 enter-mode normal
 
 #
-# Locked mode
+# Locked and normal mode
 #
 
 for mode in normal locked; do
   # Control volume with `pamixer`.
-  riverctl map -repeat $mode None XF86AudioRaiseVolume spawn "pamixer -i 5"
-  riverctl map -repeat $mode None XF86AudioLowerVolume spawn "pamixer -d 5"
-  riverctl map $mode None XF86AudioMute spawn "pamixer --toggle-mute"
+  riverctl map -repeat "$mode" None XF86AudioRaiseVolume spawn "pamixer -i 5"
+  riverctl map -repeat "$mode" None XF86AudioLowerVolume spawn "pamixer -d 5"
+  riverctl map "$mode" None XF86AudioMute spawn "pamixer --toggle-mute"
 
   # Control MPRIS aware media players with `playerctl`.
-  riverctl map $mode None XF86AudioMedia spawn "playerctl play-pause"
-  riverctl map $mode None XF86AudioPlay spawn "playerctl play-pause"
-  riverctl map $mode None XF86AudioPrev spawn "playerctl previous"
-  riverctl map $mode None XF86AudioNext spawn "playerctl next"
+  riverctl map "$mode" None XF86AudioMedia spawn "playerctl play-pause"
+  riverctl map "$mode" None XF86AudioPlay spawn "playerctl play-pause"
+  riverctl map "$mode" None XF86AudioPrev spawn "playerctl previous"
+  riverctl map "$mode" None XF86AudioNext spawn "playerctl next"
 
   # Control screen backlight brightness with `light`.
-  riverctl map -repeat $mode None XF86MonBrightnessUp spawn "light -A 5"
-  riverctl map -repeat $mode None XF86MonBrightnessDown spawn "light -U 5"
+  riverctl map -repeat "$mode" None XF86MonBrightnessUp spawn "light -A 5"
+  riverctl map -repeat "$mode" None XF86MonBrightnessDown spawn "light -U 5"
 done
+
 #
 # Launchers
 #
@@ -455,7 +373,7 @@ riverctl map normal Super Q close
 riverctl map normal Super Backspace exit
 
 # Show status bar (starts daemon if not running).
-riverctl map normal Super B spawn "sh -c 'eww open bar-1 --toggle'"
+riverctl map normal Super B spawn "eww open --toggle top-bar"
 
 #
 # Focus
@@ -525,7 +443,7 @@ riverctl map-pointer window None BTN_BACK enter-mode normal
 # Bind number keys to tag actions.
 for i in $(seq 1 9); do
   tags=$((1 << (i - 1))) # Super+[1-9] to focus tag [0-8]
-  riverctl map normal Super "$i" spawn "sh -c 'riverctl set-focused-tags $((stickytag + tags)) && eww update active-tag=$tags'"
+  riverctl map normal Super "$i" spawn "sh -c 'riverctl set-focused-tags $((NX_RIVER_TAGS_SCRATCHPAD + tags)) && eww update active-tag=$tags'"
 
   # Super+Shift+[1-9] to tag focused view with tag [0-8]
   riverctl map normal Super+Shift "$i" set-view-tags $tags
@@ -538,9 +456,7 @@ for i in $(seq 1 9); do
 done
 
 # Super+0 to focus all tags.
-# Super+Shift+0 to tag focused view with all tags.
-riverctl map normal Super 0 spawn "riverctl set-focused-tags $alltags && eww update active-tag=0"
-riverctl map normal Super+Shift 0 set-view-tags $alltags
+riverctl map normal Super 0 spawn "riverctl set-focused-tags $NX_RIVER_TAGS_ALL && eww update active-tag=0"
 
 # Toggle view-related state such as fullscreen mode, floating mode, and whether or not to insert new
 # views at the top or the bottom of the list of views called the view stack.
@@ -562,16 +478,16 @@ riverctl map normal Super+Control F zoom
 ##
 
 # Toggle scratchpad.
-riverctl map normal Super Z toggle-focused-tags "$scratchtag"
+riverctl map normal Super Z toggle-focused-tags "$NX_RIVER_TAGS_SCRATCHPAD"
 
 # Send window to scratchpad.
-riverctl map normal Super+Shift Z spawn "riverctl set-view-tags $scratchtag && riverctl toggle-focused-tags $scratchtag"
+riverctl map normal Super+Shift Z spawn "riverctl set-view-tags "$NX_RIVER_TAGS_SCRATCHPAD && riverctl toggle-focused-tags "$NX_RIVER_TAGS_SCRATCHPAD"
 
 # Toggle sticky.
-riverctl map normal Super+Shift S toggle-view-tags "$stickytag"
+riverctl map normal Super+Shift S toggle-view-tags "$NX_RIVER_TAGS_SCRATCHPAD"
 
 # Ensure new windows don't have the scratchpad or sticky tag unless explicitly set.
-riverctl spawn-tagmask "$availabletags"
+riverctl spawn-tagmask "$NX_RIVER_TAGS_NONSPECIAL"
 
 ##
 # FLOATING FILTERS
@@ -598,12 +514,11 @@ riverctl float-filter-add app-id "org.kde.haruna"
 riverctl float-filter-add app-id "pavucontrol"
 riverctl float-filter-add app-id "pavucontrol-qt"
 riverctl float-filter-add app-id "qt5ct"
-riverctl float-filter-add app-id "qv4l2"   # Cam settings UI, great with Logitech Brio 4K.
-riverctl float-filter-add app-id "qvidcap" # Cam settings UI, preview window.
+riverctl float-filter-add app-id "qv4l2"
+riverctl float-filter-add app-id "qvidcap"
 riverctl float-filter-add app-id "vimiv"
 riverctl float-filter-add app-id "vlc"
 riverctl float-filter-add app-id "wdisplays"
-riverctl float-filter-add app-id "xdg-desktop-portal-gnome"
 
 #
 # Terminal emulators
@@ -658,107 +573,17 @@ riverctl csd-filter-add app-id "nemo"
 # AUTO-START
 #
 
-# Convenience variables exported during session launch (or by sourcing this config).
-export NX_RIVER_TAGS_ALL="$(((1 << 32) - 1))"
-export NX_RIVER_TAGS_STICKY="$((1 << 20))"
-export NX_RIVER_TAGS_SCRATCHPAD="$((1 << 21))"
-export NX_RIVER_TAGS_NONSTICKY="$((alltags ^ stickytag))"
-export NX_RIVER_TAGS_NONSCRATCHPAD="$((alltags ^ scratchtag))"
-export NX_RIVER_TAGS_NONSPECIAL="$((noscratchtag ^ stickytag))"
-
-# Convenience variables imported and available to D-BUS and `systemd`. No substitution.
-export NX_ENV_RIVER="NX_RIVER_TAGS_STICKY NX_RIVER_TAGS_SCRATCHPAD"
-export NX_ENV_IMPORTS="DISPLAY WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE GDK_BACKEND SDL_VIDEODRIVER XKB_DEFAULT_LAYOUT XKB_DEFAULT_OPTIONS XDG_CURRENT_DESKTOP XDG_DESKTOP_PORTAL_DIR XDG_DATA_DIRS XDG_RUNTIME_DIR MOZ_DBUS_REMOTE MOZ_USE_XINPUT2 MOZ_ENABLE_WAYLAND QT_WAYLAND_DISABLE_WINDOWDECORATION QT_QPA_PLATFORM"
-export NX_ENV="$NX_ENV_RIVER $NX_ENV_IMPORTS"
-
-dbus-update-activation-environment --systemd "$NX_ENV"
-
-# Launch Policy Kit.
-# nx_rctl_spawn_once "/run/current-system/sw/libexec/polkit-gnome-authentication-agent-1"
-nx_rctl_spawn_once "swaybg --image ~/Pictures/wallpapers/active --mode fill --output '*'"
-nx_rctl_spawn_shell "riverctl set-focused-tags $NX_RIVER_TAGS_SCRATCHPAD && sleep 0.5 && riverctl spawn $cmd_terminal_scratchpad && sleep 0.25 && riverctl set-focused-tags $NX_RIVER_TAGS_NONSPECIAL"
-
-# Trigger systemd target used to launch certain services.
-nx_rctl_spawn_once "systemctl --user start river-session.target"
-
-# Top bar widget for primary monitor.
-#
-# Using the same window for multiple monitors isn't supported yet. Instead, I've added a "bar-2" and
-# "bar-3", one per monitor, all identical except for naming. Those can be opened on the two smaller
-# 24" monitors stacked vertically to the left of the primary 34" ultra-wide. Performance difference
-# is negligible on this Ryzen 7 machine (likely helps that `eww` runs as a daemon).
-#
-# Currently prefer having the one bar on the main monitor as it saves space on the two 24" 1080p.
-nx_rctl_spawn_once "eww kill ; eww open bar-2"
+riverctl spawn "pkill swaybg ; swaybg --image ~/Pictures/wallpapers/active --mode fill --output '*'"
+riverctl spawn "eww --restart open top-bar"
 
 #
-# Layout generator
+# LAYOUT GENERATOR
 #
 
 riverctl default-layout rivertile
 
-# Prepare to redirect standard error to user local file `~/.local/share/logs/rivertile.log`,
-# overwriting the existing file after backing it up (only backs up one previous revision).
-# "Good enough for government work!"
-#
-# shellcheck disable=SC2317  # Don't warn about unreachable commands in this function
-nx_rctl_spawn_logged() {
-  if [ $# -eq 2 ]; then
-    cmd="$1"
-    logname="$2"
-    logfile="$HOME/.local/share/logs/$logname.log"
-    bakfile="$logname.bak"
+riverctl spawn "pkill rivertile ; rivertile -view-padding ${NX_RTILE_VIEW_PADDING:-10} -outer-padding ${NX_RTILE_OUTER_PADDING:-10} -main-ratio ${NX_RTILE_MAIN_RATIO:-0.5} -main-count ${NX_RTILE_MAIN_COUNT:-1} -main-location ${NX_RTILE_MAIN_LOCATION:-'left'} >/dev/null 2>$NX_RTILE_LOGFILE"
 
-    [ -f "$bakfile" ] && rm "$bakfile" >/dev/null 2>&1
-    [ -f "$logfile" ] && mv "$logfile" "$bakfile" >/dev/null 2>&1
-
-    printf "Launching command: %s\nLogging to file: %s\n\n" "$1" "$2"
-
-    $cmd 2>"$logfile" &
-  fi
-}
-
-# Start layout manager, using somewhat sane defaults. This function just avoids having to duplicate
-# arguments below if we run this command directly (depending on if we're in an interactive shell or
-# a login shell, etcetera, etcetera, et al.).
-#
-# shellcheck disable=SC2317 # Don't warn about unreachable commands in this function
-# shellcheck disable=SC2139 # Don't warn about expand on define--*exactly* what we want to fkn do.
-export NX_CMD_LAYOUT_MANAGER="rivertile -view-padding ${view_padding:-10} -outer-padding ${outer_padding:-10} -main-ratio ${main_ratio:-0.5} -main-count ${main_count:-1} -main-location ${main_location:-'left'}"
-
-# Print a bordered banner to standard output in a POSIX compatible manner. `$padchar` contains the
-# character to use for borders. Support for specifying padding width, border character, and
-# other fancy stuff will be added "later." As in 2026.
-#
-# It runs in POSIX `sh`, and uses GNU coretools `echo` and `printf` commands rather than builtins.
-nx_banner() {
-  padding="="
-  content="$(command printf '%s' "$*" | tr '[:lower:]' '[:upper:]')" # Uppercase.
-  content="$padding $content $padding"
-  columns="$(command printf '%s' "$content" | wc -m)" # Pad.
-  wrapper="$(for index in $(seq 1 $columns); do command printf '%s' "$padding"; done)"
-
-  # shellcheck disable=SC2059 # Chill with the "no vars there." It's rude, and super controlling. :/
-  command printf '\n%s\n%s\n%s\n' "$wrapper" "$content" "$wrapper" # Put them together.
-}
-
-# Start layout manager using `exec` only on boot, and otherwise start it without replacing the
-# process. This makes sure the init script can be executed in an interactive shell without replacing
-# the shell process with `exec`. Instead we start it as a background job, using `nohup` because
-# POSIX says so. 'command &! ' and 'cmd & disown' work in most traditional shells though.
-if [ -t 0 ]; then
-  # Likely we're post-login in a terminal emulator, so just start layout engine in background.
-  if pgrep rivertile >/dev/null 2>&1; then
-    pkill rivertile
-  fi
-
-  nohup sh -c "$NX_CMD_LAYOUT_MANAGER" >/dev/null 2>"$NX_RTILE_LOGFILE" &
-else
-  # Likely logging in, so we'll start layout engine by replacing this process with it.
-  exec "$NX_CMD_LAYOUT_MANAGER >/dev/null 2>$NX_RTILE_LOGFILE"
-fi
-
-rivertile -view-padding "${view_padding:-10}" -outer-padding "${outer_padding:-10}" -main-ratio "${main_ratio:-0.5}" -main-count "${main_count:-1}" -main-location "${main_location:-'left'}" >/dev/null 2>"$NX_RTILE_LOGFILE" &
-
-dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=river
-systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=river
+dbus-update-activation-environment --all
+systemctl --user import-environment
+systemctl --user start river-session.target

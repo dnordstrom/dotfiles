@@ -6,4 +6,4 @@ let
   unknown2 =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJUagdlahSXlKZf9vs+EWVOwo6VqUCXtakJyF1jbwlBZ";
   systems = [ nordix unknown1 unknown2 ];
-in { "environment/env.age".publicKeys = systems; }
+in { "env.age".publicKeys = systems; }

@@ -98,7 +98,7 @@ in {
     allowUnfreePredicate = pkg:
       builtins.elem (lib.getName pkg) [ "corefonts" "slack" ];
     firefox.enableTridactylNative = true;
-    permittedInsecurePackages = [ "openssl-1.1.1t" "nodejs-16.20.0" ];
+    permittedInsecurePackages = [ "openssl-1.1.1u" ];
   };
 
   #
@@ -209,12 +209,21 @@ in {
           "NerdFontsSymbolsOnly"
           "Noto"
           "Overpass"
-          "ProFont"
           "SourceCodePro"
           "iA-Writer"
         ];
       })
     ];
+  };
+  
+  #
+  # CONSOLE/TTY
+  #
+
+  # Use xserver keyboard settings at virtual console/TTY.
+  console = {
+    earlySetup = true;
+    useXkbConfig = true;
   };
 
   #
@@ -225,8 +234,12 @@ in {
     #
     # Enable libinput for mouse and touchpad setup.
     #
-
-    xserver.libinput.enable = true;
+    xserver = {
+      enable = false;
+      libinput.enable = true;
+      layout = "us,se";
+      xkbVariant = ",";
+    };
 
     #
     # DDC Control for controlling monitor settings.
@@ -343,9 +356,10 @@ in {
     };
 
     #
-    # Remap keys using Interception Tools plugins (works in TTY).
+    # Keyboard
     #
 
+    # Remap keys using Interception Tools plugins. Works in TTY.
     interception-tools = {
       enable = true;
       plugins = [ pkgs.interception-tools-plugins.dual-function-keys ];
@@ -404,7 +418,6 @@ in {
     plex = {
       enable = true;
       openFirewall = true;
-      dataDir = mediaDirectory;
     };
 
     # Jellyfin Media Server.
@@ -545,6 +558,8 @@ in {
   # HARDWARE
   #
 
+  # Disable system-wide ALSA setup, since we're using PipeWire's ALSA emulation. Enabling this can
+  # let us use media keys in TTY, for example.
   sound.enable = false;
 
   hardware = {
@@ -563,6 +578,8 @@ in {
       enable = true;
       settings.General.Enable = "Source,Sink,Media,Socket";
     };
+
+    uinput.enable = true;
   };
 
   #
@@ -608,19 +625,9 @@ in {
   #
   # USERS
   #   
-  # `isNormalUser = true;` creates a home directory while `isSystemUser = true;` doesn't. For
-  # appropriate access, users need to be in the right groups, such as "input" for libinput, or
-  # "audio" for the Roon Server user.
-  #
-  # Remember to add all the groups you need to your user. Groups created by Nix modules aren't very
-  # visible, which is the whole point of abstracting it into a module. E.g., reading `openvpn3.nix`
-  # below tells us that it adds a system user (no home directory) "openvpn", in a new group 
-  # "openvpn", and adds itself to the the list of packages requiring D-BUS access. Many modules let
-  # you specify which user and group should be used to run a service, but you'll often need to add
-  # the group to your user since the module doesn't know or care who you are. Including "openvpn"
-  # below lets me do my job, which is nice, and "audio" even lets me listen to music.
-  #
-  # See: https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/programs/openvpn3.nix
+  # `isNormalUser = true` creates a home directory while `isSystemUser = true` doesn't. For
+  # appropriate access, remember to add users to the right groups, e.g. "input" for libinput, or
+  # "audio" for Roon Server.
   #
 
   users = {
@@ -631,29 +638,22 @@ in {
 
         # Extra groups for audio, input gestures, etc.
         extraGroups = [
-          "wheel"
           "audio"
           "input"
-          "openvpn"
-          "plex"
           "kvm"
           "libvirtd"
+          "openvpn"
+          "plex"
           "qemu-libvirtd"
+          "uinput"
           "vboxusers"
+          "wheel"
         ];
 
-        # Default to Zsh in TTY.
+        # Use Zsh as user shell.
         shell = pkgs.zsh;
       };
-
-      openvpn = {
-        isSystemUser = true;
-        description = "OpenVPN user";
-        group = "openvpn";
-      };
     };
-
-    groups.openvpn = { };
   };
 
   #
@@ -695,6 +695,10 @@ in {
   #
 
   environment = {
+    # Add `~/.local/bin` to `PATH`.
+    localBinInPath = true;
+
+    # Crap we "need" installed at system level rather than user, like audio and PCI tools.
     systemPackages = with pkgs; [
       git
       libva-utils
@@ -703,7 +707,6 @@ in {
       wget
       glib
       xdg-utils
-      # xdgPortalsJoinedPackagesEnv
       wireplumber
       alsa-tools
       pulseaudio
@@ -714,13 +717,13 @@ in {
       xorg.xinput
     ];
 
+    # These are set on login for all users. (I.e., for me and myself.)
     sessionVariables = {
       BROWSER = defaultBrowser;
       EDITOR = defaultEditor;
 
       # XDG portals
       GTK_USE_PORTAL = "1";
-      # NIXOS_XDG_OPEN_USE_PORTAL = "1";
 
       # Firefox
       MOZ_DBUS_REMOTE = "1";
