@@ -6,10 +6,7 @@
 # Sets up the environment before launching River.
 ##
 
-export NX_RIVER_LOGFILE="$HOME/.local/share/logs/river.log"
-
-# Script paths organized and prefixed by category: `nix/nix-preview`, `launch/launch-app`, etc. We
-# want to add these to PATH before launching River so it can spawn the scripts.
+# Script paths organized and prefixed by category: `nix/nix-preview`, `launch/launch-app`, etc.
 for directory in ~/.scripts/*; do
   export PATH="$PATH:$directory"
 done
@@ -26,4 +23,4 @@ if [ -f "$logfile" ]; then
   mv "$logfile" "$bakfile" >/dev/null 2>&1
 fi
 
-dbus-run-session -- river 2>"$logfile"
+river 2>"$logfile"
