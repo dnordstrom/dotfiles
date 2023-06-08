@@ -57,7 +57,7 @@ function createNode(parent, id, obj_type, factory, properties)
 	properties["factory.name"] = factory
 
 	-- set the default pause-on-idle setting
-	properties["node.pause-on-idle"] = false
+	properties["node.pause-on-idle"] = true
 
 	-- try to negotiate the max amount of channels
 	if dev_props["api.alsa.use-acp"] ~= "true" then

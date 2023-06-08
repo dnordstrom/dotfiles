@@ -5,7 +5,7 @@ device_defaults.properties = {
   -- store preferences to the file system and restore them at startup;
   -- when set to false, default nodes and routes are selected based on
   -- their priorities and any runtime changes do not persist after restart
-  ["use-persistent-storage"] = true,
+  ["use-persistent-storage"] = false, -- Changed
 
   -- the default volumes to apply to ACP device nodes, in the linear scale
   --["default-volume"] = 0.064,

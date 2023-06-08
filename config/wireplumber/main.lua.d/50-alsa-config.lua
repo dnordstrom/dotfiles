@@ -117,7 +117,7 @@ alsa_monitor.rules = {
 			--["node.description"]       = "My Node Description",
 			--["priority.driver"]        = 100,
 			--["priority.session"]       = 100,
-			["node.pause-on-idle"] = false,
+			["node.pause-on-idle"] = true,
 			--["monitor.channel-volumes"] = false
 			--["resample.quality"]       = 4,
 			--["resample.disable"]       = false,
@@ -134,7 +134,7 @@ alsa_monitor.rules = {
 			--["dither.noise"]           = 0,
 			--["dither.method"]          = "none",  -- "rectangular", "triangular" or "shaped5"
 			["audio.channels"] = 2,
-			["audio.format"] = "S32LE",
+			--["audio.format"] = "S32LE",
 			["audio.rate"] = 48000,
 			["audio.allowed-rates"] = "44100,48000,88200,96000,176400,19200",
 			["audio.position"] = "FL,FR",
@@ -149,7 +149,7 @@ alsa_monitor.rules = {
 			--["latency.internal.rate"]  = 0
 			--["latency.internal.ns"]    = 0
 			--["clock.name"]             = "api.alsa.0"
-			["session.suspend-timeout-seconds"] = 0, -- 0 disables suspend
+			["session.suspend-timeout-seconds"] = 1, -- 0 disables suspend
 		},
 	},
 }

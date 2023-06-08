@@ -215,7 +215,7 @@ in {
       })
     ];
   };
-  
+
   #
   # CONSOLE/TTY
   #
@@ -453,8 +453,8 @@ in {
     # Packages
     #
 
-    # packages = xdgPortalsJoinedPackages;
-    packages = [ inputs.firefox.packages.${pkgs.system}.firefox-nightly-bin ];
+    packages = [ inputs.firefox.packages.${pkgs.system}.firefox-nightly-bin ]
+      ++ xdgPortalsJoinedPackages;
 
     #
     # Services
@@ -471,38 +471,7 @@ in {
       wait-online.timeout = 0;
 
       # Insert WireGuard interfaces here.
-      netdevs = {
-        protonvpn-sweden = {
-          enable = true;
-
-          netdevConfig = {
-            Description = "ProtonVPN via Sweden";
-            Kind = "wireguard";
-            Name = "proton-sweden";
-          };
-
-          extraConfig = ''
-            [WireGuard]
-            # Key for se3-full
-            # Bouncing = 0
-            # NetShield = 2
-            # Moderate NAT = on
-            # NAT-PMP (Port Forwarding) = on
-            # VPN Accelerator = on
-            PrivateKeyFile=/run/keys/protonvpn-sweden
-            ListenPort=9918
-            PrivateKey = uKhYESQ9WY3ggi7eC3yuwNa6nhO5972T9Hbh+ylJ0ks=
-            Address = 10.2.0.2/32
-            DNS = 10.2.0.1
-
-            [WireGuardPeer]
-            # SE#3
-            PublicKey = iVnf4knNO1M/kRyn74SxRDNgWJMtyzglXRRcn9HMEBI=
-            AllowedIPs=0.0.0.0/0
-            Endpoint = 45.87.214.98:51820:51820
-          '';
-        };
-      };
+      netdevs = { };
     };
   };
 
@@ -738,8 +707,8 @@ in {
       XDG_SESSION_DESKTOP = "river";
       XDG_SESSION_TYPE = "wayland";
 
-      # XDG_DESKTOP_PORTAL_DIR = lib.mkForce
-      #   "${xdgPortalsJoinedPackagesEnv}/share/xdg-desktop-portal/portals";
+      XDG_DESKTOP_PORTAL_DIR = lib.mkForce
+        "${xdgPortalsJoinedPackagesEnv}/share/xdg-desktop-portal/portals";
 
       # Java
       _JAVA_AWT_WM_NONREPARENTING = "1";
@@ -751,7 +720,12 @@ in {
     };
 
     # Directories to be symlinked in `/run/current-system/sw`.
-    pathsToLink = [ "/share/zsh" "/libexec" "/share/applications" ];
+    pathsToLink = [
+      "/share/zsh"
+      "/libexec"
+      "/share/xdg-desktop-portal/portals"
+      "/share/applications"
+    ];
 
     # Before `getty`, logging in at `tty1` started Sway and `ttY2` started River. Faster than a
     # display manager. The `agetty` TUI login manager gives clean UI that pops up crazy fast.
