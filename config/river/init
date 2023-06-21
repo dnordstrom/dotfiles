@@ -249,8 +249,7 @@ riverctl map window None P set-view-tags "$NX_RIVER_TAGS_SCRATCHPAD"
 for i in $(seq 1 9); do
   tags=$((1 << (i - 1)))
 
-  # Window mode+[1-9] to tag focused view with tag [0-8]
-  riverctl map window None "$i" spawn "riverctl set-focused-tags $((NX_RIVER_TAGS_STICKY + tags)) ; eww update activetag=$i ; riverctl enter-mode normal"
+  riverctl map window None "$i" "riverctl set-focused-tags $tags ; eww update activetag=$i ; riverctl enter-mode normal"
 done
 
 #
@@ -394,10 +393,10 @@ riverctl map normal Super+Shift K swap previous
 #
 # Super+Period|Comma to focus previous/next output.
 # Super+Shift+Period|Comma to send view to previous/next output.
-riverctl map normal Super Comma focus-output next
-riverctl map normal Super Period focus-output previous
-riverctl map normal Super+Shift Comma send-to-output next
-riverctl map normal Super+Shift Period send-to-output previous
+riverctl map normal Super Comma focus-output previous
+riverctl map normal Super Period focus-output next
+riverctl map normal Super+Shift Comma send-to-output previous
+riverctl map normal Super+Shift Period send-to-output next
 
 #
 # Layout
@@ -415,48 +414,38 @@ riverctl map normal Super X send-layout-cmd rivertile "main-count -1"
 # POINTER MAPS
 ##
 
-# TODO: If any of these buttons don't get used, change it. Have it run a custom, mouse-oriented Eww
-# launcher. Toggle the scratchpad. Show the regular `fzf` lanuchers. Show pickers for clipboard
-# history, passwords (with Bitwarden CLI), snippets (any code, phrase, word, or sentence sub-optimal
-# to type on 60% keebs), emojis, Unicode symbols, Nerd Font icons, colors from the screen or from a
-# picker like GTK's, characters like em-dashes and middle dots (similar to Kitty's picker).
-# Anything. Prime button location. :)
-
 # Normal mode without modifier.
-riverctl map-pointer normal None BTN_FORWARD close
-riverctl map-pointer normal None BTN_BACK enter-mode window
+riverctl map-pointer normal None BTN_EXTRA enter-mode window
+riverctl map-pointer normal None BTN_SIDE enter-mode window
 
 # Normal mode with modifier.
 riverctl map-pointer normal Super BTN_LEFT move-view
 riverctl map-pointer normal Super BTN_RIGHT resize-view
 riverctl map-pointer normal Super BTN_MIDDLE toggle-float
-riverctl map-pointer normal Super BTN_FORWARD toggle-fullscreen
-riverctl map-pointer normal Super BTN_BACK enter-mode window
+riverctl map-pointer normal Super BTN_EXTRA "riverctl close ; riverctl enter-mode normal"
+riverctl map-pointer normal Super BTN_SIDE enter-mode window
 
 # Window mode without modifier.
 riverctl map-pointer window None BTN_LEFT move-view
 riverctl map-pointer window None BTN_RIGHT resize-view
-riverctl map-pointer window None BTN_MIDDLE enter-mode normal
-riverctl map-pointer window None BTN_FORWARD toggle-fullscreen
-riverctl map-pointer window None BTN_BACK enter-mode normal
+riverctl map-pointer window None BTN_MIDDLE toggle-float
+riverctl map-pointer window None BTN_EXTRA "riverctl close ; riverctl enter-mode normal"
+riverctl map-pointer window None BTN_SIDE enter-mode normal
 
 # Bind number keys to tag actions.
 for i in $(seq 1 9); do
-  tags=$((1 << (i - 1))) # Super+[1-9] to focus tag [0-8]
-  riverctl map normal Super "$i" spawn "sh -c 'riverctl set-focused-tags $((NX_RIVER_TAGS_SCRATCHPAD + tags)) && eww update active-tag=$tags'"
+  # Generate tags 1, 2, 4, 8, 16, 32, 64, 128, and 256.
+  tags=$((1 << (i - 1)))
 
-  # Super+Shift+[1-9] to tag focused view with tag [0-8]
-  riverctl map normal Super+Shift "$i" set-view-tags $tags
+  # Super+[1-9] to focus tag [0-8].
+  riverctl map normal Super "$i" set-focused-tags "$tags"
 
-  # Super+Ctrl+[1-9] to toggle focus of tag [0-8]
-  riverctl map normal Super+Control "$i" toggle-focused-tags $tags
-
-  # Super+Shift+Ctrl+[1-9] to toggle tag [0-8] of focused view
-  riverctl map normal Super+Alt "$i" toggle-view-tags $tags
+  # Super+Shift+[n] tags focused view with tag [n-1].
+  riverctl map normal Super+Shift "$i" set-view-tags "$tags"
 done
 
 # Super+0 to focus all tags.
-riverctl map normal Super 0 spawn "riverctl set-focused-tags $NX_RIVER_TAGS_ALL && eww update active-tag=0"
+riverctl map normal Super 0 set-focused-tags "$NX_RIVER_TAGS_NONSCRATCHPAD"
 
 # Toggle view-related state such as fullscreen mode, floating mode, and whether or not to insert new
 # views at the top or the bottom of the list of views called the view stack.
@@ -547,8 +536,6 @@ riverctl float-filter-add title "Parent process Browser Toolbox"                
 riverctl float-filter-add title "Picture-in-Picture"                                        # Firefox's PIP windows.
 riverctl float-filter-add title ""                                                          # Notifications. app-id is "firefox-nightly" and title is empty.
 
-# TODO: When regular expressions are invented, use `title "Developer Tools - .+"` for Firefox.
-
 ##
 # CLIENT-SIDE DECORATION FILTERS
 #
@@ -585,5 +572,6 @@ riverctl default-layout rivertile
 riverctl spawn "pkill rivertile ; rivertile -view-padding ${NX_RTILE_VIEW_PADDING:-10} -outer-padding ${NX_RTILE_OUTER_PADDING:-10} -main-ratio ${NX_RTILE_MAIN_RATIO:-0.5} -main-count ${NX_RTILE_MAIN_COUNT:-1} -main-location ${NX_RTILE_MAIN_LOCATION:-'left'} >/dev/null 2>$NX_RTILE_LOGFILE"
 
 dbus-update-activation-environment --all
+
 systemctl --user import-environment
 systemctl --user start river-session.target

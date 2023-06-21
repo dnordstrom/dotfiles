@@ -617,7 +617,9 @@ in rec {
     libinput
     libinput-gestures
     lisgd
+    ristate
     river
+    river-tag-overlay
     rofi-calc
     rofi-emoji
     rofi-systemd
@@ -1118,16 +1120,6 @@ in rec {
     # Unnecessary evil.
     java.enable = false;
 
-    # Status bar we use in Sway WM.
-    waybar = {
-      enable = true;
-      systemd = {
-        enable = true;
-        target =
-          "sway-session.target"; # Default is `graphical-session.target`, but we only use it in Sway.
-      };
-    };
-
     # Status bar we use in River WM.
     eww = {
       enable = true;
@@ -1154,7 +1146,7 @@ in rec {
           compact = false;
           use_pager = true;
         };
-        updates.auto_update = false;
+        updates.auto_update = true;
       };
     };
 
@@ -1258,10 +1250,7 @@ in rec {
       viAlias = true;
       vimAlias = true;
       vimdiffAlias = true;
-
-      # The config is 100% written in Lua, so all `init.vim` needs to do is load `init.lua`, which
-      # takes care of the rest.
-      extraConfig = "lua require('init')";
+      extraConfig = "lua require('init')"; # The config is 100% Lua files.
     };
 
     zsh = {
@@ -1572,7 +1561,7 @@ in rec {
               scale = benq-1.scale;
             }
             {
-              criteria = "DP-3";
+              criteria = "DP-2";
               status = "enable";
               mode = aoc-1.mode;
               position = aoc-1.position;
@@ -1658,8 +1647,8 @@ in rec {
           After = [ "river-session.target" ];
         };
         Service = {
-          ExecStart = "${pkgs.eww-wayland}/bin/eww open bar-2";
-          ExecReload = "${pkgs.eww-wayland}/bin/eww --restart open bar-2";
+          ExecStart = "${pkgs.eww-wayland}/bin/eww open --restart top-bar";
+          ExecReload = "${pkgs.eww-wayland}/bin/eww open --restart top-bar";
           Restart = "on-failure";
           KillMode = "mixed";
         };
