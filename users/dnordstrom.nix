@@ -482,6 +482,15 @@ in rec {
     nordpkgs.lswt
 
     #
+    # Tryouts
+    #
+    # Maybe we keep 'em, maybe we don't. But if we don't bunch them up here, we forget 'em.
+    #
+
+    wlrctl
+    wiki-tui
+
+    #
     # Networking
     #
 
@@ -1256,7 +1265,7 @@ in rec {
     zsh = {
       autocd = true;
       enable = true;
-      enableSyntaxHighlighting = true;
+      syntaxHighlighting.enable = true;
       enableVteIntegration = true;
       enableAutosuggestions = true;
 
@@ -1551,7 +1560,7 @@ in rec {
       systemdTarget = "river-session.target";
       profiles = {
         # Home: DisplayPort for primary monitor.
-        home_dp = {
+        home = {
           outputs = [
             {
               criteria = "DP-1";
@@ -1562,33 +1571,6 @@ in rec {
             }
             {
               criteria = "DP-2";
-              status = "enable";
-              mode = aoc-1.mode;
-              position = aoc-1.position;
-              scale = aoc-1.scale;
-            }
-            {
-              criteria = "DVI-D-1";
-              status = "enable";
-              mode = aoc-2.mode;
-              position = aoc-2.position;
-              scale = aoc-2.scale;
-            }
-          ];
-        };
-
-        # Home: HDMI for primary monitor.
-        home_hdmi = {
-          outputs = [
-            {
-              criteria = "HDMI-A-1";
-              status = "enable";
-              mode = benq-1.mode;
-              position = benq-1.position;
-              scale = benq-1.scale;
-            }
-            {
-              criteria = "DP-3";
               status = "enable";
               mode = aoc-1.mode;
               position = aoc-1.position;

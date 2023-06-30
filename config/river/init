@@ -513,11 +513,11 @@ riverctl float-filter-add app-id "wdisplays"
 # Terminal emulators
 #
 
-riverctl float-filter-add app-id "fuzzyterm"
-riverctl float-filter-add app-id "plainterm"
-riverctl float-filter-add app-id "popupterm"
-riverctl float-filter-add app-id "scratchterm"
-riverctl float-filter-add app-id "transterm"
+riverctl float-filter-add title "fuzzyterm"
+riverctl float-filter-add title "plainterm"
+riverctl float-filter-add title "popupterm"
+riverctl float-filter-add title "scratchterm"
+riverctl float-filter-add title "transterm"
 
 #
 # Float windows based on title. E.g., in Firefox Nightly it's
@@ -547,7 +547,6 @@ riverctl csd-filter-add app-id "com.github.wwmm.easyeffects"
 riverctl csd-filter-add app-id "firefox-nightly"
 riverctl csd-filter-add app-id "nemo"
 riverctl csd-filter-add app-id "org.gnome.Nautilus"
-riverctl csd-filter-add app-id "org.ksnip.ksnip"
 riverctl csd-filter-add app-id "io.github.celluloid_player.Celluloid"
 riverctl csd-filter-add app-id "wdisplays"
 riverctl csd-filter-add app-id "nemo"
