@@ -83,20 +83,21 @@ export NX_RIVER_TAGS_NONSTICKY="$((NX_RIVER_TAGS_ALL ^ NX_RIVER_TAGS_STICKY))"
 export NX_RIVER_TAGS_NONSCRATCHPAD="$((NX_RIVER_TAGS_ALL ^ NX_RIVER_TAGS_SCRATCHPAD))"
 export NX_RIVER_TAGS_NONSPECIAL="$((NX_RIVER_TAGS_NONSTICKY ^ NX_RIVER_TAGS_NONSCRATCHPAD))"
 
-# Terminal startup sessions for using different layouts and init commands, literally does anything.
-cmd_terminal_plain="kitty --class=plainterm --title Plain"
-cmd_terminal_scratchpad="kitty --class=scratchterm --title 'Scratchpad terminal' --single-instance --instance-group scratchterm --session \"$NX_KITTY_SESSIONS/scratchpad.session\""
-cmd_terminal_popup="kitty --class=popupterm --title='Popup terminal' --single-instance --instance-group=popupterm"
-cmd_terminal_trans="kitty --class=transterm --title='Transparent terminal'"
+# Terminal emulator with different startup automations for specific used cases, using different
+# app-id's for targeting with `riverctl float-filter-add`. E.g., a scratchpad terminal adds tabs for
+# home directory and for NixOS configuration, and opens a note-taking file in Neovim, while other
+# startup sessions lets us quickly do blog authoring and development, and launch work projects.
+cmd_terminal_plain="kitty --class plainterm --title 'Plain terminal'"
+cmd_terminal_scratchpad="kitty --class scratchterm --title 'Scratchpad terminal' --single-instance --instance-group scratchterm --session \"$NX_KITTY_SESSIONS/scratchpad.session\""
+cmd_terminal_popup="kitty --class=popupterm --title 'Popup terminal' --single-instance --instance-group popupterm"
+cmd_terminal_trans="kitty --class=transterm --title 'Transparent terminal'"
 
-# Launchers.
+# Launchers for applications and commands.
 cmd_launch_app="/etc/nixos/scripts/launch/launchapp"
 cmd_launch_cmd="/etc/nixos/scripts/launch/launchcommand"
 cmd_launch_gui="rofi -show drun"
 
-# File managers. Choice is hard. Luckily choice is just an illusion anyway. Free will is just a
-# naive perspective that puts us in control, when reality is a game of dominoes and all we can do is
-# watch the dominoes fall, each a direct consequence of the previous and direct cause of the next.
+# File managers for different uses, both GUI and TUI.
 cmd_files_qt="dolphin"
 cmd_files_gtkone="nemo"
 cmd_files_gtktwo="nautilus"
@@ -164,57 +165,57 @@ EOF
 
 # Device IDs from `riverctl list-inputs`.
 pointer_lgtch="pointer-1133-16505-Logitech_G_Pro"
-pointer_apple="pointer-76-613-Apple_Inc._Magic_Trackpad_2"
+pointer_apple_bt="pointer-76-613-Apple_Inc._Magic_Trackpad_2"    # Without cable.
+pointer_apple_usb="pointer-1452-613-Apple_Inc._Magic_Trackpad_2" # With cable.
 
 # Concatenate and separate by newline.
-pointers="$pointer_lgtch $pointer_apple"
-pointers="$(printf '%s' "$pointers" | tr '[:space:]' '\n')"
+pointers_all="$pointer_lgtch $pointer_apple_bt $pointer_apple_usb"
+pointers_all="$(printf '%s' "$pointers_all" | tr '[:space:]' '\n')"
+pointers_trackpads="$pointer_apple_bt $pointer_apple_usb"
+pointers_trackpads="$(printf '%s' "$pointers_trackpads" | tr '[:space:]' '\n')"
 
-# Configure common settings for all mice and trackpads the same.
+# Configure Apple trackpad for both Bluetooth and USB.
 while read -r pointer; do
   if [ -n "$NX_DEBUG_RIVER" ]; then
     printf "Configuring pointer device \"%s\"…\n" "$pointer"
   fi
+
+  # Enable acceleration (none, flat, or adaptive).
+  riverctl input "$pointer" accel-profile adaptive
+
+  # Acceleration factor (between -1.0 and 1.0).
+  riverctl input "$pointer" pointer-accel -0.1
+
+  # Tap to click, or click to click, it's pro-choice.
+  riverctl input "$pointer" tap enabled
+
+  # Tap anywhere: two and three fingers for right and middle click (none, button-area, clickfinger).
+  riverctl input "$pointer" click-method clickfinger
+
+  # Keep pointer visible when typing (Kitty terminal still hides it according to its own config).
+  riverctl input "$pointer" disable-while-typing enabled
+
+  # Scroll with two fingers, not at edge of trackpad (none, two-finger, edge, button).
+  riverctl input "$pointer" scroll-method two-finger
+
+  # Middle-click emulation when tapping with three fingers.
+  riverctl input "$pointer" middle-emulation enabled
+
+  # Natural scroll direction is disgusting.
+  riverctl input "$pointer" natural-scroll disabled
 done <<EOF
-$pointers
+$pointers_trackpads
 EOF
 
 # Disable mouse acceleration globally using profile "none" and "0" factor (min -1.0, max 1.0).
 riverctl input "$pointer_lgtch" accel-profile flat
 riverctl input "$pointer_lgtch" pointer-accel 0.65
 
-# Enable acceleration (none, flat, or adaptive).
-riverctl input "$pointer_apple" accel-profile adaptive
-
-# Acceleration factor (between -1.0 and 1.0).
-riverctl input "$pointer_apple" pointer-accel -0.1
-
-# Tap to click, or click to click, it's pro-choice.
-riverctl input "$pointer_apple" tap enabled
-
-# Tap anywhere: two and three fingers for right and middle click (none, button-area, clickfinger).
-riverctl input "$pointer_apple" click-method clickfinger
-
-# Keep pointer visible when typing (Kitty terminal still hides it according to its own config).
-riverctl input "$pointer_apple" disable-while-typing enabled
-
-# Scroll with two fingers, not at edge of trackpad (none, two-finger, edge, button).
-riverctl input "$pointer_apple" scroll-method two-finger
-
-# Middle-click emulation when tapping with three fingers.
-riverctl input "$pointer_apple" middle-emulation enabled
-
-# Natural scroll direction is disgusting.
-riverctl input "$pointer_apple" natural-scroll disabled
-
 ##
-# KEY MAPS
+# MODES
 ##
 
-#
-# Modes
-#
-
+# Create modes.
 riverctl declare-mode passthrough
 riverctl declare-mode system
 riverctl declare-mode window
@@ -222,30 +223,31 @@ riverctl declare-mode window-location
 riverctl declare-mode window-move
 riverctl declare-mode window-resize
 
-#
-# Map keys to return to normal mode
-#
-
+# Map exit keys like Escape, Space, and Enter to return to normal mode.
 nx_rctl_add_mode_exit_maps system
 nx_rctl_add_mode_exit_maps window
 nx_rctl_add_mode_exit_maps window-location
 nx_rctl_add_mode_exit_maps window-move
 nx_rctl_add_mode_exit_maps window-resize
 
+##
+# KEY MAPS
+##
+
 #
 # Window mode
+#   Super+W
 #
 
-# Window mode.
 riverctl map normal Super W enter-mode window
 
-# Window mode -> S => Toggle sticky tag for focused view.
+# S => Toggle sticky for focused view.
 riverctl map window None S toggle-view-tags "$NX_RIVER_TAGS_STICKY"
 
-# Window mode -> P => Send focused window to scratchpad (toggle visibility with Super+Z).
+# P => Send window to scratchpad.
 riverctl map window None P set-view-tags "$NX_RIVER_TAGS_SCRATCHPAD"
 
-# Window mode -> [1-9] => Send window to tag.
+# 1-9 => Send window to tag.
 for i in $(seq 1 9); do
   tags=$((1 << (i - 1)))
 
@@ -253,68 +255,65 @@ for i in $(seq 1 9); do
 done
 
 #
-# Window -> Resize mode
+# Window resize mode
+#   Super+W -> R
 #
 
-# Trigger
 riverctl map window None R enter-mode window-resize
 
-# Resize
+# HJKL => Resize window.
 riverctl map -repeat window-resize None H resize horizontal -50
 riverctl map -repeat window-resize None J resize vertical 50
 riverctl map -repeat window-resize None K resize vertical -50
 riverctl map -repeat window-resize None L resize horizontal 50
 
 #
-# Window -> Move mode
-#
+# Window movement mode
+#   Super+W -> M
 #
 
-# Trigger
 riverctl map window None M enter-mode window-move
 
-# Nive
+# HJKL => Move window.
 riverctl map -repeat window-move None H move left 50
 riverctl map -repeat window-move None J move down 50
 riverctl map -repeat window-move None K move up 50
 riverctl map -repeat window-move None L move right 50
 
 #
-# Window -> Main location mode
+# Window main location mode
+#   Super+W -> L
 #
 
-# Trigger
 riverctl map window None L enter-mode window-location
 
-# Move location
+# HJKL -> Set main area location.
 riverctl map window-location None H send-layout-cmd rivertile "main-location left"
 riverctl map window-location None J send-layout-cmd rivertile "main-location bottom"
 riverctl map window-location None K send-layout-cmd rivertile "main-location top"
 riverctl map window-location None L send-layout-cmd rivertile "main-location right"
 
 #
-# System status mode
+# System mode
+#   Super+Space
 #
 
-# Trigger
 riverctl map normal Super Space enter-mode system
 
-# Display time
+# T -> Show time
 riverctl map system None T spawn \
   "notify-send \"\$(date +'%H:%M')\" ; riverctl enter-mode normal"
 
-# Display date
+# D -> Show date
 riverctl map system None D spawn \
   "notify-send \"\$(date +'%A · %F · Week %V')\" ; riverctl enter-mode normal"
 
 #
 # Passthrough mode for testing
+#   Super+F11
 #
 
-# Trigger
 riverctl map normal Super F11 enter-mode passthrough
-
-# Exit mode
 riverctl map passthrough Super F11 enter-mode normal
 
 #
@@ -463,7 +462,7 @@ riverctl map normal Super+Shift F toggle-float
 riverctl map normal Super+Control F zoom
 
 ##
-# SCRATCHPAD AND STICKY
+# SCRATCHPAD AND STICKY MAPS
 ##
 
 # Toggle scratchpad.
@@ -529,7 +528,9 @@ riverctl float-filter-add title "Save As",
 riverctl float-filter-add title "Bitwarden"
 riverctl float-filter-add title "Kvantum Manager"
 
+#
 # Firefox
+#
 
 riverctl float-filter-add title "Extension: (Clippings) - Paste Clipping — Firefox Nightly" # Snippets add-on.
 riverctl float-filter-add title "Parent process Browser Toolbox"                            # Devtools for the browser itself.
@@ -556,19 +557,23 @@ riverctl csd-filter-add app-id "nemo"
 ##
 
 #
-# AUTO-START
+# Autostart
 #
 
 riverctl spawn "pkill swaybg ; swaybg --image ~/Pictures/wallpapers/active --mode fill --output '*'"
 riverctl spawn "eww --restart open top-bar"
 
 #
-# LAYOUT GENERATOR
+# Layout generator
 #
 
 riverctl default-layout rivertile
 
 riverctl spawn "pkill rivertile ; rivertile -view-padding ${NX_RTILE_VIEW_PADDING:-10} -outer-padding ${NX_RTILE_OUTER_PADDING:-10} -main-ratio ${NX_RTILE_MAIN_RATIO:-0.5} -main-count ${NX_RTILE_MAIN_COUNT:-1} -main-location ${NX_RTILE_MAIN_LOCATION:-'left'} >/dev/null 2>$NX_RTILE_LOGFILE"
+
+#
+# D-Bus and systemd wrap-up
+#
 
 dbus-update-activation-environment --all
 

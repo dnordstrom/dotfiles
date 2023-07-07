@@ -12,16 +12,11 @@ let
   # SETUP
   ##
 
-  # Username to use for paths.
   username = "dnordstrom";
-
-  # Path of NixOS build configuration.
   buildDirectory = "/etc/nixos";
-
-  # Home directory of user.
   homeDirectory = "/home/${username}";
+  kittySessionsDirectory = "${buildDirectory}/config/kitty/sessions";
 
-  # Utility shortcuts.
   mkSymlink = config.lib.file.mkOutOfStoreSymlink;
 
   # Convenience method for getting absolute paths based on `buildDirectory`. Leading slash not needed.
@@ -36,7 +31,7 @@ let
   #
   # @param {string|path} path - Relative path.
   # @returns {path} Absolute path.
-  mkConfigRootPath = path: /. + "${buildDirectory}/${path}";
+  mkBuildPath = path: /. + "${buildDirectory}/${path}";
 
   # Convenience method to convert relative path to absolute, based on the user's home directory.
   #
@@ -84,15 +79,15 @@ let
   #
 
   xdgBrowser = [ "firefox.desktop" ];
-  xdgEditor = [ "neovim-kitty.desktop" ];
+  xdgEditor = [ "neovim.desktop" ];
   xdgFileBrowser = [ "org.kde.dolphin.desktop" ];
-  xdgHttpie = [ "httpie-appimage.desktop" ];
+  xdgHttpie = [ "httpie.desktop" ];
   xdgImageViewer = [ "vimiv.desktop" ];
   xdgMailClient = [ "firefox.desktop" ];
-  xdgMarkdown = [ "neovim-kitty.desktop" ];
-  xdgMediaPlayer = [ "org.kde.haruna.desktop" ];
-  xdgMoneroWallet = [ "mymonero-appimage.desktop" ];
-  xdgPasswordManager = [ "bitwarden-appimage.desktop" ];
+  xdgMarkdown = [ "glow.desktop" ];
+  xdgMediaPlayer = [ "umpv.desktop" ];
+  xdgMoneroWallet = [ "mymonero.desktop" ];
+  xdgPasswordManager = [ "bitwarden.desktop" ];
   xdgPdfViewer = [ "org.pwmt.zathura.desktop" ];
 
   ## 
@@ -134,8 +129,8 @@ let
   # PYTHON AND FRIENDS
   #
 
-  python-packages = ps: with ps; [ i3ipc requests ];
-  python-with-packages = pkgs.python3.withPackages python-packages;
+  pythonPackages = ps: with ps; [ i3ipc requests ];
+  pythonWithPackages = pkgs.python3.withPackages python-packages;
 
   #
   # GSETTINGS
@@ -158,7 +153,7 @@ in rec {
   ##
 
   home = {
-    stateVersion = "23.05";
+    stateVersion = "23.11";
 
     sessionVariables = {
       EDITOR = editor;
@@ -173,11 +168,12 @@ in rec {
   };
 
   ##
-  # XDG ENTRIES AND ASSOCIATIONS
+  # XDG DESKTOP ENTRIES AND MIME-TYPE ASSOCIATIONS
   ##
 
   xdg = {
     enable = true;
+
     mimeApps = {
       enable = true;
       associations.added = mimeAassociations;
@@ -185,12 +181,10 @@ in rec {
     };
 
     desktopEntries = let
-      # Firefox Nightly desktop files for different profiles are geberated based on this.
+      # Defaults for Firefox Nightly desktop entries we'll add for specific profiles.
       firefoxName = "Firefox Nightly";
-      firefoxGenericName = "Web Browser";
-      firefoxType = "Application";
-      firefoxIcon = "firefox-dev";
       firefoxCategories = [ "Network" "WebBrowser" ];
+      firefoxIcon = "firefox-nightly";
       firefoxMimeType = [
         "application/vnd.mozilla.xul+xml"
         "application/xhtml+xml"
@@ -201,16 +195,19 @@ in rec {
         "x-scheme-handler/https"
         "x-scheme-handler/mailto"
       ];
+      firefoxStartupNotify = false;
+      firefoxTerminal = false;
+      firefoxType = "Application";
     in {
       #
-      # Desktop applications
+      # AppImage applications
       #
 
-      nemo-without-cinnamon = {
+      nemo = {
         name = "Nemo";
-        comment = "Nemo, but skip the Cinnamon";
+        comment = "Nemo, no Cinnamon";
         type = "Application";
-        genericName = "Access and organize files";
+        genericName = "Nemo, no Cinnamon";
         exec = "nemo %U";
         terminal = false;
         icon = "system-file-manager";
@@ -219,7 +216,7 @@ in rec {
         startupNotify = false;
       };
 
-      httpie-appimage = {
+      httpie = {
         name = "HTTPie";
         type = "Application";
         genericName = "Modern HTTP client for the API era";
@@ -232,49 +229,7 @@ in rec {
         startupNotify = false;
       };
 
-      ferdium-appimage = {
-        name = "Ferdium";
-        type = "Application";
-        genericName =
-          "Messaging app for WhatsApp, Slack, Telegram, Gmail, Hangouts and many many more.";
-        exec =
-          "appimage-run ${homeDirectory}/.local/bin/ferdium/ferdium.appimage";
-        terminal = false;
-        icon = "ferdium";
-        categories = [ "Network" "InstantMessaging" ];
-        mimeType = [ ];
-        startupNotify = false;
-      };
-
-      session-appimage = {
-        name = "Session";
-        type = "Application";
-        genericName = "Private messaging from your desktop";
-        exec =
-          "appimage-run ${homeDirectory}/.local/bin/session/session.appimage";
-        terminal = false;
-        icon = "session-desktop";
-        categories = [ "Network" ];
-        mimeType = [ ];
-        startupNotify = false;
-        settings = { StartupWMClass = "session"; };
-      };
-
-      station-appimage = {
-        name = "Station";
-        type = "Application";
-        genericName = "Web service manager";
-        exec =
-          "GDK_BACKEND=x11 appimage-run ${homeDirectory}/.local/bin/station/station.appimage";
-        terminal = false;
-        icon = "station-desktop-app";
-        categories = [ "Network" ];
-        mimeType = [ "x-scheme-handler/station" ];
-        startupNotify = false;
-        settings = { StartupWMClass = "Station"; };
-      };
-
-      mymonero-appimage = {
+      mymonero = {
         name = "MyMonero";
         type = "Application";
         genericName = "Monero Wallet";
@@ -288,58 +243,14 @@ in rec {
         settings = { StartupWMClass = "MyMonero"; };
       };
 
-      singlebox-appimage = {
-        name = "Singlebox";
-        type = "Application";
-        genericName = "All-in-One Messenger";
-        exec =
-          "appimage-run ${homeDirectory}/.local/bin/singlebox/singlebox.appimage -- %U";
-        terminal = false;
-        icon = "singlebox";
-        categories = [ "Utility" ];
-        mimeType = [
-          "x-scheme-handler/https"
-          "x-scheme-handler/http"
-          "x-scheme-handler/mailto"
-          "x-scheme-handler/webcal"
-        ];
-        startupNotify = false;
-      };
-
-      bitwarden-appimage = {
-        name = "Bitwarden (AppImage)";
-        type = "Application";
-        genericName = "Password Manager";
-        exec =
-          "appimage-run ${homeDirectory}/.local/bin/bitwarden/bitwarden.appimage %U";
-        terminal = false;
-        icon = "ferdium";
-        categories = [ "Utility" ];
-        mimeType = [ "x-scheme-handler/bitwarden" ];
-        startupNotify = false;
-        settings = { StartupWMClass = "Bitwarden"; };
-      };
-
       #
-      # COMMAND LINE APPLICATIONS
+      # Terminal applications
       #
 
-      neovim-kitty = {
-        name = "Neovim (kitty)";
+      vifm = {
+        name = "Vifm";
         type = "Application";
-        genericName = "Text Editor";
-        exec = "kitty --title popupterm -e nvim %F";
-        terminal = false;
-        icon = "nvim";
-        categories = [ "Utility" "TextEditor" "Development" "IDE" ];
-        mimeType = [ "text/plain" "inode/directory" ];
-        startupNotify = false;
-      };
-
-      vifm-kitty = {
-        name = "Vifm (kitty)";
-        type = "Application";
-        genericName = "File Manager";
+        genericName = "Terminal file manager";
         exec = "kitty --title popupterm -e vifm %F";
         terminal = false;
         icon = "vifm";
@@ -348,10 +259,10 @@ in rec {
         startupNotify = false;
       };
 
-      glow-kitty = {
-        name = "Glow (kitty)";
+      glow = {
+        name = "Glow";
         type = "Application";
-        genericName = "Markdown Viewer";
+        genericName = "Markdown viewer";
         exec = "kitty --title popupterm -e glow %F";
         terminal = false;
         icon = "kitty";
@@ -361,29 +272,14 @@ in rec {
       };
 
       #
-      # STARTUP SESSIONS
+      # Terminal startup automations
       #
 
-      kitty-session-wpo = {
-        name = "WPO development (kitty)";
-        comment = "WPO development (kitty)";
+      blogSession = {
+        name = "Blog terminal";
+        comment = "Writing and development session";
+        genericName = "Writing and development session";
         type = "Application";
-        genericName = "Text Editor";
-        exec = ''
-          kitty --session "${buildDirectory}/config/kitty/sessions/dev-cloud.session" --single-instance --instance-group dev-wpo
-        '';
-        terminal = false;
-        icon = "kitty";
-        categories = [ "Utility" "TextEditor" "Development" "IDE" ];
-        mimeType = [ "text/plain" "inode/directory" ];
-        startupNotify = true;
-      };
-
-      kitty-session-cloud = {
-        name = "Cloud development (kitty)";
-        comment = "Cloud development (kitty)";
-        type = "Application";
-        genericName = "Text Editor";
         exec = ''
           kitty --session "${buildDirectory}/config/kitty/sessions/dev-cloud.session" --single-instance --instance-group dev-cloud
         '';
@@ -394,18 +290,19 @@ in rec {
         startupNotify = true;
       };
 
-      kitty-session-scratch = {
-        name = "Scratchpad terminal (kitty)";
-        comment = "Scratchpad terminal (kitty)";
+      scratchpadSession = {
+        name = "Scratchpad terminal";
+        comment = "Persistent scratchpad session";
+        genericName = "Persistent scratchpad session";
         type = "Application";
-        genericName = "Text Editor";
         exec = ''
-          kitty --class scratchterm --name scratchterm --session "${buildDirectory}/config/kitty/sessions/scratchpad.session" --single-instance --instance-group scratch
+          kitty --class scratchterm --title "Scratchpad terminal" --single-instance --instance-group
+          scratchterm --session "${kittySessionsDirectory}/scratchpad.session"
         '';
         terminal = false;
         icon = "kitty";
         categories = [ "Utility" "TextEditor" "Development" "IDE" ];
-        mimeType = [ "text/plain" "inode/directory" ];
+        mimeType = [ ];
         startupNotify = true;
       };
 
@@ -413,56 +310,56 @@ in rec {
       # Browser profiles
       #
 
-      firefoxDefault = {
-        name = "${firefoxName} (Default)";
-        type = firefoxType;
-        genericName = firefoxGenericName;
+      firefox = {
+        name = "${firefoxName}";
+        genericName = "Default profile";
         exec = "firefox -P Default %U";
-        terminal = false;
+        settings = { StartupWMClass = "firefox-nightly-default"; };
+        type = firefoxType;
+        terminal = firefoxTerminal;
         icon = firefoxIcon;
         categories = firefoxCategories;
         mimeType = firefoxMimeType;
-        startupNotify = false;
-        settings = { StartupWMClass = "firefox-nightly-default"; };
+        startupNotify = firefoxStartupNotify;
       };
 
       firefoxPrivate = {
-        name = "${firefoxName} (Private)";
-        type = firefoxType;
-        genericName = firefoxGenericName;
+        name = "${firefoxName}";
+        genericName = "Private profile";
         exec = "firefox -P Private %U";
-        terminal = false;
+        settings = { StartupWMClass = "firefox-nightly-private"; };
+        type = firefoxType;
+        terminal = firefoxTerminal;
         icon = firefoxIcon;
         categories = firefoxCategories;
         mimeType = firefoxMimeType;
-        startupNotify = false;
-        settings = { StartupWMClass = "firefox-nightly-private"; };
+        startupNotify = firefoxStartupNotify;
       };
 
       firefoxTesting = {
-        name = "${firefoxName} (Testing)";
-        type = firefoxType;
-        genericName = firefoxGenericName;
+        name = "${firefoxName}";
+        genericName = "Testing profile";
         exec = "firefox -P Testing %U";
-        terminal = false;
+        settings = { StartupWMClass = "firefox-nightly-testing"; };
+        type = firefoxType;
+        terminal = firefoxTerminal;
         icon = firefoxIcon;
         categories = firefoxCategories;
         mimeType = firefoxMimeType;
-        startupNotify = false;
-        settings = { StartupWMClass = "firefox-nightly-testing"; };
+        startupNotify = firefoxStartupNotify;
       };
 
       firefoxMusic = {
-        name = "${firefoxName} (Music)";
-        type = firefoxType;
-        genericName = firefoxGenericName;
+        name = "${firefoxName}";
+        genericName = "Music profile";
         exec = "firefox -P Music %U";
-        terminal = false;
+        settings = { StartupWMClass = "firefox-nightly-music"; };
+        type = firefoxType;
+        terminal = firefoxTerminal;
         icon = firefoxIcon;
         categories = firefoxCategories;
         mimeType = firefoxMimeType;
-        startupNotify = false;
-        settings = { StartupWMClass = "firefox-nightly-music"; };
+        startupNotify = firefoxStartupNotify;
       };
     };
   };
@@ -487,8 +384,40 @@ in rec {
     # Maybe we keep 'em, maybe we don't. But if we don't bunch them up here, we forget 'em.
     #
 
+    cider
+    cliphist
+    clipman
+    copyq
+    cozy
+    libsForQt5.ktorrent
+    proycon-wayout
+    rambox
+    shikane
+    strawberry
+    swww
+    wayout
     wlrctl
     wiki-tui
+    wpaperd
+    input-remapper
+    navi
+    ytfzf
+    youtube-dl # TODO: Switch to updated forks.
+
+    #
+    # Rofi and Wofi tools
+    #
+
+    emojipick
+    rofi-bluetooth
+    rofi-calc
+    rofi-emoji
+    rofi-emoji
+    rofi-systemd
+    rofi-wayland
+    rofimoji
+    wofi
+    wofi-emoji
 
     #
     # Networking
@@ -498,7 +427,6 @@ in rec {
     gnunet-gtk
     onionshare-gui
     qbittorrent
-    rofi-bluetooth
     wg-bond
 
     #
@@ -510,6 +438,12 @@ in rec {
     nix-du
     nix-prefetch
     nixos-option
+
+    #
+    # Key remappers
+    #
+
+    interception-tools
 
     #
     # Programs, packages, and files
@@ -526,10 +460,6 @@ in rec {
 
     #
     # Feeds
-    #
-    # RSS feeds, Atom feeds, and occasionally web scraping appear to decrease in popularity. We
-    # produce more content than ever, but content discovery and digestion become fragmented. We
-    # have blog platforms that charge their readers, we have Medium which is just 
     #
 
     gnome-podcasts
@@ -562,7 +492,6 @@ in rec {
     libsForQt5.qt5.qtwayland
     libsForQt5.qtstyleplugin-kvantum
     libsForQt5.qtstyleplugins
-
     qt6.qt5compat
     qt6.qt3d
     qt6.full
@@ -572,14 +501,9 @@ in rec {
     #
 
     element-desktop
-    gomuks
-    gotktrix
     qtox
-    schildichat-desktop-wayland
     slack
-    tdesktop # Telegram desktop client.
-    utox
-    weechat
+    tdesktop
 
     #
     # Command line
@@ -591,10 +515,10 @@ in rec {
     libnotify
     librsvg # Sypposedly a dependency to `mdcat` for showing images.
     mdcat
-    ncpamixer # TRY: We ready to let Pavucontrol go?
+    ncpamixer # TODO: Let `pavucontrol` go.
     neofetch
     onefetch
-    pamixer # TRY: ^ See previous question.
+    pamixer # TODO: Let `pavucontrol` go.
     parallel
     rdrview
     ripgrep
@@ -618,8 +542,6 @@ in rec {
     # Wayland
     #
 
-    cliphist
-    clipman
     gebaar-libinput
     grim
     imagemagick
@@ -629,10 +551,6 @@ in rec {
     ristate
     river
     river-tag-overlay
-    rofi-calc
-    rofi-emoji
-    rofi-systemd
-    rofi-wayland
     slurp
     swappy
     swaybg
@@ -644,17 +562,9 @@ in rec {
     wf-recorder
     wl-clipboard
     wlopm
-    wofi
-    wofi-emoji
     wshowkeys
     wtype
     ydotool
-
-    #
-    # Office 
-    #
-
-    # libreoffice-fresh TODO: Uncomment when not broken.
 
     #
     # Web
@@ -670,7 +580,7 @@ in rec {
 
     # Proton's official CLI and GUI apps both have GUI/DE dependencies and won't run headless. We'll
     # use `wg-quick` to start a WireGuard session instead, but let's add the CLI just in case.
-    protonvpn-cli # Official CLI.
+    protonvpn-cli
     bitwarden
     bitwarden-cli
     git-crypt
@@ -689,17 +599,13 @@ in rec {
     castnow
     cava
     chrome-export
-    # easyeffects # Also see option `services.easyeffects`.
     enlightenment.ephoto
-    fx_cast_bridge
-    google-chrome
     jamesdsp
     libcamera
     lxqt.pavucontrol-qt
     playerctl
     plexamp
     pulsemixer
-    streamlink
     ustreamer # Video for Linux webcam streamer.
     v4l-utils # Video For Linux webcam utilities.
     vlc
@@ -763,7 +669,7 @@ in rec {
     stylua
 
     # Python
-    python-with-packages
+    pythonWithPackages
 
     # Shell
     shellcheck
@@ -792,28 +698,17 @@ in rec {
 
     # Fonts (PragmataPro Mono with ligatures in terminal and any code, commercial license)
     corefonts
-    fcft # Font loading library used by foot.
     font-manager
     joypixels
     merriweather
     merriweather-sans
     paratype-pt-mono
     paratype-pt-sans
-    paratype-pt-serif # Current serif and print format font.
+    paratype-pt-serif
     powerline-fonts
     public-sans
     redhat-official-fonts
-    source-sans
-    source-serif
     twemoji-color-font
-    work-sans
-
-    # Emoji tools.
-    emoji-picker # TUI picker.
-    emojipick # For `rofi` and `wofi`.
-    emote
-    rofi-emoji
-    rofimoji
 
     # Theming.
     catppuccin-kvantum
@@ -825,16 +720,6 @@ in rec {
     gtk3 # Needed for the gsettings script to add its schema path.
     gtk-engine-murrine
     icoutils
-
-    #
-    # Interesting prospects.
-    #
-
-    input-remapper # Key remapper, surprise!
-    interception-tools # Key remapper at lower level than WM/DE, works in TTY, has caps2esc plugin.
-    navi # CLI cheatsheet tool.
-    ytfzf # Fzf utility for YouTube.
-    youtube-dl # Download command used by `ytfzf`: we want to use it standalone as as well.
   ];
 
   #
@@ -884,30 +769,28 @@ in rec {
   ##
 
   #
-  # SCRIPTS AND SHELL
+  # Scripts and shell
   #
 
-  home.file.".local/bin/scripts".source =
-    mkSymlink (mkConfigRootPath "scripts");
+  home.file.".local/bin/scripts".source = mkSymlink (mkBuildPath "scripts");
   home.file.".config/zsh/.zshinit".source =
     mkSymlink (mkConfigPath "zsh/zshrc");
 
   #
-  # WALLPAPERS
+  # Wallpapers
   #
 
-  home.file."Pictures/wallpapers".source =
-    mkSymlink (mkConfigRootPath "wallpapers");
+  home.file."Pictures/wallpapers".source = mkSymlink (mkBuildPath "wallpapers");
 
   #
-  # DOLPHIN FILE MANAGER "PLACES"
+  # Dolphin file manager "places"
   #
 
   home.file.".config/dolphin/user-places.xbel".source =
     mkSymlink (mkConfigPath "dolphin/user-places.xbel");
 
   #
-  # EASYEFFECTS
+  # Easyeffects
   #
   #   Settings directories are writable but presets directory read-only. This allows EasyEffects
   #   to modify its settings while the presets are immutable since that's where the important
@@ -925,47 +808,29 @@ in rec {
   home.file.".config/easyeffects/irs".source =
     mkSymlink (mkConfigPath "easyeffects/irs");
 
-  # Keep EasyEffects presets immutable so we don't fuck anything up. Not that we ever would, Still.
+  # Keep presets immutable so we don't fuck anything up. Not that we would, but still.
   xdg.configFile."easyeffects/presets".source = ../config/easyeffects/presets;
 
   #
-  # SWAY
-  #
-  # We can't symlink the `~/.config/sway` directory if the Home Manager module handles the systemd
-  # integration (since it adds a config file with the systemd target command), we have to symlink
-  # individual files. For some reason `xdg.configFile` doesn't work so we use `home.file`.
-  #
-
-  home.file.".config/sway/start".source = mkSymlink (mkConfigPath "sway/start");
-  home.file.".config/sway/main.conf".source =
-    mkSymlink (mkConfigPath "sway/main.conf");
-  home.file.".config/sway/colors.catppuccin.conf".source =
-    mkSymlink (mkConfigPath "sway/colors.catppuccin.conf");
-  home.file.".config/swaylock/config".source =
-    mkSymlink (mkConfigPath "swaylock/config");
-  home.file.".config/swaynag/config".source =
-    mkSymlink (mkConfigPath "swaynag/config");
-
-  #
-  # RIVER
+  # River
   #
 
   home.file.".config/river".source = mkSymlink (mkConfigPath "river");
 
   # 
-  # SWAPPY 
+  # Swappy 
   #
 
   xdg.configFile."swappy/config".source = ../config/swappy/config;
 
   #
-  # BAT 
+  # Bat 
   #
 
   xdg.configFile."bat/themes".source = ../config/bat/themes;
 
   #
-  # KITTY
+  # Kitty
   #
 
   home.file.".config/kitty/config.conf".source =
@@ -980,19 +845,19 @@ in rec {
     mkSymlink (mkConfigPath "kitty/kittens");
 
   #
-  # STARSHIP
+  # Starship
   #
 
   xdg.configFile."starship.toml".source = ../config/starship/starship.toml;
 
   #
-  # ZATHURA
+  # Zathura
   #
 
   xdg.configFile."zathura".source = ../config/zathura;
 
   #
-  # FIREFOX
+  # Firefox
   #
 
   home.file.".config/tridactyl".source =
@@ -1002,7 +867,7 @@ in rec {
     "${pkgs.tridactyl-native}/lib/mozilla/native-messaging-hosts/tridactyl.json";
 
   #
-  # NEOVIM
+  # Neovim
   #
 
   home.file.".config/nvim/lua".source = mkSymlink (mkConfigPath "nvim/lua");
@@ -1013,7 +878,7 @@ in rec {
   home.file.".config/nvim/spell".source = mkSymlink (mkConfigPath "nvim/spell");
 
   #
-  # PIPEWIRE
+  # Pipewire
   #
 
   home.file.".config/pipewire".source = mkSymlink (mkConfigPath "pipewire");
@@ -1021,55 +886,45 @@ in rec {
     mkSymlink (mkConfigPath "wireplumber");
 
   #
-  # VIFM
+  # Vifm
   #
 
   home.file.".config/vifm".source = mkSymlink (mkConfigPath "vifm");
 
   #
-  # GLOW
+  # Glow
   #
 
   home.file.".config/glow".source = mkSymlink (mkConfigPath "glow");
 
   #
-  # LSD
+  # Lsd
   #
 
   home.file.".config/lsd".source = mkSymlink (mkConfigPath "lsd");
 
   #
-  # WOFI
+  # Wofi
   #
 
   home.file.".config/wofi".source = mkSymlink (mkConfigPath "wofi");
-
-  #
-  # WAYBAR
-  #
-
-  home.file.".config/waybar".source = mkSymlink (mkConfigPath "waybar");
 
   ##
   # PROGRAMS
   ##
 
   programs = {
-    #
-    # TRYOUTS
-    #
-
     kodi = let
       # Metadata directory to use instead of `~/.kodi`.
-      kodi-directory = "${config.xdg.dataHome}/kodi";
+      kodiDirectory = "${config.xdg.dataHome}/kodi";
 
       # Kodi package to use (Wayland support and added packages).
-      kodi-with-packages =
+      kodiWithPackages =
         pkgs.kodi-wayland.withPackages (exts: [ exts.pvr-iptvsimple ]);
     in {
-      enable = true;
-      datadir = kodi-directory;
-      package = kodi-with-packages;
+      enable = false; # Currently not using Kodi.
+      datadir = kodiDirectory;
+      package = kodiWithPackages;
       sources = {
         video = {
           default = "Videos";
@@ -1094,18 +949,6 @@ in rec {
       };
     };
 
-    #
-    # UTILITIES
-    #
-
-    exa.enable = true;
-    jq.enable = true;
-    lsd.enable = true;
-
-    #
-    # MEDIA
-    #
-
     mpv = {
       enable = true;
       config = {
@@ -1115,30 +958,17 @@ in rec {
       };
     };
 
-    #
-    # OFFICE
-    #
-
-    # PDF viewer.
     zathura.enable = true;
+    exa.enable = true;
+    jq.enable = true;
+    lsd.enable = true;
+    java.enable = false; # Only used in case of emergencies.
 
-    #
-    # DEVELOPMENT
-    #
-
-    # Unnecessary evil.
-    java.enable = false;
-
-    # Status bar we use in River WM.
+    # Widget framework used to design top bar.
     eww = {
       enable = true;
       configDir = mkSymlink (mkConfigPath "eww");
       package = pkgs.eww-wayland;
-    };
-
-    nix-index = {
-      enable = true;
-      enableZshIntegration = true;
     };
 
     # Customizable shell prompt written in Rust.
@@ -1159,11 +989,11 @@ in rec {
       };
     };
 
-    # Command line snippets manager.
+    # Snippet manager.
     pet = {
       enable = true;
       snippets = [{
-        description = "Copy Firefox password";
+        description = "Copy Firefox password from Bitwarden";
         command =
           "bw get item Firefox | jq -r '.login.password // empty' | wl-copy";
         tag = [ "password" "copy" "clipboard" "json" ];
@@ -1172,8 +1002,9 @@ in rec {
 
     # Fox on fire.
     firefox = let
+      # Defaults preferences for all Firefox profiles.
       config = {
-        # Disable annoyances
+        # Disable annoyances.
         "browser.aboutConfig.showWarning" = false;
         "browser.shell.checkDefaultBrowser" = false;
         "browser.bookmarks.restore_default_bookmarks" = false;
@@ -1182,13 +1013,13 @@ in rec {
         # Enable userChrome.css and `userContent.css`.
         "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
 
-        # Enable showing compact mode option.
+        # Enable compact mode option.
         "browser.compactmode.show" = true;
 
-        # Enable legacy screen share indicator that works better in Wayland.
+        # Enable legacy screen share indicator (better for Wayland).
         "privacy.webrtc.legacyGlobalIndicator" = false;
 
-        # Needed to make certain key combinations work with Tridactyl.
+        # Enable certain key combinations for Tridactyl add-on.
         "privacy.resistFingerprinting" = false;
         "privacy.resistFingerprinting.block_mozAddonManager" = false;
       };
@@ -1232,24 +1063,21 @@ in rec {
       userName = "dnordstrom";
       userEmail = "dnordstrom@users.noreply.github.com";
       aliases = {
-        # Open editor with commit message temnplate found in the `.git` directory in repositories. For
-        # max convenience, tweak that message: see `.git/hooks/prepare-commit-msg.sample` and
-        # `.git/hooks/commit-msg.sample`. Remove the ".sample" suffix to enable this feature.
-        save = "commit --all --edit";
+        # Commit using editor for commit message. Edit `.git/hooks/prepare-commit-msg.sample` and
+        # `.git/hooks/commit-msg.sample`, and remove the ".sample" suffix to set message defaults.
+        c = "commit --all --edit";
 
         # Show repostitory status, e.g. untracked files and changes since last commit.
         s = "status";
 
-        # Checks out branch if it exiss, otherwise create it first.
-        swap = "switch -c";
+        # Check out branch, creating it if needed.
+        b = "switch -c";
 
-        # Show commit history in a reasonably readable format without unneeded details. Abbreviates
-        # commit hashes, shows simple details one line per commit, formats dates for humans, and of
-        # course sets the tabs to two spaces as it should be.
-        brieflog = "log --pretty=oneline -expand-tabs=2";
+        # Show log in readable format, abbreviating hashes and showing one-line commits.
+        l = "log --pretty=oneline -expand-tabs=2";
       };
 
-      # TODO: Need to include the key before this works.
+      # TODO: Include GPG/SSH key.
       # signing.signByDefault = true;
     };
 
@@ -1259,7 +1087,7 @@ in rec {
       viAlias = true;
       vimAlias = true;
       vimdiffAlias = true;
-      extraConfig = "lua require('init')"; # The config is 100% Lua files.
+      extraConfig = "lua require('init')"; # Only line needed, loads Lua config.
     };
 
     zsh = {
@@ -1278,10 +1106,9 @@ in rec {
       # We've added it in `./modules/common.nix`
       enableCompletion = true;
 
+      cdpath = [ buildDirectory homeDirectory "${homeDirectory}/Code" ];
       dotDir = ".config/zsh";
       history.path = "${config.xdg.dataHome}/zsh/history";
-
-      cdpath = [ buildDirectory homeDirectory "${homeDirectory}/Code" ];
 
       # Plugins installed either here with Git or from nixpkgs if available, using the build in plugin
       # management, meaning we need to point it to the correct file to load, usually ending in
@@ -1339,7 +1166,7 @@ in rec {
       enableZshIntegration = true;
     };
 
-    # Cat with wings.
+    # Smarter `cat`.
     bat = {
       enable = true;
       config = {
@@ -1351,7 +1178,7 @@ in rec {
       };
     };
 
-    # Fuzzy finder written in Go.
+    # Smarter finder and menu.
     fzf = {
       enable = true;
       enableZshIntegration = true;
@@ -1365,15 +1192,15 @@ in rec {
       goPath = "${homeDirectory}/.local/bin/go"; # Using `~/go` is lunacy.
     };
 
-    # Do things when entering a directory, such as load isolated development shells automatically with
-    # all necessary dependencies available. Can be done with `direnv` alone but `nix-direnv` Improves
-    # the caching of dependencies.
+    # Automate when entering a directory, e.g. load isolated development shells automatically with
+    # all dependencies available without global installs. Just `direnv` alone works, but enabling
+    # `nix-direnv` caches dependencies.
     direnv = {
       enable = true;
-      nix-direnv.enable = true; # Improves caching of Nix devshells.
+      nix-direnv.enable = true;
     };
 
-    # TUI RSS reader.
+    # TUI feed reader.
     newsboat = {
       enable = true;
       autoReload = true;
@@ -1470,11 +1297,13 @@ in rec {
           url = "https://newsboat.org/news.atom";
         }
         {
+          # All Pocket articles.
           title = "Pocket";
           tags = [ "pocket" ];
           url = "https://getpocket.com/users/dnordstrom/feed/all";
         }
         {
+          # Unread Pocket articles.
           title = "Pocket Unread";
           tags = [ "pocket" ];
           url = "https://getpocket.com/users/dnordstrom/feed/unread";
@@ -1495,11 +1324,8 @@ in rec {
   ##
 
   manual = {
-    # Installs `home-manager-help` tool.
-    html.enable = true;
-
-    # Installs to `<profile>/share/doc/home-manager/options.json`.
-    json.enable = true;
+    html.enable = true; # Adds `home-manager-help` tool.
+    json.enable = true; # Adds `<profile>/share/doc/home-manager/options.json`.
   };
 
   ##
@@ -1507,13 +1333,11 @@ in rec {
   ##
 
   #
-  # MODULES
+  # Modules
   #
 
   services = {
-    #
     # Notification daemon
-    #
     mako = {
       actions = true;
       backgroundColor = "#B7E5E6";
@@ -1533,9 +1357,7 @@ in rec {
       width = 325;
     };
 
-    #
-    # Monitor layouts
-    #
+    # Monitor layouts.
     kanshi = let
       # Primary [center]: 35" 1440p @ 100Hz
       benq-1 = {
@@ -1598,8 +1420,7 @@ in rec {
       pinentryFlavor = "qt";
     };
 
-    # Gammastep gradually adjusts color temperature of monitors at sunset and sunrise. Tray icon
-    # disabled for now, until EWW is confirmed to support system tray. PR should be merged IIRC.
+    # Gradually adjusts monitor color temperature at sunset and sunrise.
     gammastep = {
       enable = true;
       tray = false;

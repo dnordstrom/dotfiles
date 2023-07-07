@@ -1,13 +1,21 @@
 { config, pkgs, stdenv, lib, inputs, ... }:
 
 let
+  autocleanEnable = true; # Optimize and garbage collect (daemon and on build).
+  autocleanFrequency = "weekly"; # How often the daemon should do optimizations.
+  autocleanOlderThan = "30d"; # How long to keep generations before deleting.
+
   username = "dnordstrom";
   password = "Who knows?";
+
   defaultBrowser = "firefox";
   defaultEditor = "nvim";
-  homeDirectory = "/home/${username}"; # Home directory.
-  mediaDirectory = "${homeDirectory}/Videos"; # Plex library.
-  musicDirectory = "${homeDirectory}/Music"; # Roon library.
+
+  homeDirectory = "/home/${username}";
+
+  # To avoid some issues with the XDG portals, this does basically the same thing as the Nix module,
+  # but we can see it and tweak as needed. `xdgPortalsJoinedPackagesEnv` creates a package
+  # environment containing all portal outputs in one place, simpler to link or mess around with.
   xdgPortalsPackage = [ pkgs.xdg-desktop-portal ];
   xdgPortalsExtraPackages = with pkgs; [
     xdg-desktop-portal-wlr
@@ -30,20 +38,12 @@ in {
   # GENERAL
   #
 
-  # Coming NixOS releases might change an option's default value, rename it, or move it to a new
-  # location. Here we tell Nix that we want the options as they existed in 23.05. That way, they
-  # work regardless of NixOS version, and the configuration outlives us all.
-  system.stateVersion = "23.05";
+  system.stateVersion = "23.11"; # You don't want to do this, keep it as is.
 
   time.timeZone = "Europe/Stockholm";
 
   nix = {
-    # Use unstable `nix` CLI tool. Written by greek goddess Medusa, hence the subcommand naming is
-    # a bit eight-headed. Not sure it this is still required for using flakes, but it used to be.
-    # If you like consistency and stability, stick with stable. If you like to know what's
-    # coming, understand problems better, and contribute by trying new stuff: use unstable.
-    #
-    # That being said, I've used it for years without any issues, so I'd say it's nice and stable.
+    # Use unstable `nix` CLI tool, because we can.
     package = pkgs.nixUnstable;
 
     # CPU scheduling policy for Nix daemon process. Defaults to "other". Other options are "batch"
@@ -55,37 +55,39 @@ in {
     # an attempt to be able to use the PC during builds. (Documentation recommends this on desktop.)
     daemonIOSchedClass = "idle";
 
-    # Build settings
+    # Build settings.
     settings = {
-      # Number of cores used per one build (if it has parallel building enabled). You probably don't
-      # want to touch this, but I'd love if the PC was responsive while upgrading.
+      # Number of cores per one build if the derivation has parallel building enabled, and max
+      # builds to run in parallel. You probably don't want to touch this, but I like my PC to remain
+      # semi-responsive while rebuilding, crashing Firefox less than twice a minute.
       cores = 1;
-
-      # Max build jobs to run in parallel. You probably don't want to touch this, but I'd love if
-      # the PC was responsive while upgrading.
       max-jobs = 2;
 
-      # Users with elevated `nix` command privileges.
+      # Elite users with elevated `nix` command privileges that allow rebuilding NixOS.
       trusted-users = [ "root" "dnordstrom" ];
 
-      # Automatically symlink identical files.
-      auto-optimise-store = true;
+      # Automatically perform store optimizations when rebuilding.
+      auto-optimise-store = autocleanEnable;
     };
 
-    # Automatically have nix daemon symlink identical files weekly to free storage space.
+    # Kindly ask Nix daemon to auto-optimize the Nix store by symlinking identical files weekly.
     optimise = {
-      automatic = true;
-      dates = [ "weekly" ];
+      automatic = autocleanEnable;
+      dates = [ autocleanFrequency ];
     };
 
-    # Automatically have nix daemon remove unused packages after 30 days.
+    # Kindly ask Nix daemon to auto-optimize the Nix store by garbage collecting old generations and
+    # builds weekly. Ever had a build fail after obliterating your last 20GB? Then you get it.
     gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 30d";
+      automatic = autocleanEnable;
+      dates =
+        autocleanFrequency; # Why this is a string but `optimise.dates` a list, I don't know.
+
+      # Garbage collect weekly, but keep generations for 30 days since we suck at updating things.
+      options = "--delete-older-than ${autocleanOlderThan}";
     };
 
-    # Disable annoying warning about dirty Git tree.
+    # Disable warning about dirty Git tree. Running `git status` every other minute is far superior.
     extraOptions = "warn-dirty = false";
   };
 
@@ -93,12 +95,15 @@ in {
   # PACKAGE MANAGEMENT
   #
 
+  # Mostly stuff we don't want to do but need to due to shit package maintenance.
   nixpkgs.config = {
     allowUnsupportedSystem = true;
     allowUnfreePredicate = pkg:
       builtins.elem (lib.getName pkg) [ "corefonts" "slack" ];
-    firefox.enableTridactylNative = true;
     permittedInsecurePackages = [ "openssl-1.1.1u" ];
+
+    # This installs the native messaging client for the Tridactyl Firefox add-on though.
+    firefox.enableTridactylNative = true;
   };
 
   #
@@ -232,7 +237,7 @@ in {
 
   services = {
     #
-    # Enable libinput for mouse and touchpad setup.
+    # Enable libinput for Wayland mouse and touchpad setup.
     #
     xserver = {
       enable = false;
@@ -345,11 +350,11 @@ in {
 
     greetd = {
       enable = true;
-      vt = 5; # TTY 1 and 2 will start Sway or River on login, respectively.
+      vt = 3; # TTY 1 and 2 will start Sway or River on login, respectively.
       settings = {
         default_session = {
           command =
-            "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --remember-session --cmd ${homeDirectory}/.config/river/start";
+            "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --remember-session --asterisks --cmd ${homeDirectory}/.config/river/start";
           user = "greeter";
         };
       };
