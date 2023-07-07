@@ -130,7 +130,7 @@ let
   #
 
   pythonPackages = ps: with ps; [ i3ipc requests ];
-  pythonWithPackages = pkgs.python3.withPackages python-packages;
+  pythonWithPackages = pkgs.python3.withPackages pythonPackages;
 
   #
   # GSETTINGS
